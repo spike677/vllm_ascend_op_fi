@@ -13,6 +13,7 @@ import re
 import threading
 
 from .core import UnsupportedCall
+from .prerequisites import expectation, require_assessment, require_identity
 from . import quant_native_isolation as isolation
 
 U32, U64, I32, I64 = C.c_uint32, C.c_uint64, C.c_int32, C.c_int64
@@ -188,6 +189,62 @@ def key(sha256):
     return Key.from_buffer_copy(bytes.fromhex(sha256))
 
 
+def inspect_bundle(bundle,approved_build_sha256):
+    """Aggregate inert file/source/SDK/process prerequisites before any CDLL."""
+    root=Path(bundle).resolve()
+    def digest(path):
+        try:return _sha(path)
+        except OSError:return None
+    checks=[]
+    def check(field,expected,actual,code):
+        checks.append(expectation('deployment_identity','quant_bundle.'+field,expected,actual,code))
+    manifest_path=root/'build.json'
+    check('approved_manifest_sha256',approved_build_sha256,digest(manifest_path),'QUANT_GROUP_APPROVED_MANIFEST_CHANGED')
+    check('approved_manifest_sha256_valid',True,bool(isinstance(approved_build_sha256,str) and
+        re.fullmatch('[0-9a-f]{64}',approved_build_sha256)),'QUANT_GROUP_APPROVED_MANIFEST_CHANGED')
+    try:manifest=json.loads(manifest_path.read_bytes())
+    except (OSError,ValueError):manifest={}
+    if type(manifest) is not dict:manifest={}
+    for field,expected in dict(schema='demoncat.quant.group_deployment.v1',cann='8.5.1',actual_npu_calls=0,
+            legacy_c1_library_present=False,library='runtime/vendor/op_api/lib/libcust_opapi.so').items():
+        check(field,expected,manifest.get(field),'QUANT_GROUP_DEPLOYMENT_IDENTITY_INCOMPLETE')
+    files=manifest.get('files',{})
+    valid_files=type(files) is dict and 1<=len(files)<=1024 and all(type(k) is str and type(v) is str for k,v in files.items())
+    check('file_manifest',True,valid_files,'QUANT_GROUP_DEPLOYMENT_IDENTITY_INCOMPLETE')
+    if not valid_files:files={}
+    check('library_in_file_manifest',True,manifest.get('library') in files,'QUANT_GROUP_DEPLOYMENT_IDENTITY_INCOMPLETE')
+    for relative,expected in files.items():
+        path=(root/relative).resolve()
+        actual=digest(path) if path.is_relative_to(root) else 'OUTSIDE_BUNDLE'
+        if actual!=expected:check('files.'+relative,expected,actual,'QUANT_GROUP_BUNDLE_FILE_CHANGED:'+relative)
+    sources=manifest.get('sources',{})
+    if type(sources) is not dict:sources={}
+    for name in PRODUCTION_SOURCES:
+        expected=digest(Path(__file__).parent/'native_adapters'/name)
+        check('source.'+name,dict(source=expected,file=expected),
+            dict(source=sources.get('fault_injection/native_adapters/'+name),file=files.get(name)),
+            'QUANT_GROUP_SOURCE_DOES_NOT_MATCH_INSTALLED_BINDING:'+name)
+    sdk=manifest.get('sdk_identity',{})
+    if type(sdk) is not dict:sdk={}
+    real=Path(os.environ.get('DCAT_REAL_OPAPI',''))
+    check('real_opapi_absolute_file',True,real.is_absolute() and real.is_file(),
+        'QUANT_GROUP_REAL_OPAPI_OR_PROCESS_MODE_CHANGED')
+    check('real_opapi',sdk.get('real_opapi'),str(real) if real.is_absolute() else None,
+        'QUANT_GROUP_REAL_OPAPI_OR_PROCESS_MODE_CHANGED')
+    check('real_opapi_sha256',sdk.get('real_opapi_sha256'),digest(real) if real.is_absolute() else None,
+        'QUANT_GROUP_REAL_OPAPI_OR_PROCESS_MODE_CHANGED')
+    for field,pattern in [('actual_image_id',r'sha256:[0-9a-f]{64}'),('source_commit',r'[0-9a-f]{40}')]:
+        value=manifest.get(field)
+        check(field+'_valid',True,isinstance(value,str) and re.fullmatch(pattern,value) is not None,
+            'QUANT_GROUP_DEPLOYMENT_IDENTITY_INCOMPLETE')
+    check('sdk_abi_sizes',True,type(sdk.get('abi_sizes')) is dict and type(sdk.get('metadata_abi_sizes')) is dict,
+        'QUANT_GROUP_SDK_ABI_MANIFEST_REQUIRED')
+    for key,expected in [('DCAT_DQ_GROUP_V1_ALLOWED','1'),('VLLM_SERVER_DEV_MODE','1')]:
+        check(key,expected,os.environ.get(key),'QUANT_GROUP_REAL_OPAPI_OR_PROCESS_MODE_CHANGED')
+    check('legacy_v2_enabled',False,os.environ.get('DCAT_DQ_V2_ENABLE')=='1','QUANT_GROUP_REAL_OPAPI_OR_PROCESS_MODE_CHANGED')
+    return root,manifest,require_assessment(checks,UnsupportedCall)
+
+
 class QuantGroupNative:
     def __init__(self, library, identity, *, _token=None):
         if _token is not _VERIFIED_LOAD:
@@ -210,39 +267,19 @@ class QuantGroupNative:
     @classmethod
     @isolation.managed_loader('group')
     def load(cls, bundle, *, approved_build_sha256):
-        root = Path(bundle).resolve(strict=True)
-        manifest_path = root / 'build.json'
-        if (not isinstance(approved_build_sha256, str) or not re.fullmatch('[0-9a-f]{64}', approved_build_sha256)
-                or _sha(manifest_path) != approved_build_sha256):
-            raise UnsupportedCall('QUANT_GROUP_APPROVED_MANIFEST_CHANGED')
-        manifest = json.loads(manifest_path.read_bytes())
-        if (manifest.get('schema') != 'demoncat.quant.group_deployment.v1' or manifest.get('cann') != '8.5.1'
-                or manifest.get('actual_npu_calls') != 0 or manifest.get('legacy_c1_library_present') is not False
-                or manifest.get('library') != 'runtime/vendor/op_api/lib/libcust_opapi.so'
-                or manifest.get('library') not in manifest.get('files', {})):
-            raise UnsupportedCall('QUANT_GROUP_DEPLOYMENT_IDENTITY_INCOMPLETE')
-        for relative, expected in manifest['files'].items():
-            path = (root / relative).resolve(strict=True)
-            if not path.is_relative_to(root) or _sha(path) != expected:
-                raise UnsupportedCall('QUANT_GROUP_BUNDLE_FILE_CHANGED:' + relative)
-        for name in PRODUCTION_SOURCES:
-            expected = _sha(Path(__file__).parent / 'native_adapters' / name)
-            if (manifest['sources'].get('fault_injection/native_adapters/' + name) != expected
-                    or manifest['files'].get(name) != expected):
-                raise UnsupportedCall('QUANT_GROUP_SOURCE_DOES_NOT_MATCH_INSTALLED_BINDING:' + name)
-        real = Path(os.environ.get('DCAT_REAL_OPAPI', ''))
-        sdk = manifest['sdk_identity']
-        if (not real.is_absolute() or str(real) != sdk.get('real_opapi') or not real.is_file()
-                or _sha(real) != sdk.get('real_opapi_sha256') or os.environ.get('DCAT_DQ_GROUP_V1_ALLOWED') != '1'
-                or os.environ.get('VLLM_SERVER_DEV_MODE') != '1' or os.environ.get('DCAT_DQ_V2_ENABLE') == '1'):
-            raise UnsupportedCall('QUANT_GROUP_REAL_OPAPI_OR_PROCESS_MODE_CHANGED')
+        root,manifest,report = inspect_bundle(bundle,approved_build_sha256)
+        sdk=manifest['sdk_identity']
         path = (root / manifest['library']).resolve(strict=True)
-        library = C.CDLL(str(path), mode=C.RTLD_LOCAL)
+        try:library = C.CDLL(str(path), mode=C.RTLD_LOCAL)
+        except OSError as error:
+            require_identity(False,'quant_bundle','load','load approved DSO',str(error),
+                'QUANT_GROUP_NATIVE_LOAD_FAILED',UnsupportedCall)
         identity = dict(path=str(path), library_sha256=_sha(path), build_sha256=approved_build_sha256,
                         actual_image_id=manifest['actual_image_id'], source_commit=manifest['source_commit'],
                         sdk_abi_sizes=sdk['abi_sizes'], sdk_metadata_abi_sizes=sdk['metadata_abi_sizes'], actual_npu_acceptance=False)
         result = cls(library, identity, _token=_VERIFIED_LOAD)
         result._verify_mapped()
+        result.identity_prerequisites=report
         return result
 
     def _bind(self):
@@ -255,23 +292,29 @@ class QuantGroupNative:
             seal=[pointer(Config), pointer(Key), U64, U64, pointer(Key)], stop=[pointer(Config), pointer(Key)],
             drain=[pointer(Config), pointer(Key)], cancel_empty=[pointer(Config)],
             recover=[pointer(Config)], remove=[pointer(Config), Admission, Completed])
+        missing=[name for name in arguments if not hasattr(self.lib,'dcat_dqg_'+name+'_v1')]
+        require_identity(not missing,'quant_bundle','required_symbols',list(arguments),{'missing':missing},
+            'QUANT_GROUP_REQUIRED_SYMBOLS_MISSING',UnsupportedCall)
         for name, argtypes in arguments.items():
             function = getattr(self.lib, 'dcat_dqg_' + name + '_v1')
             function.argtypes, function.restype = argtypes, C.c_int
         sizes = AbiSizes()
         self._checked('abi', C.byref(sizes))
         actual = {name: getattr(sizes, name) for name in ABI_TYPES}
-        if actual != {name: C.sizeof(cls) for name, cls in ABI_TYPES.items()} or actual != self.identity['sdk_abi_sizes']:
-            raise UnsupportedCall('QUANT_GROUP_ACTUAL_DSO_SDK_CTYPES_LAYOUT_DIFFERS')
+        expected={name:C.sizeof(kind) for name,kind in ABI_TYPES.items()}
+        require_identity(actual==expected and actual==self.identity['sdk_abi_sizes'],
+            'quant_bundle','sdk_dso_ctypes_layout',dict(ctypes=expected,sdk=self.identity['sdk_abi_sizes']),
+            actual,'QUANT_GROUP_ACTUAL_DSO_SDK_CTYPES_LAYOUT_DIFFERS',UnsupportedCall)
         read_metadata_state(self.lib.dcat_dqg_metadata_state_v1, self.identity['sdk_metadata_abi_sizes'])
 
     def _verify_mapped(self):
         rows = isolation.require_mode('group')
-        if len(rows) != 1:
-            raise UnsupportedCall('EXACTLY_ONE_APPROVED_GROUP_DSO_MAPPING_REQUIRED')
+        require_identity(len(rows)==1,'quant_bundle','mapped_dso_count',1,len(rows),
+            'EXACTLY_ONE_APPROVED_GROUP_DSO_MAPPING_REQUIRED',UnsupportedCall)
         row = rows[0]
-        if row['path'] != self.identity['path'] or row['sha256'] != self.identity['library_sha256']:
-            raise UnsupportedCall('QUANT_GROUP_ACTUAL_MAPPED_SOURCE_CHANGED')
+        require_identity(row['path']==self.identity['path'] and row['sha256']==self.identity['library_sha256'],
+            'quant_bundle','loaded_mapping',dict(path=self.identity['path'],sha256=self.identity['library_sha256']),
+            dict(path=row['path'],sha256=row['sha256']),'QUANT_GROUP_ACTUAL_MAPPED_SOURCE_CHANGED',UnsupportedCall)
         for name in isolation.MARKERS['group']:
             if row['symbols'].get(name) != C.cast(getattr(self.lib, name), C.c_void_p).value:
                 raise UnsupportedCall('QUANT_GROUP_HANDLE_SYMBOL_OWNER_CHANGED')

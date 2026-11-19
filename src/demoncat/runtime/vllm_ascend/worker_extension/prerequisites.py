@@ -3,38 +3,8 @@
 Actual loaders/typed bindings retain their identity checks. Missing facts stay
 pending and mismatches stay refused, with deployment errors before call errors.
 """
-from copy import deepcopy
-
-LAYERS = ('deployment_identity', 'mechanism_compatibility', 'actual_call')
-_MISSING = object()
-
-
-def observed_field(root, path):
-    value = root
-    for name in path.split('.'):
-        value = getattr(value, name, _MISSING)
-        if value is _MISSING:
-            return _MISSING
-    return value
-
-
-def expectation(layer, field, expected, actual, code):
-    if layer not in LAYERS:
-        raise ValueError('UNKNOWN_PREREQUISITE_LAYER')
-    missing = actual is _MISSING
-    matched = not missing and type(actual) is type(expected) and actual == expected
-    return dict(layer=layer, field=field, expected=deepcopy(expected),
-                actual={'missing': True} if missing else deepcopy(actual),
-                status='pending' if missing else 'matched' if matched else 'mismatch', code=code)
-
-
-def assessment(checks):
-    ordered = sorted((deepcopy(row) for row in checks), key=lambda row: LAYERS.index(row['layer']))
-    unmet = [row for row in ordered if row['status'] != 'matched']
-    return dict(schema='demoncat.prerequisites.v1', checks=ordered, unmet=unmet,
-                status='refused' if any(row['status']=='mismatch' for row in unmet)
-                       else 'pending' if unmet else 'matched',
-                primary=unmet[0] if unmet else None, execution_authorized=False)
+from fault_injection.prerequisites import (
+    LAYERS, _MISSING, observed_field, expectation, assessment, require_assessment)
 
 
 def serial_eager_assessment(runner, *, expected_max_seqs=1):

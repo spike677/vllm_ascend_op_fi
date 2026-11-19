@@ -214,6 +214,11 @@ class WorkerFaultClient:
         reply = {'status': 'RPC_UNCERTAIN' if uncertain else 'HOST_REJECTED',
                  'reason': str(error) if isinstance(error, HostContractError) else 'HOST_CALL_FAILED',
                  'error_type': type(error).__name__}
+        from .runtime import _provider_error
+        reply.update(_provider_error(error))
+        message=str(error)
+        reply['error_message']=message[:2048]
+        reply['error_message_truncated']=len(message)>2048
         observed = response if response is not None else getattr(error, 'response', None)
         if observed is not None:
             try:

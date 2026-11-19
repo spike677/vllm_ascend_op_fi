@@ -18,6 +18,7 @@ import secrets
 import threading
 
 import torch
+from ..prerequisites import require_identity
 from torch.utils._python_dispatch import TorchDispatchMode
 from torch.utils._pytree import tree_flatten, tree_map
 
@@ -75,13 +76,18 @@ class NativePostwriteLibrary:
         from ..cpu_build_identity import current_cpu_identity
         if current_cpu_identity() is not None:
             raise PostwriteRefused('CPU_TEST_BUILD_CANNOT_LOAD_NATIVE_TRANSPORT')
-        path = Path(library).resolve(strict=True)
+        path = Path(library).resolve()
+        require_identity(path.is_file(),'postwrite','library_file','existing regular DSO',
+            str(path) if path.is_file() else {'missing':str(path)},'POSTWRITE_LIBRARY_FILE_REQUIRED',PostwriteRefused)
         actual = hashlib.sha256(path.read_bytes()).hexdigest()
-        if actual != sha256 or len(sha256) != 64:
-            raise PostwriteRefused('POSTWRITE_BUILD_HASH_MISMATCH')
+        require_identity(actual==sha256 and isinstance(sha256,str) and len(sha256)==64,
+            'postwrite','library_sha256',sha256,actual,'POSTWRITE_BUILD_HASH_MISMATCH',PostwriteRefused)
         self.sha256 = actual
         self.path = str(path)
-        self.lib = ctypes.CDLL(str(path))
+        try:self.lib = ctypes.CDLL(str(path))
+        except OSError as error:
+            require_identity(False,'postwrite','load','load approved DSO',str(error),
+                'POSTWRITE_NATIVE_LOAD_FAILED',PostwriteRefused)
         u64, u32, i32, ptr = ctypes.c_uint64, ctypes.c_uint32, ctypes.c_int32, ctypes.c_void_p
         signatures = {
             'dcat_pw_abi': ([], u32),
@@ -91,14 +97,18 @@ class NativePostwriteLibrary:
             'dcat_pw_release': ([u64, u64, u64], ctypes.c_int),
             'dcat_pw_live': ([u64, u64, u64], ctypes.c_int),
         }
+        missing=[name for name in signatures if not hasattr(self.lib,name)]
+        require_identity(not missing,'postwrite','required_symbols',list(signatures),
+            {'missing':missing},'POSTWRITE_REQUIRED_SYMBOLS_MISSING',PostwriteRefused)
         for name, (args, result) in signatures.items():
             function = getattr(self.lib, name)
             function.argtypes, function.restype = args, result
         self._snapshot = getattr(self.lib, 'dcat_pw_read_span', None)
         if self._snapshot is not None:
             self._snapshot.argtypes, self._snapshot.restype = [ptr, u64, i32, ptr], ctypes.c_int
-        if self.lib.dcat_pw_abi() != 1:
-            raise PostwriteRefused('POSTWRITE_ABI_MISMATCH')
+        abi=int(self.lib.dcat_pw_abi())
+        self.identity_prerequisites=require_identity(abi==1,'postwrite','abi',1,abi,
+            'POSTWRITE_ABI_MISMATCH',PostwriteRefused)
         capacity = getattr(self.lib, 'dcat_pw_lease_capacity', None)
         byte_capacity = getattr(self.lib, 'dcat_pw_lease_byte_capacity', None)
         self.lease_capacity = 1
@@ -112,16 +122,17 @@ class NativePostwriteLibrary:
                     or not 1 <= self.lease_byte_capacity <= MAX_POSTWRITE_SPAN_BYTES):
                 raise PostwriteRefused('POSTWRITE_LEASE_CAPACITY_UNADAPTED')
         self._verify_loaded_file(path)
-        if hashlib.sha256(path.read_bytes()).hexdigest() != actual:
-            raise PostwriteRefused('POSTWRITE_LOADED_BYTES_CHANGED')
+        after=hashlib.sha256(path.read_bytes()).hexdigest()
+        require_identity(after==actual,'postwrite','loaded_bytes_sha256',actual,after,
+            'POSTWRITE_LOADED_BYTES_CHANGED',PostwriteRefused)
 
     @staticmethod
     def _verify_loaded_file(path):
         # A successful CDLL lookup can reuse an older mapping with the same
         # filename. Bind this process's mapped inode as well as on-disk bytes.
         maps = Path('/proc/self/maps')
-        if not maps.is_file():
-            raise PostwriteRefused('POSTWRITE_LINUX_LOADED_IDENTITY_REQUIRED')
+        require_identity(maps.is_file(),'postwrite','process_maps','readable /proc/self/maps',
+            str(maps) if maps.is_file() else None,'POSTWRITE_LINUX_LOADED_IDENTITY_REQUIRED',PostwriteRefused)
         stat = path.stat()
         expected_device = f'{os.major(stat.st_dev):02x}:{os.minor(stat.st_dev):02x}'
         matching = []
@@ -129,8 +140,10 @@ class NativePostwriteLibrary:
             fields = line.split(None, 5)
             if len(fields) == 6 and fields[5] == str(path):
                 matching.append(fields)
-        if not matching or any(int(row[4]) != stat.st_ino or row[3] != expected_device for row in matching):
-            raise PostwriteRefused('POSTWRITE_LOADED_INODE_MISMATCH')
+        require_identity(bool(matching) and all(int(row[4])==stat.st_ino and row[3]==expected_device for row in matching),
+            'postwrite','loaded_file_identity',dict(path=str(path),inode=stat.st_ino,device=expected_device),
+            [dict(path=row[5],inode=int(row[4]),device=row[3]) for row in matching],
+            'POSTWRITE_LOADED_INODE_MISMATCH',PostwriteRefused)
 
     def validate(self, tensor):
         if tensor.device.type != 'npu' or tensor.dtype != torch.bfloat16:

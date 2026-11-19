@@ -5,7 +5,8 @@ import os
 from pathlib import Path
 import threading
 
-from .serving_context import require, require_serial_eager
+from .serving_context import require, require_serial_eager, ContextRefused
+from fault_injection.prerequisites import require_identity
 
 
 _ATTRIBUTE = '_demoncat_kv41_serving_binding'
@@ -42,12 +43,15 @@ def read_native_binding(binding):
     require(type(transport) is NativePostwriteLibrary and id(transport.lib) == binding.native_library_identity,
             'KV41_NATIVE_LIBRARY_OBJECT_CHANGED')
     path = Path(transport.path).resolve(strict=True)
-    require(transport.sha256 == binding.native_sha256
-        and hashlib.sha256(path.read_bytes()).hexdigest() == binding.native_sha256,
-        'KV41_NATIVE_LIBRARY_BYTES_CHANGED')
+    digest=hashlib.sha256(path.read_bytes()).hexdigest()
+    require_identity(transport.sha256==binding.native_sha256 and digest==binding.native_sha256,
+        'postwrite','current_library_sha256',binding.native_sha256,
+        dict(held=transport.sha256,file=digest),'KV41_NATIVE_LIBRARY_BYTES_CHANGED',ContextRefused)
     transport._verify_loaded_file(path)
-    require(transport.lib.dcat_pw_abi() == 1 and transport._snapshot is not None,
-            'KV41_NATIVE_ABI_OR_READ_SPAN_UNAVAILABLE')
+    abi=int(transport.lib.dcat_pw_abi())
+    require_identity(abi==1 and transport._snapshot is not None,'postwrite','current_abi_and_read_span',
+        dict(abi=1,read_span=True),dict(abi=abi,read_span=transport._snapshot is not None),
+        'KV41_NATIVE_ABI_OR_READ_SPAN_UNAVAILABLE',ContextRefused)
     return dict(abi=1, sha256=binding.native_sha256, loaded_mapping_verified=True,
         read_span_available=True, simulation=False, qualification_granted=False)
 

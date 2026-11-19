@@ -13,8 +13,8 @@ RC1.1 已单独发布；这里的开发改动不回写 RC1.1 包。蓝区测试�
 
 三层报告为 deployment_identity、mechanism_compatibility、actual_call。身份问题排序
 优先于未观察到消费者；当前公共层已接路由/绑定检查与串行 eager 聚合前提。各 Native
-加载器的精确 SDK/ABI/源文件/加载库校验继续生效，但其历史独立错误尚未全部汇总到
-三层报告，不能宣称这一部分已全覆盖。
+加载器的精确 SDK/ABI/源文件/加载库校验继续生效。39 postwrite 与 Batch量化bundle已
+接入相同schema的部署身份错误报告；其余Native适配器随对应普通任务推进，不宣称全覆盖。
 
 `require_serial_eager` 一次列出所有缺失/不匹配字段与期望/实值；RPC 在有界
 `prerequisites` 字段返回。CPU custom GEMM/consumer 使用独立只读测试身份，
@@ -148,3 +148,20 @@ logits返回、回调计数退出后完成collect/close/校验。正常与失败
 CPU56项通过，含两个作用域、失败恢复、缓存跳过拒绝、只读query与第五请求拒绝。
 新路线NPU未完成前，17组合标记UNIFIED_RETURN_COMPLETION_NPU_PENDING，默认不可执行；
 蓝区新验收器显式安装限定机制的许可。公共宿主无需新增方法或故障特例。
+
+## Native身份诊断与Host透传
+
+公共三层schema下沉为 `fault_injection.prerequisites`，Worker层复用；保持身份问题优先。
+39 postwrite报告文件缺失、批准SHA/实值、必需符号、实际ABI、已加载inode/device和加载后
+字节变化；共享read_native_binding在39/41持有期间继续核对字节与ABI/read_span。
+Batch在CDLL之前聚合批准build.json、bundle文件、当前生产源码、SDK真实opapi和进程模式
+条件；加载后检查DSO/SDK/ctypes布局与实际映射，返回期望和实值。
+
+原异常类型及错误码保留，新增 `prerequisites`；公共Worker RPC和Host prepare_binding
+失败回执均保留此结构（有界32KiB）及最多2048字符的异常消息。不会用“未观察到消费者”
+覆盖构建错误。检查没有重新构建Native，也没有用旧SHA替换当前产物身份。
+
+postwrite公开ABI本身不暴露编译器/SDK构建清单，不能从运行时CANN版本反推编译来源；
+该限制仍保留，批准DSO字节、实际ABI/映射与来源构建回执须分别看。Batch现有bundle包含
+SDK清单，因此可直接核对其SDK/ctypes布局。新增6项诊断用例与相关组合共114项CPU通过；
+新错误透传不宣称完成新的NPU或黄区安装验收。
