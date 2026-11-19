@@ -19,6 +19,15 @@ import subprocess
 import sys
 import time
 import traceback
+from types import SimpleNamespace
+
+if __package__:
+    from . import tnd28_denominator_build
+else:
+    _replay_spec = importlib.util.spec_from_file_location('tnd28_denominator_build',
+        Path(__file__).with_name('tnd28_denominator_build.py'))
+    tnd28_denominator_build = importlib.util.module_from_spec(_replay_spec)
+    _replay_spec.loader.exec_module(tnd28_denominator_build)
 
 
 HERE = Path(__file__).resolve().parent
@@ -39,6 +48,9 @@ TND28_NORMAL_VARIANT = 'tnd_prefill_arch22_normal'
 TND28_NORMAL_KEYS = [103000000030000003, 5000000000000200100, 5000000000000200103,
                     5000000000010200100, 5000000000010200103,
                     5100000000010200100, 5100000000010200103]
+TND28_REPLAY_VARIANT = 'tnd_prefill_denominator_replay'
+TND28_REPLAY_KEYS = [103000000030000003, 103000000030400003, 109000000030400003,
+                    119000000030400003, *TND28_NORMAL_KEYS[1:]]
 TND28_SDK_INTERFACE_SHA256 = '1a9c9159e9d1d84b82b754b2db806be1b878e05d06d45d3df07295c1280878e2'
 TND28_DENIED = ('loading_allowed', 'fault_execution_ready', 'stock_private_exact_proven',
                'public_prepared_pointer_stride_join', 'c1', 'c2', 'c3')
@@ -324,7 +336,7 @@ class Builder:
                                          'tnd_page16_fai_fd_s2_256', 'tnd_page16_arch22_normal_bridge',
                                          'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal',
                                          'tnd_page16_arch22_group_s2_256',
-                                         TND28_NORMAL_VARIANT),
+                                         TND28_NORMAL_VARIANT, TND28_REPLAY_VARIANT),
                     'EXACT_TND33_CANN851_BUILD_REQUIRED')
             from opdef_compat import adapt
             compatibility = adapt(self.source)
@@ -373,6 +385,10 @@ class Builder:
                            excluded_test_fixtures_sha256=sha(self.ev / 'excluded_test_fixtures.json'))
 
     def configure_policy(self, source_in):
+        if (self.receipt.get('variant') == TND28_REPLAY_VARIANT
+                or self.receipt.get('schema') == 'demoncat.attention28.tnd_denominator_source.v1'):
+            tnd28_denominator_build.configure(self, source_in, SimpleNamespace(**globals()))
+            return
         if (self.receipt.get('variant') == TND28_NORMAL_VARIANT
                 or self.receipt.get('mechanism') == '28.fia.normal_candidate'
                 or self.receipt.get('schema') == 'demoncat.attention28.tnd_prefill_normal_source.v1'):
@@ -496,6 +512,8 @@ class Builder:
         self.run('geometry_compile', ['g++', '-std=c++17', '-I', HERE, HERE / 'geometry_check.cpp',
                                       '-o', self.ev / 'geometry_check'], env=self.env)
         self.run('geometry_check', [self.ev / 'geometry_check'], env=self.env)
+        if self.variant == TND28_REPLAY_VARIANT:
+            tnd28_denominator_build.cpu_checks(self, SimpleNamespace(**globals()))
         if self.variant in ('tnd_page16_arch22_s2_256','tnd_page16_arch22_all_normal', 'tnd_page16_arch22_group_s2_256'):
             self.run('actual_arch22_s2_split_matrix', [self.args.python, HERE/'compile_arch22_s2_matrix.py',
                 '--source', self.source, '--out', self.ev/'arch22_s2_matrix'], env=self.env)
@@ -602,7 +620,7 @@ class Builder:
                 self.report['fai_fd_cpu_matrix_sha256'] = sha(self.ev/'fai_schema/fai_fd_geometry_matrix.json')
                 self.report['fai_fd_geometry_validator_sha256'] = sha(HERE/'fai_fd_geometry.py')
                 self.report['actual_worker_platform_observed'] = False
-        if self.variant == TND28_NORMAL_VARIANT:
+        if self.variant in (TND28_NORMAL_VARIANT, TND28_REPLAY_VARIANT):
             self.tnd28_public_schema()
 
     def tnd28_public_schema(self):
@@ -695,7 +713,8 @@ class Builder:
         require(dynamic.is_file(), 'NEW_PACKAGE_JIT_SOURCE_MISSING')
         opc = self.sdk / 'python/site-packages/opc_tool/opc.py'
         require(opc.is_file(), 'MATCHED_OPC_COMPILER_MISSING')
-        keys = (TND28_NORMAL_KEYS if self.variant == TND28_NORMAL_VARIANT else
+        keys = (TND28_REPLAY_KEYS if self.variant == TND28_REPLAY_VARIANT else
+                TND28_NORMAL_KEYS if self.variant == TND28_NORMAL_VARIANT else
                 TND33_ARCH22_KEYS if self.variant in ('tnd_page16_arch22_normal_bridge', 'tnd_page16_arch22_s2_256', 'tnd_page16_arch22_all_normal', 'tnd_page16_arch22_group_s2_256') else
                 TND33_FAI_FD_KEYS if self.variant == 'tnd_page16_fai_fd_s2_256' else
                 TND33_FAI_KEYS if self.variant == 'tnd_page16_fai_s2_256' else
@@ -772,6 +791,8 @@ class Builder:
                 'same private Worker OFF health and zero owned resources'],
                 normal_only=True, actual_worker_platform_observed=False,
                 mask_values_verified=False, prepared_stride_values_verified=False)
+        if self.variant == TND28_REPLAY_VARIANT:
+            tnd28_denominator_build.finish_check(self, SimpleNamespace(**globals()))
         save(self.ev / 'completion.json', self.report)
 
     def check_excluded_fixtures(self):

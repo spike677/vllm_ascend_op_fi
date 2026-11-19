@@ -30,6 +30,8 @@ KEYS['tnd_page16_arch22_normal_bridge'] = KEYS['tnd_page16_s2_256'] | {
 KEYS['tnd_prefill_arch22_normal'] = {
     103000000030000003, 5000000000000200100, 5000000000000200103,
     5000000000010200100, 5000000000010200103, 5100000000010200100, 5100000000010200103}
+KEYS['tnd_prefill_denominator_replay'] = KEYS['tnd_prefill_arch22_normal'] | {
+    103000000030400003, 109000000030400003, 119000000030400003}
 KEYS['tnd_page16_arch22_s2_256'] = set(KEYS['tnd_page16_arch22_normal_bridge'])
 KEYS['tnd_page16_arch22_all_normal'] = set(KEYS['tnd_page16_arch22_normal_bridge'])
 
