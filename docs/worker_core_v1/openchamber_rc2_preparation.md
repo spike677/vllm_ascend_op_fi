@@ -8,6 +8,7 @@ RC1.1标签：`demoncatpfi-yellow-rc1-1-20261119`，发行提交
 |能力|所需蓝区参考测试部署|黄区准备事项|
 |---|---|---|
 |18/39|Qwen3-0.6B BF16，TP1|现有部署可回归RC1.1；RC2新增身份门禁需实际环境摘要|
+|22|Qwen3-0.6B BF16，TP1|已有纯文本测试部署；只选首条实际fused RoPE，需匹配来源与最终reader|
 |8|DeepSeek-V2-Lite-W8A8，TP1/BF16计算|需MoE权重及匹配vLLM-Ascend动态专家实现；纯文本dense Qwen不能替代|
 |17|Qwen3-VL-2B-Instruct BF16，TP1|需视觉权重、tokenizer/processor和单图像入口；16×16 patch Conv3d|
 |Batch|Qwen3-0.6B动态W8A8，TP1/B8|需动态W8A8权重与按实际环境构建的量化bundle；BF16部署不可替代|
@@ -16,7 +17,7 @@ RC1.1标签：`demoncatpfi-yellow-rc1-1-20261119`，发行提交
 enable_chunked_prefill=False、enable_prefix_caching=False、TP/PP/DP=1；
 max_num_seqs=1（Batch协议为8）。不启用speculative、DBO、上下文并行。
 视觉每阶段必须真实执行encoder，不能复用缓存结果。17新普通接口统一为
-advance(internal_id)→真实等待完成→query，不要求collect_replay；新接口正补验。
+advance(internal_id)→真实等待完成→query，不要求collect_replay；新接口已在124的a5两个独立作用域通过，黄区仍需独立验证。
 
 请回传：
 1. 各模型能否获取、确切标识/来源、模型配置SHA、权重清单SHA与量化方式（动态/静态）。

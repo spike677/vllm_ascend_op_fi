@@ -1,0 +1,643 @@
+{
+  "schema": "demoncat.ordinary_task.blue_summary.v2",
+  "source": {
+    "commit": "4c56701f2fc87edd8faa4e343a4b3b3b3f3987e6",
+    "manifest_sha256": "15a6eb3895e59e27c8eeef5680eea8df73c5a53cf3cf0207000dcba6a8034f94",
+    "pins": {
+      "experiments/c2c3_closure_20261117/queue_contract.py": "44d53cf8bb0abd432091018c9295fe6235cf17130efa9c85b6b5af3e7e5fece1",
+      "experiments/c2c3_postwrite_20261117/model_identity.py": "23eaea03ff7fba260badf40ac1ba36333e5ff40ba41674e782a2f6d8b1167426",
+      "experiments/c2c3_postwrite_20261117/natural41_coverage_probe.py": "abf60e00c24f3ccb36c4fe3855e92f2d32058f6340773ba2dbdee95e77f394a0",
+      "experiments/c2c3_postwrite_20261117/natural41_probe.py": "e714818595327b629f9393e0316cd6bfed11865e5fb84dbdc368273e6fa12172",
+      "experiments/worker_core_v11_20261118/output39_single_task_probe.py": "46bf9de0da1cbcf7a6ef3cdee93f9f880a348bbaf9c097227979e24b2f82d3c9",
+      "experiments/worker_core_v11_20261118/prepare_rope22_single_task.py": "6a85ea343d9bdd8ade52505b840bc681c277e8bc8b68fa6a060d8a4dd5831f22",
+      "experiments/worker_core_v11_20261118/rope22_task_probe.py": "7d91f8dd3bbb6ed756d26194eb39ed80d04d59e01ecd446007e3547181b090cc",
+      "fault_injection/_scoped_dispatch.py": "073548dca004b5ab8dc079516149b2f3f499ac30c69210c4319ed9bdc8bdd70a",
+      "fault_injection/actions.py": "7c38b4a9d224f95db1e9100668fdf342337b5900ef9ebf6dba2d628054b0e9d4",
+      "fault_injection/catalog.py": "a4a22b3c505de02652aa587d71a104fd3adce011976b8c0d82ab741ec594927a",
+      "fault_injection/core.py": "5f043a7ab653d691a87d75fe61384fe68c6814c4f1d2a0930b6c1d5d44c22737",
+      "fault_injection/delivery_scope.py": "40dd275660c0f811f45ad41e511e9e7a2b02fee2cf38b594554fb4d7bccb70a4",
+      "fault_injection/effect_summary.py": "95f7474baaf7c74205268926492c9ce4d78544f375e72f2facfa8634562eace3",
+      "fault_injection/module_faults.py": "fcb20844a1393457c4d81b0294b846d77ec21dad6071def6f74cf2f1a8844fcd",
+      "fault_injection/prerequisites.py": "1dcc82bffe9f07bbbedc59d50cf8968e9d2ff9f7833634e02c5998d015bf18d5",
+      "fault_injection/rmsnorm_return.py": "cd14ca8c70f0be504277f2e23106c8851aa656f86a7896eca0687efc0ebd1e19",
+      "fault_injection/rope_census.py": "55eee502a8b42e77b9b74de2928b44e128d3ac9cf2662f0075bba1e75adee82e",
+      "fault_injection/rope_fused22.py": "b2b6b1891b7290f108c95f68ca5dbc6dfa5a67c348f826f32cd6ff76e5829350",
+      "fault_injection/rope_sites.py": "3195ab4342ef1fe51c82d34b02d76d8dc2a6c5d17a6b88dc00cb1944b38ea838",
+      "fault_injection/rope_triton_trace.py": "08bdff4480caacadc6558906ef03d13927a7761ef39230f9bb210352120301a4",
+      "fault_injection/tensor_callable.py": "c03715df7c90144a7f07fbff42d2aa3d3017e38818bda674f1fc273625c5e5dd",
+      "fault_injection/tensor_observer.py": "3961e2fe5e9d0c720fdba8754c159824e018000e3ea4967e499ecadb99da3999",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/call_binding.py": "000e3d11f666c9cf4a897487c486eb9b5ccebe03807d12fdc572442c07340adb",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/config.py": "fb59fe21877dddc64322b23ff520960d7b10a39280350edf18a495984a6afccf",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/deployment_acceptance.py": "077e5f266e908adef59a33cc99279534f93d80cc8220b9882c012dfd6e34e45a",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/host.py": "980ada593fcdb3d30a348d74c59dfa7bf15774d58167a1777889dec1e3c73896",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/identity.py": "0af0136c9ada160391c95f2adc7ff1f08b11bdd9327f7e496108141516b9112f",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/ordinary_admission.py": "98ac0d863d424b15d981516039e1a15584e8278cb12bf5d4f804ba94f7a6a767",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/ordinary_evidence.py": "86b6f4481b140f1f386f3276f6eb11f52bdd3a751fcd9c4c8ba1ea3a57cee699",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/prerequisites.py": "828adb92156e8dd2f52be85c72b6787aba9e95c2d9af39544b89da7536496a91",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/providers/_scope.py": "8618e6788086c2d5bd961b45a7247e1b27149a625b93a88931c21d48ff215898",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/providers/rms18_task.py": "c969a8733c4bacbcbd7f2cdcee30be5f85ea2b739dfb568d562c6fecf8a2d7a9",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/providers/tensor_modules.py": "471a64680a80ae95937926fcba6662336a87ae56bf7c7d2f8542734e9f05c7b8",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/providers/tensor_serving.py": "e21ad6abe06f9d8f7aa53d5c05469c90a4e3945a7a2e2d3d73508f900347ad27",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/registry.py": "4539aa8bbc7d02e30f9171030b537e1974489148e6393f1179dd877ef7f7b5fb",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/rms18_request.py": "d5f0196c13a93b29ff48dca00c6334b98d01f043d8197c66dafe860befcdd581",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/rope22_task.py": "ec0c420e5ce845ceab644d7bc1a689fc2b650c2b84c93974dd0d77f147693f96",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/runtime.py": "16403f2459a10e012bab1f8274fe534959477dd1682649c35d7c4111bc27ca77",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/serving.py": "951f7f4f08e55ce179795b36e414f24bb8e4f54c33ac6c52b1475cb498e642e3",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/serving_context.py": "5695a3a5dc5c9a143388fd3b6c72b07a4a5af634d9acb0cb8913389cb9f8c2dc",
+      "src/demoncat/runtime/vllm_ascend/worker_extension/serving_tensor_binding.py": "1cef502a5da609c7155ea26496669e5eefad74f61b70f86c951ad134ac0df98b"
+    }
+  },
+  "machine": "124",
+  "physical_card": 5,
+  "execution": "TP1 BF16 serial eager actual vLLM scheduler",
+  "raw_receipt": {
+    "path": "/home/17-fault-c2c3-20261117/product-ordinary22-20261119-card5-a1/rope22-single-task-four-requests/probe/result.json",
+    "bytes": 597868,
+    "sha256": "a993f34b27c1ad7a9461ea0ee327a5440ff3578ff450d35a37e59d2af02406f2"
+  },
+  "status": "BLUE_ZONE_PUBLIC_ROPE22_SINGLE_TASK_ACCEPTED_NOT_MAIN_PROJECT",
+  "default_acceptance": {
+    "acceptance_granted": false,
+    "accepted": false,
+    "actual": {
+      "cann": [
+        "8.5.1"
+      ],
+      "dp": 1,
+      "dtype": "torch.bfloat16",
+      "eager": true,
+      "live_config_matches_file": true,
+      "model_class": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+      "model_config_sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+      "pp": 1,
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0.post1+gitee7ba04",
+      "tp": 1,
+      "vllm": "0.18.0",
+      "vllm_ascend": "0.18.0"
+    },
+    "can_prepare": false,
+    "checks": [],
+    "expected": null,
+    "explicit_blue_attempt": null,
+    "live_call_qualification": "PENDING",
+    "mode": "DEFAULT",
+    "pending_revalidation": null,
+    "reviewed_combination": null,
+    "schema": "demoncat.deployment_acceptance.v1",
+    "status": "IMPLEMENTED_NOT_ACCEPTED_FOR_DEPLOYMENT",
+    "structural_compatibility": "CHECKED_SEPARATELY_NOT_AN_ACCEPTANCE_CERTIFICATE"
+  },
+  "blue_acceptance": {
+    "acceptance_granted": false,
+    "accepted": false,
+    "actual": {
+      "cann": [
+        "8.5.1"
+      ],
+      "dp": 1,
+      "dtype": "torch.bfloat16",
+      "eager": true,
+      "live_config_matches_file": true,
+      "model_class": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+      "model_config_sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+      "pp": 1,
+      "torch": "2.9.0+cpu",
+      "torch_npu": "2.9.0.post1+gitee7ba04",
+      "tp": 1,
+      "vllm": "0.18.0",
+      "vllm_ascend": "0.18.0"
+    },
+    "can_prepare": true,
+    "checks": [],
+    "expected": null,
+    "explicit_blue_attempt": "ordinary22-two-scopes",
+    "live_call_qualification": "PENDING",
+    "mode": "BLUE_ACCEPTANCE_ONLY",
+    "pending_revalidation": null,
+    "reviewed_combination": null,
+    "schema": "demoncat.deployment_acceptance.v1",
+    "status": "IMPLEMENTED_NOT_ACCEPTED_FOR_DEPLOYMENT",
+    "structural_compatibility": "CHECKED_SEPARATELY_NOT_AN_ACCEPTANCE_CERTIFICATE"
+  },
+  "product_closed": false,
+  "main_project_integration": "NOT_VERIFIED",
+  "new_statistics": false,
+  "tasks": [
+    {
+      "checks": {
+        "actual_consumer": {
+          "actual_query_and_key_views": true,
+          "callable": {
+            "callable_object_id": 281462365572768,
+            "file": "/vllm-workspace/vllm/vllm/model_executor/layers/attention/attention.py",
+            "first_line": 377,
+            "module_object_id": 281461660436624,
+            "module_type": "vllm.model_executor.layers.attention.attention.Attention",
+            "source": {
+              "bytes": 4639,
+              "sha256": "d42a773154a1b1f090398d0b09ac4a8927fc42ed4ee18cf42ea530c22c920114"
+            },
+            "source_sha256": "d42a773154a1b1f090398d0b09ac4a8927fc42ed4ee18cf42ea530c22c920114"
+          },
+          "input": [
+            {
+              "actual_format": 2,
+              "device": "npu:0",
+              "dtype": "torch.bfloat16",
+              "object_id": 281459548782672,
+              "offset": 0,
+              "shape": [
+                14,
+                2048
+              ],
+              "storage_id": 187663140539568,
+              "stride": [
+                2048,
+                1
+              ]
+            },
+            {
+              "actual_format": 2,
+              "device": "npu:0",
+              "dtype": "torch.bfloat16",
+              "object_id": 281459548784016,
+              "offset": 0,
+              "shape": [
+                14,
+                1024
+              ],
+              "storage_id": 187663084574032,
+              "stride": [
+                1024,
+                1
+              ]
+            },
+            {
+              "actual_format": 2,
+              "device": "npu:0",
+              "dtype": "torch.bfloat16",
+              "object_id": 281459548785552,
+              "offset": 3072,
+              "shape": [
+                14,
+                1024
+              ],
+              "storage_id": 187663139196816,
+              "stride": [
+                4096,
+                1
+              ]
+            }
+          ],
+          "output": [
+            {
+              "actual_format": 2,
+              "device": "npu:0",
+              "dtype": "torch.bfloat16",
+              "object_id": 281459548784304,
+              "offset": 0,
+              "shape": [
+                14,
+                2048
+              ],
+              "storage_id": 187662860851920,
+              "stride": [
+                2048,
+                1
+              ]
+            }
+          ],
+          "path": "model.layers.0.self_attn.attn",
+          "returned": true
+        },
+        "exact_health_hidden_logits": true,
+        "exact_off_hidden_logits": true,
+        "fault_text_differs": false,
+        "fault_tokens_differ": false,
+        "generated_text_change_required": false,
+        "health_tokens_match": true,
+        "normal_fault_hidden_differ": true,
+        "normal_fault_logits_differ": true,
+        "normal_fault_observed_returns": [
+          1,
+          1
+        ],
+        "off_health_rope_observers": [
+          0,
+          0
+        ],
+        "off_tokens_match": true,
+        "selected_path": "model.layers.0.self_attn.rotary_emb",
+        "typed_effect": {
+          "comparison": "MATCHED_FULL_QK_INPUTS_AND_IMMUTABLE_CACHE",
+          "complete_qk_changed": true,
+          "correct_source_row": 13,
+          "fault_qk": [
+            {
+              "dtype": "torch.bfloat16",
+              "sha256": "8c36929462ab2dc0efc159498bc96e0ce596519a30d6d4152e40d962a06813ae",
+              "shape": [
+                14,
+                2048
+              ]
+            },
+            {
+              "dtype": "torch.bfloat16",
+              "sha256": "72e243389402d55bf8f3021539e91f68f624b2a4f8eff37d5da06f7c6e17eafe",
+              "shape": [
+                14,
+                1024
+              ]
+            }
+          ],
+          "non_target_unchanged": true,
+          "normal_qk": [
+            {
+              "dtype": "torch.bfloat16",
+              "sha256": "e950f4d98658d790d97dab9666ede7ea21ee4377d005d72dc139a879f8c4ef4f",
+              "shape": [
+                14,
+                2048
+              ]
+            },
+            {
+              "dtype": "torch.bfloat16",
+              "sha256": "3128f68a7bf2a6daacc20d739f302d6de8f290479e9d5aec87dc844fbd603add",
+              "shape": [
+                14,
+                1024
+              ]
+            }
+          ],
+          "replacement_source_row": 0
+        }
+      },
+      "resource_cleanup": {
+        "inflight": 0,
+        "leases": 0,
+        "numerical_recovery_separate": true,
+        "owned_hooks": 0
+      },
+      "ownership_retained": false,
+      "binding_removal": [
+        {
+          "mechanism": "22.wrong_row",
+          "status": "SERVING_DEPLOYMENT_REMOVED"
+        }
+      ],
+      "request_ids": [
+        "0-959e60af",
+        "1-9ed3b9a5",
+        "2-af682b65",
+        "3-9dc30a02"
+      ],
+      "normal_event": {
+        "path": "model.layers.0.self_attn.rotary_emb",
+        "applied": false,
+        "native_calls": 1,
+        "output_changed": false,
+        "non_target_output_unchanged": true,
+        "correct_source_row": 13,
+        "replacement_source_row": 0,
+        "same_complete_inputs_as_healthy": false,
+        "original_execution_verified": true,
+        "return_readback_exact": true,
+        "actual_qk_after": [
+          {
+            "dtype": "torch.bfloat16",
+            "sha256": "e950f4d98658d790d97dab9666ede7ea21ee4377d005d72dc139a879f8c4ef4f",
+            "shape": [
+              14,
+              2048
+            ]
+          },
+          {
+            "dtype": "torch.bfloat16",
+            "sha256": "3128f68a7bf2a6daacc20d739f302d6de8f290479e9d5aec87dc844fbd603add",
+            "shape": [
+              14,
+              1024
+            ]
+          }
+        ],
+        "independent_final_reader": {
+          "returned": true,
+          "cache_creation_observed": false,
+          "complete_cache_unchanged": true,
+          "actual_positions_unchanged": true,
+          "root_positions_unchanged": true,
+          "independent_position_transform": "identity",
+          "legal_positions": true,
+          "candidate_rows_different": true,
+          "distinct_first_last_positions": true
+        }
+      },
+      "fault_event": {
+        "path": "model.layers.0.self_attn.rotary_emb",
+        "applied": true,
+        "native_calls": 1,
+        "output_changed": true,
+        "non_target_output_unchanged": true,
+        "correct_source_row": 13,
+        "replacement_source_row": 0,
+        "same_complete_inputs_as_healthy": true,
+        "original_execution_verified": true,
+        "return_readback_exact": true,
+        "actual_qk_after": [
+          {
+            "dtype": "torch.bfloat16",
+            "sha256": "8c36929462ab2dc0efc159498bc96e0ce596519a30d6d4152e40d962a06813ae",
+            "shape": [
+              14,
+              2048
+            ]
+          },
+          {
+            "dtype": "torch.bfloat16",
+            "sha256": "72e243389402d55bf8f3021539e91f68f624b2a4f8eff37d5da06f7c6e17eafe",
+            "shape": [
+              14,
+              1024
+            ]
+          }
+        ],
+        "independent_final_reader": {
+          "returned": true,
+          "cache_creation_observed": false,
+          "complete_cache_unchanged": true,
+          "actual_positions_unchanged": true,
+          "root_positions_unchanged": true,
+          "independent_position_transform": "last_from_first",
+          "legal_positions": true,
+          "candidate_rows_different": true,
+          "distinct_first_last_positions": false
+        }
+      }
+    },
+    {
+      "checks": {
+        "actual_consumer": {
+          "actual_query_and_key_views": true,
+          "callable": {
+            "callable_object_id": 281462365572768,
+            "file": "/vllm-workspace/vllm/vllm/model_executor/layers/attention/attention.py",
+            "first_line": 377,
+            "module_object_id": 281461660436624,
+            "module_type": "vllm.model_executor.layers.attention.attention.Attention",
+            "source": {
+              "bytes": 4639,
+              "sha256": "d42a773154a1b1f090398d0b09ac4a8927fc42ed4ee18cf42ea530c22c920114"
+            },
+            "source_sha256": "d42a773154a1b1f090398d0b09ac4a8927fc42ed4ee18cf42ea530c22c920114"
+          },
+          "input": [
+            {
+              "actual_format": 2,
+              "device": "npu:0",
+              "dtype": "torch.bfloat16",
+              "object_id": 281459384619792,
+              "offset": 0,
+              "shape": [
+                14,
+                2048
+              ],
+              "storage_id": 187663051591744,
+              "stride": [
+                2048,
+                1
+              ]
+            },
+            {
+              "actual_format": 2,
+              "device": "npu:0",
+              "dtype": "torch.bfloat16",
+              "object_id": 281459384616432,
+              "offset": 0,
+              "shape": [
+                14,
+                1024
+              ],
+              "storage_id": 187663144244880,
+              "stride": [
+                1024,
+                1
+              ]
+            },
+            {
+              "actual_format": 2,
+              "device": "npu:0",
+              "dtype": "torch.bfloat16",
+              "object_id": 281459384619600,
+              "offset": 3072,
+              "shape": [
+                14,
+                1024
+              ],
+              "storage_id": 187662957036288,
+              "stride": [
+                4096,
+                1
+              ]
+            }
+          ],
+          "output": [
+            {
+              "actual_format": 2,
+              "device": "npu:0",
+              "dtype": "torch.bfloat16",
+              "object_id": 281459384616528,
+              "offset": 0,
+              "shape": [
+                14,
+                2048
+              ],
+              "storage_id": 187663139575920,
+              "stride": [
+                2048,
+                1
+              ]
+            }
+          ],
+          "path": "model.layers.0.self_attn.attn",
+          "returned": true
+        },
+        "exact_health_hidden_logits": true,
+        "exact_off_hidden_logits": true,
+        "fault_text_differs": false,
+        "fault_tokens_differ": false,
+        "generated_text_change_required": false,
+        "health_tokens_match": true,
+        "normal_fault_hidden_differ": true,
+        "normal_fault_logits_differ": true,
+        "normal_fault_observed_returns": [
+          1,
+          1
+        ],
+        "off_health_rope_observers": [
+          0,
+          0
+        ],
+        "off_tokens_match": true,
+        "selected_path": "model.layers.0.self_attn.rotary_emb",
+        "typed_effect": {
+          "comparison": "MATCHED_FULL_QK_INPUTS_AND_IMMUTABLE_CACHE",
+          "complete_qk_changed": true,
+          "correct_source_row": 13,
+          "fault_qk": [
+            {
+              "dtype": "torch.bfloat16",
+              "sha256": "8c36929462ab2dc0efc159498bc96e0ce596519a30d6d4152e40d962a06813ae",
+              "shape": [
+                14,
+                2048
+              ]
+            },
+            {
+              "dtype": "torch.bfloat16",
+              "sha256": "72e243389402d55bf8f3021539e91f68f624b2a4f8eff37d5da06f7c6e17eafe",
+              "shape": [
+                14,
+                1024
+              ]
+            }
+          ],
+          "non_target_unchanged": true,
+          "normal_qk": [
+            {
+              "dtype": "torch.bfloat16",
+              "sha256": "e950f4d98658d790d97dab9666ede7ea21ee4377d005d72dc139a879f8c4ef4f",
+              "shape": [
+                14,
+                2048
+              ]
+            },
+            {
+              "dtype": "torch.bfloat16",
+              "sha256": "3128f68a7bf2a6daacc20d739f302d6de8f290479e9d5aec87dc844fbd603add",
+              "shape": [
+                14,
+                1024
+              ]
+            }
+          ],
+          "replacement_source_row": 0
+        }
+      },
+      "resource_cleanup": {
+        "inflight": 0,
+        "leases": 0,
+        "numerical_recovery_separate": true,
+        "owned_hooks": 0
+      },
+      "ownership_retained": false,
+      "binding_removal": [
+        {
+          "mechanism": "22.wrong_row",
+          "status": "SERVING_DEPLOYMENT_REMOVED"
+        }
+      ],
+      "request_ids": [
+        "4-b640b420",
+        "5-bf6b209c",
+        "6-bd2f06bb",
+        "7-baddcefd"
+      ],
+      "normal_event": {
+        "path": "model.layers.0.self_attn.rotary_emb",
+        "applied": false,
+        "native_calls": 1,
+        "output_changed": false,
+        "non_target_output_unchanged": true,
+        "correct_source_row": 13,
+        "replacement_source_row": 0,
+        "same_complete_inputs_as_healthy": false,
+        "original_execution_verified": true,
+        "return_readback_exact": true,
+        "actual_qk_after": [
+          {
+            "dtype": "torch.bfloat16",
+            "sha256": "e950f4d98658d790d97dab9666ede7ea21ee4377d005d72dc139a879f8c4ef4f",
+            "shape": [
+              14,
+              2048
+            ]
+          },
+          {
+            "dtype": "torch.bfloat16",
+            "sha256": "3128f68a7bf2a6daacc20d739f302d6de8f290479e9d5aec87dc844fbd603add",
+            "shape": [
+              14,
+              1024
+            ]
+          }
+        ],
+        "independent_final_reader": {
+          "returned": true,
+          "cache_creation_observed": false,
+          "complete_cache_unchanged": true,
+          "actual_positions_unchanged": true,
+          "root_positions_unchanged": true,
+          "independent_position_transform": "identity",
+          "legal_positions": true,
+          "candidate_rows_different": true,
+          "distinct_first_last_positions": true
+        }
+      },
+      "fault_event": {
+        "path": "model.layers.0.self_attn.rotary_emb",
+        "applied": true,
+        "native_calls": 1,
+        "output_changed": true,
+        "non_target_output_unchanged": true,
+        "correct_source_row": 13,
+        "replacement_source_row": 0,
+        "same_complete_inputs_as_healthy": true,
+        "original_execution_verified": true,
+        "return_readback_exact": true,
+        "actual_qk_after": [
+          {
+            "dtype": "torch.bfloat16",
+            "sha256": "8c36929462ab2dc0efc159498bc96e0ce596519a30d6d4152e40d962a06813ae",
+            "shape": [
+              14,
+              2048
+            ]
+          },
+          {
+            "dtype": "torch.bfloat16",
+            "sha256": "72e243389402d55bf8f3021539e91f68f624b2a4f8eff37d5da06f7c6e17eafe",
+            "shape": [
+              14,
+              1024
+            ]
+          }
+        ],
+        "independent_final_reader": {
+          "returned": true,
+          "cache_creation_observed": false,
+          "complete_cache_unchanged": true,
+          "actual_positions_unchanged": true,
+          "root_positions_unchanged": true,
+          "independent_position_transform": "last_from_first",
+          "legal_positions": true,
+          "candidate_rows_different": true,
+          "distinct_first_last_positions": false
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "One first source-bound actual RoPE invocation, not all layers",
+    "Legal wrong-row substitution, not integer overflow",
+    "Existing cache read and complete cache unchanged; cache creation was not observed",
+    "First-token logits changed but generated top1/token did not",
+    "No new msprobe E5 run or yellow main-project acceptance"
+  ],
+  "controller_cleanup": {
+    "status": "OWNED_CONTAINER_REMOVED",
+    "exit_code": 0,
+    "oom_killed": false,
+    "container_cleanup_alone_does_not_prove_recovery": true
+  }
+}

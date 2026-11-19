@@ -79,9 +79,9 @@ def setup(worker, identity, prompt, weights, pins, manifest_sha256):
     from demoncat.runtime.vllm_ascend.worker_extension.serving_tensor_binding import remove_tensor_serving_binding
     try:
         default=ordinary_route_report('22.wrong_row',worker,worker.model_runner.model)
-        require(not default['deployment_acceptance']['accepted'],'UNREVIEWED_ROPE22_DEFAULT_ACCEPTANCE')
-        install_blue_acceptance_permit(worker,mechanisms=['22.wrong_row'],attempt='ordinary22-two-scopes',
-            source_manifest_sha256=manifest_sha256)
+        if not default['deployment_acceptance']['accepted']:
+            install_blue_acceptance_permit(worker,mechanisms=['22.wrong_row'],attempt='ordinary22-two-scopes',
+                source_manifest_sha256=manifest_sha256)
         blue=require_ordinary_route('22.wrong_row',worker,worker.model_runner.model)
     except BaseException:
         remove_tensor_serving_binding(worker,'22.wrong_row')

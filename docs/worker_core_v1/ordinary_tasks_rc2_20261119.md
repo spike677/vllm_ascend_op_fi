@@ -6,7 +6,7 @@ RC1.1 已单独发布；这里的开发改动不回写 RC1.1 包。蓝区测试�
 
 `ordinary_admission.ordinary_route_report` 是能力查询和创建共同的普通路由判定。
 缺绑定显示 pending，实际调用始终待观测；候选/绑定不授予执行资格。当前普通入口为
-18、39、Batch、已通过a3实机的8/17及待验的22；默认执行还须匹配部署验收准入。其他八项中的未接入部分返回明确
+18、39、Batch、已通过新构建实机的8/17/22；默认执行还须匹配部署验收准入。其他八项中的未接入部分返回明确
 `ORDINARY_TASK_ADAPTER_PENDING`，不会回退 C1/group/coverage。研究实现仍保留为显式
 `create_research_provider` 或直接类调用，不接受用户配置的研究模式开关。
 15 当前部署不适用、25 不支持、28 legal 历史保留、28 denominator F/OFF 未完成均关闭。
@@ -56,7 +56,7 @@ recover（必要时真实 OFF/health）或 abort，再 clean/unregister/detach/r
 |Batch|既有六批；结构而非模型名判定|既有 Source118；黄区缺 W8A8/bundle；现役未验|
 |8|新四请求，两个独立作用域|124 a5通过（新门禁/大小边界）；黄区未验|
 |17|新四请求，两个独立作用域|124 a5统一完成回调路线通过；黄区未验|
-|22|四请求代码与40项定向CPU检查完成|普通入口NPU未验，默认关闭|
+|22|四请求，两个独立作用域|124 a1通过；仅精确组合准入，黄区未验|
 |20、26 两变体、33、41|历史机制保留，普通任务待接入|不可沿用历史机制结果宣称新普通入口通过|
 |28 denominator|正常关联与 opt-in Execute 借用已保留|F/OFF 未完成，关闭|
 
@@ -199,6 +199,23 @@ a4曾在首次普通绑定前被准入拒绝，未执行故障；发现TorchVers
 17需要Qwen3-VL-2B及图像，Batch需要Qwen3-0.6B动态W8A8和匹配bundle；均TP1串行eager。
 纯文本dense Qwen3-0.6B不能替代MoE/视觉验收。该文档用于用户转交，未声称已联系黄区。
 
-8/17本轮闭环完成后继续22；22及20/26两变体/33/41未通过的普通路线保持默认关闭。
+8/17本轮闭环完成后22亦完成a1实机；20/26两变体/33/41未通过的普通路线保持默认关闭。
 Batch仍保留已有六批实验协议，尚未承诺与四请求路线完全统一；RC2冻结前须完成Host层
 封装或明确评审接口差异，不能要求黄区猜测逐能力的私有调用。RC2尚未冻结。
+
+## Fault22 普通任务 a1
+
+源提交`4c56701f2fc87edd8faa4e343a4b3b3b3f3987e6`，清单
+`15a6eb3895e59e27c8eeef5680eea8df73c5a53cf3cf0207000dcba6a8034f94`。
+[真实结果总结](../../experiments/worker_core_v11_20261118/ordinary22_a1_20261119_summary.json)。
+124卡5、Qwen3-0.6B BF16、TP1、串行eager；标准Worker两作用域各4请求，控制器exit0并移除自有容器。
+
+自动选中首条真实`model.layers.0.self_attn.rotary_emb`，F在实际fused RoPE输入处将最后
+位置使用的合法行13替换为0，实际原算子执行一次。独立最终读取观察确认该位置变换、
+缓存完整值不变、同一完整Q/K输入、非目标输出不变，后续Attention消费真实Q/K视图。
+Q/K、hidden、logits变化，首token/文本未变；OFF/health逐字节恢复，资源与所有权清零。
+
+本轮观察既有cache读取，`cache_creation_observed=false`原样保留；不声称观察cache生成，
+不声称整数溢出、全部层或连续生成验收。没有新增msprobe采集或E5结论。
+实测使用限定blue许可；之后将实际配置SHA/模型类与13项环境条件加入已验组合。
+其他模型、TP或CANN组合仍默认关闭。CPU准备48项通过；记录晋级另跑准入与普通任务回归。

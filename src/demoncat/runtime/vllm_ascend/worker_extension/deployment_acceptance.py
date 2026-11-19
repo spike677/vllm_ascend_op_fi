@@ -28,6 +28,8 @@ _CONFIGS = {
         'vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM', '16f40f1f/ordinary8-a5'),
     '17.spatial_padding': ('bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b',
         'vllm.model_executor.models.qwen3_vl.Qwen3VLForConditionalGeneration', '16f40f1f/ordinary17-a5'),
+    '22.wrong_row': ('660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd',
+        'vllm.model_executor.models.qwen3.Qwen3ForCausalLM', '4c56701f/ordinary22-a1'),
     '18.api_half': ('660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd',
         'vllm.model_executor.models.qwen3.Qwen3ForCausalLM', 'Source126'),
     '39.output_proxy': ('660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd',

@@ -18,14 +18,14 @@ class DeploymentAcceptanceTests(unittest.TestCase):
             self.assertEqual(a.deployment_acceptance_report('8.restore_offset',self.worker,self.model)['status'],'ACCEPTED_DEPLOYMENT')
             self.assertEqual(a.deployment_acceptance_report('22.wrong_row',self.worker,self.model)['status'],'IMPLEMENTED_NOT_ACCEPTED_FOR_DEPLOYMENT')
             self.assertEqual(a.deployment_acceptance_report('20.buffer_substitute',self.worker,self.model,implemented=False)['status'],'NOT_IMPLEMENTED')
-    def test_reviewed8_and17_only_accept_exact_a5_deployment(self):
-        for key in ('8.restore_offset','17.spatial_padding'):
+    def test_reviewed8_17_22_only_accept_exact_deployment(self):
+        for key in ('8.restore_offset','17.spatial_padding','22.wrong_row'):
             actual=self.actual(key)
             with self.subTest(key=key),patch.object(a,'observe_deployment',return_value=actual):
                 report=a.deployment_acceptance_report(key,self.worker,self.model)
                 self.assertTrue(report['accepted']);self.assertEqual(report['mode'],'DEFAULT')
                 self.assertIsNone(report['pending_revalidation'])
-                self.assertIn('16f40f1f/',report['reviewed_combination'])
+                self.assertIn('4c56701f/' if key=='22.wrong_row' else '16f40f1f/',report['reviewed_combination'])
             for field,value in [('model_config_sha256','f'*64),('tp',2),('cann',['9.0.0'])]:
                 changed=dict(actual);changed[field]=value
                 with self.subTest(key=key,field=field),patch.object(a,'observe_deployment',return_value=changed):
