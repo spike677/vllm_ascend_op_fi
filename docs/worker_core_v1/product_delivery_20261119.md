@@ -90,6 +90,13 @@ Q/scale共同发布；最终fault-owned资源及hook/owner释放。固定10,682,
 独立复核验证了原件哈希、调用关系及固定源码执行守卫；没有离线重算未下载的完整私有张量。
 Source116加载失败和Source117 reference零admission/零F失败均保留。
 
+TND新增[真实输入观察链](tnd28_prepared_input.md)只记录一个匹配目标的原始typed调用，
+尚不授权F。Source119的` tnd28-input-observer-build-a1`已通过无设备C++观察合同和原22项
+SplitCore检查，但嵌套CMake误拆编译launcher参数，在host包构建时失败，未执行NPU。
+失败completion SHA为`fa11d608d03270c42cbf70dbcc6fd104d65b0a56086618fbd7752837f6e4bec6`，
+原件保留。后继修复将固定参数放进单一可执行launcher；47项相关CPU通过，须新目录重建。
+独审发现的false-LSE占位关联、摘要与原RPC连接及首错保留问题也须修复后才进入正常实测。
+
 ## 每项通过及停止条件
 
 矩阵中的下一改动只针对声明范围。通过需实际主项目调用→真实请求效果→对应OFF/健康恢复，
