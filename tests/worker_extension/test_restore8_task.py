@@ -80,6 +80,9 @@ class Restore8TaskTests(unittest.TestCase):
                 self.assertEqual([r['phase'] for r in rows],['normal','fault','off','health'])
                 self.assertEqual([len((r['mechanism'] or {}).get('events',[])) for r in rows],[1,1,0,0])
                 self.assertEqual(self.provider.target['path'],'first')
+                self.assertEqual(rows[0]['mechanism']['actual_moe_trace']['observed_unpermute_calls'],1)
+                import json
+                self.assertLess(len(json.dumps(state)),250000)
                 hit=rows[1]['mechanism']['events'][0]
                 self.assertTrue(hit['applied'] and hit['output_changed'])
                 self.assertEqual(hit['observed_original_native_calls'],1)

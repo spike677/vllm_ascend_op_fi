@@ -14,6 +14,22 @@ from .providers.rms18_task import Rms18TaskProvider
 from .serving_context import require
 
 
+class _OneMoETrace(MoERestoreTrace):
+    """Observe only the selected actual pipeline; other modules pass untouched."""
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args,**kwargs)
+        target=self.adapter.task.target
+        self.selected_path=target['path'] if target else None
+
+    def _profile(self,frame,event,result):
+        if event=='call' and frame.f_code in self.bindings:
+            path=self._model_path(frame)
+            if path not in self.structural_paths:return
+            if self.selected_path is None:self.selected_path=path
+            if path!=self.selected_path:return
+        return super()._profile(frame,event,result)
+
+
 class _OneMoERestore(RestoreOffsetSession):
     def __init__(self, task):
         self.task = task
@@ -35,7 +51,7 @@ class _OneMoERestore(RestoreOffsetSession):
         try:
             proxy = SimpleNamespace(simulation=self.simulation,
                 current_request_ids=(self.task.session.current['request_id'],), _event=self._event)
-            self.trace = MoERestoreTrace(self.model,self.template,proxy,self,lambda:self.stack,self.paths)
+            self.trace = _OneMoETrace(self.model,self.template,proxy,self,lambda:self.stack,self.paths)
             self.trace.__enter__()
             def close_trace(module,args,output):
                 self.trace.close()
@@ -54,10 +70,10 @@ class _OneMoERestore(RestoreOffsetSession):
         if name=='npu::npu_moe_token_unpermute':
             # The nested source-bound combine trace is mandatory, even when
             # the outer dispatcher can already see this operator.
-            require(self.trace is not None and bool(self.trace.owned_modes),
-                    'MOE8_SOURCE_BOUND_COMBINE_REQUIRED')
             if self.events or (self.task.target is not None and self.stack[-1][0]!=self.task.target['path']):
                 return func(*args,**kwargs)
+            require(self.trace is not None and bool(self.trace.owned_modes),
+                    'MOE8_SOURCE_BOUND_COMBINE_REQUIRED')
         return super().dispatch(func,args,kwargs)
 
     def observe_actual_inputs(self,event,values,original_values):
