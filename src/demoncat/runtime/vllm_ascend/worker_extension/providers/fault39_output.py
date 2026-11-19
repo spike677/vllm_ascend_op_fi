@@ -27,6 +27,10 @@ def create_single_request_provider(worker, model, identity):
     require(type(binding) is Output39ServingBinding, 'REVIEWED_OUTPUT39_SERVING_BINDING_REQUIRED')
     require(binding.stage == 'c1' and binding.max_live_leases == 1,
             'OUTPUT39_CURRENT_DELIVERY_SINGLE_REQUEST_SINGLE_TARGET_REQUIRED')
+    require(type(binding.runtime_only) is bool, 'OUTPUT39_RUNTIME_MODE_BOOLEAN_REQUIRED')
+    if binding.runtime_only:
+        from .output39_task import Output39TaskProvider
+        return Output39TaskProvider(worker, model, identity)
     return Fault39OutputServingProvider(worker, model, identity)
 
 

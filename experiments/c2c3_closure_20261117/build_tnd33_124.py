@@ -14,7 +14,8 @@ def main():
     p.add_argument('--interfaces', type=Path, required=True)
     p.add_argument('--strategy', choices=('arch22-investigation', 'actual-fai', 'native-fd',
                                          'arch22-normal-bridge', 'arch22-s2', 'arch22-all-normal',
-                                         'tnd28-prefill-normal', 'arch22-group-s2'), default='native-fd')
+                                         'tnd28-prefill-normal', 'tnd28-denominator-replay',
+                                         'arch22-group-s2'), default='native-fd')
     a = p.parse_args()
     a.out.mkdir(parents=True, exist_ok=False)
     pristine = Path('/home/17-fault-engineering-20261117/ops-transformer-pristine-a1')
@@ -30,6 +31,7 @@ def main():
                   'arch22-s2': 'apply_tnd33_arch22_s2.py',
                   'arch22-all-normal': 'apply_tnd33_arch22_all_normal.py',
                   'tnd28-prefill-normal': 'apply_tnd28_prefill_normal.py',
+                  'tnd28-denominator-replay': 'apply_tnd28_denominator.py',
                   'arch22-group-s2': 'apply_tnd33_arch22_group_s2.py'}[a.strategy]
     subprocess.run(['python3', str(a.source / 'fault_injection/native_adapters/attention28/fia' / patch_name),
                     '--source', str(official), '--output', str(patch)], check=True)

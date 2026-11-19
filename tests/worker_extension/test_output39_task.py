@@ -50,10 +50,8 @@ class Output39TaskTests(unittest.TestCase):
                 _simulation=True, _native_readback=lambda t: dict(abi=1, sha256=t.sha256))
             return {}
         self.client.host._binding = bind
-        # Integration selection is the root's registry change, not a runtime
-        # bypass: the public Core still obtains/owns/verifies every real lease.
-        self.enterContext(patch.object(runtime, '_resolve_provider', side_effect=lambda mechanism,
-            version, worker, model, identity: Output39TaskProvider(worker, model, identity)))
+        # Exercise the real public registry route, with no provider resolver
+        # replacement. Only the Native transport and scheduler are CPU doubles.
 
     def start(self):
         before = self.model.forward_calls

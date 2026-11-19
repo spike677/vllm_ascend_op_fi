@@ -53,7 +53,7 @@ class ProductScopeTests(unittest.TestCase):
         for stage, leases in (('c1', 1), ('c1', 2), ('c2_once', 1), ('c2_c3', 1)):
             # Only inert constructor data; no native binding or tensor storage.
             values = {field.name: None for field in fields(Output39ServingBinding)}
-            values.update(stage=stage, max_live_leases=leases)
+            values.update(stage=stage, max_live_leases=leases, runtime_only=False)
             binding = Output39ServingBinding(**values)
             worker = SimpleNamespace(**{module._ATTRIBUTE: binding})
             with patch.object(module, 'Fault39OutputServingProvider') as factory, \
