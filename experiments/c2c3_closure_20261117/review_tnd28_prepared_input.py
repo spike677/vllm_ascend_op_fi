@@ -24,6 +24,7 @@ PHASES=('prepare_enter','contiguous_prepare_enter','contiguous_prepare_return',
     'contiguous_execute_enter','contiguous_execute_return','fia_execute_enter','fia_execute_return',
     'execute_return','execute_exit')
 SERIALIZER_SHA='b54c905c4cda0d049892b3ade7edd0aa51dce3452caf2dcf233722e892288fa5'
+RT2_SHAPE_DEPENDENCY_SHA='0c248af2c004f6e928c5abfdcd1548deefab263c3ac8347c6bb980a7ad22c74b'
 NNOPBASE_SHA='6dc3b4fcfcf57b10be0018e89f4edbc079f02b4bb0aaadb109df350939fd4c99'
 GENERATED_SHA='d35f8b60d1ad50d97b7cf0d2050be5c23fd0d53eba77a58c053c184d96af4fe2'
 LSE_SOURCE_COMMIT='c77c0829f1f0f0b8f882db1d9b051a758b605472'
@@ -236,10 +237,15 @@ def launch_inputs(raw,abi,typed):
     if 'softmaxLse' in slots:need(pointer('softmaxLse')==p['lse']['data_address'],'ACTUAL_LSE_OUTPUT_POINTER')
     known={'query','key','value','attenMask','actualSeqLengths','actualSeqLengthsKV','attentionOut','softmaxLse','workspace','tiling'}
     need(all(pointer(name)==0 for name in names if name not in known),'UNEXPECTED_OPTIONAL_KERNEL_OPERAND')
-    # This exact public opbase serializer is pinned separately. Never search
-    # argument bytes for a matching address and never decode Slice arguments.
+    # The inspected dependency's NnopbaseSaveTensor copies ACL GetViewShape
+    # into rt2Tensor origin/storage shapes. Its serializer therefore emits the
+    # logical shape, not the ACL allocation extent checked by tensor_join.
+    # This source relation is corroborated against every actual descriptor
+    # byte below and the separately verified production ELF; it is not a
+    # certificate that the production ELF's complete source was available.
+    # Never search argument bytes for an address or decode Slice arguments.
     spans=[]
-    for name,address,shape in (('key',p['key']['members'][0]['data_address'],p['key']['members'][0]['storage_shape']),
+    for name,address,shape in (('key',p['key']['members'][0]['data_address'],p['key']['members'][0]['shape']),
             ('value',ce['prepared_v_address'],p['value']['members'][0]['shape'])):
         need(slots[name] in locations,'DYNAMIC_KV_PLACEHOLDER_MISSING:'+name);start=locations[slots[name]]
         size=8+8+len(shape)*8+8
@@ -254,6 +260,11 @@ def launch_inputs(raw,abi,typed):
     return dict(query_address=p['query']['data_address'],key_address=p['key']['members'][0]['data_address'],
         prepared_value_address=ce['prepared_v_address'],actual_output_address=p['output']['data_address'],
         serializer_source_sha256=SERIALIZER_SHA,slice_pod_decoded=False,
+        kv_shape_rule=dict(acl_field='GetViewShape',rt2_field='GetStorageShape',
+            allocation_extent_field='aclTensor::GetStorageShape',allocation_extent_checked_separately=True,
+            dependency_function='NnopbaseSaveTensor',dependency_source_sha256=RT2_SHAPE_DEPENDENCY_SHA,
+            actual_descriptor_comparison='EXACT_BYTES_AT_SOURCE_ABI_PLACEHOLDER',
+            dependency_behavior_agrees_with_actual_arguments=True,production_complete_source_match_proven=False),
         lse=dict(rule='FALSE_LSE_TEMPORARY_GWS_PLACEHOLDER',snapshot_phase='prepare_enter',
             placeholder_address=p['lse']['data_address'],kernel_argument_present='softmaxLse' in slots,
             public_empty_return_checked_separately=True,descriptor_live_after_gws_claimed=False,

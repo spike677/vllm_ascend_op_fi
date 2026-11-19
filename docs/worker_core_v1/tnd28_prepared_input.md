@@ -75,6 +75,25 @@ the original Source123 public/return/Native JSON; it does not establish the
 remaining full RPC, registered binary and raw launch joins. Originals and
 their initial review failures are unchanged; no new NPU execution occurred.
 
+The internal ListTensorDesc shape is a separate representation. In the
+Source122 build dependency's `indv_executor_tensor.cpp`,
+`NnopbaseSaveTensor` lines 293–294 copy `aclTensor::GetViewShape()` into
+both the rt2Tensor origin and storage shape. The independently rehashed file
+is `0c248af2c004f6e928c5abfdcd1548deefab263c3ac8347c6bb980a7ad22c74b`.
+The pinned serializer above emits that rt2Tensor shape. Thus K and prepared V
+use logical shape `[2048,8,128]`; the original ACL flat allocation extents
+`[2097152]` and `[8388608]` remain separate public-storage bounds.
+The reader derives each descriptor location from the actual compiled FIA ABI
+and host placeholder table, then compares every descriptor byte, including
+rank, dimensions, count, dynamic offset and the actual K/prepared-V address.
+It does not search argument bytes for a desired address. This fixes the
+Source125 K rejection caused by using the ACL allocation extent as the
+internal descriptor shape; the original rejected report is retained.
+The dependency source describes a conversion consistent with the observed
+production arguments. It is not a complete-source match certificate for the
+production `libnnopbase.so`; its actual mapped identity and ELF hash remain
+required independently. This reader-only change does not rebuild or rerun NPU.
+
 The NNOPBASE owner must have reviewed production SHA
 `6dc3b4fcfcf57b10be0018e89f4edbc079f02b4bb0aaadb109df350939fd4c99`.
 The actual Contiguous owner is checked against the explicitly supplied,

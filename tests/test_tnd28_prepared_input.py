@@ -87,7 +87,7 @@ def launch_fixture(data):
             attentionOut=p['output']['data_address'],softmaxLse=p['lse']['data_address']).items():
         struct.pack_into('<Q',raw,slots[name],value)
     for name,address in (('key',p['key']['members'][0]['data_address']),('value',data['contiguous_execute_enter']['prepared_v_address'])):
-        shape=p['key']['members'][0]['storage_shape'] if name=='key' else p['value']['members'][0]['shape']
+        shape=p[name]['members'][0]['shape']
         pairs.append((slots[name],len(raw)))
         raw+=struct.pack('<QII',16+len(shape)*8,len(shape),1)+struct.pack('<'+'q'*len(shape),*shape)+struct.pack('<Q',address)
     for name in ('actualSeqLengths','actualSeqLengthsKV'):
@@ -129,6 +129,50 @@ class TypedReadbackContracts(unittest.TestCase):
         p,r,e=fixture();d=R.protocol(p,r,e);raw,abi=launch_fixture(d)
         result=R.launch_inputs(raw,abi,d)
         self.assertEqual(result['prepared_value_address'],0x8001000);self.assertFalse(result['slice_pod_decoded'])
+
+    def test_rt2_descriptors_use_view_shape_but_retain_separate_acl_allocation_extent(self):
+        p,r,e=fixture();d=R.protocol(p,r,e);raw,abi=launch_fixture(d)
+        result=R.launch_inputs(raw,abi,d)
+        for name in ('key','value'):
+            t=d['prepare_enter'][name]['members'][0]
+            self.assertEqual(t['shape'],[2048,8,128]);self.assertEqual(len(t['storage_shape']),1)
+            slot=abi['hidden_hardware_sync_prefix_bytes']+abi['names'].index(name)*8
+            offset=dict(struct.iter_unpack('<II',bytes.fromhex(raw['placeholders_hex'])))[slot]
+            b=bytes.fromhex(raw['args_hex'])
+            self.assertEqual(struct.unpack_from('<QIIqqq',b,offset),(40,3,1,2048,8,128))
+        self.assertEqual(d['prepare_enter']['key']['members'][0]['storage_shape'],[2097152])
+        self.assertEqual(d['prepare_enter']['value']['members'][0]['storage_shape'],[8388608])
+        rule=result['kv_shape_rule']
+        self.assertTrue(rule['allocation_extent_checked_separately'])
+        self.assertFalse(rule['production_complete_source_match_proven'])
+
+    def test_flat_allocation_or_equal_numel_different_shape_is_not_the_rt2_descriptor(self):
+        for name in ('key','value'):
+            for shape in ([2097152],[1024,16,128]):
+                p,r,e=fixture();d=R.protocol(p,r,e);raw,abi=launch_fixture(d)
+                slot=abi['hidden_hardware_sync_prefix_bytes']+abi['names'].index(name)*8
+                start=dict(struct.iter_unpack('<II',bytes.fromhex(raw['placeholders_hex'])))[slot]
+                b=bytearray.fromhex(raw['args_hex'])
+                address=(d['prepare_enter']['key']['members'][0]['data_address'] if name=='key'
+                    else d['contiguous_execute_enter']['prepared_v_address'])
+                wrong=struct.pack('<QII',16+8*len(shape),len(shape),1)
+                wrong+=struct.pack('<'+'q'*len(shape),*shape)+struct.pack('<Q',address)
+                b[start:start+len(wrong)]=wrong;raw['args_hex']=b.hex()
+                with self.subTest(name=name,shape=shape),self.assertRaisesRegex(ValueError,
+                        'ACTUAL_KV_LIST_DESCRIPTOR_OR_ADDRESS_DIFFERS:'+name):
+                    R.launch_inputs(raw,abi,d)
+
+    def test_kv_descriptor_address_is_read_at_fixed_slot_not_searched_in_arguments(self):
+        for name in ('key','value'):
+            p,r,e=fixture();d=R.protocol(p,r,e);raw,abi=launch_fixture(d)
+            slot=abi['hidden_hardware_sync_prefix_bytes']+abi['names'].index(name)*8
+            start=dict(struct.iter_unpack('<II',bytes.fromhex(raw['placeholders_hex'])))[slot]
+            b=bytearray.fromhex(raw['args_hex']);original=bytes(b[start:start+48])
+            address=struct.unpack_from('<Q',b,start+40)[0];struct.pack_into('<Q',b,start+40,address+2)
+            b.extend(original);raw.update(args_hex=b.hex(),args_size=len(b))
+            with self.subTest(name=name),self.assertRaisesRegex(ValueError,
+                    'ACTUAL_KV_LIST_DESCRIPTOR_OR_ADDRESS_DIFFERS:'+name):
+                R.launch_inputs(raw,abi,d)
 
     def test_false_lse_temporary_placeholder_is_separate_from_public_empty_output(self):
         p,r,e=fixture();typed=e[0]['data']['lse'];public=r['outputs'][1]
