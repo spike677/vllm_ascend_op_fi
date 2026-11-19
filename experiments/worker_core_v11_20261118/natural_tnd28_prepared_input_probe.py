@@ -183,7 +183,11 @@ def run(args,bundle):
             report['setup']=rpc(llm,setup,expected,tokens,provenance,settings);return {}
         client=common.WorkerFaultClient(common.HostAdapter(llm,prepare_binding=deploy,timeout=300),common.FaultConfig(28,'fia.denominator_replay'))
         drive(llm,client,dict(prompt_token_ids=tokens),SamplingParams(temperature=0,max_tokens=1,ignore_eos=True),args,report,settings)
-    except BaseException as error:report.update(status='REFUSED_OR_FAILED',error=repr(error),traceback=traceback.format_exc())
+    except BaseException as error:
+        report['status']='REFUSED_OR_FAILED'
+        if 'error' in report:
+            report.setdefault('post_protocol_errors',[]).append(dict(error=repr(error),traceback=traceback.format_exc()))
+        else:report.update(error=repr(error),traceback=traceback.format_exc())
     common.save(args.out/'result.json',report)
     print(json.dumps({k:report[k] for k in ('status','error') if k in report}));return 0 if report['status']==SUCCESS else 2
 

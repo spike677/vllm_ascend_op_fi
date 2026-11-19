@@ -26,6 +26,13 @@ PHASES=('prepare_enter','contiguous_prepare_enter','contiguous_prepare_return',
 SERIALIZER_SHA='b54c905c4cda0d049892b3ade7edd0aa51dce3452caf2dcf233722e892288fa5'
 NNOPBASE_SHA='6dc3b4fcfcf57b10be0018e89f4edbc079f02b4bb0aaadb109df350939fd4c99'
 GENERATED_SHA='d35f8b60d1ad50d97b7cf0d2050be5c23fd0d53eba77a58c053c184d96af4fe2'
+LSE_SOURCE_COMMIT='c77c0829f1f0f0b8f882db1d9b051a758b605472'
+LSE_SOURCES={
+    'attention/fused_infer_attention_score/op_api/aclnn_fused_infer_attention_score_v3.cpp':
+        '551cc8b6b7439bfc231dba0d17305d07df56226f2e771346fe78a7d2054f4ed2',
+    'attention/fused_infer_attention_score/op_api/aclnn_fused_infer_attention_score_inner.cpp':
+        '1efdfba88a2463376d11df2dbd7b9aed515f6f42a875314406c15b39e4119808'}
+RPC_ACTIONS=['attach','prepare','register','check','enable','advance','query','advance','disable','unregister','detach']
 SCALARS=('num_heads','pre_tokens','next_tokens','num_key_value_heads','sparse_mode','inner_precise',
     'block_size','antiquant_mode','key_antiquant_mode','value_antiquant_mode','query_quant_mode','pse_type','out_dtype')
 V3_FIXED={'antiquant_mode':0,'key_antiquant_mode':0,'value_antiquant_mode':0,'query_quant_mode':0,'pse_type':0,'out_dtype':0}
@@ -81,6 +88,30 @@ def function_identity(function):
         'ACTUAL_FUNCTION_MAPPED_FILE_IDENTITY')
     need(function['path'].startswith('/') and function['mapped_path'].startswith('/'),
         'ACTUAL_FUNCTION_OWNER_PATH_MISSING')
+
+
+def false_lse(typed,public,output):
+    # The pinned V3 wrapper supplies a newly-created, temporary host placeholder
+    # to inner GWS and destroys its descriptor before returning to Python.
+    # Its recorded address is metadata only: do not read the expired storage.
+    need(type(typed) is dict and typed['descriptor']>0 and typed['storage_address']>0
+        and typed['data_address']==typed['storage_address']
+        and all(typed[k]==v for k,v in dict(shape=[0],storage_shape=[0],stride=[0],offset=0,
+            native_storage_offset=0,dtype=0,format=2).items()),'FALSE_LSE_TYPED_PLACEHOLDER_DIFFERS')
+    need(type(public) is dict and public['object_id']>0 and public['storage_identity']>0
+        and public['device']==output['device'] and public['device'].startswith('npu:')
+        and all(public[k]==v for k,v in dict(shape=[0],stride=[1],storage_offset=0,
+            storage_bytes=0,element_bytes=4,dtype='torch.float32',data_address=0,storage_address=0).items()),
+        'FALSE_LSE_PUBLIC_EMPTY_RETURN_DIFFERS')
+
+
+def false_lse_sources(completion,build):
+    need(build['source_commit']==LSE_SOURCE_COMMIT,'FALSE_LSE_SOURCE_REVISION_CHANGED')
+    source=Path(completion).parent.parent/'source'
+    for name,expected in LSE_SOURCES.items():
+        need(hashlib.sha256(raw_file(E.child(source,name),64*1024)).hexdigest()==expected,
+            'FALSE_LSE_ACTUAL_BUILD_SOURCE_CHANGED:'+name)
+    return dict(LSE_SOURCES)
 
 
 def protocol(public,returned,events):
@@ -150,7 +181,8 @@ def protocol(public,returned,events):
         and fe['workspace']+fe['workspace_bytes']==ce['workspace']
         and fe['workspace_bytes']==wr['fia_workspace_bytes'] and fe['executor']==wr['executor']
         and fe['stream']==ce['stream']>0,'ACTUAL_PREPARED_V_PARENT_CHILD_SPAN_OR_STREAM')
-    for name,output in zip(('output','lse'),returned['outputs']):tensor_join(output,p[name],name)
+    tensor_join(returned['outputs'][0],p['output'],'output')
+    false_lse(p['lse'],returned['outputs'][1],returned['outputs'][0])
     return data
 
 
@@ -187,7 +219,11 @@ def launch_inputs(raw,abi,typed):
         'HOST_INPUT_DESCRIPTORS_OVERLAP')
     return dict(query_address=p['query']['data_address'],key_address=p['key']['members'][0]['data_address'],
         prepared_value_address=ce['prepared_v_address'],actual_output_address=p['output']['data_address'],
-        serializer_source_sha256=SERIALIZER_SHA,slice_pod_decoded=False)
+        serializer_source_sha256=SERIALIZER_SHA,slice_pod_decoded=False,
+        lse=dict(rule='FALSE_LSE_TEMPORARY_GWS_PLACEHOLDER',snapshot_phase='prepare_enter',
+            placeholder_address=p['lse']['data_address'],kernel_argument_present='softmaxLse' in slots,
+            public_empty_return_checked_separately=True,descriptor_live_after_gws_claimed=False,
+            temporary_storage_bytes_read=False))
 
 
 def runtime_join(run,rows,public,events,abi,kernel_sha):
@@ -274,10 +310,24 @@ def public_lifecycle(result,public):
         and window['actual_native_observed'] is False and window['prepared_input_join'] is False,
         'ACTUAL_BINDING_REMOVAL_OR_WINDOW_CLEANUP')
     need(result['ownership_retained'] is False and not result.get('cleanup_errors')
+        and not result.get('error') and not result.get('post_protocol_errors')
         and result['health']['scope']=='POST_UNREGISTER_TOKENS_ONLY'
         and result['health']['output_tokens']==result['request']['output_tokens']
         and all(result[k] is False for k in ('C1','C2','C3','E5','fault_authorized')),
         'ACTUAL_FINAL_OWNER_OR_ORDINARY_HEALTH')
+
+
+def public_rpc_summaries(result,public,records):
+    need([r['action'] for r in records]==RPC_ACTIONS,'ACTUAL_SINGLE_WINDOW_PUBLIC_RPC_PROTOCOL')
+    # collect_replay is an advance RPC. Use the raw response that produced each
+    # summary; matching action names/history alone cannot bind copied summaries.
+    collected=records[7]['response']['provider_state'];stopped=records[8]['response']['provider_state']
+    need(collected['evidence']['requests']==[result['request']['worker']],
+        'ACTUAL_COLLECT_RPC_REQUEST_SUMMARY_DIFFERS')
+    need(stopped==result['cleanup'],'ACTUAL_DISABLE_RPC_CLEANUP_SUMMARY_DIFFERS')
+    for state in (collected,stopped):
+        need(state['owner']==public['owner'] and state['generation']==public['generation'],
+            'ACTUAL_COLLECT_DISABLE_RPC_OWNER_CHANGED')
 
 
 def main():
@@ -291,6 +341,7 @@ def main():
     sys.addaudithook(E.prohibit_runtime)
     try:
         build,files,metadata,abi=bundle(a.build,a.build_sha256,a.vendor,a.source,a.source_manifest_sha256)
+        report['false_lse_build_sources']=false_lse_sources(a.build,build)
         public=json_file(a.public);returned=json_file(a.returned);events=lines(a.native,1024**2)
         result=json_file(a.result,128*1024**2);public_lifecycle(result,public)
         need(result['build_sha256']==a.build_sha256 and result['source_manifest_sha256']==a.source_manifest_sha256,
@@ -300,8 +351,7 @@ def main():
             path=E.child(a.result.parent,ref['path']);need(E.sha(path)==ref['sha256'],'ORIGINAL_RPC_ARTIFACT_CHANGED')
             record=json_file(path,16*1024**2);need(record['action']==ref['action'],'ORIGINAL_RPC_ACTION_CHANGED')
             actions.append(record['action']);original_rpc.append(record)
-        need(actions==['attach','prepare','register','check','enable','advance','query','advance','disable','unregister','detach'],
-            'ACTUAL_SINGLE_WINDOW_PUBLIC_RPC_PROTOCOL')
+        public_rpc_summaries(result,public,original_rpc)
         host=E.child(a.result.parent,result['host_receipt']['path'])
         need(E.sha(host)==result['host_receipt']['sha256'] and host.stat().st_size==result['host_receipt']['bytes'],
             'ORIGINAL_HOST_RECEIPT_CHANGED')

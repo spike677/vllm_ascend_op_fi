@@ -44,6 +44,17 @@ opbase ListTensorDesc (`indv_args.cpp` SHA
 `b54c905c4cda0d049892b3ade7edd0aa51dce3452caf2dcf233722e892288fa5`).
 It joins actual public Q/K/mask/output pointers, the prepared V address from
 the current child workspace/offset, and the actual FIA dynamic-list bytes.
+Attention output 0 remains an exact public/typed pointer and geometry join.
+With `softmaxLseFlag=false`, V3 instead creates a temporary FP32/ND LSE
+placeholder for inner GWS: shape/storage shape `[0]`, stride `[0]`, zero
+offset and a non-null host address. V3 destroys that descriptor after GWS.
+Python's separate empty NPU LSE return has shape `[0]` and stride `[1]`;
+the reader checks it independently and never requires shared storage/address.
+If the actual kernel ABI includes `softmaxLse`, its raw pointer must still
+match the typed placeholder snapshot. No bytes at that temporary address are
+read and no post-GWS descriptor lifetime is claimed. The reader rehashes the
+retained build's exact V3/helper sources against SHA `551cc8b6...` and
+`1efdfba8...` before applying this source-bound rule.
 The NNOPBASE owner must have reviewed production SHA
 `6dc3b4fcfcf57b10be0018e89f4edbc079f02b4bb0aaadb109df350939fd4c99`.
 The actual Contiguous owner is checked against the explicitly supplied,
@@ -117,6 +128,12 @@ After normal completion, read originals on the host CPU. `TOKEN` is the one
 recorded public window token, not a chosen layer name. The reader reopens all
 original RPC files and verifies the final legacy Host receipt and token-health
 scope; a probe success flag is not proof.
+The completed request summary must equal the original collect `advance` RPC's
+`provider_state.evidence.requests[0]`, and the cleanup summary must equal the
+original `disable` RPC's full provider state with the same owner/generation.
+If final Host-receipt writing fails, the probe preserves the original API or
+prepare failure and records the write error separately; a missing receipt
+still prevents independent acceptance.
 
 ```sh
 python3 "$SOURCE/experiments/c2c3_closure_20261117/review_tnd28_prepared_input.py" \

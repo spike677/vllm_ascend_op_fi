@@ -37,7 +37,10 @@ def fixture():
         ('atten_mask',[2048,2048],[2048,1],0x5000000,'torch.int8',0,None)):
         tensors[name],native[name]=tensor(name,shape,stride,base,dtype,offset,storage)
     out,tout=tensor('out',[2048,16,128],[2048,128,1],0x6000000)
-    lse,tlse=tensor('lse',[0],[1],0,'torch.float32')
+    lse,_=tensor('lse',[0],[1],0,'torch.float32')
+    # V3 false-LSE uses a temporary host placeholder for inner GWS. Python
+    # returns a separate empty NPU tensor; neither descriptor nor stride joins.
+    _,tlse=tensor('temporary_lse',[0],[0],0x7000000,'torch.float32')
     identity=dict(pid=101,native_tid=202,python_thread_ident=303,process_start_ticks='444')
     scalar=dict(num_heads=16,num_key_value_heads=8,sparse_mode=3,block_size=128,scale=128**-.5,
         input_layout='TND',actual_seq_lengths=[2048],actual_seq_lengths_kv=[2048],block_table=None)
@@ -75,11 +78,12 @@ def fixture():
 
 
 def launch_fixture(data):
-    names=['query','key','value','pse_shift','attenMask','actualSeqLengths','actualSeqLengthsKV','attentionOut','workspace','tiling']
+    names=['query','key','value','pse_shift','attenMask','actualSeqLengths','actualSeqLengthsKV','attentionOut','softmaxLse','workspace','tiling']
     abi=dict(names=names,pointer_bytes=8,hidden_hardware_sync_prefix_bytes=8)
     raw=bytearray(8+len(names)*8);slots={n:8+i*8 for i,n in enumerate(names)};pairs=[]
     p=data['prepare_enter']
-    for name,value in dict(query=p['query']['data_address'],attenMask=p['mask']['data_address'],attentionOut=p['output']['data_address']).items():
+    for name,value in dict(query=p['query']['data_address'],attenMask=p['mask']['data_address'],
+            attentionOut=p['output']['data_address'],softmaxLse=p['lse']['data_address']).items():
         struct.pack_into('<Q',raw,slots[name],value)
     for name,address in (('key',p['key']['members'][0]['data_address']),('value',data['contiguous_execute_enter']['prepared_v_address'])):
         pairs.append((slots[name],len(raw)));raw+=struct.pack('<QIIqqqQ',40,3,1,2048,8,128,address)
@@ -94,6 +98,44 @@ class TypedReadbackContracts(unittest.TestCase):
         p,r,e=fixture();d=R.protocol(p,r,e);raw,abi=launch_fixture(d)
         result=R.launch_inputs(raw,abi,d)
         self.assertEqual(result['prepared_value_address'],0x8001000);self.assertFalse(result['slice_pod_decoded'])
+
+    def test_false_lse_temporary_placeholder_is_separate_from_public_empty_output(self):
+        p,r,e=fixture();typed=e[0]['data']['lse'];public=r['outputs'][1]
+        self.assertNotEqual(typed['data_address'],public['data_address'])
+        self.assertNotEqual(typed['stride'],public['stride'])
+        d=R.protocol(p,r,e);raw,abi=launch_fixture(d);result=R.launch_inputs(raw,abi,d)
+        self.assertEqual(result['lse']['placeholder_address'],typed['data_address'])
+        self.assertFalse(result['lse']['descriptor_live_after_gws_claimed'])
+        b=bytearray.fromhex(raw['args_hex']);slot=8+abi['names'].index('softmaxLse')*8
+        struct.pack_into('<Q',b,slot,public['data_address']);raw['args_hex']=b.hex()
+        with self.assertRaisesRegex(ValueError,'ACTUAL_LSE_OUTPUT_POINTER'):R.launch_inputs(raw,abi,d)
+
+    def test_false_lse_invalid_temporary_geometry_or_public_nonempty_return_refuse(self):
+        for key,value in (('shape',[1]),('storage_shape',[1]),('stride',[1]),('offset',1),
+                ('native_storage_offset',1),('dtype',1),('format',3),('descriptor',0),
+                ('data_address',0),('storage_address',0)):
+            p,r,e=fixture();e[0]['data']['lse'][key]=value
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'FALSE_LSE_TYPED_PLACEHOLDER'):
+                R.protocol(p,r,e)
+        for key,value in (('shape',[1]),('dtype','torch.float16'),('storage_bytes',4),('data_address',0x7000000),
+                ('stride',[0]),('device','cpu')):
+            p,r,e=fixture();r['outputs'][1][key]=value
+            with self.subTest(public_key=key),self.assertRaisesRegex(ValueError,'FALSE_LSE_PUBLIC_EMPTY_RETURN'):
+                R.protocol(p,r,e)
+
+    def test_false_lse_rule_requires_exact_retained_build_source(self):
+        with tempfile.TemporaryDirectory() as folder:
+            run=Path(folder);completion=run/'evidence/completion.json';completion.parent.mkdir()
+            data=b'CPU source identity fixture; not SDK evidence\n';name=next(iter(R.LSE_SOURCES))
+            path=run/'source'/name;path.parent.mkdir(parents=True);path.write_bytes(data)
+            pins={name:hashlib.sha256(data).hexdigest()};build={'source_commit':R.LSE_SOURCE_COMMIT}
+            with patch.object(R,'LSE_SOURCES',pins):
+                self.assertEqual(R.false_lse_sources(completion,build),pins)
+                path.write_bytes(data+b'changed')
+                with self.assertRaisesRegex(ValueError,'ACTUAL_BUILD_SOURCE_CHANGED'):
+                    R.false_lse_sources(completion,build)
+                with self.assertRaisesRegex(ValueError,'SOURCE_REVISION_CHANGED'):
+                    R.false_lse_sources(completion,{'source_commit':'0'*40})
 
     def test_same_value_cloned_descriptor_cannot_replace_original_v(self):
         p,r,e=fixture();e[1]['data']['inputs']['members'][0]['descriptor']+=1
@@ -156,6 +198,32 @@ class TypedReadbackContracts(unittest.TestCase):
         code='import runpy,sys;runpy.run_path(sys.argv[1]);assert not any(n in sys.modules for n in ("torch","torch_npu","ctypes","vllm"))'
         result=subprocess.run([sys.executable,'-B','-c',code,str(script)],capture_output=True,text=True)
         self.assertEqual(result.returncode,0,result.stderr)
+
+
+class RawRpcSummaryContracts(unittest.TestCase):
+    def fixture(self):
+        public={'owner':'b'*32,'generation':1}
+        request={'request_id':'actual-request','phase':'observe','forwards':[{'calls':[{'original_calls':1}]}]}
+        stopped=dict(public,owned_hooks=0,owned_api_wrappers=0)
+        records=[dict(action=action,response={}) for action in R.RPC_ACTIONS]
+        records[7]['response']['provider_state']=dict(public,evidence={'requests':[deepcopy(request)]})
+        records[8]['response']['provider_state']=deepcopy(stopped)
+        result={'request':{'worker':request},'cleanup':stopped}
+        return result,public,records
+
+    def test_exact_advance_collect_and_disable_raw_responses_bind_summaries(self):
+        result,public,records=self.fixture();R.public_rpc_summaries(result,public,records)
+        self.assertEqual(records[7]['action'],'advance')
+
+    def test_replaced_request_or_cleanup_summary_and_cross_owner_refuse(self):
+        for kind in ('request','cleanup','owner','collect_name','extra_request'):
+            result,public,records=self.fixture()
+            if kind=='request':result['request']['worker']['forwards'][0]['calls'][0]['original_calls']=2
+            if kind=='cleanup':result['cleanup']['owned_hooks']=1
+            if kind=='owner':records[7]['response']['provider_state']['owner']='c'*32
+            if kind=='collect_name':records[7]['action']='collect_replay'
+            if kind=='extra_request':records[7]['response']['provider_state']['evidence']['requests'].append({})
+            with self.subTest(kind=kind),self.assertRaises(ValueError):R.public_rpc_summaries(result,public,records)
 
 
 class CompilerHookContracts(unittest.TestCase):
@@ -228,6 +296,44 @@ class OneWindowEntrypoints(unittest.TestCase):
             args=NS(out=Path(folder));P.drive(NS(),client,{},None,args,report,{})
             self.assertEqual(client.actions,['prepare','detach']);self.assertFalse(report['ownership_retained'])
             self.assertEqual(report['status'],'REFUSED_OR_FAILED');self.assertIn('RPC_UNCERTAIN',report['error'])
+
+    def test_real_drive_final_host_write_failure_does_not_replace_primary_prepare_error(self):
+        from experiments.worker_core_v11_20261118 import natural_tnd28_prepared_input_probe as P
+        from demoncat.runtime.vllm_ascend.worker_extension import paged33_loading,serving_context
+        class Client:
+            def __init__(self):self.actions=[];self.owned=True;self.history=[]
+            def prepare(self):self.actions.append('prepare');return dict(status='RPC_UNCERTAIN',history=[])
+            def detach(self):
+                self.actions.append('detach');self.owned=False
+                self.history.append(dict(action='detach',response={'status':'DETACHED'}))
+                return dict(status='DETACHED',history=self.history)
+            def snapshot(self):return dict(ownership_retained=self.owned,ticket=None,attachment=None,worker={},history=self.history)
+        client=Client();active=NS(report=lambda:{},prepare_platform=lambda p:{},verify=lambda:{})
+        llm=NS(get_tokenizer=lambda:NS(encode=lambda *a,**k:[1]))
+        saved=P.common.save
+        def fail_host(path,value):
+            if Path(path).name=='host_receipt.json':raise OSError('CPU host receipt write failure')
+            saved(path,value)
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);model=root/'model';model.mkdir();(model/'fixture.safetensors').write_bytes(b'CPU fixture')
+            (model/'config.json').write_text(json.dumps(dict(num_hidden_layers=28,num_attention_heads=16,num_key_value_heads=8,hidden_size=1024)))
+            out=root/'probe';out.mkdir()
+            args=NS(out=out,model=model,build=root/'completion.json',build_sha256='a'*64,
+                source_manifest_sha256='b'*64,observer_receipt=root/'observer.json',observer_receipt_sha256='c'*64,memory=.25)
+            with patch.object(paged33_loading,'bootstrap',return_value=active),\
+                    patch.dict(sys.modules,{'vllm':NS(LLM=lambda **k:llm,SamplingParams=lambda **k:None),
+                        'vllm.platforms':NS(current_platform=object())}),\
+                    patch.object(serving_context,'require_host_driven_core'),\
+                    patch.object(P.common,'HostAdapter',return_value=object()),\
+                    patch.object(P.common,'WorkerFaultClient',return_value=client),\
+                    patch.object(P.common,'save',side_effect=fail_host):
+                self.assertEqual(P.run(args,{}),2)
+            report=json.loads((out/'result.json').read_text())
+            self.assertEqual(client.actions,['prepare','detach'],report.get('traceback'))
+            self.assertIn('RPC_UNCERTAIN',report['error']);self.assertIn('RPC_UNCERTAIN',report['traceback'])
+            self.assertIn('CPU host receipt write failure',report['post_protocol_errors'][0]['error'])
+            self.assertNotIn('host_receipt',report);self.assertFalse((out/'host_receipt.json').exists())
+            self.assertFalse(client.owned)
 
     def test_cold_probe_import_does_not_initialize_a_model_or_load_an_operator(self):
         script=ROOT/'experiments/worker_core_v11_20261118/natural_tnd28_prepared_input_probe.py'
