@@ -24,7 +24,7 @@ MODULES = tuple(('fault_injection.'+name, 'fault_injection/'+name+'.py') for nam
     'tensor_observer', 'module_faults', 'core', 'catalog', 'delivery_scope')) + tuple(
     ('demoncat.runtime.vllm_ascend.worker_extension.'+name,
      'src/demoncat/runtime/vllm_ascend/worker_extension/'+name.replace('.', '/')+'.py')
-    for name in ('restore8_task', 'ordinary_admission', 'prerequisites', 'providers.rms18_task', 'providers.tensor_serving', 'providers._scope',
+    for name in ('deployment_acceptance','ordinary_evidence','restore8_task', 'ordinary_admission', 'prerequisites', 'providers.rms18_task', 'providers.tensor_serving', 'providers._scope',
         'providers.tensor_modules', 'rms18_request', 'serving_tensor_binding', 'serving',
         'serving_context', 'call_binding', 'host', 'config', 'runtime', 'identity', 'registry'))
 SOURCES = tuple(relative for _, relative in MODULES) + (
@@ -74,7 +74,11 @@ def setup(worker, identity, prompt, weights, pins):
     versions = dict(torch=torch.__version__, torch_npu=torch_npu.__version__, vllm=vllm.__version__)
     bound = install_restore8_task_binding(worker, prompt_token_ids=prompt, weight_manifest=weights,
         workload_sha256=digest(prompt), environment_sha256=digest(dict(versions=versions, sources=pins)))
-    return dict(worker=identity, binding=bound, loaded_sources=loaded, versions=versions,
+    from demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission import ordinary_route_report
+    acceptance=ordinary_route_report('8.restore_offset',worker,worker.model_runner.model)
+    require(acceptance['can_prepare'] and acceptance['deployment_acceptance']['accepted'],
+        'ACTUAL_ACCEPTED_MOE8_DEPLOYMENT_REQUIRED:'+json.dumps(acceptance,sort_keys=True))
+    return dict(worker=identity, binding=bound, loaded_sources=loaded, versions=versions,acceptance=acceptance,
                 no_model_forward=True, full_census=False, new_native_build=False)
 
 

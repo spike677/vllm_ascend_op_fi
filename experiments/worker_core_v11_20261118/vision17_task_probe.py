@@ -59,6 +59,8 @@ def setup(worker,expected,prompt,image_sha,weight_sha,pins):
     environment_sha=hashlib.sha256(json.dumps(environment,sort_keys=True).encode()).hexdigest()
     result=install_vision17_task_binding(worker,prompt_token_ids=prompt,image_sha256=image_sha,
         weights_sha256=weight_sha,environment_sha256=environment_sha)
+    from demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission import ordinary_route_report
+    default_acceptance=ordinary_route_report('17.spatial_padding',worker,worker.model_runner.model)
     from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import install_blue_acceptance_permit
     install_blue_acceptance_permit(worker,mechanisms=['17.spatial_padding'],attempt='ordinary17-unified-query',
         source_manifest_sha256=hashlib.sha256(json.dumps(pins,sort_keys=True).encode()).hexdigest())
@@ -70,7 +72,8 @@ def setup(worker,expected,prompt,image_sha,weight_sha,pins):
         from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import remove_blue_acceptance_permit
         remove_blue_acceptance_permit(worker)
         raise
-    return dict(result,environment=environment,environment_sha256=environment_sha)
+    return dict(result,environment=environment,environment_sha256=environment_sha,
+        default_acceptance=default_acceptance,blue_acceptance=ordinary_route_report('17.spatial_padding',worker,worker.model_runner.model))
 
 
 def remove_binding(worker,expected):
