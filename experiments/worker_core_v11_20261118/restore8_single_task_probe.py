@@ -13,7 +13,7 @@ from demoncat.runtime.vllm_ascend.worker_extension.host import HostAdapter, Work
 from demoncat.runtime.vllm_ascend.worker_extension.serving_context import read_enqueued_identity
 from experiments.worker_core_v11_20261118.output39_single_task_probe import require, sha, write, IMAGE
 from experiments.c2c3_postwrite_20261117.natural41_probe import PROMPT, actual_worker, output
-from experiments.c2c3_postwrite_20261117.natural41_coverage_probe import actual_vllm_weights
+from experiments.c2c3_postwrite_20261117.model_identity import vllm_safetensors_identity as actual_vllm_weights
 
 ROOT = Path(__file__).resolve().parents[2]
 SUCCESS = 'BLUE_ZONE_PUBLIC_MOE8_SINGLE_TASK_ACCEPTED_NOT_MAIN_PROJECT'
