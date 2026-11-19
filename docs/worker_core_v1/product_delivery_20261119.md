@@ -23,6 +23,9 @@
   `MATCHED_SAME_RETURN_VALUES_OBSERVED` 只说明这些观察值已绑定；无摘要的命中为
   `EFFECT_NOT_VERIFIED`，截断位置数单独计数。实际消费者是否观察到独立显示。
   `recovery_proven=false` 不由数值摘要升级：健康恢复仍看原 Runtime/provider 的 OFF 和健康请求。
+  tensor、普通量化及39复用 `current_completed_row` 处理尚未完成的新请求；pending OFF/health
+  不再借用旧F效果。历史 `last_fault_effect`/`fault_effect` 独立保留。这是查询显示修复，
+  不改变原注入、Native或恢复，新增窗口CPU契约已通过。
 - `delivery_scope.py` 是静态交付说明，并在 catalog、能力查询和 Worker manifest 中统一返回。
   `live_deployment_status=NOT_EVALUATED` 明确区别于实际 Worker admission。
   历史清单仍有17条，公共工厂16条；**工厂数不是支持数**。25在创建 provider 前明确拒绝。
@@ -60,7 +63,7 @@ normal/reference/lossless/calibration_off/F/OFF，不宣称已压缩为三个bat
 |25 reduce_scatter|不支持，已停止|无替代通信输出破坏|不适用|不适用|无本轮后续实现|
 |26 residual_stomp|选择已有Native单点路线|真实邻接、QMM writer和residual consumer|未接线验收|原单点通过；主项目待验|目标部署邻接不成立则明确不适用，不追135完整集合|
 |26 fia_destination|保留通过范围|实际FIA→当前请求残差→consumer|未接线验收|原范围通过；主项目待验|迁移时重新绑定，不继承裸地址|
-|Batch shared_scale|普通W8A8运行时已实现|匹配Qwen普通投影，TP1/B8首decode；Q/scale共同变化|Source117模型加载和normal自动选点通过；reference调用栈校验拒绝，0F；主项目待验|历史单点保留；新入口待验|已修复真实dispatcher frame绑定并通过CPU正负例，待新attempt；不等待routed GMM1|
+|Batch shared_scale|普通W8A8新入口单点实测及原件复核通过|Qwen3-0.6B W8A8，TP1/B8首decode，自动qkv投影；六个当前作用域batch|Source118的Q有5565/8192元素变化、scale有7/8变化，实际QMM消费；主项目待验|同Worker OFF的Q/scale及完整hidden/logits哈希精确恢复，前后健康请求一致|实际宿主接线；既有Native ABI仍需作用域校准，不等待routed GMM1|
 |28 FA legal|仅历史保留|旧FA限定范围|本轮不做|旧证据保留|退出当前关键路径|
 |28 FIA legal|仅历史保留|旧FIA限定范围|本轮不做|旧证据保留|退出当前关键路径|
 |28 denominator_replay|TND kernel/host已构建；整条实现未完成|真实TND在线softmax分母重复累计|未验|未验|原物理核调度全部FD已拒；新22项矩阵、SDK及10个实际key构建通过，prepared-input绑定和正常对照待完成，F关闭|
@@ -77,6 +80,15 @@ normal/reference/lossless/calibration_off/F/OFF，不宣称已压缩为三个bat
 选择首层`gate_up_proj`，单元素`0.96484375 → +Inf`；首token `576/" The" → 0/"!"`，
 OFF与health均恢复`576/" The"`。仅验证单请求首token，不授C1/C2/C3/E5或主项目资格。
 Source114首个normal的`__class__`闭包误拒仍保留为0F失败；新限定修复没有放宽Native有限值检查。
+
+普通量化[Source118独立原件复核](review_quant_ordinary_source118.md)确认在同一Worker完成
+normal/reference/lossless/calibration_off/F/OFF及前后健康请求，
+恰好一次F。第8条请求第二token为`374 → 653 → OFF 374`，其余7条的第二token及全部首token不变；
+这不是连续长文本或全部模型资格。六组输入摘要一致，实际Native为当前正确域helper后执行共享域，
+Q/scale共同发布；最终fault-owned资源及hook/owner释放。固定10,682,368字节的元数据journal
+是常驻诊断区，不把“故障资源归零”说成进程总内存归零。
+独立复核验证了原件哈希、调用关系及固定源码执行守卫；没有离线重算未下载的完整私有张量。
+Source116加载失败和Source117 reference零admission/零F失败均保留。
 
 ## 每项通过及停止条件
 
@@ -106,6 +118,7 @@ Windows不允许创建源码符号链接而跳过（非NPU测试）。另13项�
 Host/Runtime单点、实际请求模拟、恢复和源码交付闭包。CPU fixture明确标为CPU，
 不作为124或实际主项目验收。后续新增65项39/量化合同全部通过；源码包29项中28通过、
 1项Windows符号链接权限跳过。Source116已有上述39 NPU实测；量化首轮加载失败0F，
-Source117加载/normal通过但reference在admission前拒绝，仍为0F；
-28只有无设备构建。没有新增msprobe原始数据或完整张量发布。
+Source117加载/normal通过但reference在admission前拒绝，仍为0F；Source118六阶段及健康实测通过，
+28只有无设备构建。普通量化frame修复的67项定向CPU通过；当前请求显示修复的97项组合通过。
+没有新增msprobe原始数据或完整张量发布。
 GitHub只提交实现、测试和本总结，既有原件和Native库不进入本次提交。

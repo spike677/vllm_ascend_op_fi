@@ -210,3 +210,8 @@ Native query仍要求同observer/forward/输入对象/写epoch、同外层stack�
 
 CPU合同先复现同一reference拒因，再跑真实Host/Runtime的六阶段与上述反例；Native仍为显式CPU double，
 不会将此修复当新的NPU reference/F/OFF验收。新Worker/source包必须重新实测；Native ABI/build不变。
+
+后续Source118已完成真实六阶段、双效果和同Worker OFF/健康恢复。
+完整限定结论、各原件SHA及消费者取证限制见[独立复核](review_quant_ordinary_source118.md)。
+同一原件内的pending OFF查询曾借用旧F效果；后续仅展示层修复已补CPU窗口测试，
+原实测记录不重写，当前请求与历史F效果分开显示。
