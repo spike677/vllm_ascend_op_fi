@@ -163,6 +163,89 @@ class OrdinaryQuantTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'SINGLE_REVIEWED_ATTEMPT'):
             self.dispatch('enable')
 
+    def actual_dispatch(self):
+        # Real CPU OpOverload -> real TorchDispatchMode -> typed Native double.
+        # The production resolver still names only torch.ops.npu.npu_dynamic_quant.
+        self.binding.dispatch_quant = True
+        self.enterContext(patch.object(torch.ops.npu, 'npu_dynamic_quant',
+            NS(default=torch.ops.cpu_quant_group_c1.quant.default), create=True))
+
+    def test_actual_opoverload_plain_prefix_through_all_public_core_phases(self):
+        client = self.host_client()
+        self.actual_dispatch()
+        snapshots = []
+        original_query = self.session.row_observer.query_native_input
+        def query(*args, **kwargs):
+            graph = self.session.row_observer
+            snapshots.append(dict(source_absent=graph.boundaries is None,
+                before=len(kwargs['context']['operators']), current=len(graph.call_stack),
+                outer_source_frames=len(kwargs['context']['source_operators'])))
+            result = original_query(*args, **kwargs)
+            self.assertEqual(result['native_input_dispatch']['operator'], 'cpu_quant_group_c1.quant.default')
+            return result
+        self.enterContext(patch.object(self.session.row_observer, 'query_native_input', query))
+        for _ in range(6):
+            self.phase()
+        result = self.dispatch('finish')['serving']
+        self.assertEqual(snapshots, [dict(source_absent=True, before=0, current=1, outer_source_frames=0)]*4)
+        self.assertEqual(self.binding.selected_modes, [1, 2, 4, 3])
+        self.assertTrue(result['functional_effect_observed'] and result['recovery_proven'])
+        self.assertEqual(self.session.row_observer.call_stack, [])
+        self.assertEqual(self.session.row_observer.dispatch_frames, [])
+        self.dispatch('unregister')
+        self.assertEqual(client.detach()['status'], 'DETACHED')
+        self.assertFalse(client.snapshot()['ownership_retained'])
+
+    def refuse_actual_dispatch(self, mutation=None, *, unknown=False, smooth=None):
+        client = self.host_client()
+        self.actual_dispatch()
+        self.calibrated()
+        self.binding.unknown_dispatch = unknown
+        self.binding.dispatch_smooth = smooth
+        observed = self.binding.observed
+        def changed(call):
+            if self.session.current_call is not None and mutation is not None:
+                mutation(self.session.row_observer, self.session.current_call)
+            return observed(call)
+        self.binding.observed = changed
+        with self.assertRaisesRegex(RuntimeError, 'NATIVE_ROW_'):
+            self.phase()
+        self.assertEqual(self.binding.selected_modes, [1, 2, 4])
+        self.assertNotIn('fault', self.session.phase_attempts)
+        self.assertFalse(any(row['phase'] == 'fault' for row in self.session.receipts))
+        self.assertEqual(self.session.row_observer.dispatch_frames, [])
+        self.assertEqual(self.session.row_observer.call_stack, [])
+        self.assertTrue(client.snapshot()['ownership_retained'])
+        self.binding.drain_result = False
+        failed = client.recover()
+        self.assertTrue(failed['ownership_retained'])
+        self.assertTrue(self.session.installed)
+        self.binding.drain_result = True
+        self.dispatch('recover')
+        self.dispatch('unregister')
+        self.assertEqual(client.detach()['status'], 'DETACHED')
+        self.assertFalse(client.snapshot()['ownership_retained'])
+        self.assertFalse(self.session.installed or self.session.row_observer.active)
+
+    def test_actual_dispatch_wrong_operator_never_admits_or_faults(self):
+        self.refuse_actual_dispatch(unknown=True)
+
+    def test_actual_dispatch_nondefault_tensor_argument_never_admits_or_faults(self):
+        self.refuse_actual_dispatch(smooth=torch.ones(8))
+
+    def test_actual_dispatch_error_after_public_query_still_refuses(self):
+        self.refuse_actual_dispatch(lambda graph, context: graph.errors.append('CPU_ACTUAL_PENDING_DISPATCH_ERROR'))
+
+    def test_actual_dispatch_current_frame_input_identity_cannot_be_replaced_by_same_shape(self):
+        unrelated = torch.zeros(8, 4, dtype=torch.bfloat16)
+        self.refuse_actual_dispatch(lambda graph, context: graph.dispatch_frames[-1].update(args=(unrelated,)))
+
+    def test_actual_dispatch_write_epoch_change_still_refuses(self):
+        self.refuse_actual_dispatch(lambda graph, context: graph._invalidate([context['input']]))
+
+    def test_actual_dispatch_event_must_still_be_pending(self):
+        self.refuse_actual_dispatch(lambda graph, context: graph.dispatch_frames[-1]['event'].update(status='OBSERVED'))
+
     def test_query_is_readonly_and_collect_is_explicit(self):
         self.phase(collect=False)
         before = copy.deepcopy(self.session.report())

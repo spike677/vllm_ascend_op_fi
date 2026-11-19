@@ -187,3 +187,26 @@ python -B -X utf8 -m unittest test_quant_ordinary_probe test_quant_projection_ru
 不符、Q与scale未同时改变、Native pending/owner不明、真实OFF/健康未恢复、预算不足、原件无法保存。
 不为通过改变prompt、补Native字段、另选用户指定层、清空attempt或重复F。成功只产生这个新蓝区入口的
 待审功能/OFF原件；主项目无法访问的接线缺口和C2/C3/E5未验收仍保留。
+
+### source117 普通前缀 Native frame 修复
+
+source117/a5实际 normal 完成，自动选择 `model.layers.0.self_attn.qkv_proj`：输入 BF16 `[8,1024]`，
+输出Q为同几何INT8、scale为FP32 `[8]`；实际Native prepare/execute各一次，实际QMM消费一次。
+`phase-normal.json` SHA `473488af83b13cb80add2802b77593adfe7d50607d9aa8c9bb14a11a2a223dc0`。
+紧接的reference在admission前拒绝 `NATIVE_ROW_SOURCE_FRAME_CONTEXT_CHANGED`，外层为161001；
+admitted/targets/F均0，公共recover/empty-owner清理完成且DETACHED，owned hooks/API/modes/资源全0。
+`result.json` SHA `9663072fd76dcfa367d576770a87122c5b6a11b8f7801f17b1389654c6a0dc02`，原件保留。
+
+根因由固定源码及真实CPU OpOverload复现确认：普通前缀没有 `SourceBoundRows`（它不需要MoE/MLA全量
+source observer）；公开输入查询时外层operator/source-frame数均0，进入真实量化dispatcher后operator数1，
+旧Native query仍从空source读取frame数0。该拒绝正确阻止了admission，但缺少普通dispatcher来源接线。
+
+修复只在现 `RequestRowProvenance.__torch_dispatch__`、没有source adapter时，保留本次实际func、args、
+kwargs和pending event的瞬时frame；原函数返回/异常后撤销，end要求frame数0。不回放算子、不构造虚假
+source frame，也不把这个frame当任意opaque操作的行证明。原source-bound分支保持原source stack检查。
+Native query仍要求同observer/forward/输入对象/写epoch、同外层stack、唯一实际已指定OpOverload和schema、
+默认非写参数、对应pending event与实际mode栈。unknown、同shape换对象、非默认tensor参数、错误、epoch变化
+或非pending event均拒绝且不消耗F；失败drain仍保留owner。
+
+CPU合同先复现同一reference拒因，再跑真实Host/Runtime的六阶段与上述反例；Native仍为显式CPU double，
+不会将此修复当新的NPU reference/F/OFF验收。新Worker/source包必须重新实测；Native ABI/build不变。

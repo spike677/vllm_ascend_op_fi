@@ -103,12 +103,14 @@ class RequestRowProvenance(TorchDispatchMode):
         self.boundaries = None
         self.watched_storages = []
         self.call_stack = []
+        self.dispatch_frames = []
         self.ending = False
         self.mode_released = True
         self.base_modes = ()
 
     def begin(self, forward_id):
-        require(not self.active and threading.get_ident() == self.thread, 'ONE_CURRENT_ROW_OBSERVER_REQUIRED')
+        require(not self.active and not self.call_stack and not self.dispatch_frames
+                and threading.get_ident() == self.thread, 'ONE_CURRENT_ROW_OBSERVER_REQUIRED')
         self.forward_id = forward_id
         self.events, self.nodes, self.proofs, self.epochs = [], [], {}, {}
         self.parameters = {}
@@ -116,6 +118,7 @@ class RequestRowProvenance(TorchDispatchMode):
         self.errors = []
         self.watched_storages = []
         self.call_stack = []
+        self.dispatch_frames = []
         self.ending, self.mode_released = False, False
         self.base_modes = tuple(_get_current_dispatch_mode_stack())
         self.active = True
@@ -274,7 +277,7 @@ class RequestRowProvenance(TorchDispatchMode):
         require(self._visible_context(), 'NATIVE_ROW_PUBLIC_CONTEXT_NOT_VISIBLE')
         modes = tuple(_get_current_dispatch_mode_stack())
         source = self.boundaries
-        frames = tuple(getattr(source, 'operator_stack', ()))
+        frames = tuple(self.dispatch_frames if source is None else source.operator_stack)
         require(len(frames) == len(self.call_stack)
                 and all(frame['func'] is func for frame, func in zip(frames, self.call_stack)),
                 'NATIVE_ROW_PUBLIC_SOURCE_FRAME_CONTEXT_CHANGED')
@@ -299,7 +302,7 @@ class RequestRowProvenance(TorchDispatchMode):
         require(len(self.call_stack) in (len(outer), len(outer) + 1)
                 and all(actual is old for actual, old in zip(self.call_stack, outer)),
                 'NATIVE_ROW_OUTER_DISPATCH_CONTEXT_CHANGED')
-        frames = tuple(getattr(source, 'operator_stack', ()))
+        frames = tuple(self.dispatch_frames if source is None else source.operator_stack)
         parents = tuple(getattr(source, 'stack', ()))
         require(len(frames) == len(self.call_stack) and len(parents) == len(context['source_parents'])
                 and all(actual is old for actual, old in zip(frames, context['source_operators']))
@@ -481,11 +484,23 @@ class RequestRowProvenance(TorchDispatchMode):
             mutable = True
         try:
             event['original_calls'] = 1
+            # An ordinary proven prefix has no source-bound opaque adapter.
+            # Retain the actual dispatcher frame itself through the Native
+            # callback, rather than inferring arguments from a name or shape.
+            # The source-bound path keeps its existing frame/owner checks.
+            native_frame = (dict(func=func, args=args, kwargs=kwargs, event=event)
+                            if self.boundaries is None else None)
+            if native_frame is not None:
+                self.dispatch_frames.append(native_frame)
             self.call_stack.append(func)
             try:
                 output = func(*args, **kwargs)
             finally:
                 self.call_stack.pop()
+                if native_frame is not None:
+                    require(self.dispatch_frames and self.dispatch_frames[-1] is native_frame,
+                            'ROW_NATIVE_DISPATCH_FRAME_RETURN_OWNER_CHANGED')
+                    self.dispatch_frames.pop()
         except BaseException as error:
             event.update(status='ORIGINAL_FAILED', exception=repr(error))
             if self.boundaries is not None:
@@ -524,7 +539,7 @@ class RequestRowProvenance(TorchDispatchMode):
 
     def end(self):
         require(self.active and threading.get_ident() == self.thread, 'CURRENT_ROW_OBSERVER_REQUIRED')
-        require(not self.call_stack, 'ROW_OBSERVER_CALLS_STILL_INFLIGHT')
+        require(not self.call_stack and not self.dispatch_frames, 'ROW_OBSERVER_CALLS_STILL_INFLIGHT')
         self.ending = True
         # Torch temporarily removes this outer mode during the opaque call,
         # then restores it above any nested modes left by a failed cleanup.
@@ -549,6 +564,7 @@ class RequestRowProvenance(TorchDispatchMode):
             complete=not self.active and not self.errors and not self.overflow and (boundary_report is None or boundary_report['complete'])
                 and all(e['original_calls'] == 1 and e['status'] == 'OBSERVED' for e in self.events),
             events=self.events, nodes=self.nodes, active=self.active, native_qualified=False,
+            owned_native_dispatch_frames=len(self.dispatch_frames),
             owned_dispatch_modes=int(not self.mode_released), cleanup_pending=self.active and self.ending,
             unknown_edges=[e['sequence'] for e in self.events if not e['row_preserving']],
             source_boundaries=boundary_report))
