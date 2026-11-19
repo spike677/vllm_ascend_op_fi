@@ -9,7 +9,7 @@
 |22 wrong_row|同上，真实首条 fused RoPE/最终 reader|124 a1 两作用域|
 |8 restore_offset|本轮不要求黄区准备或验收|DeepSeek-V2-Lite W8A8 a5 两作用域|
 |17 spatial_padding|本轮不要求黄区准备或验收|Qwen3-VL-2B 图像 a5 两作用域|
-|Batch|黄区保持待配置，不要求当前准备权重或 bundle|已有动态 W8A8 单投影；第二 NPU 作用域待本轮复核|
+|Batch|黄区保持待配置，不要求当前准备权重或 bundle|已有动态 W8A8 单投影；a1/a3两个独立 NPU 作用域通过|
 
 串行 eager：TP/PP/DP=1、enforce_eager=True、async_scheduling=False、enable_chunked_prefill=False、enable_prefix_caching=False、max_num_seqs=1；不启用 speculative、DBO 或上下文并行。保留机制自己的源码、ABI、实际调用检查，不能伪填蓝区版本满足门禁。
 

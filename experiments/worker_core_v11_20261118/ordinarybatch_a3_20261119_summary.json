@@ -1,0 +1,116 @@
+{
+  "schema": "demoncat.ordinarybatch.second_scope_review.v1",
+  "status": "BLUE_A2_SECOND_INDEPENDENT_NPU_SCOPE_ACCEPTED",
+  "source_commit": "f83d25cbf024038a6f6c1ac324f6747c3f47ac51",
+  "source_manifest_sha256": "199b0d9a2154179c0f67839c92a3ff22ff5cfea04576a532afd32c1510724959",
+  "attempt": "product-ordinarybatch-20261119-card5-a3",
+  "earlier_gate_only_attempt": "a2:checkpoint SHA changed; zero NPU calls",
+  "physical_card": 5,
+  "native_build_sha256": "b4ac9a2b68ff58c3a5f6b54c1f052170ce5d1f6d1f8c53a6a571d175ed9328ac",
+  "actual_deployment": {
+    "cann": [
+      "8.5.1"
+    ],
+    "dp": 1,
+    "dtype": "torch.bfloat16",
+    "eager": true,
+    "hardware_family": "A2",
+    "live_config_matches_file": true,
+    "model_class": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+    "model_config_sha256": "bf644c8607476632c4ece502205dbd5b4793723025471c375fe9626688a19816",
+    "pp": 1,
+    "torch": "2.9.0+cpu",
+    "torch_npu": "2.9.0.post1+gitee7ba04",
+    "tp": 1,
+    "vllm": "0.18.0",
+    "vllm_ascend": "0.18.0"
+  },
+  "independent_scopes": {
+    "first_owner": "worker-fault-f264cb5b56624df88dd07776471844eb",
+    "second_owner": "worker-fault-9254e4b3586e4bedabb7ab1818181bb0",
+    "different_workers": true,
+    "same_worker_recovery_within_each_scope": true,
+    "not_claimed_two_owners_in_same_worker": true,
+    "first_run": "product-ordinarybatch-20261119-card5-a1"
+  },
+  "selected_site": "model.layers.0.self_attn.qkv_proj",
+  "actual_fault_hits": 1,
+  "callback_counts": {
+    "admitted": 4,
+    "completed": 588,
+    "observed": 588,
+    "passthrough": 584
+  },
+  "effect": {
+    "quant": {
+      "changed_elements": 5565,
+      "elements": 8192,
+      "max_abs_diff_finite": 58
+    },
+    "scale": {
+      "changed_elements": 7,
+      "elements": 8,
+      "max_abs_diff_finite": 0.009165847674012184
+    }
+  },
+  "propagation": {
+    "all_prefill_exact": true,
+    "decode_logits_changed": true,
+    "decode_top1_changed_logical_request_indices": [
+      7
+    ],
+    "off_hidden_logits_exact": true,
+    "healthy_tokens_exact": true,
+    "model_files_unchanged": true
+  },
+  "resources": {
+    "owned_hooks": 0,
+    "owned_api_patches": 0,
+    "owned_method_patches": 0,
+    "owned_row_modes": 0,
+    "owned_normal_readback_bytes": 0,
+    "native_registered": false
+  },
+  "host_actions": {
+    "attach": 1,
+    "prepare": 1,
+    "register": 1,
+    "check": 1,
+    "enable": 1,
+    "advance": 6,
+    "query": 6,
+    "finish": 1,
+    "unregister": 1,
+    "detach": 1
+  },
+  "host_detached": true,
+  "binding_removed": true,
+  "owned_container_removed": true,
+  "acceptance_use": {
+    "audited_states": 18,
+    "all_valid": true,
+    "source": "BLUE_COMBINATION",
+    "yellow_accepted": false
+  },
+  "wire_max_bytes": 114155,
+  "originals": {
+    "controller.json": {
+      "bytes": 111040,
+      "sha256": "d435e61c2f78a6732952cf709ebbd587fd107ddb1fd02f53fd0e4defe8c23db8"
+    },
+    "host-core-receipts.json": {
+      "bytes": 6635477,
+      "sha256": "2688627cf94662fa28dc04b19a277158b5b5b445dfae0b81832357a17b3613eb"
+    },
+    "result.json": {
+      "bytes": 361178,
+      "sha256": "d5910acdd13b41edfdcc1bc92b62ad5c790053591f986076fa4de64094548086"
+    }
+  },
+  "limitation": [
+    "one selected dynamic W8A8 projection, B8 first decode",
+    "no new msprobe/E5",
+    "not a yellow or production acceptance",
+    "no long-generation or all-target claim"
+  ]
+}

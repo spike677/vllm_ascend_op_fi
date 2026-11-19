@@ -47,3 +47,5 @@ python tools/summarize_deployment_acceptance.py --scope scope1.json --scope scop
 请另附具体硬件型号、发行源提交/清单 SHA、三个 wheel SHA、真实安装源码校验结果，以及机制自己的适用范围。旧回执缺新增来源/硬件字段时不得补造默认值。默认无许可的已登记组合也逐动作保留来源身份。
 
 RC2 黄区清单仅 18/39/22；8/17 保留蓝区验收；Batch 黄区待配置。升级 RC2 后，黄区 18/39 在组合登记前默认关闭；使用上述授权许可验收回传后，由 RC2.x 登记恢复默认准入。RC1/RC1.1 包与标签保持不变。
+
+Batch 的前后健康请求在六批 Host 协议之外；仅提供 Host 回执时总结标记 `BATCH_EXTERNAL_HEALTH_RECEIPT_REQUIRES_SEPARATE_REVIEW`，必须另审真实健康回执，不能将 Native recovery_proven 冒充健康请求证明。

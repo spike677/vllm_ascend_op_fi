@@ -11,8 +11,8 @@ RC1、RC1.1冻结包和标签不变。本页是当前开发线结果；蓝区、
 没有普通适配器的项返回`ORDINARY_TASK_ADAPTER_PENDING`，不回退C1/group/coverage。
 研究机制仅保留显式`create_research_provider`，公共FaultConfig没有研究或蓝区旁路参数。
 
-组合匹配核对13项实际信息：torch/torch_npu/vLLM/vllm-ascend/CANN、dtype、TP/PP/DP、
-eager、模型配置SHA、实际模型类和内存配置与文件一致。各机制的源码、ABI、权重、调度和
+组合匹配核对14项实际信息：torch/torch_npu/vLLM/vllm-ascend/CANN、dtype、TP/PP/DP、
+eager、模型配置SHA、实际模型类和内存配置与文件一致、A2/A3硬件族。各机制的源码、ABI、权重、调度和
 实际调用检查仍独立生效。Batch按真实动态W8A8/INT8结构发现候选，不按模型名白名单；
 新Qwen3.5/3.8、DeepSeek-V4等仍属于未验组合，默认关闭。
 
@@ -35,12 +35,12 @@ recover/abort后按实际状态完成OFF/健康或保留所有权，不能以卸
 
 |能力|当前普通任务及蓝区范围|黄区状态|
 |---|---|---|
-|18|既有Source126四请求；共享回归通过|原RC1用户转述两作用域通过；RC1.1回归/现役待验|
+|18|既有Source126四请求；共享回归通过|用户已确认RC1.1合入且两作用域通过；RC2组合登记/现役待验|
 |39 output_proxy|既有Source116四请求；RC1.1诊断维护，新增Native错误汇总|同上；不得套用为现役支持|
-|8|124 a5新构建、两个独立任务各4请求；单一实际MoE链|未验，需要MoE部署|
-|17|124 a5统一回调、两个独立任务各4请求；单视觉投影Torch padding|未验，需要视觉部署|
+|8|124 a5新构建、两个独立任务各4请求；单一实际MoE链|本轮仅蓝区验收，不要求黄区准备|
+|17|124 a5统一回调、两个独立任务各4请求；单视觉投影Torch padding|本轮仅蓝区验收，不要求黄区准备|
 |22|124 a1、两个独立任务各4请求；首个source-bound fused RoPE|未验|
-|Batch|124 a1统一回调、单任务六B8批及前后健康；单动态W8A8投影|未验，需要量化权重和匹配bundle|
+|Batch|124 a1/a3两个独立作用域，每次六B8批及前后健康；单动态W8A8投影|黄区待配置，不要求本轮准备|
 |20、26两变体、33 Source105、41|历史机制保留，普通任务仍待接入/验收|默认不可执行|
 |28 denominator|真实TND F/OFF未完成|关闭；legal变体仅历史保留|
 
@@ -97,7 +97,7 @@ scale改变7/8元素（最大绝对差0.009165847674012184）。两者均与当�
 Host只有6次advance、6次query，无额外capture/collect；两次常规健康B8输出一致。
 Native/Hook/patch/readback所有权均释放。默认门禁在实测前保持关闭、限定许可验收；
 13项实际部署字段全部匹配后才更新精确组合。Source118历史记录保留。
-本轮仅一个NPU任务作用域；新owner独立生命周期有CPU回归，不能冒充本轮两个NPU作用域。
+a1历史记录仅一个NPU作用域；本轮a3补齐第二个实际独立Worker/owner作用域，见下节。
 不宣称长生成质量、全投影、新模型或新msprobe/E5验收。
 
 ## 回执大小：已定位并设公共上限
@@ -150,3 +150,15 @@ TP1串行eager、视觉输入、动态W8A8及bundle要求。蓝区不能直接�
 
 普通20、26两变体、33、41以及28真实TND仍未闭环。RC2尚未冻结三包发行物；不得把本轮
 开发包当作黄区现役支持或17项全覆盖。黄区接线/product_closed仍须openchamber实际验收。
+
+## RC2 第二个 Batch NPU 作用域（a3）
+
+[独立复核总结](../../experiments/worker_core_v11_20261118/ordinarybatch_a3_20261119_summary.json)：
+源码`f83d25cbf024038a6f6c1ac324f6747c3f47ac51`，清单`199b0d9a2154179c0f67839c92a3ff22ff5cfea04576a532afd32c1510724959`。
+124卡5、同一模型/Native构建。a2因旧kubelet清单SHA变化在NPU调用前拒绝；a3重新按当前清单/API/PodResources核验无活动owner后执行，未修改分配或停止外部服务。
+
+a3正常/F/OFF机制及输入与a1一致：Q 5565/8192、scale 7/8改变，最大绝对差58和0.009165847674012184；decode logits变化、仅逻辑请求7的decode Top-1变化；全部prefill一致。OFF hidden/logits精确恢复，前后健康token一致、模型文件未变。6次advance/6次query、零collect_replay；所有Native/hooks/patch/readback释放，Host DETACHED，binding移除，容器退出0且清理。单state最大114155字节，18条state审计均为有效BLUE_COMBINATION/A2身份。
+
+a1/a3属于两个实际独立Worker/owner，各自完成同Worker OFF/health；不宣称两owner在同一个Worker中完成。旧a1原件不补造新增14字段或许可日志。新总结工具对于缺失旧字段保持不可观测，实际两作用域资格依据各自原始证据的人工复核。无新msprobe/E5、无全目标或长生成质量结论。
+
+RC2新增[部署授权与登记](deployment_acceptance_rc2.md)，黄色来源与蓝色记录隔离；[最新黄区清单](openchamber_rc2_preparation.md)只要求18/39/22。此前本页黄区权重准备描述由此覆盖。

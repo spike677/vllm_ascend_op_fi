@@ -68,11 +68,14 @@ def describe_delivery(mechanism):
     """Machine-readable scope, not a claim about a caller's current model."""
     state, requirements, next_step = _SCOPES[mechanism]
     selected = state not in ('UNSUPPORTED', 'HISTORICAL_ONLY')
-    from .rc1_profile import RC_ID, test_candidate
+    from .rc1_profile import test_candidate
+    from .rc2_profile import RC_ID, test_candidate as rc2_candidate
     return deepcopy(dict(
         revision=REVISION, state=state, selected_for_current_delivery=selected,
         rc_id=RC_ID, rc1_test_candidate=test_candidate(mechanism),
         rc1_candidate_grants_live_admission=False,
+        rc2_test_candidate=rc2_candidate(mechanism),rc2_candidate_grants_live_admission=False,
+        ordinary_adapter_status=('IMPLEMENTED_COMBINATION_GATE_REQUIRED' if rc2_candidate(mechanism) else 'NON_EXECUTABLE_IN_RC2'),
         declaration_only=True, deployment_requirements=requirements,
         live_deployment_status='NOT_EVALUATED',
         main_project_status=INTEGRATION_STATUS,

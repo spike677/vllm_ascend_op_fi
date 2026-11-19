@@ -79,6 +79,10 @@ class SummaryTests(unittest.TestCase):
     def test_oversize_never_silently_truncates_success(self):
         with patch.object(s,'MAX_SUMMARY_BYTES',100):
             r=s.summarize_deployment([self.receipt('a'),self.receipt('b')]);self.assertFalse(r['review_ready']);self.assertTrue(r['summary_payload_omitted'])
+    def test_batch_off_proof_does_not_certify_external_health(self):
+        r=self.receipt('b');r['mechanism']='quant.batch_shared_scale'
+        ev=r['history'][0]['response']['provider_state']['evidence'];ev['actual_requests']=[{'phase':p} for p in ('normal','reference','lossless','calibration_off','fault','off')]
+        self.assertIn('BATCH_EXTERNAL_HEALTH_RECEIPT_REQUIRES_SEPARATE_REVIEW',s.summarize_scope(r)['missing_or_failed'])
     def test_cross_deployment_scopes_cannot_merge(self):
         r=self.receipt('b');r['history'][0]['response']['provider_state']['deployment_acceptance_use']['actual']['hardware_family']='A3'
         self.assertIn('SCOPE_MISMATCH:actual',s.summarize_deployment([self.receipt('a'),r])['missing_or_failed'])

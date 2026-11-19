@@ -98,6 +98,11 @@ _WRITER26_CONTRACTS = {'tests/worker_extension/'+name+'.py' for name in (
     'experiments/c2c3_closure_20261117/providers26_build_group.py'}
 _V11_ENDPOINTS = 'src/demoncat/runtime/vllm_ascend/worker_extension/endpoints.py'
 _V11_CONTRACTS = {
+    'docs/worker_core_v1/rc3_inspect_migration_resources_20261119.md',
+    'experiments/worker_core_v11_20261118/ordinarybatch_a3_20261119_summary.json',
+    'tools/check_rc2_install.py','tests/test_rc2_handoff.py',
+    'docs/worker_core_v1/yellow_rc2.md',
+    'docs/worker_core_v1/openchamber_rc2_preparation.md',
     'docs/worker_core_v1/deployment_acceptance_rc2.md',
     'tools/summarize_deployment_acceptance.py',
     'tests/worker_extension/test_deployment_authorization.py','docs/contracts/execution_adapter_contract.md',

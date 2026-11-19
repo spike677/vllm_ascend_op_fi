@@ -1,3 +1,5 @@
+RC2测试部署准备：六能力子集与独立部署登记见 [RC2交付接口](docs/worker_core_v1/yellow_rc2.md)。Batch第二NPU作用域已补齐；具体冻结状态以releases发行清单为准，黄区组合尚待RC2实测回传登记。现役摸底和W4A8优先路线见[迁移清单](docs/worker_core_v1/rc3_inspect_migration_resources_20261119.md)。
+
 # vLLM Ascend Operator Fault Injection
 
 这是一个面向 vLLM-Ascend/CANN 的开发者模式原生算子故障注入原型。实现覆盖 CANN repeat executor-cache replay 边界、typed operator adapter 和 temporary device buffer 替换，并提供受控、可审计的输入数值退化、非有限输出代理与 allocation-boundary 写错地址代理。

@@ -63,6 +63,8 @@ def summarize_scope(receipt):
     if not rows:errors.append('ACTUAL_REQUEST_ROWS_MISSING')
     recovery=ev.get('matched_off_and_health_confirmed',serving.get('matched_off_and_health_confirmed',serving.get('recovery_proven')))
     if recovery is not True:errors.append('OFF_AND_HEALTH_RECOVERY_UNCONFIRMED')
+    if receipt.get('mechanism')=='quant.batch_shared_scale' and not any(r.get('phase')=='health' for r in rows):
+        errors.append('BATCH_EXTERNAL_HEALTH_RECEIPT_REQUIRES_SEPARATE_REVIEW')
     resources={k:state[k] for k in _RESOURCES if k in state}
     resources.update({k:serving[k] for k in _RESOURCES if k in serving})
     if any(k not in resources for k in ('inflight','leases','registered','enabled','native_registered')):
