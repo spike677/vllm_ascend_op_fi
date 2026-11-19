@@ -13,8 +13,12 @@ class QuantProvider(Scope):
             from fault_injection.providers import resolve_runtime
             from ..serving_quant import QuantServingBinding,QuantServingSession,MECHANISM
             from ..serving_quant_group_c1 import QuantGroupC1ServingBinding,QuantGroupC1ServingSession
+            from ..serving_quant_projection import QuantProjectionServingBinding,QuantProjectionServingSession
             binding=resolve_runtime(MECHANISM,self.model)
-            if type(binding) is QuantGroupC1ServingBinding:
+            if type(binding) is QuantProjectionServingBinding:
+                self.session=binding.make_session(self.worker,self.model,owner=owner,generation=generation,worker_identity=self.identity)
+                expected=QuantProjectionServingSession
+            elif type(binding) is QuantGroupC1ServingBinding:
                 self.session=binding.make_session(self.worker,self.model,owner=owner,generation=generation,worker_identity=self.identity)
                 expected=QuantGroupC1ServingSession
             elif type(binding) is QuantServingBinding:
@@ -46,7 +50,10 @@ class QuantProvider(Scope):
             if not self.session.recovered:raise ProviderError('QUANT_OFF_NOT_VERIFIED')
             self.session.close()
         elif action in ('disable','abort','recover','clean','unregister'):
-            self.session.close(abort=not self.session.recovered)
+            from ..serving_quant_projection import QuantProjectionServingSession
+            if action=='recover' and type(self.session) is QuantProjectionServingSession:
+                self.session.prepare_recovery()
+            else:self.session.close(abort=not self.session.recovered)
             if action in ('clean','unregister'):self._registered=False
         else:raise ProviderError('UNSUPPORTED_PROVIDER_ACTION')
         return self.query(owner=owner,generation=generation)
@@ -57,8 +64,9 @@ class QuantProvider(Scope):
         s=self.session
         raw=s.state()
         from ..serving_quant_group_c1 import QuantGroupC1ServingSession
-        leases=s.provider_call_leases(raw) if type(s) is QuantGroupC1ServingSession else raw['owned']+raw['pending']
+        from ..serving_quant_projection import QuantProjectionServingSession
+        leases=s.provider_call_leases(raw) if type(s) in (QuantGroupC1ServingSession,QuantProjectionServingSession) else raw['owned']+raw['pending']
         return dict(native_loaded=True,registered=self._registered,native_registered=bool(raw['owned']),enabled=bool(raw['armed']),
             inflight=raw['executing'],leases=leases,native=raw,
-            replay_pending=s.installed,replay_failed=bool(s.error and not s.aborted),
+            replay_pending=s.installed,replay_failed=bool(s.error and not s.aborted and not getattr(s,'recovery_only',False)),
             recovery_validation_pending=s.installed and not s.recovered,serving=s.report())

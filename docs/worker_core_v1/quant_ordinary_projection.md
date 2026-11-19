@@ -1,0 +1,109 @@
+# 普通 Qwen W8A8 的 batch_shared_scale 入口
+
+当前是可供主项目接线的 Worker 适配实现，**实际主项目接线及这个新入口的 NPU normal/F/OFF 尚未验收**。
+不继承旧 source64 C1 或 routed/GMM 观察的资格。本轮不处理135全目标、GMM1、MoE/专家行、C2/C3。
+
+范围为普通 `qwen2`/`qwen3`、真实动态 W8A8、TP1/PP1/DP1、B8、eager、同步调度、无 prefix cache、
+无 chunked prefill、无 speculative/CP、首个纯 decode。模型名称不能代替 actual INT8 weight、实际
+`AscendW8A8DynamicLinearMethod`、scheduler 与 Native formals 检查。Qwen MoE 和未知模型类型拒绝。
+每个真实 prompt 最多1024 tokens；每个完整读回最多16 MiB，超过则拒绝，不截断比较。
+
+## 实际接入点
+
+新增 `serving_quant_projection.install_quant_projection_binding(worker, root=..., build_sha256=...)`。
+由可信部署适配层在真实 Worker/runner/model 已存在后安装 inert binding；此动作不装 Native owner、
+不执行模型。参数是已审核 Native bundle 的本地路径及真实 build.json SHA，不能由用户输入层号或地址。
+原 `QuantProvider`、`WorkerFaultRuntime`、`WorkerFaultClient`、`FaultConfig('quant', 'batch_shared_scale')`
+继续管理 owner、generation、attempt、动作与恢复。没有新 runner、RPC forward、Host 状态机或配置变体。
+部署环境仍要求 `VLLM_ENABLE_V1_MULTIPROCESSING=0`、`TASK_QUEUE_ENABLE=0`；真实 Native 依赖必须按原
+bundle 启动前装载，保留 managed C1/group DSO 互斥与 source/profile/mapped identity 检查。
+
+主项目的正常调度调用方消费 `serving.next_phase/next_action`：
+
+1. 通过原公共 prepare/register/check/enable 建立本次 owner。
+2. 原调度器 enqueue 八个真实新 request，调用 `client.advance_batch(actual_request_ids)`。
+3. 原调度器正常执行一次 prefill；调用 `client.begin_decode_capture()`。
+4. 原调度器正常执行该 B8 首次 decode；调用 `client.collect_replay()`，可随时纯 query。
+5. 根据下一 phase 用相同逻辑输入、全新实际 request IDs 继续调度。OFF完成后 finish/disable/unregister/detach；
+   最后可复用现有 `remove_quant_binding(worker)`，它仍要求公共 owner 已释放。
+
+实际 prompt 从该 batch 到达 Worker 后的 `runner.requests` 读取。无预置实验 prompt文件，无伪造 scheduler ID。
+prefill仅提供真实 first-decode 上下文；故障只在捕获的 pure decode 发生。方法本身从不创建或回放请求。
+
+## 为什么首次作用域仍需六个真实 batch
+
+保留当前已审核 group Native ABI。它要求单点 Reference/Lossless/OFF 和 seal，不能通过删除 Python
+实验步骤、清零 `_attempted`、复用旧 target 指针或反序列化旧证明绕过。
+
+| batch | phase | 实际行为 |
+|---|---|---|
+|1|normal|原始量化；自动绑定 scheduler→embedding→首个 RMSNorm 的原对象→当前普通投影，观察真实 Q/scale/QMM|
+|2|reference|该单点 Native Reference；完整 Q/scale、input、hidden、logits 与 normal 对齐|
+|3|lossless|该单点独立临时输出无损路径；同样完整比较|
+|4|calibration_off|Native OFF 预验证；同样完整比较，然后才允许单点 seal|
+|5|fault|一次实际调用：正确域 reference helper 与共享域 effect 两个真实 Native 子调用；发布 Q 与 scale|
+|6|off|已停止、真实同步、drain/recover/remove 后，原量化与同 Worker 健康请求恢复|
+
+这是**首次当前作用域校准的显式成本**，不是声称普通运行/验收已经彻底拆分或已成为三 batch API。
+一次新任务创建新 session/owner；旧 spent 对象不能再 enable。若未来要免除新 owner 的这些校准，必须
+独立修改并重新验收 Native 授权协议，本实现没有做该变更。总 batch 数固定，不静默增加自选层/多次 F 重试。
+
+## 自动实际调用绑定及效果
+
+仅一次结构枚举寻找真实普通动态投影，不做两次全模型 census、不启动全量 row graph、metadata/MoE
+profile 或 msprobe。类型与当前 callable/source/weight identity 持续核对；instance forward 替换拒绝。
+重用已经使用的直接 embedding→RMSNorm 前缀证明。首个正常化输出必须是投影实际输入的同一个 Tensor，
+不能因同形状/同值承认 roll、专家重排或别的 module。轻量行 observer 只从这个 norm 输出到选中 QMM
+返回，最多256 Torch调用；实际 Native admission 再核当前 row prefix、thread/device、调用和 lifetime。
+输入 metadata/写 epoch 变化、当前 proof 失效、不同 logical prefix、不同 input 完整SHA均拒绝。
+
+Normal 与 OFF 读独立 Native journal 的实际 parent 和4个 GWS/execute events。校准和 F 走现有
+`public_begin/invoke/public_end`、owner/generation/target/actual-row lease、严格 typed completion 验证。
+F明确保留两次 Native execute（helper+effect）；没有把它们伪报为整个 F 只有一次 Native execute。
+非目标原方法/API仍执行一次，Native callbacks仅 pass；不把结构候选数当合格分母。
+
+真正的 QMM必须消费该次实际 Q、pertoken scale 与当前 projection-owned weight/scale/bias，且原 QMM
+只执行一次。消费前完整Q/scale读回须仍等于 Native 发布后的值。Native当前输入不变、当前正确 reference
+与 effect 比较、准确 publication、资源释放均复用原 ABI硬门槛。
+
+效果同时要求 Native `changed_quant_bytes > 0` **且** `changed_scale_bytes > 0`，已匹配输入的完整 CPU
+Q/scale 两个比较也都发生变化；仅 Q 变或仅 scale 变不能交付。若本次输入不产生双效应，保留失败并恢复，
+不修改用户输入或重试 spent F。`numeric_change` 复用公共函数，从已经取得的 CPU readback输出完整变化
+元素数、有限最大差与至多4个样例；无 tensor 文件、全量dump或隐式统计实验。
+
+`fault_effect`明确指向唯一已完成故障 batch；`current_request_effect`在 OFF/普通 batch 为 null，
+不会把旧 F 的效果冒充当前 OFF。E5仍是 `NOT_ASSESSED_NO_STATISTICS_RUN`，不用于阻止安全功能闭环。
+
+## 失败与恢复
+
+首次错误不被后续 hook/collect错误覆盖。Native同步、未知pending、原接口身份或 hook所有权不确定时保留
+owner/资源，不晚回写失效公开存储。F已尝试但尚无健康 OFF 时不能直接 unregister。
+
+现有公共 `recover()` 可在真实 Native stop/drain/recover/remove成功后保留同一 owner和观察hooks，进入
+`recovery_only`。它只允许一个实际 OFF batch，仍用正常 scheduler/advance/capture/collect；原错误、失败
+request IDs和已消耗 F 保留。真实 OFF确认后可释放 owner，但失败功能不会因此改成通过。若 drain失败，
+不能进入 recovery_only；重试只做恢复，不重复 F。
+
+## CPU复现与实机 handoff
+
+在仓库根执行（本地 Python路径按部署环境选择）：
+
+```powershell
+$env:PYTHONPATH='src;fault39/src;.;tests;tests/worker_extension'
+$env:PYTHONDONTWRITEBYTECODE='1'
+python -B -X utf8 -m unittest test_quant_projection_runtime.OrdinaryQuantTests -q
+```
+
+这些合同跑真实 CPU Torch module/API hooks、公共 Host/Runtime 和显式非CANN Native doubles，验证调度/身份/
+故障/恢复协议，不作为 CANN数值、真实硬件或主项目资格。受影响旧 `test_quant_group_c1.QuantGroupC1Tests`
+也应保留通过；Native源、ABI、数学路径及既有构建均未修改。
+
+唯一下一实机由 root调度：经正式工具生成并记录config/weights身份的小Qwen动态W8A8，原真实 bundle的新
+安装包，TP1/card映射、B8同步纯decode，六个相同逻辑输入且实际IDs全新的正常 batch。只用当前公共 Host
+入口和真实调度，不拿旧七阶段实验或独立HF runner代替；记录实际 Native、双输出效果、同Worker OFF、
+清理与普通健康请求。Native bundle须通过当前 source/profile一致性检查，不能仅按旧成功标签引用。
+若模型、调度、直接前缀或 Native formals不匹配，原样保存拒因并停止；不得补 public 值到 Native descriptor。
+
+Root导出闭包需增加 `serving_quant_projection.py`；其依赖（现有serving/row proof、Native binding、
+`deployments.quant_group_c1`/`quant_group_inventory`及公共 `effect_summary.py`）已经属于当前源树。
+本提交不编辑公共 registry/exporter/Host/Runtime，主项目接线无法访问的限制仍明确保留。
