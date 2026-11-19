@@ -51,6 +51,17 @@ return-half effect plus consumer, exact full hidden/logits OFF and health,
 and zero owned hooks/modes/leases after finish. It is not a ten-request or
 all-target coverage re-run.
 
+The separate acceptance-only entry is
+`experiments/worker_core_v11_20261118/prepare_rms18_single_task.py`.
+It reads `--source`, `--installed`, `--source-manifest-sha256`, `--card 2|5`,
+and a fresh `--out` case-manifest path, verifies this probe's own source list
+against installed bytes, and prepares one case for the existing root queue.
+There is no native library/build argument. Its probe enqueues four real requests,
+keeps their external/internal mapping, and writes `probe/result.json` plus the
+original `probe/host_receipt.json`. Failure preserves the first error and may
+enqueue at most two recovery requests; it never retries F. Eight CPU driver
+contracts passed; preparation and CPU success are not NPU acceptance.
+
 ## Source105 / Fault33 audit boundary
 
 `Paged33S2ServingProvider` still binds its Source105 normal/reference/lossless/
