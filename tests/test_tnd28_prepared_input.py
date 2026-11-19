@@ -241,27 +241,116 @@ class CompilerHookContracts(unittest.TestCase):
         self.unit.write_bytes(source);self.unit.with_suffix('.h').write_bytes(b'CPU fake header')
         self.enterContext(patch.object(C,'ORIGINAL_SHA',C.sha(source)))
         self.enterContext(patch.object(C,'GENERATED_HEADER_SHA',C.sha(b'CPU fake header')))
-        self.argv=['c++','-c',str(self.unit),'-o','object.o']
+        self.sdk=self.root/'cann-8.5.1';pins={}
+        for name in C.SDK_HEADERS:
+            path=self.sdk/name;path.parent.mkdir(parents=True,exist_ok=True)
+            data=('CPU synthetic SDK header: '+name).encode();path.write_bytes(data);pins[name]=C.sha(data)
+        self.enterContext(patch.object(C,'SDK_HEADERS',pins))
+        self.transitive=[]
+        for name in ('include/aclnn/opdev/fast_vector.h','include/external/exe_graph/runtime/shape.h','pkg_inc/base/dlog_pub.h'):
+            path=self.sdk/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(b'CPU transitive header')
+            self.transitive.append(path)
+        self.obj=self.source/'build/observer.o';self.dep=self.source/'build/observer.o.d'
+        self.argv=['c++','-MD','-MF',str(self.dep),'-MT',str(self.obj),'-c',str(self.unit),'-o',str(self.obj)]
+
+    def compile_result(self,argv,check=False,*,change=None,status=0):
+        self.assertFalse(check)
+        self.assertEqual(argv,[self.argv[0],'-I',str(self.sdk.resolve()/'include/aclnn'),'-I',str(self.sdk.resolve()/'pkg_inc'),*self.argv[1:]])
+        self.obj.write_bytes(b'CPU object fixture; never a compiled SDK operator')
+        paths=[self.unit,self.unit.with_name(C.HEADER),*(self.sdk/name for name in C.SDK_HEADERS),*self.transitive]
+        if change is not None:paths=change(paths)
+        escape=lambda p:p.as_posix().replace(' ','\\ ')
+        self.dep.write_text(escape(Path(C.option(self.argv,'-MT')))+': '+ ' \\\n '.join(escape(p) for p in paths)+'\n')
+        return NS(returncode=status)
 
     def test_only_exact_generated_unit_patches_and_reentry_rechecks_bytes(self):
-        result=C.prepare_unit(self.source,self.ev,self.argv,variant=C.VARIANT)
-        self.assertEqual(C.prepare_unit(self.source,self.ev,self.argv,variant=C.VARIANT),result)
+        result=C.prepare_unit(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk)
+        self.assertEqual(C.prepare_unit(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk),result)
         data=self.unit.read_text();self.assertIn('CPU_TENSOR_BODY_UNCHANGED',data);self.assertEqual(data.count('dcat_input.'),6)
         self.assertFalse(result['fault_authorized'] or result['current_input_authority'])
         self.unit.write_text(data+'\n')
-        with self.assertRaisesRegex(ValueError,'REENTRY_BYTES_CHANGED'):C.prepare_unit(self.source,self.ev,self.argv,variant=C.VARIANT)
+        with self.assertRaisesRegex(ValueError,'REENTRY_BYTES_CHANGED'):C.prepare_unit(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk)
 
     def test_unknown_source_wrong_variant_and_fixture_compile_cannot_build(self):
         for variant,argv in (('tnd_prefill_normal_bridge',self.argv),(C.VARIANT,self.argv+['-DDCAT_TND28_INPUT_CPU_FIXTURE'])):
-            with self.assertRaises(ValueError):C.prepare_unit(self.source,self.ev,argv,variant=variant)
+            with self.assertRaises(ValueError):C.prepare_unit(self.source,self.ev,argv,variant=variant,sdk=self.sdk)
         self.unit.write_bytes(self.unit.read_bytes()+b'\n')
-        with self.assertRaisesRegex(ValueError,'UNREVIEWED_GENERATED'):C.prepare_unit(self.source,self.ev,self.argv,variant=C.VARIANT)
+        with self.assertRaisesRegex(ValueError,'UNREVIEWED_GENERATED'):C.prepare_unit(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk)
         self.assertFalse((self.ev/'tnd28_compiled_input_observer.json').exists())
 
     def test_other_compilation_units_pass_through_without_any_patch(self):
         before=self.unit.read_bytes()
-        self.assertIsNone(C.prepare_unit(self.source,self.ev,['c++','-c','other.cpp'],variant=C.VARIANT))
+        argv=['c++','-c','other.cpp']
+        self.assertIsNone(C.prepare_unit(self.source,self.ev,argv,variant=C.VARIANT,sdk=self.sdk))
+        with patch.object(C.subprocess,'run',return_value=NS(returncode=7)) as compiler:
+            self.assertEqual(C.run_compiler(self.source,self.ev,argv,variant=C.VARIANT,sdk=self.sdk),7)
+        compiler.assert_called_once_with(argv,check=False)
         self.assertEqual(before,self.unit.read_bytes());self.assertEqual(list(self.ev.iterdir()),[])
+
+    def test_exact_sdk_compile_once_and_actual_dependency_closure_revalidated(self):
+        with patch.object(C.subprocess,'run',side_effect=self.compile_result) as compiler:
+            self.assertEqual(C.run_compiler(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk),0)
+        compiler.assert_called_once()
+        result=C.verify_compile_receipt(self.ev,self.source,self.sdk)
+        self.assertEqual(result['compiler_calls'],1);self.assertEqual(result['dependency_count'],8)
+        self.assertEqual(result['sdk_headers'],C.sdk_headers(self.sdk))
+        self.transitive[0].write_bytes(b'changed container ABI after compilation')
+        with self.assertRaisesRegex(ValueError,'DEPENDENCY_CLOSURE_CHANGED'):
+            C.verify_compile_receipt(self.ev,self.source,self.sdk)
+
+    def test_original_relative_output_and_dep_targets_use_recorded_compiler_cwd(self):
+        for flag,value in (('-MF','observer.o.d'),('-o','observer.o'),('-MT','observer.o')):
+            self.argv[self.argv.index(flag)+1]=value
+        with patch.object(C.Path,'cwd',return_value=(self.source/'build').resolve()),\
+                patch.object(C.subprocess,'run',side_effect=self.compile_result):
+            self.assertEqual(C.run_compiler(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk),0)
+        self.assertEqual(C.verify_compile_receipt(self.ev,self.source,self.sdk)['object']['path'],str(self.obj.resolve()))
+
+    def test_compiler_that_changes_the_observed_source_is_not_confirmed(self):
+        def changed(paths):self.unit.write_bytes(self.unit.read_bytes()+b'\n');return paths
+        with patch.object(C.subprocess,'run',side_effect=lambda argv,check:self.compile_result(argv,check,change=changed)):
+            with self.assertRaisesRegex(ValueError,'OBSERVER_BYTES_CHANGED_DURING_COMPILE'):
+                C.run_compiler(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk)
+        self.assertEqual(json.loads((self.ev/C.COMPILE_RECEIPT).read_bytes())['status'],'FAILED_OR_UNCONFIRMED')
+
+    def test_wrong_pinned_sdk_or_missing_original_dependency_flags_refuse_before_compile(self):
+        argv=[arg for arg in self.argv if arg!='-MD']
+        with patch.object(C.subprocess,'run') as compiler:
+            with self.assertRaisesRegex(ValueError,'ORIGINAL_MD'):
+                C.run_compiler(self.source,self.ev,argv,variant=C.VARIANT,sdk=self.sdk)
+            (self.sdk/next(iter(C.SDK_HEADERS))).write_bytes(b'wrong SDK header')
+            with self.assertRaisesRegex(ValueError,'SDK_HEADER_BYTES_CHANGED'):
+                C.run_compiler(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk)
+        compiler.assert_not_called();self.assertFalse(self.unit.with_name(C.HEADER).exists())
+
+    def test_dependency_opbase_header_even_identical_bytes_cannot_replace_sdk(self):
+        other=self.root/'dependencies/opbase/include/nnopbase/opdev/common_types.h'
+        other.parent.mkdir(parents=True);other.write_bytes((self.sdk/'include/aclnn/opdev/common_types.h').read_bytes())
+        def changed(paths):return [other if p.name=='common_types.h' else p for p in paths]
+        with patch.object(C.subprocess,'run',side_effect=lambda argv,check:self.compile_result(argv,check,change=changed)) as compiler:
+            with self.assertRaisesRegex(ValueError,'OPBASE_INTERNAL_HEADER_FORBIDDEN'):
+                C.run_compiler(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk)
+        compiler.assert_called_once();report=json.loads((self.ev/C.COMPILE_RECEIPT).read_bytes())
+        self.assertEqual(report['status'],'FAILED_OR_UNCONFIRMED');self.assertTrue(self.obj.exists() and self.dep.exists())
+        with self.assertRaisesRegex(ValueError,'RECEIPT_UNCONFIRMED'):C.verify_compile_receipt(self.ev,self.source,self.sdk)
+
+    def test_missing_real_shape_dependency_is_not_a_successful_compile_receipt(self):
+        def changed(paths):return [p for p in paths if p.name!='shape.h']
+        with patch.object(C.subprocess,'run',side_effect=lambda argv,check:self.compile_result(argv,check,change=changed)):
+            with self.assertRaisesRegex(ValueError,'SDK_TRANSITIVE_HEADER_REQUIRED'):
+                C.run_compiler(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk)
+        report=json.loads((self.ev/C.COMPILE_RECEIPT).read_bytes())
+        self.assertEqual(report['compiler_returncode'],0);self.assertIn('TRANSITIVE',report['first_error'])
+
+    def test_original_compiler_failure_is_recorded_and_never_retried(self):
+        with patch.object(C.subprocess,'run',side_effect=lambda argv,check:self.compile_result(argv,check,status=7)) as compiler:
+            with self.assertRaisesRegex(ValueError,'ACTUAL_ORIGINAL_COMPILER_FAILED'):
+                C.run_compiler(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk)
+        compiler.assert_called_once();path=self.ev/C.COMPILE_RECEIPT;original=path.read_bytes()
+        self.assertEqual(json.loads(original)['compiler_returncode'],7)
+        with patch.object(C.subprocess,'run') as compiler:
+            with self.assertRaises(FileExistsError):C.run_compiler(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk)
+        compiler.assert_not_called();self.assertEqual(path.read_bytes(),original)
 
 
 class OneWindowEntrypoints(unittest.TestCase):

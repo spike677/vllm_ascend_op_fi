@@ -93,6 +93,23 @@ contains `tnd28_compiled_input_observer` and its artifact SHA, all original
 vendor files, source hashes and kernel keys. A missing compiler receipt stops
 the build; no unpatched API can be relabeled as observed.
 
+The compiler launcher requires `--sdk` and pins the production CANN 8.5.1
+`include/aclnn/opdev/common_types.h`, `op_executor.h` and `aclnn/acl_meta.h`.
+Only the exact generated unit receives the SDK `include/aclnn` and `pkg_inc`
+include directories. The original compiler runs once with its original
+`-MD`/`-MF` outputs; there is no second preprocessing or compilation pass.
+The resulting dependency closure must select those exact SDK headers plus
+the SDK `fast_vector.h`, runtime `shape.h` and `base/dlog_pub.h`. Dependency
+opbase internal headers and foreign same-named headers cannot substitute.
+The launcher records original/effective argv, actual exit code, object hash,
+dependency-file hash and every selected dependency's path/bytes/hash in
+`evidence/tnd28_compiled_input_compile.json`. Completion rechecks that receipt
+and the entire closure. A failed, incomplete or preexisting compilation is
+preserved and stops that build; a fresh build is required, never an automatic
+retry. The dependency opbase heads used for source analysis are not SDK ABI
+evidence. Root's separate read-only generated-unit precheck compiled with the
+two real SDK include directories, but it was not a linked package or NPU run.
+
 Use the same reviewed Qwen3-0.6B model `/home/gyl/models/Qwen3-0.6B`.
 The production-library manifest is a small immutable file with schema
 `demoncat.tnd28.library_bytes.v1` and `files` entries containing

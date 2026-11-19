@@ -82,6 +82,9 @@ def cpu_checks(builder,base):
 
 def finish_check(builder,base):
     ev=builder.ev;report=builder.report
+    spec=importlib.util.spec_from_file_location('tnd28_actual_input_compile',base.HERE/'tnd28_input_compile.py')
+    compiler=importlib.util.module_from_spec(spec);spec.loader.exec_module(compiler)
+    report['tnd28_actual_input_compilation']=compiler.verify_compile_receipt(ev,builder.source,builder.sdk)
     observation=json.loads((ev/'tnd28_compiled_input_observer.json').read_bytes())
     base.require(observation['variant']==builder.variant and observation['observer_only'] is True
         and observation['header_sha256']==base.sha(base.HERE/'tnd28_input_observation.h')
