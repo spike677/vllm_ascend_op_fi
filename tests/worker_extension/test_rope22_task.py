@@ -97,3 +97,24 @@ class Rope22TaskTests(unittest.TestCase):
         self.assertEqual(self.client.detach()['status'],'DETACHED')
 
 if __name__=='__main__':unittest.main()
+
+
+class Rope22AcceptanceCleanupTests(unittest.TestCase):
+    def test_accepted_and_experimental_deployment_cleanup(self):
+        from experiments.worker_core_v11_20261118 import rope22_task_probe as probe
+        from demoncat.runtime.vllm_ascend.worker_extension import deployment_acceptance as gate
+        for experimental in (False,True):
+            w=NS(model_runner=NS(model=object()),demoncat_worker_identity=lambda:{'worker':{'rank':0}})
+            if experimental:
+                gate.install_blue_acceptance_permit(w,mechanisms=['22.wrong_row'],attempt='CPU-cleanup',source_manifest_sha256='a'*64)
+            with self.subTest(experimental=experimental),patch.object(probe,'actual_worker',return_value=w),patch.object(bindings,'remove_tensor_serving_binding',return_value={'status':'SERVING_DEPLOYMENT_REMOVED'}):
+                self.assertEqual(probe.remove_binding(w,{'rank':0})['status'],'SERVING_DEPLOYMENT_REMOVED')
+                self.assertFalse(hasattr(w,'_demoncat_blue_acceptance_permit'))
+    def test_binding_cleanup_failure_keeps_experimental_permission(self):
+        from experiments.worker_core_v11_20261118 import rope22_task_probe as probe
+        from demoncat.runtime.vllm_ascend.worker_extension import deployment_acceptance as gate
+        w=NS(model_runner=NS(model=object()),demoncat_worker_identity=lambda:{'worker':{'rank':0}})
+        gate.install_blue_acceptance_permit(w,mechanisms=['22.wrong_row'],attempt='CPU-cleanup',source_manifest_sha256='a'*64)
+        with patch.object(probe,'actual_worker',return_value=w),patch.object(bindings,'remove_tensor_serving_binding',side_effect=RuntimeError('OWNER_LIVE')):
+            with self.assertRaisesRegex(RuntimeError,'OWNER_LIVE'):probe.remove_binding(w,{'rank':0})
+        self.assertTrue(hasattr(w,'_demoncat_blue_acceptance_permit'))

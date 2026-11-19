@@ -85,7 +85,7 @@ def setup(worker, identity, prompt, weights, pins, manifest_sha256):
         blue=require_ordinary_route('22.wrong_row',worker,worker.model_runner.model)
     except BaseException:
         remove_tensor_serving_binding(worker,'22.wrong_row')
-        remove_blue_acceptance_permit(worker)
+        if hasattr(worker,'_demoncat_blue_acceptance_permit'):remove_blue_acceptance_permit(worker)
         raise
     return dict(worker=identity, binding=bound, loaded_sources=loaded, versions=versions,
                 default_acceptance=default, blue_acceptance=blue,
@@ -98,7 +98,7 @@ def remove_binding(worker, identity):
     require(worker.demoncat_worker_identity().get('worker') == identity, 'CLEANUP_WORKER_CHANGED')
     result=remove_tensor_serving_binding(worker, '22.wrong_row')
     from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import remove_blue_acceptance_permit
-    remove_blue_acceptance_permit(worker)
+    if hasattr(worker,'_demoncat_blue_acceptance_permit'):remove_blue_acceptance_permit(worker)
     return result
 
 
