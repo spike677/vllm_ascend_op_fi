@@ -47,6 +47,10 @@ def rpc_provider_capabilities():
         if row['mechanism'] in ('8.restore_offset', '18.api_half'):
             row.update(execution='reviewed_natural_serving_group_real_enqueue_required',
                        legacy_replay_fallback=False, historical_qualification_inherited=False)
+        if row['mechanism'] == '18.api_half':
+            row.update(execution='typed_ordinary_single_target_or_explicit_validation_group',
+                       ordinary_binding='install_rms18_task_binding', ordinary_scope='one_actual_rms_return',
+                       ordinary_npu_validation='PENDING', default_census=False)
         if row['mechanism'] == '17.spatial_padding':
             row.update(optional_two_healthy_mm_census=True,
                        observation_binding='_demoncat_vision17_observation_binding',
@@ -130,6 +134,13 @@ def create_worker_provider(mechanism, version, worker, model, identity):
         module = importlib.import_module(__package__ + '.providers.fault22')
         return module.Fault22ServingProvider(worker, model, identity)
     if mechanism in ('8.restore_offset', '18.api_half'):
+        if mechanism == '18.api_half':
+            from .serving_tensor_binding import _ATTRIBUTE, TensorServingBinding
+            bindings = getattr(worker, _ATTRIBUTE, None)
+            binding = bindings.get(mechanism) if type(bindings) is dict else None
+            if type(binding) is TensorServingBinding and binding.runtime_only:
+                module = importlib.import_module(__package__ + '.providers.rms18_task')
+                return module.Rms18TaskProvider(worker, model, identity)
         module = importlib.import_module(__package__ + '.providers.tensor_serving')
         return module.TensorServingProvider(worker, model, identity, mechanism)
     if mechanism in {name for name, _ in _TENSOR}:

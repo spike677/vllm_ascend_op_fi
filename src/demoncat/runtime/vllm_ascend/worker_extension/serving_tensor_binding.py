@@ -27,15 +27,17 @@ class TensorServingBinding:
     synchronize: object = None
     trace_factory: object = None
     leases: set = field(default_factory=set, compare=False, repr=False)
+    runtime_only: bool = False
 
 
 def install_tensor_serving_binding(worker, mechanism, *, prompt_token_ids, weight_manifest,
         workload_sha256, environment_sha256, first_live_validation=False,
-        _simulation=False, _synchronize=None, _trace_factory=None):
+        _simulation=False, _synchronize=None, _trace_factory=None, runtime_only=False):
     require(mechanism in MECHANISMS, 'REVIEWED_NATURAL_TENSOR_MECHANISM_REQUIRED')
     bindings = getattr(worker, _ATTRIBUTE, {})
     require(type(bindings) is dict and mechanism not in bindings, 'SERVING_DEPLOYMENT_ALREADY_BOUND')
-    require(first_live_validation is True and type(_simulation) is bool,
+    require(type(runtime_only) is bool and (not runtime_only or mechanism == '18.api_half')
+            and first_live_validation is (not runtime_only) and type(_simulation) is bool,
             'EXPLICIT_FIRST_LIVE_VALIDATION_REQUIRED')
     require((_synchronize is None and _trace_factory is None) or _simulation,
             'TENSOR_DEPLOYMENT_OVERRIDES_CPU_ONLY')
@@ -55,13 +57,23 @@ def install_tensor_serving_binding(worker, mechanism, *, prompt_token_ids, weigh
     require(model.training is False, 'INFERENCE_MODEL_REQUIRED')
     binding = TensorServingBinding(mechanism, worker, runner, model, tuple(prompt_token_ids), manifest,
         workload_sha256, environment_sha256, os.getpid(), threading.get_ident(),
-        _simulation, _synchronize, _trace_factory)
+        _simulation, _synchronize, _trace_factory, runtime_only=runtime_only)
     if not hasattr(worker, _ATTRIBUTE):
         setattr(worker, _ATTRIBUTE, bindings)
     bindings[mechanism] = binding
     return dict(status='SERVING_DEPLOYMENT_BOUND_NOT_QUALIFIED', mechanism=mechanism,
         hooks_installed=0, workers_created=0, qualification_granted=False, simulation=_simulation,
-        execution='REAL_ENQUEUE_REQUIRED', constructed_replay_fallback=False)
+        execution='REAL_ENQUEUE_REQUIRED', constructed_replay_fallback=False,
+        runtime_only=runtime_only)
+
+
+def install_rms18_task_binding(worker, *, prompt_token_ids, weight_manifest,
+        workload_sha256, environment_sha256, _simulation=False, _synchronize=None):
+    """Trusted ordinary task binding; never a C1/C2/C3 certificate or replay."""
+    return install_tensor_serving_binding(worker, '18.api_half', prompt_token_ids=prompt_token_ids,
+        weight_manifest=weight_manifest, workload_sha256=workload_sha256,
+        environment_sha256=environment_sha256, runtime_only=True,
+        _simulation=_simulation, _synchronize=_synchronize)
 
 
 def remove_tensor_serving_binding(worker, mechanism):

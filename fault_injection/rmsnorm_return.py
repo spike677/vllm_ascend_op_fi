@@ -74,8 +74,11 @@ class RMSNormReturnSession(ScopedDispatch):
     mechanism = '18.api_half'
 
     def __init__(self, model, *, selected_calls=None, admission=None,
-                 observe_post_root_consumers=False, **kwargs):
+                 observe_post_root_consumers=False, passthrough_unselected=False, **kwargs):
         super().__init__(model, **kwargs)
+        if type(passthrough_unselected) is not bool:
+            raise ValueError('Explicit RMS passthrough flag required')
+        self.passthrough_unselected = passthrough_unselected
         self.selected_calls = None if selected_calls is None else frozenset(selected_calls)
         self.eager = {id(module): eager_rms_contract(module) for module in model.modules()}
         self.pending = {}
@@ -203,7 +206,7 @@ class RMSNormReturnSession(ScopedDispatch):
         # Healthy *1 is checked against an entirely unhooked model baseline.
         gain = 0.5 if injecting else 1.0
         with self.diagnostics():
-            changed = scale_value(values[0], gain)
+            changed = values[0] if self.passthrough_unselected and not injecting else scale_value(values[0], gain)
             before, after = self.cpu(values[0]), self.cpu(changed)
             if not bool(torch.isfinite(before).all()) or not torch.equal(after, before * gain):
                 raise UnsupportedCall('RMSNORM_COMPLETE_RETURN_GAIN_READBACK_FAILED')
@@ -218,6 +221,8 @@ class RMSNormReturnSession(ScopedDispatch):
                     semantic_position=dict(path=event['path'], ordinal=event['ordinal'], forward=event['forward']),
                     values=numeric_change(before, after))
             self.returns.append((changed, event))
+        if changed is values[0]:
+            return output
         if isinstance(output, tuple):
             if not isinstance(output[0], torch.Tensor) or output[0] is not values[0]:
                 raise UnsupportedCall('RMSNORM_TUPLE_FIRST_OUTPUT_REQUIRED')
