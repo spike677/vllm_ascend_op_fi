@@ -14,7 +14,7 @@ from experiments.worker_core_v11_20261118 import probe_quant_ordinary as probe
 from experiments.c2c3_closure_20261117.queue_contract import validate_cases
 
 IMAGE = 'sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0'
-MODEL = '/home/17-fault-c2c3-20261117/product-qwen06-w8a8-cpu-a4/model'
+MODEL = '/home/17-fault-c2c3-20261117/product-qwen06-w8a8-cpu-a5/model'
 
 
 def adapt(base, *, source_root, source_commit, source_sha, model_sha, build_sha):

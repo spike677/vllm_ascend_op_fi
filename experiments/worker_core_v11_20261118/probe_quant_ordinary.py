@@ -55,17 +55,26 @@ def model_identity(root):
         raise ValueError('EXACT_SINGLE_FILE_MODELSLIM_DYNAMIC_ARTIFACT_REQUIRED')
     config = json.loads((root / 'config.json').read_bytes())
     description = json.loads((root / desc).read_bytes())
-    quant = config.get('quantization_config', {})
+    quant = config.get('quantization_config')
     if (config.get('model_type') not in ('qwen2', 'qwen3') or config.get('quantize') != 'w8a8_dynamic'
             or config.get('torch_dtype') != 'bfloat16'
-            or quant.get('w_bit') != 8 or quant.get('a_bit') != 8 or quant.get('is_dynamic') is not True
-            or description.get('model_quant_type') != 'W8A8_DYNAMIC'):
+            or not isinstance(description, dict) or description.get('model_quant_type') != 'W8A8_DYNAMIC'
+            or not isinstance(description.get('model.embed_tokens.weight'), str)):
         raise ValueError('ACTUAL_ORDINARY_QWEN_DYNAMIC_W8A8_CONFIG_REQUIRED')
+    # Fixed image35f9 weight_utils.get_quant_config passes any nonempty HF
+    # quantization_config directly to AscendModelSlimConfig.from_config;
+    # maybe_update_config then skips the separate description file. ModelSlim
+    # generation options (w_bit/a_bit/is_dynamic) are not this loader contract.
+    # Compare the ENTIRE actual per-layer description, including unknown extra
+    # fields; never patch individual missing layer keys or change weights here.
+    if not isinstance(quant, dict) or digest(quant) != digest(description):
+        raise ValueError('INLINE_MODELSLIM_DESCRIPTION_MUST_EQUAL_ACTUAL_COMPLETE_FILE')
     records = {path.name: dict(bytes=path.stat().st_size, sha256=sha_file(path)) for path in files}
     manifest = dict(files=records, selected_safetensors=[weight], quant_description=desc,
         config=dict(model_type=config['model_type'], quantize=config['quantize'], quantization_config=quant,
                     torch_dtype=config.get('torch_dtype')),
-        loader_selection="vllm.LLM(load_format='safetensors', trust_remote_code=False)", qualification_granted=False)
+        loader_selection="vllm.LLM(load_format='safetensors', trust_remote_code=False)",
+        loader_description='ACTUAL_COMPLETE_INLINE_DESCRIPTION_EQUALS_SEPARATE_FILE', qualification_granted=False)
     return dict(manifest=manifest, sha256=digest(manifest))
 
 

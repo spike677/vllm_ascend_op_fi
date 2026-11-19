@@ -115,12 +115,28 @@ Root导出闭包需增加 `serving_quant_projection.py`；其依赖（现有serv
 公共 Host/Runtime 和实际 enqueue/prefill/decode 调度完成六阶段；前后各一个普通健康 B8，共八批。
 每批相同八个普通 prompt、两个生成 token、全新实际 request IDs；单点仅首个 decode。正常推理不在 RPC 内执行。
 
-输入固定为 root 用官方 ModelSlim `3b3f5151521f0b2a0c1f29937fc735ba4938db43` CPU生成的独立 a4 目录：
-`/home/17-fault-c2c3-20261117/product-qwen06-w8a8-cpu-a4/model`。本次实际唯一权重文件名为
+输入固定为 root 用官方 ModelSlim `3b3f5151521f0b2a0c1f29937fc735ba4938db43` CPU生成、再做精确
+loader元数据兼容的独立 a5 目录：`/home/17-fault-c2c3-20261117/product-qwen06-w8a8-cpu-a5/model`。
+原 a4 与其失败原件保留。a5仅将 `config.quantization_config` 改为实际独立description的完整字典；
+其余原config字段不变，权重、独立description和其他文件字节不变。本次实际唯一权重文件名为
 `quant_model_weight_w8a8_dynamic.safetensors`，没有 index；描述文件为
 `quant_model_description_w8a8_dynamic.json`。生成器核实际 `W8A8_DYNAMIC` 描述、BF16普通 Qwen配置，
+并按完整canonical JSON核验inline字典与该description一致，含所有字段/嵌套值/类型；不只比较若干选项。
 记录所有顶层文件完整SHA与单文件真实loader选择；不改文件名、不改公共模型hash helper、不修改模型。
 这里的模型身份记录本身不证明 vLLM 已成功加载或执行这个量化产物。
+
+source116/a4首次实际尝试在 `LLM_CONSTRUCTION` 拒绝 `KeyError('model.embed_tokens.weight')`，
+`result.json` SHA `9fb2116063bc40ad6314e4059cf730e9171e20fac34f9097738834768699b66b`。
+当时 phases为空，无Host owner，已有Native只读诊断的GWS/execute/admission/resources均0。
+固定image的真实 `weight_utils.py`（SHA `e7c4934a6fea0f6a3a5116d88221f24904bc34106890ac6e524051886239f46d`）
+L267–305把非空HF `quantization_config` 直接传入 `from_config`；真实 `modelslim_config.py`（SHA
+`cebb76def24d7da0de8a9ced18a00b07d875119c8000b4ae66b2998cdcdd12d4`）L364–366原样保存该字典，
+L603–606因非空跳过独立文件加载，L292随后索引逐层weight键。旧 `w_bit/a_bit/is_dynamic` 生成选项
+不是这个loader的逐层description契约。默认查找文件名实际为 `quant_model_description.json` (L48)。
+因此本修复要求完整内联**已有**description；不补猜测层键、不改loader或权重、不声称NPU已通过。
+取证来自固定镜像的自有 `docker create/cp/rm`、从未start或导入框架，原件在124
+`product-quant-loader-source-a1`；controller SHA
+`76f6b8272d8a7dfdc04c38ab749be942df7d31744ce9cfc4b2f3684345430c47`。a4失败原件未覆盖。
 
 复用已审核 bundle `/home/17-fault-c2c3-20261117/native-quant-group-nd-flat-a2`，其 `build.json` SHA 为
 `b4ac9a2b68ff58c3a5f6b54c1f052170ce5d1f6d1f8c53a6a571d175ed9328ac`。
@@ -137,7 +153,7 @@ python3 "$SOURCE/experiments/worker_core_v11_20261118/prepare_quant_ordinary_cas
   --source-root "$SOURCE" --source-commit "$SOURCE_COMMIT" --installed "$INSTALLED" \
   --quant "$R/native-quant-group-nd-flat-a2" \
   --expected-build-sha256 b4ac9a2b68ff58c3a5f6b54c1f052170ce5d1f6d1f8c53a6a571d175ed9328ac \
-  --model "$R/product-qwen06-w8a8-cpu-a4/model" --card 5 \
+  --model "$R/product-qwen06-w8a8-cpu-a5/model" --card 5 \
   --out "$R/product-quant-ordinary-a1-cases.json"
 ```
 

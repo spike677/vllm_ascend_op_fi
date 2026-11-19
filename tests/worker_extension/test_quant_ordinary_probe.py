@@ -14,11 +14,15 @@ from experiments.worker_core_v11_20261118 import prepare_quant_ordinary_case as 
 
 
 def model_files(folder):
+    description = {'model_quant_type': 'W8A8_DYNAMIC', 'model.embed_tokens.weight': 'FLOAT',
+        'model.layers.0.self_attn.q_proj.weight': 'W8A8_DYNAMIC',
+        'model.layers.0.self_attn.q_proj.weight_scale': 'FLOAT',
+        'test_nested_metadata': {'retained': [1, {'same': True}]}}
     config = dict(model_type='qwen3', quantize='w8a8_dynamic', torch_dtype='bfloat16',
-                  quantization_config=dict(w_bit=8, a_bit=8, is_dynamic=True, dev_type='cpu'))
+                  quantization_config=description)
     values = {'config.json': json.dumps(config).encode(),
         'quant_model_weight_w8a8_dynamic.safetensors': b'EXPLICIT_CPU_IDENTITY_FIXTURE_NOT_REAL_WEIGHTS',
-        'quant_model_description_w8a8_dynamic.json': b'{"model_quant_type":"W8A8_DYNAMIC"}',
+        'quant_model_description_w8a8_dynamic.json': json.dumps(description).encode(),
         'tokenizer.json': b'{}', 'tokenizer_config.json': b'{}', 'generation_config.json': b'{}'}
     for name, raw in values.items():
         (folder / name).write_bytes(raw)
@@ -52,8 +56,7 @@ class IdentityAndCaseContracts(unittest.TestCase):
 
     def test_config_moe_static_wrong_dtype_or_missing_description_refused(self):
         path = self.folder / 'config.json'
-        for change in ({'model_type': 'qwen3_moe'}, {'torch_dtype': 'float16'},
-                       {'quantization_config': {'w_bit': 8, 'a_bit': 8, 'is_dynamic': False}}):
+        for change in ({'model_type': 'qwen3_moe'}, {'torch_dtype': 'float16'}):
             value = json.loads(self.values['config.json'])
             value.update(change)
             path.write_text(json.dumps(value))
@@ -63,6 +66,45 @@ class IdentityAndCaseContracts(unittest.TestCase):
         (self.folder / 'quant_model_description_w8a8_dynamic.json').unlink()
         with self.assertRaisesRegex(ValueError, 'EXACT_SINGLE_FILE'):
             probe.model_identity(self.folder)
+
+    def test_actual_generation_options_are_not_a_per_layer_loader_description(self):
+        path = self.folder / 'config.json'
+        config = json.loads(self.values['config.json'])
+        config['quantization_config'] = dict(w_bit=8, a_bit=8, is_dynamic=True, dev_type='cpu',
+            disable_level='L0', do_smooth=False, open_outlier=True, anti_method='')
+        path.write_text(json.dumps(config))
+        before = {item.name: item.read_bytes() for item in self.folder.iterdir()}
+        with self.assertRaisesRegex(ValueError, 'INLINE_MODELSLIM_DESCRIPTION'):
+            probe.model_identity(self.folder)
+        self.assertEqual(before, {item.name: item.read_bytes() for item in self.folder.iterdir()})
+
+    def test_inline_description_full_dictionary_missing_extra_and_nested_changes_refused(self):
+        for mutation in ('missing_layer', 'extra_option', 'nested_value', 'nested_type', 'type_changed'):
+            config = json.loads(self.values['config.json'])
+            inline = config['quantization_config']
+            if mutation == 'missing_layer':
+                del inline['model.layers.0.self_attn.q_proj.weight']
+            elif mutation == 'extra_option':
+                inline['w_bit'] = 8
+            elif mutation == 'nested_value':
+                inline['test_nested_metadata']['retained'][1]['same'] = False
+            elif mutation == 'nested_type':
+                inline['test_nested_metadata']['retained'][1]['same'] = 1  # bool/int equality must not mask this change.
+            else:
+                config['quantization_config'] = list(inline)
+            (self.folder / 'config.json').write_text(json.dumps(config))
+            with self.subTest(mutation=mutation), self.assertRaisesRegex(ValueError, 'INLINE_MODELSLIM_DESCRIPTION'):
+                probe.model_identity(self.folder)
+
+    def test_equal_but_missing_embedding_or_wrong_quant_type_description_refused(self):
+        for description in ({'model_quant_type': 'W8A8_DYNAMIC'},
+                            {'model_quant_type': 'W8A8', 'model.embed_tokens.weight': 'FLOAT'}):
+            config = json.loads(self.values['config.json'])
+            config['quantization_config'] = description
+            (self.folder / 'config.json').write_text(json.dumps(config))
+            (self.folder / 'quant_model_description_w8a8_dynamic.json').write_text(json.dumps(description))
+            with self.assertRaisesRegex(ValueError, 'ACTUAL_ORDINARY_QWEN_DYNAMIC'):
+                probe.model_identity(self.folder)
 
     def test_installed_source_must_equal_frozen_source(self):
         source, installed = self.folder / 'source', self.folder / 'installed'
