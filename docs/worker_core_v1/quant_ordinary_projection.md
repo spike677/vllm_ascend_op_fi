@@ -107,3 +107,67 @@ python -B -X utf8 -m unittest test_quant_projection_runtime.OrdinaryQuantTests -
 Root导出闭包需增加 `serving_quant_projection.py`；其依赖（现有serving/row proof、Native binding、
 `deployments.quant_group_c1`/`quant_group_inventory`及公共 `effect_summary.py`）已经属于当前源树。
 本提交不编辑公共 registry/exporter/Host/Runtime，主项目接线无法访问的限制仍明确保留。
+
+## 独立蓝区短验收 driver
+
+`experiments/worker_core_v11_20261118/probe_quant_ordinary.py` 只用于 root 已有124队列的新入口验收，
+**不是主项目接线，也不授 C1/C2/C3 或 E5**。它经标准 `DemoncatWorkerExtension`、上述 inert binding、
+公共 Host/Runtime 和实际 enqueue/prefill/decode 调度完成六阶段；前后各一个普通健康 B8，共八批。
+每批相同八个普通 prompt、两个生成 token、全新实际 request IDs；单点仅首个 decode。正常推理不在 RPC 内执行。
+
+输入固定为 root 用官方 ModelSlim `3b3f5151521f0b2a0c1f29937fc735ba4938db43` CPU生成的独立 a4 目录：
+`/home/17-fault-c2c3-20261117/product-qwen06-w8a8-cpu-a4/model`。本次实际唯一权重文件名为
+`quant_model_weight_w8a8_dynamic.safetensors`，没有 index；描述文件为
+`quant_model_description_w8a8_dynamic.json`。生成器核实际 `W8A8_DYNAMIC` 描述、BF16普通 Qwen配置，
+记录所有顶层文件完整SHA与单文件真实loader选择；不改文件名、不改公共模型hash helper、不修改模型。
+这里的模型身份记录本身不证明 vLLM 已成功加载或执行这个量化产物。
+
+复用已审核 bundle `/home/17-fault-c2c3-20261117/native-quant-group-nd-flat-a2`，其 `build.json` SHA 为
+`b4ac9a2b68ff58c3a5f6b54c1f052170ce5d1f6d1f8c53a6a571d175ed9328ac`。
+生成器重新核全部 bundle 文件、3份生产 Native 源、实际SDK metadata ABI和固定镜像身份；Native编译commit
+与新的 Worker/source commit分别记录。任何字节不匹配都拒绝复用，不因旧通过记录省略验证。
+本增量不改 Native源、ABI或数学路径，不需要新编译。
+
+Root在124冻结包含新模块/两个实验脚本的完整source和安装包后，以实际路径设置 `SOURCE`、`INSTALLED`、
+`SOURCE_COMMIT`（完整40位），执行以下准备命令。准备器只校验本地输入并写case JSON，不启动容器或NPU：
+
+```sh
+R=/home/17-fault-c2c3-20261117
+python3 "$SOURCE/experiments/worker_core_v11_20261118/prepare_quant_ordinary_case.py" \
+  --source-root "$SOURCE" --source-commit "$SOURCE_COMMIT" --installed "$INSTALLED" \
+  --quant "$R/native-quant-group-nd-flat-a2" \
+  --expected-build-sha256 b4ac9a2b68ff58c3a5f6b54c1f052170ce5d1f6d1f8c53a6a571d175ed9328ac \
+  --model "$R/product-qwen06-w8a8-cpu-a4/model" --card 5 \
+  --out "$R/product-quant-ordinary-a1-cases.json"
+```
+
+case固定实际镜像 `sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0`，
+沿原量化 `ASCEND_CUSTOM_OPP_PATH`/stock custom preload顺序，无 late load，无新增trace journal。
+仅 `/evidence` 由现队列写入；model/source/installed/Native/probe均只读。case上限900秒、32GiB、8CPU；
+从probe import前的开始时刻计660秒工作截止、840秒最终截止，F前至少保留180秒。
+这只是预留和拒绝门槛，不是对未来耗时的保证；真实超时、未完成OFF或清理保留失败，不称容器删除为恢复。
+
+实际启动只允许 root 经现有live资源门禁（需要的fresh allocation scope由root生成，不能拷贝旧scope）：
+
+```sh
+python3 "$SOURCE/experiments/c2c3_closure_20261117/run_queue_124.py" \
+  --cases "$R/product-quant-ordinary-a1-cases.json" --attempt product-quant-ordinary-a1 --cards 5
+```
+
+每phase的原件独占写入 `phase-<name>.json` 并保存完整SHA，`result.json`保存实际model前后身份、
+8条请求对应关系、逻辑输入、双效果、同Worker/OFF和清理；`host-core-receipts.json`保留公共动作原件。
+实际enqueue后立即保存 `completed=false`，map失败或decode/collect失败不能抹去已发请求。
+F后出错会先保存纯query原件，再走公共 recover；只有实际Native释放成功才能做真正OFF，随后释放owner。
+错误/未完成drain/未知owner一律保留，F不重试，首错不被恢复或写盘错误改为成功。
+
+新增harness短合同（真实CPU module hooks、Host/Runtime；明确非CANN Native double）与运行时合同：
+
+```powershell
+$env:PYTHONPATH='src;fault39/src;.;tests;tests/worker_extension'
+python -B -X utf8 -m unittest test_quant_ordinary_probe test_quant_projection_runtime -q
+```
+
+停止条件：实际模型/库/方法或source身份不符、不是TP1 B8纯decode、自动前缀无法证明、Native/public formals
+不符、Q与scale未同时改变、Native pending/owner不明、真实OFF/健康未恢复、预算不足、原件无法保存。
+不为通过改变prompt、补Native字段、另选用户指定层、清空attempt或重复F。成功只产生这个新蓝区入口的
+待审功能/OFF原件；主项目无法访问的接线缺口和C2/C3/E5未验收仍保留。
