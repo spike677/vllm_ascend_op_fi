@@ -63,6 +63,9 @@ _ROPE_CONTRACTS = {'tests/worker_extension/rope22_fixture.py',
                    'docs/worker_core_v1/rope22_host_contract.md'}
 _KV41_PROVIDER = 'src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault41.py'
 _KV41_CONTRACTS = {'tests/worker_extension/kv41_fixture.py',
+    'tests/worker_extension/test_kv41_task.py',
+    'docs/worker_core_v1/kv41_ordinary_task.md',
+    'experiments/worker_core_v11_20261118/probe_kv41_ordinary.py',
                    'tests/test_postwrite_natural_kv.py', 'tests/test_postwrite_providers.py',
                    'tests/test_postwrite_native_recovery.py',
                    'docs/worker_core_v1/kv41_host_contract.md'}
