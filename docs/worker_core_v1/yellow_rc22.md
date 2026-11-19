@@ -72,3 +72,6 @@ except Exception:
 2026-11-19只读门禁：蓝区124的卡2/5无NPU计算进程，但仍有Kubernetes设备分配记录与OCI设备许可；未获得释放证明。故18/39/Batch同Worker补验尚未启动，不停止其他任务、不恢复已过期隔断。18/39验收脚本新增`--scopes 2`，每轮独立client/provider与绑定清理、保留各自原件，强制同Worker不同owner；不是实机通过。41已验收范围沿用既有A2/0.18/Qwen3-0.6B BF16/TP1双作用域，不扩展资格。
 
 Batch准备器也增加`--scopes 2`：通过单独验收驱动复用同一个标准LLM/Worker，重复构造Host owner和部署binding；每个作用域各六批及前后健康，首个失败即停止。原始记录分别保存scope0/scope1，最终必须核对Worker相同、owner不同、两次资源释放。当前CPU测试仅证明复用入口不重新构造LLM及旧单作用域合同；同Worker两作用域仍待A2实测。
+
+
+多卡主线改为P1后，本版仍仅收录已声明的TP1能力。后续冻结RC2.2必须从单卡维护提交集构建，不直接打包含M1的开发HEAD；`multi_rank.py`、TP2前提与group身份等M1改动仅进入RC3。当前未冻结RC2.2，18/39/Batch同Worker双作用域设备证据仍待补齐。

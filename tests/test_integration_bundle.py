@@ -20,6 +20,14 @@ SPEC.loader.exec_module(bundle)
 
 
 class BundleTests(unittest.TestCase):
+    def test_multi_rank_development_source_ships_its_limits_and_cpu_contracts(self):
+        payload=bundle._inventory(ROOT)
+        self.assertIn(bundle._MULTI_RANK,payload)
+        self.assertFalse(bundle._MULTI_RANK_CONTRACTS-payload.keys())
+        self.assertTrue(bundle._MULTI_RANK_CONTRACTS <= bundle._required(payload.keys()))
+        self.assertNotIn('tests/worker_extension/test_multi_rank.py',bundle._required(set()))
+
+
     def test_rc1_quant_build_recipe_has_complete_sources_in_payload(self):
         from experiments.c2c3_closure_20261117.providers_quant_build_group import SOURCES
         payload = bundle._inventory(ROOT)

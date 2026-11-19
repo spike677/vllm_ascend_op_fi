@@ -1,5 +1,9 @@
 # Worker Core V1 — integration checkpoint
 
+Development-only TP2 coordination and remaining provider work are recorded in
+[multi-rank design](multi_rank_design.md). CPU protocol tests do not grant TP2
+deployment eligibility; frozen RC packages remain unchanged.
+
 Current delivery decisions and implementation status:
 [2026-11-19 product scope](product_delivery_20261119.md). Fault25 is unsupported;
 39 output uses independent single-request scopes,33 uses Source105 single-site,

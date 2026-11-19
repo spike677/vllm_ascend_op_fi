@@ -514,10 +514,18 @@ _REQUIRED = (_EXACT - _CORE_DOCS - _ROPE_CONTRACTS - _KV41_CONTRACTS - _OUTPUT39
 }
 
 
+_MULTI_RANK = 'src/demoncat/runtime/vllm_ascend/worker_extension/multi_rank.py'
+_MULTI_RANK_CONTRACTS = {'tests/worker_extension/test_multi_rank.py',
+    'docs/worker_core_v1/multi_rank_design.md',
+    'tests/worker_extension/test_serving_context.py',
+    'src/demoncat/runtime/vllm_ascend/worker_extension/multi_rank_prerequisites.py'}
+_EXACT |= _MULTI_RANK_CONTRACTS
+
 def _required(names):
     # Older reviewed snapshots may lack census entirely. A snapshot that ships
     # it must also ship the actual observer package, fixture and its contracts.
-    return (_REQUIRED | (_CORE_DOCS if _CENSUS in names else set())
+    return (_REQUIRED | (_MULTI_RANK_CONTRACTS if _MULTI_RANK in names else set())
+            | (_CORE_DOCS if _CENSUS in names else set())
             | (_PRODUCT_CONTRACTS if _PRODUCT_ACTIONS in names else set())
             | (_V11_CONTRACTS if _V11_ENDPOINTS in names else set())
             | (_ROPE_CONTRACTS | {'tests/worker_extension/test_core_rope22.py'}

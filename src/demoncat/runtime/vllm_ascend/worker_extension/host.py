@@ -6,6 +6,7 @@ fault. The catalog/binding HostContracts remain separate deployment contracts.
 """
 
 from copy import deepcopy
+from dataclasses import dataclass
 import json
 import threading
 import uuid
@@ -139,6 +140,14 @@ class HostAdapter:
         return targeted[0]
 
 
+@dataclass(frozen=True)
+class _GroupIdentity:
+    """Trusted host coordinator identity, never a public FaultConfig field."""
+    owner: str
+    tenant_id: str
+    generation: int
+
+
 class WorkerFaultClient:
     """One automatic route and one attempted lease; Runtime owns lifecycle.
 
@@ -147,7 +156,7 @@ class WorkerFaultClient:
     and detach. No context manager performs hidden cleanup or retries.
     """
 
-    def __init__(self, host, config, *, receipt_mode='full'):
+    def __init__(self, host, config, *, receipt_mode='full', _group_identity=None):
         if type(receipt_mode) is not str or receipt_mode not in ('full', 'cursor'):
             raise ValueError('receipt_mode must be full or cursor')
         if getattr(host, 'api', None) != HOST_API or not all(
@@ -159,8 +168,15 @@ class WorkerFaultClient:
         if not isinstance(config, FaultConfig):
             raise TypeError('Worker FaultConfig is required')
         self.host, self.config = host, config
-        self.owner = 'worker-fault-' + uuid.uuid4().hex
-        self.tenant_id = 'worker-client-' + uuid.uuid4().hex
+        if _group_identity is not None and (type(_group_identity) is not _GroupIdentity
+                or type(_group_identity.generation) is not int or _group_identity.generation < 1
+                or type(_group_identity.owner) is not str
+                or type(_group_identity.tenant_id) is not str
+                or not _group_identity.owner.startswith('worker-group-')
+                or not _group_identity.tenant_id.startswith('worker-group-client-')):
+            raise ValueError('TRUSTED_GROUP_IDENTITY_REQUIRED')
+        self.owner = (_group_identity.owner if _group_identity else 'worker-fault-' + uuid.uuid4().hex)
+        self.tenant_id = (_group_identity.tenant_id if _group_identity else 'worker-client-' + uuid.uuid4().hex)
         self._worker = self._attachment = self._lease = None
         self._census = None
         self._capabilities = None
