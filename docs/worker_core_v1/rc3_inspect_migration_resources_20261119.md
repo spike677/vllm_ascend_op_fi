@@ -1,6 +1,6 @@
 # 现役 inspect、软件迁移与蓝区资源（2026-11-19）
 
-本页是4.7准备结果，不是4.8/RC3执行许可或通过结论。4.8须项目负责人确认后启动；黄区现役inspect到达后再形成4.9适用性结论。不等待这些材料来阻塞RC2子集交付。
+本页是4.7准备结果，不是4.8/RC3执行许可或通过结论。4.8已获项目负责人批准，仅按新增容量/驱动门禁执行0.26 A2迁移；黄区现役inspect到达后再形成4.9适用性结论。不等待这些材料来阻塞RC2子集交付。
 
 ## 给 openchamber 的只读 inspect 清单
 
@@ -24,7 +24,7 @@
 - 现役DeepSeek：V4.1-Flash-1017-W8A8，v0.32.0rc1-a3，A3，TP8/DP2/EP，8实例16NPU，maxseq16、maxlen1048576、batched16384、block128、async/prefix、dspark5、FULL_DECODE_ONLY、Engram cpu_offload+dp_shared_memory、CPU binding/shared expert DP；无LMCache或KV Transfer。
 - **后续DeepSeek测试优先 V4.1-Flash-1017-W4A8-Ascend**。历史镜像v0.30.0-a3-lmcache、TP8/DP2/A3只是启动参考；先确认权重完整性、镜像/CANN、EP与LMCache必要性、可控eager。不得以W8A8代替或共享未经验证的Q/scale假设。
 - Qwen现役：Qwen3.8-27B-W8A8，参考v0.26.0rc1、TP1/8实例，maxseq4、len262144、batched4096、prefix、qwen3_5_mtp3、FULL_DECODE_ONLY、CPU binding、AscendStoreConnector/Mooncake。实际栈和接口需确认。
-- 顺序：Qwen家族→DeepSeekV4.1 W4A8→W8A8→按真实调用适配GLM。MoE、视觉、量化、Attention/KV、collective各选满足机制的真实模型，不强制一个模型涵盖全部能力。
+- 顺序：Qwen家族→DeepSeekV4.1 W4A8→DeepSeekV4.1 W8A8。MoE、视觉、量化、Attention/KV、collective各选满足机制的真实模型，不强制一个模型涵盖全部能力。
 
 ## 逐能力迁移清单
 
@@ -69,3 +69,7 @@
 124到HuggingFace本次连接超时/网络不可达；不能承诺从124直接下载。官方公开的 [Qwen3-0.6B](https://huggingface.co/Qwen/Qwen3-0.6B) 和 [DeepSeek-V2-Lite](https://huggingface.co/deepseek-ai/DeepSeek-V2-Lite)可作家族组件迁移参考，本机也有既有Qwen小模型及V2-Lite-W8A8。V2-Lite不是V4.1替代验收。[V4.1官方模型](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash)的公开存在不证明用户指定1017-W4A8-Ascend制品已经取得；该精确W4A8权重、容量和A2可加载性待确认。当前两卡不具备用户历史TP8/DP2实例资源。
 
 建议分工：蓝区先在批准后做0.26 A2无设备检查/新CANN构建与Qwen小模型机制迁移；DeepSeek专项先解决精确W4A8制品及资源，再运行真实该路线。黄区87 A3由openchamber按独立专用实例验收，每能力两作用域，通过许可回传后按来源登记。A2通过只登记A2，A3最终结论不合并。
+
+## 负责人更新后的执行边界
+
+阶段D仅0.26 A2；暂不拉取/实测0.32，不进行任何DeepSeek实测。先核对Docker实际数据目录、压缩/解压大小及驱动要求。根分区存储、拉取后不足15GiB或驱动不兼容任一条件出现即停止且不拉取；关键尺寸/兼容性无法证明时保留未通过，不猜测。自有重构建产物置/home且总量不超过10GiB；不改宿主驱动/CANN/Docker，不动0.18环境、不删外部数据。第一步通过后，只用本地Qwen3-0.6B BF16/W8A8验证18/39/22/Batch各两作用域。

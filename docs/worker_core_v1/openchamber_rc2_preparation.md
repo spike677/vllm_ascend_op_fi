@@ -13,7 +13,7 @@
 
 串行 eager：TP/PP/DP=1、enforce_eager=True、async_scheduling=False、enable_chunked_prefill=False、enable_prefix_caching=False、max_num_seqs=1；不启用 speculative、DBO 或上下文并行。保留机制自己的源码、ABI、实际调用检查，不能伪填蓝区版本满足门禁。
 
-1. 按 RC2 冻结发行清单安装三个升级版本 wheel，校验 SHA 与实际安装源码。
+1. 黄区master保持RC1.1，在独立环境或分支按 RC2 冻结发行清单安装三个升级版本 wheel，校验 SHA 与实际安装源码。
 2. 可信 Worker bootstrap 配置 `YELLOW_TEST_DEPLOYMENT` 和部署操作员授权回调；按 [验收许可接口](deployment_acceptance_rc2.md) 安装限定机制/本次源码清单的许可。FaultConfig 不提供许可开关。
 3. 每项独立运行两个 owner 作用域，每作用域 normal/fault/off/health 四个真实请求，统一 advance→等待完成→query。请求名称不决定阶段；第五请求须拒绝。结束 finish→disable（适用时）→unregister→detach→移除 binding。
 4. 保留失败首因，按原恢复接口清理；容器重启不能代替 OFF/health。

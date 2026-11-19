@@ -1,10 +1,16 @@
 # 黄区测试部署 RC2
 
-冻结目标 `demoncatpfi-yellow-rc2-20261119`；实际发行提交、源码提交和 SHA 以 `releases/` 下该发行清单为准。本页不提前声称冻结成功。
+已冻结 `demoncatpfi-yellow-rc2-20261119`，源提交 `d07c72156e0fe4e3608dcee58cdb422b49834c66`、发行提交 `de17267b`；SHA以发行清单为准。本次升级安排是在冻结之后补充，原标签/包/SHA不重写，见[交付补充单](../../releases/RC2-HANDOFF-20261119.md)。
 
 普通任务子集：18 api_half、39 output_proxy、8 restore_offset、17 spatial_padding、22 wrong_row、quant batch_shared_scale。只覆盖已登记的部署组合，查询实现存在不表示可执行。部署来源与硬件分别核对，黄区 RC2 组合当前尚未登记。
 
 15：当前部署无私有视图写入/原 base 消费链；25：不支持；28 legal：历史保留，不扩展；28 denominator：真实 TND F/OFF 未完成；20、26 两变体、33 Source105、41：历史机制保留，普通任务未完成。这些项不从公共入口回退到研究协议。39 matmul_range 也不是本包普通任务候选。
+
+## 黄区升级安排（负责人最新确认）
+
+**黄区 master 保持 RC1.1。** 在独立环境或分支安装 RC2，通过部署许可完成18、39、22各两个独立作用域，回传14项部署字段/硬件型号、来源和许可身份、请求/效果/恢复/资源、清单和wheel SHA及实际安装校验。
+
+Codex审查后，仅在登记表中增加 `YELLOW_TEST_DEPLOYMENT` 组合并发布RC2.1，不改机制。master随后从RC1.1直接升级RC2.1；不要先把尚无黄区登记的RC2覆盖到master。未通过的项先区分缺陷、部署不匹配、接线问题，再按RC1.x维护规则处理。8/17不要求黄区验收，Batch黄区仍待配置。
 
 ## 安装与身份
 
