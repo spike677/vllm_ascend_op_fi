@@ -15,6 +15,8 @@ class QuantProvider(Scope):
             from ..serving_quant_group_c1 import QuantGroupC1ServingBinding,QuantGroupC1ServingSession
             from ..serving_quant_projection import QuantProjectionServingBinding,QuantProjectionServingSession
             binding=resolve_runtime(MECHANISM,self.model)
+            if getattr(self,'ordinary_only',False) and type(binding) is not QuantProjectionServingBinding:
+                raise ProviderError('QUANT_ORDINARY_PROJECTION_BINDING_REQUIRED')
             if type(binding) is QuantProjectionServingBinding:
                 self.session=binding.make_session(self.worker,self.model,owner=owner,generation=generation,worker_identity=self.identity)
                 expected=QuantProjectionServingSession

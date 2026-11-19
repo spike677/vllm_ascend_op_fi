@@ -96,6 +96,7 @@ class _OneRMSReturn(RMSNormReturnSession):
 class Rms18TaskRequest(ServingReplaySession):
     def __init__(self, provider):
         self.provider = provider
+        self.require = provider.require
         super().__init__(provider.worker, provider.model, provider, None, provider._ticket[0],
             prompt_token_ids=list(provider.binding.prompt), evidence_dir=None, persist_evidence=False)
         self.callbacks = {}
@@ -104,6 +105,9 @@ class Rms18TaskRequest(ServingReplaySession):
         self.request_error = None
         self.entry_error = None
         self.root_post_handle = self.completion_handle = None
+
+    def make_window(self):
+        return _OneRMSReturn(self.provider)
 
     def _same_worker(self):
         super()._same_worker()
@@ -118,18 +122,18 @@ class Rms18TaskRequest(ServingReplaySession):
 
     def _remove(self, handle):
         hooks = handle.hooks_dict_ref()
-        require(hooks is not None and (handle.id not in hooks or hooks[handle.id] is self.callbacks[handle.id]),
+        self.require(hooks is not None and (handle.id not in hooks or hooks[handle.id] is self.callbacks[handle.id]),
                 'RMS18_OWNED_HOOK_CHANGED')
         try: handle.remove()
         finally:
             if handle.id not in hooks:
                 self.handles.remove(handle)
                 self.callbacks.pop(handle.id, None)
-        require(handle.id not in hooks, 'RMS18_HOOK_REMOVAL_UNCONFIRMED')
+        self.require(handle.id not in hooks, 'RMS18_HOOK_REMOVAL_UNCONFIRMED')
 
     def install(self):
         self._same_worker()
-        require(not self.installed and not self.handles, 'RMS18_HOOKS_ALREADY_INSTALLED')
+        self.require(not self.installed and not self.handles, 'RMS18_HOOKS_ALREADY_INSTALLED')
         try:
             self._add(self.model, self._root_pre, True)
             self._add(self.processor, self._logits_pre, True)
@@ -141,9 +145,10 @@ class Rms18TaskRequest(ServingReplaySession):
     def expect(self, request_id):
         self._same_worker()
         self.readback()
-        require(self.installed and self.expected is self.current is self.window is None
+        self.require(self.provider.phase != 'complete', 'RMS18_TASK_PHASES_EXHAUSTED')
+        self.require(self.installed and self.expected is self.current is self.window is None
                 and not self.request_error and self.provider.phase != 'complete', 'RMS18_PREVIOUS_REQUEST_NOT_CLOSED')
-        require(isinstance(request_id, str) and 0 < len(request_id) <= 256
+        self.require(isinstance(request_id, str) and 0 < len(request_id) <= 256
                 and request_id not in self.provider.requests, 'FRESH_ENQUEUED_ID_REQUIRED')
         self.expected = request_id
 
@@ -156,16 +161,16 @@ class Rms18TaskRequest(ServingReplaySession):
 
     def _root_pre(self, module, args, kwargs):
         try:
-            require(not self.root_running and not self.logits_running, 'RMS18_CONCURRENT_ROOT_REFUSED')
+            self.require(not self.root_running and not self.logits_running, 'RMS18_CONCURRENT_ROOT_REFUSED')
             own = [h.id for h in self.handles if h.hooks_dict_ref() is module._forward_pre_hooks]
-            require(list(module._forward_pre_hooks) == own, 'RMS18_ROOT_PRE_HOOK_ORDER_UNREVIEWED')
+            self.require(list(module._forward_pre_hooks) == own, 'RMS18_ROOT_PRE_HOOK_ORDER_UNREVIEWED')
             self.entry_error = sys.exc_info()[1]
             ServingReplaySession._root_pre(self, module, args, kwargs)
             self.current.update(request_id=self.current['actual_internal_request_id'],
-                invocation='rms18-task:' + uuid.uuid4().hex, input=_identity(_capture((args, kwargs))))
+                invocation=self.provider.code_prefix.lower() + '-task:' + uuid.uuid4().hex, input=_identity(_capture((args, kwargs))))
             self.provider.begin_actual(self.current)
             if self.provider.phase in ('normal', 'fault'):
-                self.window = _OneRMSReturn(self.provider)
+                self.window = self.make_window()
                 self.window.__enter__()
             self.root_post_handle = self._add(self.model, self._root_post)
             self.completion_handle = self._add(self.processor, self._logits_post)
@@ -174,7 +179,7 @@ class Rms18TaskRequest(ServingReplaySession):
                 # current snapshot; enter exactly its owned root callback once.
                 for handle, callback in self.window.hooks:
                     if handle.hooks_dict_ref() is module._forward_pre_hooks:
-                        require(callback(module, args) is None, 'RMS18_ROOT_ARGUMENTS_CHANGED')
+                        self.require(callback(module, args) is None, 'RMS18_ROOT_ARGUMENTS_CHANGED')
             self.root_running = True
         except BaseException as error:
             self._failure(error)
@@ -182,16 +187,19 @@ class Rms18TaskRequest(ServingReplaySession):
 
     def _root_post(self, module, args, kwargs, output):
         try:
+            actual_error = sys.exc_info()[1]
+            if actual_error is not None and actual_error is not self.entry_error:
+                self._failure(actual_error)  # Keep the first producer/model failure.
             self._same_worker()
-            require(self.current is not None and output is not None and sys.exc_info()[1] is self.entry_error
+            self.require(self.current is not None and output is not None and sys.exc_info()[1] is self.entry_error
                     and next(reversed(module._forward_hooks)) == self.root_post_handle.id,
                     'RMS18_ORIGINAL_ROOT_RETURN_UNCONFIRMED')
-            require(output.ndim == 2 and output.shape[0] == len(self.prompt),
+            self.require(output.ndim == 2 and output.shape[0] == len(self.prompt),
                     'COMPLETE_PREFILL_HIDDEN_STATES_REQUIRED')
             with self._diagnostics():
                 _, full, finite = complete_tensor(output)
                 _, self.hidden_digest, _ = complete_tensor(output[-1:].contiguous())
-            require(finite, 'RMS18_HIDDEN_NOT_FINITE')
+            self.require(finite, 'RMS18_HIDDEN_NOT_FINITE')
             self.current.update(hidden_sha256=full, root_returned=True)
         except BaseException as error:
             self._failure(error)
@@ -202,14 +210,14 @@ class Rms18TaskRequest(ServingReplaySession):
     def _logits_pre(self, module, args, kwargs):
         try:
             self._same_worker()
-            require(self.current is not None and self.current['root_returned'] and not self.logits_running
+            self.require(self.current is not None and self.current['root_returned'] and not self.logits_running
                     and not self.request_error, 'RMS18_COMPLETED_ROOT_BEFORE_LOGITS_REQUIRED')
             if self.boundary_guard: self.boundary_guard()
             actual = self.logits_binding.bind(module, args, kwargs)
-            require(actual.get('lm_head') is self.head and actual.get('embedding_bias') is None,
+            self.require(actual.get('lm_head') is self.head and actual.get('embedding_bias') is None,
                     'ACTUAL_LOGITS_HEAD_CHANGED')
             with self._diagnostics(): _, digest, finite = complete_tensor(actual['hidden_states'])
-            require(finite and digest == self.hidden_digest, 'RMS18_LOGITS_ROWS_CHANGED')
+            self.require(finite and digest == self.hidden_digest, 'RMS18_LOGITS_ROWS_CHANGED')
             self.logits_running = True
         except BaseException as error:
             self._failure(error)
@@ -218,13 +226,13 @@ class Rms18TaskRequest(ServingReplaySession):
     def _logits_post(self, module, args, kwargs, output):
         try:
             self._same_worker()
-            require(self.logits_running and output is not None and sys.exc_info()[1] is self.entry_error
+            self.require(self.logits_running and output is not None and sys.exc_info()[1] is self.entry_error
                     and next(reversed(module._forward_hooks)) == self.completion_handle.id,
                     'RMS18_ORIGINAL_LOGITS_RETURN_UNCONFIRMED')
-            require(list(output.shape) == self.boundary_report['output_contract'],
+            self.require(list(output.shape) == self.boundary_report['output_contract'],
                     'COMPLETE_GLOBAL_VOCAB_OUTPUT_REQUIRED')
             with self._diagnostics(): _, digest, finite = complete_tensor(output)
-            require(finite, 'RMS18_LOGITS_NOT_FINITE')
+            self.require(finite, 'RMS18_LOGITS_NOT_FINITE')
             self.current['output'] = dict(hidden=self.current['hidden_sha256'], logits=digest)
             self.current['mechanism'] = self.window.report() if self.window else None
             if self.window:
@@ -242,8 +250,8 @@ class Rms18TaskRequest(ServingReplaySession):
 
     def close_window(self):
         self._same_worker()
-        require(not self.root_running and not self.logits_running, 'RMS18_ACTUAL_FORWARD_STILL_ACTIVE')
-        require(self.current is None or self.request_error, 'RMS18_ACTUAL_REQUEST_NOT_FINISHED')
+        self.require(not self.root_running and not self.logits_running, 'RMS18_ACTUAL_FORWARD_STILL_ACTIVE')
+        self.require(self.current is None or self.request_error, 'RMS18_ACTUAL_REQUEST_NOT_FINISHED')
         if self.window:
             self.window.close()
             self.window = None
@@ -262,10 +270,10 @@ class Rms18TaskRequest(ServingReplaySession):
     def readback(self):
         self._same_worker()
         for handle in self.handles:
-            require(handle.hooks_dict_ref() is not None
+            self.require(handle.hooks_dict_ref() is not None
                     and handle.hooks_dict_ref().get(handle.id) is self.callbacks[handle.id], 'RMS18_OWNED_HOOK_CHANGED')
         state = self.window.runtime_state() if self.window else dict(ownership_verified=True, leases=0)
-        require(state['ownership_verified'], 'RMS18_OWNED_DISPATCH_CHANGED')
+        self.require(state['ownership_verified'], 'RMS18_OWNED_DISPATCH_CHANGED')
         return dict(installed=self.installed, owned_hooks=len(self.handles) + (len(self.window.hooks) if self.window else 0),
             inflight=int(self.root_running or self.logits_running), leases=state['leases'],
             pending=self.expected is not None or self.current is not None)

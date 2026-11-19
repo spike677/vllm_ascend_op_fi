@@ -74,6 +74,8 @@ def rpc_provider_capabilities():
     from fault_injection.delivery_scope import describe_delivery
     for row in rows:
         row['current_delivery'] = describe_delivery(row['mechanism'])
+        from .ordinary_admission import ordinary_route_report
+        row['ordinary_task_prerequisites'] = ordinary_route_report(row['mechanism'])
         # A deployed single-site driver exists; this does not grant a fresh
         # Worker's live normal/input/ownership admission or main-host wiring.
         if row['mechanism'] == '33.paged_decode':
@@ -83,6 +85,13 @@ def rpc_provider_capabilities():
                                           'single_site_fault', 'recovery_off'])
         if row['mechanism'] == '39.output_proxy':
             row['execution'] = 'trusted_single_site_fresh_prefill_real_enqueue'
+        from .ordinary_admission import ORDINARY
+        row['historical_execution_description'] = row['execution']
+        row['execution'] = ('ordinary_task_binding_and_live_call_required'
+                            if row['mechanism'] in ORDINARY else 'public_route_closed')
+        row['fault_execution_ready'] = False  # Static declaration cannot attest this Worker.
+        row['public_protocol'] = ('six_actual_batches' if row['mechanism']=='quant.batch_shared_scale'
+                                  else 'four_actual_requests' if row['mechanism'] in ORDINARY else None)
     return deepcopy(rows)
 
 def describe_worker_provider(mechanism):
@@ -112,7 +121,7 @@ def worker_core_manifest():
         recovery_authority='existing WorkerFaultRuntime and mechanism-specific native/owned-resource readback',
         coverage_authority='fault_injection.coverage_session.CoverageSession', qualification_granted=False)
 
-def create_worker_provider(mechanism, version, worker, model, identity):
+def create_research_provider(mechanism, version, worker, model, identity):
     from fault_injection.catalog import resolve
     resolve(mechanism)
     if mechanism == '25.reduce_scatter':
@@ -135,6 +144,13 @@ def create_worker_provider(mechanism, version, worker, model, identity):
         module = importlib.import_module(__package__ + '.providers.fault22')
         return module.Fault22ServingProvider(worker, model, identity)
     if mechanism in ('8.restore_offset', '18.api_half'):
+        if mechanism == '8.restore_offset':
+            from .serving_tensor_binding import _ATTRIBUTE, TensorServingBinding
+            bindings = getattr(worker, _ATTRIBUTE, None)
+            binding = bindings.get(mechanism) if type(bindings) is dict else None
+            if type(binding) is TensorServingBinding and binding.runtime_only:
+                from .restore8_task import Restore8TaskProvider
+                return Restore8TaskProvider(worker, model, identity)
         if mechanism == '18.api_half':
             from .serving_tensor_binding import _ATTRIBUTE, TensorServingBinding
             bindings = getattr(worker, _ATTRIBUTE, None)
@@ -159,3 +175,17 @@ def create_worker_provider(mechanism, version, worker, model, identity):
             module = importlib.import_module(__package__ + '.providers.attention_serving')
             return getattr(module, class_name)(worker, model, identity)
     raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')
+
+
+def create_worker_provider(mechanism, version, worker, model, identity):
+    """Public route; research protocols require explicit direct construction."""
+    from fault_injection.catalog import resolve
+    from .ordinary_admission import require_ordinary_route
+    resolve(mechanism)
+    if version != '1':
+        raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')
+    require_ordinary_route(mechanism,worker,model)
+    provider=create_research_provider(mechanism,version,worker,model,identity)
+    if mechanism=='quant.batch_shared_scale':
+        provider.ordinary_only=True
+    return provider

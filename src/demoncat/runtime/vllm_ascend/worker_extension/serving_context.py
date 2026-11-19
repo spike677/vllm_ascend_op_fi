@@ -169,27 +169,17 @@ def _mla_prefill_metadata(metadata, runner, table, length, name, contract):
 
 
 def require_serial_eager(runner, *, expected_max_seqs=1):
-    require(type(expected_max_seqs) is int and expected_max_seqs in (1,8), 'UNREVIEWED_SEQUENCE_CAPACITY')
-    config = field(runner, "vllm_config")
-    parallel = field(config, "parallel_config")
-    for name in ("tensor_parallel_size", "pipeline_parallel_size", "data_parallel_size"):
-        require(field(parallel, name) == 1, "SERIAL_TP1_PP1_DP1_REQUIRED:" + name)
-    for name in ("pcp_size", "dcp_size"):
-        require(field(runner, name) == 1, "CONTEXT_PARALLELISM_UNSUPPORTED:" + name)
-    require(field(runner, "use_cp") is False, "CONTEXT_PARALLELISM_UNSUPPORTED")
-    require(field(parallel, "enable_dbo") is False, "DBO_UNSUPPORTED")
-    require(field(runner, "speculative_config") is None, "SPECULATIVE_DECODING_UNSUPPORTED")
-    require(field(runner, "use_async_scheduling") is False, "ASYNC_SCHEDULING_UNSUPPORTED")
-    scheduler = field(config, "scheduler_config")
-    require(field(scheduler, "max_num_seqs") == expected_max_seqs,
-            "MAX_NUM_SEQS_MUST_BE_ONE" if expected_max_seqs==1 else "MAX_NUM_SEQS_CONTRACT_MISMATCH")
-    require(field(scheduler, "enable_chunked_prefill") is False, "CHUNKED_PREFILL_UNSUPPORTED")
-    cache = field(config, "cache_config")
-    require(field(cache, "enable_prefix_caching") is False, "PREFIX_CACHE_MUST_BE_DISABLED")
-    require(field(cache, "kv_sharing_fast_prefill") is False, "KV_SHARING_FAST_PREFILL_UNSUPPORTED")
-    require(field(field(config, "model_config"), "enforce_eager") is True, "EAGER_REQUIRED")
-    require(field(runner, "is_multimodal_model") is False, "MULTIMODAL_MAPPING_UNADAPTED")
-    require(field(field(config, "model_config"), "is_encoder_decoder") is False, "ENCODER_DECODER_UNADAPTED")
+    from .prerequisites import serial_eager_assessment
+    require(type(expected_max_seqs) is int and expected_max_seqs in (1, 8), 'UNREVIEWED_SEQUENCE_CAPACITY')
+    report = serial_eager_assessment(runner, expected_max_seqs=expected_max_seqs)
+    if report['unmet']:
+        # Preserve the original leading diagnostic for callers while returning
+        # every mismatch (including missing fields) in a structured attachment.
+        first = report['primary']
+        error = ContextRefused(first['code'] + ': ' + json.dumps(report, sort_keys=True))
+        error.prerequisites = report
+        raise error
+    return report
 
 
 def snapshot_fresh_prefill(runner, model, hook_kwargs, context, *, expected_prompt_token_ids,

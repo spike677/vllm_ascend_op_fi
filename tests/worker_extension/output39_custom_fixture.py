@@ -86,22 +86,16 @@ class CustomOperators:
         actual_patch.direct_register_custom_op = register.direct_register_custom_op
         self.npu = SimpleNamespace(__version__=consumers.TORCH_NPU_VERSION, get_npu_format=lambda tensor: 2)
         self.stack.enter_context(patch.dict(sys.modules, {**self.modules, 'torch_npu': self.npu}))
-        for module, attribute, source_name in (
-                (gemm_lineage, 'PATCH_SHA256', gemm_lineage.PATCH_MODULE),
-                (gemm_lineage, 'UTILS_SHA256', gemm_lineage.UTILS_MODULE),
-                (gemm_lineage, 'REGISTER_SHA256', gemm_lineage.REGISTER_MODULE),
-                (consumers, 'META_SHA256', consumers.META_MODULE)):
-            digest = hashlib.sha256(Path(self.modules[source_name].__file__).read_bytes()).hexdigest()
-            self.stack.enter_context(patch.object(module, attribute, digest))
-        self.stack.enter_context(patch.object(consumers, 'TORCH_VERSION', str(torch.__version__)))
-        self.stack.enter_context(patch.object(gemm_lineage, 'DISPATCH_TORCH_VERSION', str(torch.__version__)))
-        self.stack.enter_context(patch.object(gemm_lineage, 'DISPATCH_GUARD',
-            'CPU_FIXTURE_SINGLE_PRIVATEUSE1_NO_SHADOW_SOURCE_ORIGIN_NOT_NPU'))
         registrations = {}
         for operation in consumers.NPU_VALUE_CONSUMERS:
             dump = torch._C._dispatch_dump('npu::' + operation.split('.')[1])
             registrations[operation] = next(line for line in dump.splitlines() if line.startswith('PrivateUse1:'))
-        self.stack.enter_context(patch.dict(consumers.PRIVATE_REGISTRATION, registrations))
+        from fault_injection.cpu_build_identity import cpu_test_build_identity
+        self.profile = self.stack.enter_context(cpu_test_build_identity(
+            name='CPU_FIXTURE_OUTPUT39_SOURCE_AND_DISPATCH', torch_version=torch.__version__,
+            torch_npu_version=self.npu.__version__, source_hashes={name:
+                hashlib.sha256(Path(module.__file__).read_bytes()).hexdigest()
+                for name,module in self.modules.items()}, registrations=registrations))
         return self
 
     def __exit__(self, *error):

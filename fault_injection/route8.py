@@ -16,6 +16,10 @@ class RestoreOffsetSession(ScopedDispatch):
         self.selected_calls = None if selected_calls is None else frozenset(selected_calls)
         self.admission, self.strict_group_oracle = admission, strict_group_oracle
 
+    def observe_actual_inputs(self, event, values, original_values):
+        """Optional ordinary-task guard before any remap; old behavior unchanged."""
+        pass
+
     def is_selected(self, event):
         if self.admission is not None:
             return bool(self.admission(event))
@@ -58,6 +62,7 @@ class RestoreOffsetSession(ScopedDispatch):
                 raise UnsupportedCall('Healthy restore indices must cover the complete contribution permutation')
             if not bool(torch.isfinite(original_h).all() and torch.isfinite(original_p).all()):
                 raise UnsupportedCall('Healthy MoE input must be finite')
+            self.observe_actual_inputs(event, values, (original_h, original_i, original_p))
             injecting = self.arm=='fault' and self.is_selected(event)
             preserve_actual_arguments = self.strict_group_oracle and not injecting
             if preserve_actual_arguments:

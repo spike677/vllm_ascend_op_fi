@@ -48,7 +48,11 @@ class Worker18StatisticsBoundaryTests(unittest.TestCase):
 
     def test_owned_proxy_arithmetic_pauses_both_arms_real_model_operation_stays_observable(self):
         _,baseline=self.run_arm('baseline');_,fault=self.run_arm('fault')
-        self.assertEqual(baseline,fault)
+        # Fault readback can perform more paused diagnostic arithmetic. Only
+        # collector-visible model operations must have the same boundary.
+        self.assertEqual([v for v in baseline if v], [v for v in fault if v])
+        self.assertTrue(baseline and fault)
+        self.assertIn(False,baseline)
         self.assertIn(False,fault)
         self.assertIs(fault[-1],True)  # The model's final multiply remains captured.
 

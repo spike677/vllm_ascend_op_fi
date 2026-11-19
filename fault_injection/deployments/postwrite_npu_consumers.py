@@ -14,6 +14,7 @@ import torch
 from torch._ops import OpOverload
 
 from .postwrite_boundaries import tensor_geometry
+from ..cpu_build_identity import current_cpu_identity, require_cpu_values
 
 
 TORCH_VERSION = '2.9.0+cpu'
@@ -56,7 +57,10 @@ def npu_consumer_registration(func):
             or any(p.alias_info is not None for p in (*func._schema.arguments, *func._schema.returns))):
         return None, 'UNREVIEWED_NPU_CONSUMER_SCHEMA_OR_ALIAS'
     npu = sys.modules.get('torch_npu')
-    if (str(torch.__version__) != TORCH_VERSION or getattr(npu, '__version__', None) != TORCH_NPU_VERSION
+    profile = current_cpu_identity()
+    expected_torch = profile.torch_version if profile else TORCH_VERSION
+    expected_npu = profile.torch_npu_version if profile else TORCH_NPU_VERSION
+    if (str(torch.__version__) != expected_torch or getattr(npu, '__version__', None) != expected_npu
             or not callable(getattr(npu, 'get_npu_format', None))):
         return None, 'UNREVIEWED_NPU_CONSUMER_BUILD'
     try:
@@ -64,17 +68,18 @@ def npu_consumer_registration(func):
         meta_sha = hashlib.sha256(Path(meta.__file__).resolve().read_bytes()).hexdigest()
     except (KeyError, AttributeError, OSError, TypeError):
         return None, 'NPU_CONSUMER_META_SOURCE_UNAVAILABLE'
-    if meta_sha != META_SHA256:
+    if meta_sha != (profile.source_hashes.get(META_MODULE) if profile else META_SHA256):
         return None, 'UNREVIEWED_NPU_CONSUMER_META_SOURCE'
     name = 'npu::npu_rms_norm' if rms else 'npu::npu_swiglu'
     dispatch = torch._C._dispatch_dump(name)
     if (('schema: ' + schema) not in dispatch.splitlines()
             or 'alias analysis kind: FROM_SCHEMA' not in dispatch.splitlines()
             or [line for line in dispatch.splitlines() if line.startswith('PrivateUse1:')]
-                != [PRIVATE_REGISTRATION[operation]]
+                != [(profile.registrations.get(operation) if profile else PRIVATE_REGISTRATION[operation])]
             or not torch._C._dispatch_has_kernel_for_dispatch_key(name, 'PrivateUse1')):
         return None, 'UNREVIEWED_NPU_CONSUMER_DISPATCH'
     return dict(operator=operation, schema=schema,
+        build_identity=profile.report() if profile else dict(kind='PINNED_PRODUCTION', test_only=False),
         schema_sha256=hashlib.sha256(schema.encode()).hexdigest(),
         torch_version=str(torch.__version__), torch_npu_version=npu.__version__,
         meta_shape_source=dict(module=META_MODULE, sha256=meta_sha,
@@ -89,6 +94,7 @@ def npu_value_consumer(func, args, kwargs, result):
     substitute for input lineage. Selected-index membership is checked separately
     against this exact returned operand object, storage, offset and stride.
     """
+    require_cpu_values((args, kwargs, result))
     proof, reason = npu_consumer_registration(func)
     if reason:
         return None, (), reason

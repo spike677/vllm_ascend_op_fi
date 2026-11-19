@@ -510,8 +510,8 @@ class ActualSourceRelocationTests(unittest.TestCase):
             # is auto-loaded in this source-only portability test.
             test_paths = paths + [str(sources/'tests'), str(sources/'tests/worker_extension')]
             script = ('import sys,unittest; sys.path[:0]=' + repr(test_paths) + '; '
-                'names=["test_core_tensor_serving.CoreTensorServingTests.test_public_protocol_actual_groups_original_proof_and_zero_resource_health",'
-                '"test_core_tensor_serving.CoreMoEServingTests.test_public_protocol_actual_groups_original_proof_and_zero_resource_health"]; '
+                'names=["test_rms18_task.Rms18TaskTests.test_four_actual_requests_one_return_no_group_census_or_files",'
+                '"test_restore8_task.Restore8TaskTests.test_four_requests_auto_select_one_actual_combine_off_health_and_new_scope"]; '
                 'result=unittest.TextTestRunner().run(unittest.defaultTestLoader.loadTestsFromNames(names)); '
                 'sys.exit(not result.wasSuccessful())')
             result = subprocess.run([sys.executable, '-I', '-B', '-c', script], cwd=sources,
@@ -529,7 +529,7 @@ class ActualSourceRelocationTests(unittest.TestCase):
             result = subprocess.run([sys.executable, '-I', '-B', '-c', contract_script], cwd=folder,
                                     capture_output=True, text=True, timeout=60)
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-            self.assertIn('Ran 44 tests', result.stderr)
+            self.assertIn('Ran 45 tests', result.stderr)
             # The typed FIA test imports its exact build-profile fixture lazily.
             # Run that contract as well as the real MoE cleanup negatives from
             # relocated paths, with no checkout or actual container fallback.

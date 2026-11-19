@@ -58,6 +58,11 @@ def _provider_error(error):
     code = getattr(error, 'code', None)
     if isinstance(code, str) and re.fullmatch(r'[A-Z][A-Z0-9_]{0,79}', code):
         details['provider_code'] = code
+    report = getattr(error, 'prerequisites', None)
+    if isinstance(report, dict) and report.get('schema') == 'demoncat.prerequisites.v1':
+        encoded = _json(report)
+        if len(encoded.encode('utf-8')) <= 32768:
+            details['prerequisites'] = json.loads(encoded)
     return details
 
 
@@ -119,6 +124,9 @@ class WorkerFaultRuntime:
                     providers = _provider_capabilities()
                     from .registry import worker_core_manifest
                     core_manifest = worker_core_manifest()
+                    from .ordinary_admission import ordinary_route_report
+                    for row in core_manifest['mechanisms']:
+                        row['ordinary_task_prerequisites'] = ordinary_route_report(row['mechanism'],worker,context.model)
                     resolver_status = 'AVAILABLE'
                 except ModuleNotFoundError as error:
                     if (error.name or '').split('.')[0] not in ('fault_injection', 'demoncat_fault39'):

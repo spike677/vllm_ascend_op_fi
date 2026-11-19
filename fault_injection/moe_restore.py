@@ -117,11 +117,12 @@ class MoERestoreTrace(NaturalMoETrace):
                             if parent.adapter:
                                 parent.adapter.diagnostic = diagnostic
                 original = Original()
+                previous_events = len(parent.adapter.events) if parent.adapter else 0
                 result = (parent.adapter.dispatch(original, args, kwargs or {})
                           if selected and parent.adapter is not None else original(*args, **(kwargs or {})))
                 require(native['original_calls'] == 1, 'ACTUAL_NATIVE_CONSUMER_REQUIRED')
                 native.update(output=[metadata(t) for t in tensors(result)], original_returned=True)
-                if selected and parent.adapter is not None:
+                if selected and parent.adapter is not None and len(parent.adapter.events) > previous_events:
                     event = parent.adapter.events[-1]
                     event['actual_producer_join'] = native['producer_proof']
                     event['observed_original_native_calls'] = native['original_calls']

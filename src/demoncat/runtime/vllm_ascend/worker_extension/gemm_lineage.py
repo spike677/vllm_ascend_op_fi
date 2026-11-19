@@ -12,6 +12,7 @@ import sys
 from types import CodeType
 
 from .serving_context import require
+from fault_injection.cpu_build_identity import current_cpu_identity, require_cpu_values
 
 
 PATCH_MODULE = 'vllm_ascend.patch.worker.patch_unquantized_gemm'
@@ -33,7 +34,8 @@ def current_registration(register, raw, path, library, dispatch_dump):
     no active/hidden registration other than the reviewed original is allowed.
     """
     import torch
-    require(str(torch.__version__) == DISPATCH_TORCH_VERSION,
+    profile = current_cpu_identity()
+    require(str(torch.__version__) == (profile.torch_version if profile else DISPATCH_TORCH_VERSION),
             'UNREVIEWED_PUBLIC_GEMM_DISPATCH_BUILD')
     assignments = [node.value for node in ast.parse(raw).body if isinstance(node, ast.Assign)
         and any(isinstance(target, ast.Name) and target.id == 'vllm_lib' for target in node.targets)]
@@ -59,7 +61,9 @@ def current_registration(register, raw, path, library, dispatch_dump):
     require(separator and lineno.isdecimal() and Path(filename).resolve() == path
             and call.lineno <= int(lineno) <= call.end_lineno,
             'PUBLIC_GEMM_CURRENT_REGISTRATION_SOURCE_ORIGIN_CHANGED')
-    return dict(guard_profile=DISPATCH_GUARD, torch_version=str(torch.__version__),
+    return dict(guard_profile=profile.name if profile else DISPATCH_GUARD,
+        build_identity=profile.report() if profile else dict(kind='PINNED_PRODUCTION', test_only=False),
+        torch_version=str(torch.__version__),
         current_privateuse1_registration=private[0], definition_registration=definitions[0],
         source_module=register.__name__, source_path=str(path),
         source_sha256=hashlib.sha256(raw).hexdigest(), construction_lines=[call.lineno, call.end_lineno],
@@ -75,6 +79,8 @@ class ReviewedGemmBinding:
         import torch
         from torch._ops import OpOverload
         self.last_proof = None
+        require_cpu_values((args, kwargs, expected_weight))
+        profile = current_cpu_identity()
         require(isinstance(function, OpOverload) and str(function) == 'vllm.unquantized_gemm.default'
                 and str(function._schema) == SCHEMA, 'UNREVIEWED_PUBLIC_GEMM_SCHEMA')
         patch = sys.modules.get(PATCH_MODULE)
@@ -84,6 +90,7 @@ class ReviewedGemmBinding:
                 'REVIEWED_ASCEND_GEMM_MODULES_NOT_LOADED')
         sources, source_bytes, source_paths = {}, {}, {}
         for module, expected in ((patch, PATCH_SHA256), (utils, UTILS_SHA256), (register, REGISTER_SHA256)):
+            expected = profile.source_hashes.get(module.__name__) if profile else expected
             path = Path(module.__file__).resolve()
             raw = path.read_bytes()
             require(hashlib.sha256(raw).hexdigest() == expected, 'UNREVIEWED_PUBLIC_GEMM_SOURCE:' + module.__name__)

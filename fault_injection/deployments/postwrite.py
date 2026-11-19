@@ -72,6 +72,9 @@ class NativePostwriteLibrary:
     transport_kind = 'public_acl_native'
 
     def __init__(self, library, sha256):
+        from ..cpu_build_identity import current_cpu_identity
+        if current_cpu_identity() is not None:
+            raise PostwriteRefused('CPU_TEST_BUILD_CANNOT_LOAD_NATIVE_TRANSPORT')
         path = Path(library).resolve(strict=True)
         actual = hashlib.sha256(path.read_bytes()).hexdigest()
         if actual != sha256 or len(sha256) != 64:
@@ -174,10 +177,16 @@ class NativePostwriteLibrary:
         return bytes(copied)
 
     def open(self, tensor, owner, generation):
+        from ..cpu_build_identity import current_cpu_identity
+        if current_cpu_identity() is not None:
+            raise PostwriteRefused('CPU_TEST_BUILD_CANNOT_OPEN_NATIVE_LEASE')
         self.validate(tensor)
         return _NativeLease(self, tensor, owner, generation)
 
     def open_span(self, tensor, element_offset, elements, owner, generation):
+        from ..cpu_build_identity import current_cpu_identity
+        if current_cpu_identity() is not None:
+            raise PostwriteRefused('CPU_TEST_BUILD_CANNOT_OPEN_NATIVE_LEASE')
         # The span is part of the *actual* live cache tensor. No repack or clone
         # is writable. Its allocation may include disjoint K/V views.
         if tensor.device.type != 'npu' or tensor.dtype != torch.bfloat16:

@@ -36,7 +36,7 @@ def install_tensor_serving_binding(worker, mechanism, *, prompt_token_ids, weigh
     require(mechanism in MECHANISMS, 'REVIEWED_NATURAL_TENSOR_MECHANISM_REQUIRED')
     bindings = getattr(worker, _ATTRIBUTE, {})
     require(type(bindings) is dict and mechanism not in bindings, 'SERVING_DEPLOYMENT_ALREADY_BOUND')
-    require(type(runtime_only) is bool and (not runtime_only or mechanism == '18.api_half')
+    require(type(runtime_only) is bool and (not runtime_only or mechanism in MECHANISMS)
             and first_live_validation is (not runtime_only) and type(_simulation) is bool,
             'EXPLICIT_FIRST_LIVE_VALIDATION_REQUIRED')
     require((_synchronize is None and _trace_factory is None) or _simulation,
@@ -74,6 +74,15 @@ def install_rms18_task_binding(worker, *, prompt_token_ids, weight_manifest,
         weight_manifest=weight_manifest, workload_sha256=workload_sha256,
         environment_sha256=environment_sha256, runtime_only=True,
         _simulation=_simulation, _synchronize=_synchronize)
+
+
+def install_restore8_task_binding(worker, *, prompt_token_ids, weight_manifest,
+        workload_sha256, environment_sha256, _simulation=False, _synchronize=None, _trace_factory=None):
+    """Ordinary four-request task; actual source-bound MoE selects its own call."""
+    return install_tensor_serving_binding(worker, '8.restore_offset', prompt_token_ids=prompt_token_ids,
+        weight_manifest=weight_manifest, workload_sha256=workload_sha256,
+        environment_sha256=environment_sha256, runtime_only=True,
+        _simulation=_simulation, _synchronize=_synchronize, _trace_factory=_trace_factory)
 
 
 def remove_tensor_serving_binding(worker, mechanism):

@@ -62,6 +62,16 @@ class OrdinaryQuantTests(unittest.TestCase):
         for action in ('prepare', 'register', 'check', 'enable'):
             self.dispatch(action)
 
+    def test_actual_schema_not_model_name_controls_candidate_discovery(self):
+        self.session.close(abort=True)
+        self.runner.vllm_config.model_config.hf_config.model_type = 'unqualified_cpu_structure_fixture'
+        session = ordinary.QuantProjectionServingSession(self.worker, self.model, root='CPU_ONLY',
+            build_sha256='b'*64, owner='new-scope', generation=5, worker_identity=self.fixture.identity)
+        self.assertTrue(session.candidates)
+        self.assertIsNone(session.target)  # Structure alone never selects a target.
+        self.assertEqual(session.rows, [])
+        self.assertFalse(session.recovered)
+
     def cleanup(self):
         if self.session.installed:
             # CPU fixture teardown only, never production recovery authority.
@@ -114,6 +124,9 @@ class OrdinaryQuantTests(unittest.TestCase):
             return self.session
         self.enterContext(patch('fault_injection.providers.resolve_runtime',
                                return_value=ordinary.QuantProjectionServingBinding(make)))
+        # Explicit CPU deployment double corresponding to the real installer.
+        self.worker._dcat_quant_binding = lambda model: ordinary.QuantProjectionServingBinding(make)
+        self.worker._dcat_quant_ordinary_model = self.model
         fixture = self
         class Executor:
             drop_action = None
@@ -445,11 +458,15 @@ class OrdinaryQuantTests(unittest.TestCase):
         self.assertEqual(len(registered), 1)
         del self.worker._dcat_quant_binding
 
-    def test_qwen_moe_and_unknown_models_refuse_before_native_load(self):
+    def test_actual_non_dynamic_method_refuses_before_native_load_even_with_qwen_name(self):
         self.session.close(abort=True)
-        self.runner.vllm_config.model_config.hf_config.model_type = 'qwen3_moe'
+        self.runner.vllm_config.model_config.hf_config.model_type = 'qwen3'
+        # Recognized model name cannot admit a different quantization method.
+        for _, module in self.model.named_modules():
+            if hasattr(module, 'quant_method'):
+                module.quant_method = NS(apply=lambda *args, **kwargs: None)
         with patch.object(native.QuantGroupNative, 'load', side_effect=AssertionError('MUST_REFUSE_BEFORE_NATIVE_LOAD')):
-            with self.assertRaisesRegex(RuntimeError, 'ORDINARY_QWEN2_OR_QWEN3_ONLY'):
+            with self.assertRaisesRegex(RuntimeError, 'NO_ORDINARY_TP1_W8A8_CANDIDATE'):
                 ordinary.QuantProjectionServingSession(self.worker, self.model, root='CPU_ONLY', build_sha256='b'*64,
                     owner='next', generation=5, worker_identity=self.fixture.identity)
 

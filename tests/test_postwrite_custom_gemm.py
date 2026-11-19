@@ -107,7 +107,7 @@ class CustomGemmBoundaryTests(unittest.TestCase):
                  'REGISTRATION_SOURCE_ORIGIN_CHANGED')):
             with self.subTest(reason=reason), patch.object(torch._C, '_dispatch_dump', return_value=replace(original)):
                 self.assertIn(reason, self.proof(result=result)[1])
-        with patch.object(gemm_lineage, 'DISPATCH_TORCH_VERSION', 'unreviewed'):
+        with patch.object(torch, '__version__', 'unreviewed'):
             self.assertIn('DISPATCH_BUILD', self.proof(result=result)[1])
 
     def test_privateuse1_override_after_lossless_opens_no_fault_lease(self):
@@ -278,14 +278,25 @@ class NpuConsumerBoundaryTests(unittest.TestCase):
         result = self.rms(self.x, self.gamma)
         for location, attribute, value, expected in (
                 (self.ops.npu, '__version__', 'unreviewed', 'BUILD'),
-                (consumers, 'TORCH_VERSION', 'unreviewed', 'BUILD'),
-                (consumers, 'META_SHA256', '0'*64, 'META_SOURCE'),
+                (torch, '__version__', 'unreviewed', 'BUILD'),
                 (torch._C, '_dispatch_dump', lambda name: 'schema: wrong', 'DISPATCH'),
                 (consumers, 'RMS_SCHEMA', consumers.RMS_SCHEMA.replace('Tensor input', 'Tensor(a!) input'), 'SCHEMA')):
             with self.subTest(expected=expected), patch.object(location, attribute, value):
                 proof, _, reason = consumers.npu_value_consumer(self.rms, (self.x, self.gamma), {}, result)
                 self.assertIsNone(proof)
                 self.assertIn(expected, reason)
+
+    def test_changed_actual_fixture_meta_source_refused(self):
+        result = self.rms(self.x, self.gamma)
+        source = Path(self.ops.modules[consumers.META_MODULE].__file__)
+        original = source.read_bytes()
+        try:
+            source.write_bytes(original + b'# changed fixture source\n')
+            proof, _, reason = consumers.npu_value_consumer(self.rms, (self.x, self.gamma), {}, result)
+            self.assertIsNone(proof)
+            self.assertIn('META_SOURCE', reason)
+        finally:
+            source.write_bytes(original)
 
     def test_rms_input_gamma_output_dtype_geometry_and_alias_refusals(self):
         out, rstd = self.rms(self.x, self.gamma)

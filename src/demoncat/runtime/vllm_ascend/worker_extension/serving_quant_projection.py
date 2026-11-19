@@ -78,13 +78,15 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
         self.worker, self.runner, self.model = worker, worker.model_runner, model
         serving.require_serial_eager(self.runner, expected_max_seqs=8)
         require(self.runner.model is model and not model.training, 'ACTUAL_EVAL_MODEL_REQUIRED')
-        require(getattr(self.runner.vllm_config.model_config.hf_config, 'model_type', None) in ('qwen2', 'qwen3'),
-                'ORDINARY_QWEN2_OR_QWEN3_ONLY')
+        # Model names are not admission. _discover checks the actual dynamic
+        # W8A8 wrapper, INT8 weights and TP1. At runtime the unchanged checks
+        # require scheduler -> embedding -> RMSNorm -> Q/scale -> QMM lineage.
+        # Unseen structures remain unqualified until that real call completes.
         self.thread, self.owner, self.generation = threading.get_ident(), owner, generation
         self.rpc_identity = snapshot(worker_identity)
-        self.native = QuantGroupNative.load(root, approved_build_sha256=build_sha256)
         self.candidates, self.rejected = _discover(model, (1,))
         require(self.candidates, 'NO_ORDINARY_TP1_W8A8_CANDIDATE')
+        self.native = QuantGroupNative.load(root, approved_build_sha256=build_sha256)
         boundary = serving.discover_logits_boundary(model, actual_logits_processor_type=LogitsProcessor,
             actual_vocab_size=self.runner.vllm_config.model_config.hf_config.vocab_size)
         self.processor, self.guard = boundary['processor'], boundary.get('branch_guard')
@@ -746,5 +748,6 @@ def install_quant_projection_binding(worker, *, root, build_sha256):
         return QuantProjectionServingBinding(make_session)
     register_runtime(serving.MECHANISM, factory)
     worker._dcat_quant_binding = factory
+    worker._dcat_quant_ordinary_model = model
     return dict(status='DEPLOYMENT_BOUND_NOT_ACCEPTED', scope=SCOPE, native_owner_installed=False,
                 actual_main_project_wiring=False, c2=False, c3=False, required_real_batches=6)

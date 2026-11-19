@@ -53,12 +53,13 @@ class GemmLineageTests(unittest.TestCase):
             lineage.PATCH_MODULE: self.module, lineage.UTILS_MODULE: utils,
             lineage.REGISTER_MODULE: register,
             'torch_npu': NS(get_npu_format=lambda tensor: 2)}))
-        self.stack.enter_context(patch.object(lineage, 'PATCH_SHA256', hashlib.sha256(patch_path.read_bytes()).hexdigest()))
-        self.stack.enter_context(patch.object(lineage, 'UTILS_SHA256', hashlib.sha256(utils_path.read_bytes()).hexdigest()))
-        self.stack.enter_context(patch.object(lineage, 'REGISTER_SHA256', hashlib.sha256(register_path.read_bytes()).hexdigest()))
-        self.stack.enter_context(patch.object(lineage, 'DISPATCH_TORCH_VERSION', str(torch.__version__)))
-        self.stack.enter_context(patch.object(lineage, 'DISPATCH_GUARD',
-            'CPU_FIXTURE_SINGLE_PRIVATEUSE1_NO_SHADOW_SOURCE_ORIGIN_NOT_NPU'))
+        from fault_injection.cpu_build_identity import cpu_test_build_identity
+        self.stack.enter_context(cpu_test_build_identity(
+            name='CPU_FIXTURE_GEMM_SOURCE_AND_DISPATCH', torch_version=torch.__version__,
+            torch_npu_version='CPU_ONLY', source_hashes={
+                lineage.PATCH_MODULE:hashlib.sha256(patch_path.read_bytes()).hexdigest(),
+                lineage.UTILS_MODULE:hashlib.sha256(utils_path.read_bytes()).hexdigest(),
+                lineage.REGISTER_MODULE:hashlib.sha256(register_path.read_bytes()).hexdigest()}, registrations={}))
         self.function = torch.ops.vllm.unquantized_gemm.default
         self.binding = lineage.ReviewedGemmBinding()
         self.x = torch.arange(8, dtype=torch.bfloat16).reshape(2, 4)

@@ -97,6 +97,15 @@ _WRITER26_CONTRACTS = {'tests/worker_extension/'+name+'.py' for name in (
     'experiments/c2c3_closure_20261117/providers26_build_group.py'}
 _V11_ENDPOINTS = 'src/demoncat/runtime/vllm_ascend/worker_extension/endpoints.py'
 _V11_CONTRACTS = {'docs/contracts/execution_adapter_contract.md',
+    'docs/worker_core_v1/ordinary_tasks_rc2_20261119.md',
+    'docs/worker_core_v1/merged_plan_baseline_20261119.md',
+    'experiments/worker_core_v11_20261118/restore8_single_task_probe.py',
+    'experiments/worker_core_v11_20261118/prepare_restore8_single_task.py',
+    'tests/worker_extension/test_restore8_task.py',
+    'tests/worker_extension/test_prerequisites.py',
+    'tests/worker_extension/test_cpu_build_identity.py',
+    'tests/worker_extension/test_ordinary_admission.py',
+
     'docs/worker_core_v1/yellow_rc1.md',
     'docs/worker_core_v1/tnd28_source123_normal_review.md',
     'docs/worker_core_v1/rc1_native_dependencies.md',
