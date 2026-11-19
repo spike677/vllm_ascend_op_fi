@@ -6,7 +6,7 @@ available for direct research use, outside this public route.
 """
 from .prerequisites import assessment, expectation, _MISSING
 
-ORDINARY = {'17.spatial_padding','8.restore_offset','18.api_half','39.output_proxy','quant.batch_shared_scale'}
+ORDINARY = {'22.wrong_row','17.spatial_padding','8.restore_offset','18.api_half','39.output_proxy','quant.batch_shared_scale'}
 NON_EXECUTABLE = {
     '15.alias_detach': 'FAULT15_CURRENT_DEPLOYMENT_NO_PRIVATE_VIEW_WRITE_CHAIN',
     '25.reduce_scatter': 'FAULT25_UNSUPPORTED_NO_SUBSTITUTE',
@@ -25,7 +25,7 @@ def ordinary_route_report(mechanism, worker=None, model=None):
     if code is None:
         actual=_MISSING
         if worker is not None:
-            if mechanism in ('8.restore_offset','18.api_half'):
+            if mechanism in ('8.restore_offset','18.api_half','22.wrong_row'):
                 from .serving_tensor_binding import TensorServingBinding, _ATTRIBUTE
                 bindings=getattr(worker,_ATTRIBUTE,None)
                 binding=bindings.get(mechanism) if type(bindings) is dict else None
@@ -53,7 +53,8 @@ def ordinary_route_report(mechanism, worker=None, model=None):
                 if hasattr(worker,'_dcat_quant_binding'):
                     actual=(marker is model and model is not None)
         checks.append(expectation('deployment_identity','typed_ordinary_binding',True,actual,
-                      {'17.spatial_padding':'VISION17_ORDINARY_BINDING_REQUIRED',
+                      {'22.wrong_row':'ROPE22_ORDINARY_BINDING_REQUIRED',
+                       '17.spatial_padding':'VISION17_ORDINARY_BINDING_REQUIRED',
                        '8.restore_offset':'MOE8_ORDINARY_BINDING_REQUIRED',
                        '18.api_half':'RMS18_ORDINARY_BINDING_REQUIRED',
                        '39.output_proxy':'OUTPUT39_ORDINARY_TASK_BINDING_REQUIRED',

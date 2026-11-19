@@ -177,9 +177,11 @@ class Rms18TaskRequest(ServingReplaySession):
             if self.window:
                 # Newly installed root pre-hooks are absent from PyTorch's
                 # current snapshot; enter exactly its owned root callback once.
-                for handle, callback in self.window.hooks:
+                for handle, callback in getattr(self.window,'entry_hooks',self.window.hooks):
                     if handle.hooks_dict_ref() is module._forward_pre_hooks:
-                        self.require(callback(module, args) is None, 'RMS18_ROOT_ARGUMENTS_CHANGED')
+                        result=(callback(module,args,kwargs) if handle.id in module._forward_pre_hooks_with_kwargs
+                                else callback(module,args))
+                        self.require(result is None, 'RMS18_ROOT_ARGUMENTS_CHANGED')
             self.root_running = True
         except BaseException as error:
             self._failure(error)
@@ -274,6 +276,6 @@ class Rms18TaskRequest(ServingReplaySession):
                     and handle.hooks_dict_ref().get(handle.id) is self.callbacks[handle.id], 'RMS18_OWNED_HOOK_CHANGED')
         state = self.window.runtime_state() if self.window else dict(ownership_verified=True, leases=0)
         self.require(state['ownership_verified'], 'RMS18_OWNED_DISPATCH_CHANGED')
-        return dict(installed=self.installed, owned_hooks=len(self.handles) + (len(self.window.hooks) if self.window else 0),
+        return dict(installed=self.installed, owned_hooks=len(self.handles) + (getattr(self.window,'owned_hook_count',len(self.window.hooks)) if self.window else 0),
             inflight=int(self.root_running or self.logits_running), leases=state['leases'],
             pending=self.expected is not None or self.current is not None)

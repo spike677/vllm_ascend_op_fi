@@ -8,7 +8,7 @@ from .serving_context import require, require_serial_eager
 
 
 _ATTRIBUTE = '_demoncat_natural_tensor_serving_bindings'
-MECHANISMS = ('8.restore_offset', '18.api_half')
+MECHANISMS = ('8.restore_offset', '18.api_half', '22.wrong_row')
 
 
 @dataclass(frozen=True)
@@ -34,6 +34,7 @@ def install_tensor_serving_binding(worker, mechanism, *, prompt_token_ids, weigh
         workload_sha256, environment_sha256, first_live_validation=False,
         _simulation=False, _synchronize=None, _trace_factory=None, runtime_only=False):
     require(mechanism in MECHANISMS, 'REVIEWED_NATURAL_TENSOR_MECHANISM_REQUIRED')
+    require(mechanism!='22.wrong_row' or runtime_only, 'ROPE22_ORDINARY_BINDING_REQUIRED')
     bindings = getattr(worker, _ATTRIBUTE, {})
     require(type(bindings) is dict and mechanism not in bindings, 'SERVING_DEPLOYMENT_ALREADY_BOUND')
     require(type(runtime_only) is bool and (not runtime_only or mechanism in MECHANISMS)
@@ -95,3 +96,10 @@ def remove_tensor_serving_binding(worker, mechanism):
     if not bindings:
         delattr(worker, _ATTRIBUTE)
     return dict(status='SERVING_DEPLOYMENT_REMOVED', mechanism=mechanism)
+
+
+def install_rope22_task_binding(worker, *, prompt_token_ids, weight_manifest,
+        workload_sha256, environment_sha256, _simulation=False, _synchronize=None, _trace_factory=None):
+    return install_tensor_serving_binding(worker,'22.wrong_row',prompt_token_ids=prompt_token_ids,
+        weight_manifest=weight_manifest,workload_sha256=workload_sha256,environment_sha256=environment_sha256,
+        runtime_only=True,_simulation=_simulation,_synchronize=_synchronize,_trace_factory=_trace_factory)

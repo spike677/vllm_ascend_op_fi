@@ -34,9 +34,11 @@ def same_view(left, right):
 class NaturalRoPETrace:
     def __init__(self,model,reader,owners,sources,*,guards=None,simulation=False,
                  diagnostics_context=None,max_events=10000,outer_operator=None,triton_kernel=None,
-                 position_policy='exact'):
+                 position_policy='exact',single_call=False):
         if not simulation and not guards:
             raise RuntimeError('SOURCE_BOUND_ACTUAL_ROPE_GUARDS_REQUIRED')
+        if type(single_call) is not bool:raise ValueError('EXPLICIT_SINGLE_CALL_SCOPE_REQUIRED')
+        self.single_call=single_call;self.selected_site=None
         self.sites=ModuleSites(model)
         self.model,self.reader,self.owners,self.sources=model,reader,self.sites.owner_sites(owners),sources
         self.reader_code=reader.__code__
@@ -162,6 +164,7 @@ class NaturalRoPETrace:
 
     def _profile(self,frame,event,result):
         try:
+            if self.single_call and not self.outer_pending:return
             if self.triton is not None:self.triton.profile(frame,event,result)
             if event not in ('call','return') or frame.f_code is not self.reader_code:return
             if threading.get_ident()!=self.thread or self.request_id is None:
@@ -299,6 +302,10 @@ class NaturalRoPETrace:
                 schema=getattr(func,'_schema',None)
                 if not parent.stack or getattr(schema,'name',None)!=parent.outer_operator:
                     return func(*args,**(kwargs or {}))
+                if parent.single_call:
+                    path=parent.stack[-1][0]
+                    if parent.selected_site is None:parent.selected_site=path
+                    if path!=parent.selected_site:return func(*args,**(kwargs or {}))
                 if parent.outer_pending:raise RuntimeError('REENTRANT_OUTER_ROPE_CALL')
                 values={arg.name:arg.default_value for arg in schema.arguments}
                 values.update(zip((arg.name for arg in schema.arguments),args));values.update(kwargs or {})
@@ -363,7 +370,8 @@ class NaturalRoPETrace:
         native=[row for row in self.native_rows if 'rotary' in row['schema']]
         per_request={request:dict(Counter(row['model_path'] for row in self.rows if row['request_id']==request))
                      for request in {row['request_id'] for row in self.rows}}
-        structural=bool(per_request) and all(set(counts)==set(self.owners) and
+        expected={self.selected_site} if self.single_call else set(self.owners)
+        structural=bool(per_request) and all(set(counts)==expected and
                     all(count==1 for count in counts.values()) for counts in per_request.values())
         nested_joins=all(len([item for item in native if item['reader_sequence']==row['sequence']])==1
                   for row in self.rows) and all(all(item['reader_argument_join'].values()) for item in native)
@@ -384,7 +392,8 @@ class NaturalRoPETrace:
                     and any(item['returned'] for item in row['consumers']) for row in self.rows)
             and all(row.get('original_returned') and row['original_calls']==1 for row in self.native_rows))
         return dict(complete=bool(complete),simulation=self.simulation,sources=self.sources,
-            actual_dispatch={path:guard.report() for path,guard in self.guards.items()},
+            actual_dispatch={path:guard.report() for path,guard in self.guards.items()
+                if not self.single_call or path==self.selected_site},
             structural_cache_owners=list(self.owners),readers=self.rows,native_operators=self.native_rows,
             outer_operators=self.outer_rows,outer_reader_joins_complete=bool(outer_joins),
             triton_launches=triton_rows,triton_reader_joins_complete=bool(triton_joins),
@@ -393,7 +402,9 @@ class NaturalRoPETrace:
             raw_device_launch_payload_observed=False,
             position_policy=self.position_policy,
             root_forwards=self.root_rows,
-            structural_coverage_complete=bool(structural),native_reader_joins_complete=bool(joins),
+            structural_coverage_complete=bool(structural and not self.single_call),
+            observation_scope='ONE_ACTUAL_SITE' if self.single_call else 'ALL_STRUCTURAL_SITES',
+            selected_site=self.selected_site,selected_scope_complete=bool(structural),native_reader_joins_complete=bool(joins),
             structural_calls_per_request=per_request,
             observed_readers=len(self.rows),observed_native_rotary_calls=len(native),
             readers_per_request=dict(Counter(row['request_id'] for row in self.rows)),errors=self.errors,
