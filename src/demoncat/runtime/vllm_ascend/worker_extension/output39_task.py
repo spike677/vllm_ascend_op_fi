@@ -22,6 +22,15 @@ class Output39TaskSession(Serving39OutputSession):
         self.callbacks = {}
         self.hidden = None
 
+    def expect(self, request_id):
+        # Preserve the inherited unfinished-request checks. Only a closed,
+        # completed four-request task gets the exhaustion diagnostic.
+        if (self.installed and self.expected is None and self.current is None
+                and not self.logits_active and self.backend.phase == 'complete'):
+            require(False, 'OUTPUT39_TASK_PHASES_EXHAUSTED:'
+                    'normal,fault,off,health (4 requests) already completed')
+        return super().expect(request_id)
+
     def _save(self):
         # Runtime/Host query is the result outlet. No default evidence folder.
         pass

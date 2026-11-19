@@ -1,6 +1,7 @@
-# demoncatpfi-yellow-rc1-20261119：openchamber 接入说明
+# 黄区 RC1.1 维护：openchamber 接入说明
 
-这是**黄区内源集成测试候选包**，不是全部故障完成或黄区验收通过。
+本文维护 RC1.1 的测试部署契约，继承冻结 RC1；原标签、包和 SHA 不覆盖。
+openchamber 已报告黄区测试部署的18/39通过，详见下方RC1.1反馈；这不代表全部故障或现役部署验收通过。
 黄区接入负责人：**openchamber**；蓝区不能直接连接黄区。
 源码冻结提交、压缩包 SHA256、三包安装回执和逐文件清单见仓库
 `releases/demoncatpfi-yellow-rc1-20261119/`。源码提交与交付物提交分别记录，
@@ -174,3 +175,98 @@ Batch：同样prepare/register/check/enable；按返回的`serving.next_phase/ne
 问题分别归类：安装冲突、Controller/调度接线、部署版本不匹配、无合格目标、效果不符、
 恢复失败/未知。当前黄区没有已完成的调用结果，五处接线均待openchamber回传。
 蓝区继续开发不修改本包；未完成28、普通33、更多模型及Site整理不阻塞RC1交接。
+
+## RC1.1 维护：黄区反馈与请求契约
+
+本维护版本基于不可覆盖的 RC1 标签。黄区反馈由 openchamber 的总结提供：
+在 quay.io/ascend/vllm-ascend:v0.18.0-a3（报告的 image ID 为
+6eda85a83d28）、Qwen3-0.6B BF16、TP1、串行 eager 测试部署中，
+18.api_half 和 39.output_proxy 均已完成首条和新的独立任务闭环。
+这与蓝区参考镜像分别记录，不授予 A3、其他 ABI 或黄区现役多卡部署资格。
+quant.batch_shared_scale 在该 BF16 部署上是“待配置”，不是实现缺陷。
+
+39 早先六请求失败的主因是宿主按历史 C1 名称驱动普通四请求任务。
+前四个请求实际上已经完成 normal、fault、off、health；第五个被拒是正确行为。
+RC1.1 只修诊断和交接说明，不改 OFF/health、Native 写入、消费者检查或恢复状态机：
+- 完成四请求后的 advance 返回 OUTPUT39_TASK_PHASES_EXHAUSTED，并说明四阶段已完成。
+- 确实有未结束请求时，仍返回 PREVIOUS_REQUEST_NOT_CLOSED。
+- 公共 create_single_request_provider 拒绝 runtime_only=False，
+  返回 OUTPUT39_ORDINARY_TASK_BINDING_REQUIRED；不会转入历史 C1。
+  安装函数签名不变。依赖旧公共路由运行 C1 的调用现在会被拒绝。
+
+### 固定四请求与结果出口
+
+18 和 39 的普通任务固定为四个真实请求，按实际到达顺序分配：
+normal → fault → off → health。宿主请求名、外部 ID 或标签不能选择阶段；
+完成 health 后不能继续 advance。新任务使用新的 owner/tenant/作用域，
+按现有安装/清理契约重新绑定，不复用已经用完的 provider。
+
+读取 client.query() 返回的 response.provider_state.evidence，至少检查：
+actual_requests[*].phase、complete、matched_off_and_health_confirmed、
+last_fault_effect。不要把 Host 外层 success 或请求名字当作故障命中证据。
+
+vLLM 0.18 接入示例（engine 为宿主现有引擎；模型执行仍由真实调度器负责）：
+
+~~~python
+internal_id = engine.add_request(external_id, prompt, sampling_params)
+if not isinstance(internal_id, str) or not internal_id:
+    raise RuntimeError("必须取得当前引擎实际返回的内部 request ID")
+reply = client.advance(internal_id)
+if reply["status"] != "ACTION_COMPLETED":
+    raise RuntimeError(reply)
+# 宿主按原来的 engine.step()/运行循环处理这个已入队请求。
+# 不直接调用 model.forward，不把 external_id 替换成猜测的内部 ID。
+evidence = client.query()["response"]["provider_state"]["evidence"]
+~~~
+
+正常结束依次检查每次响应：finish → disable → unregister → detach。
+本包真实方法是 client.finish()/disable()/unregister()/detach()；
+如黄区 Controller 另有 remove，应在 detach/资源释放成功后调用其实际接口，
+本包没有虚构的 client.remove()。
+
+失败后先 recover 或 abort，按 provider 当前状态完成必要的真实 OFF/health，
+然后 clean → unregister → detach，最后才执行宿主 remove。
+否则 OWNER_CLEAN_REQUIRED 必须保留，不能强行释放 owner。
+即使前四个请求已经成功，额外的第五次 advance 被拒仍是失败的控制 RPC；
+Host 会要求恢复/清理，不能直接忽略错误并继续请求。RC1.1 保留此行为。
+
+### 串行 eager 与环境前提
+
+18/39 的完整引擎配置至少包括：
+async_scheduling=False、enable_chunked_prefill=False、
+enable_prefix_caching=False、max_num_seqs=1、enforce_eager=True；
+TP/PP/DP 均为 1。实际 runner 的 PCP/DCP 也须为 1、use_cp=False、
+enable_dbo=False、speculative_config=None、kv_sharing_fast_prefill=False；
+当前普通文本路径还要求非 encoder-decoder、非多模态。
+这些是同一组真实运行前提，不能只设置 enforce_eager。
+
+Worker 必须通过现有 vLLM 标准启动流程带上
+worker_extension_cls=demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension。
+Extension 不创建、启动或重启 Worker。
+
+18 和 39 都依赖当前 vllm-ascend 自定义算子库能够正确加载。
+在启动 Worker 前核对 ASCEND_CUSTOM_OPP_PATH 中的实际 vendor、
+实际加载的 libcust_opapi.so 及其依赖。若遇到 GLIBCXX_3.4.29，
+核对 ldd 的真实 libstdc++.so.6 解析结果和 LD_LIBRARY_PATH 顺序，
+确保先命中满足符号要求的匹配库；不能仅修改版本字符串或覆盖正在使用的库。
+参考蓝区库 SHA 相同也不能代替这些环境检查。
+
+Batch 保留原六批协议，不套用上述四请求。测试部署须准备
+Qwen3-0.6B 动态 W8A8 权重及与实际源码/SDK 匹配的量化 bundle，
+TP1、B8、首次纯 decode；对应调度容量为 max_num_seqs=8。
+BF16 无量化权重不能执行这项能力，普通投影路线不代表 GMM1/MoE 全覆盖。
+
+当前仍区分：蓝区验证组合、黄区测试部署实测组合、黄区现役实测组合。
+前两者都有上述限定结果；黄区现役的五处真实接线及 product_closed
+仍由 openchamber 在现役项目中验收。本维护不把用户反馈变成生产准入凭证。
+
+### RC1.1 本轮 CPU 回归范围
+
+冻结 RC1 本轮复测 159 项：158 通过、1 项因 Windows 符号链接权限跳过。
+本轮选集比原发布“134 通过、1 跳过”更大，不把数量差异解释成回归。
+RC1.1 同组选集加三个边界回归：162 项中161通过、1项同原因跳过，失败/错误均为0。
+环境为 Python3.12.14 / torch2.10.0+cpu；Native 与调度器为明确 CPU 替身，NPU调用为0。
+新增回归验证第五请求的新诊断、真正未结束请求的原诊断，以及 runtime_only=False
+在公共入口拒绝。导出后的迁移检查改为普通四请求与公开拒绝契约，历史 C1 原件保留。
+消费者、Native写入和OFF/health实现未改，蓝区既有机制结果按限定范围复用。
+实际导出包安装与源码一致性结果以本维护版本发行清单为准；不能用CPU测试替代黄区回归。

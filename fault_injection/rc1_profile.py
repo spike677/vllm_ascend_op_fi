@@ -1,5 +1,5 @@
 """RC1 test handoff policy; never grants a live deployment or target admission."""
-RC_ID = 'demoncatpfi-yellow-rc1-20261119'
+RC_ID = 'demoncatpfi-yellow-rc1-1-20261119'
 TEST_CANDIDATES = frozenset(('39.output_proxy', 'quant.batch_shared_scale', '18.api_half'))
 
 

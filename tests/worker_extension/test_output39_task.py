@@ -116,6 +116,58 @@ class Output39TaskTests(unittest.TestCase):
         self.assertEqual((state['owned_hooks'], state['leases'], state['inflight']), (0, 0, 0))
         self.assertFalse(self.evidence_root.exists())
 
+    def test_six_requested_phases_stop_at_fifth_after_four_complete_requests(self):
+        self.start()
+        for index in range(4):
+            self.enqueue(index)
+        evidence = self.client.query()['response']['provider_state']['evidence']
+        self.assertEqual([row['phase'] for row in evidence['actual_requests']],
+                         ['normal', 'fault', 'off', 'health'])
+        self.assertTrue(evidence['complete'])
+        self.assertTrue(evidence['matched_off_and_health_confirmed'])
+        reply = self.client.advance('caller-labelled-off-fifth')
+        self.assertNotEqual(reply['status'], 'ACTION_COMPLETED')
+        self.assertIn('OUTPUT39_TASK_PHASES_EXHAUSTED', str(reply))
+        self.assertNotIn('PREVIOUS_REQUEST_NOT_CLOSED', str(reply))
+        self.assertEqual(self.model.forward_calls, 4)
+        after = self.client.query()['response']['provider_state']['evidence']
+        self.assertEqual(after['last_fault_effect'], evidence['last_fault_effect'])
+        self.assertTrue(after['complete'])
+        # The rejected fifth control RPC puts the Host into recovery.
+        # Keep the existing failed-task cleanup contract unchanged.
+        for action in ('abort', 'clean', 'unregister'):
+            self.ok(getattr(self.client, action)())
+        self.assertEqual(self.client.detach()['status'], 'DETACHED')
+
+    def test_unfinished_request_keeps_previous_request_diagnostic(self):
+        self.start()
+        self.actual_request_id = 'actual-output39-0'
+        self.ok(self.client.advance(self.actual_request_id))
+        reply = self.client.advance('too-early')
+        self.assertNotEqual(reply['status'], 'ACTION_COMPLETED')
+        self.assertIn('PREVIOUS_REQUEST_NOT_CLOSED', str(reply))
+        self.assertNotIn('OUTPUT39_TASK_PHASES_EXHAUSTED', str(reply))
+        self.assertEqual(self.model.forward_calls, 0)
+        for action in ('abort', 'clean', 'unregister'):
+            self.ok(getattr(self.client, action)())
+        self.assertEqual(self.client.detach()['status'], 'DETACHED')
+
+    def test_public_factory_rejects_research_binding_before_native_or_hooks(self):
+        def bind(actual, config):
+            serving39_output.install_fault39_output_serving_binding(
+                self.worker, transport=self.transport, prompt_token_ids=[1, 2, 3, 4],
+                runtime_only=False, evidence_dir=self.evidence_root / 'legacy',
+                _simulation=True, _native_readback=lambda t: dict(abi=1, sha256=t.sha256))
+            return {}
+        self.client.host._binding = bind
+        reply = self.client.prepare()
+        self.assertNotEqual(reply['status'], 'ACTION_COMPLETED')
+        self.assertIn('OUTPUT39_ORDINARY_TASK_BINDING_REQUIRED', str(reply))
+        self.assertEqual(self.model.forward_calls, 0)
+        self.assertEqual(self.transport.opened, [])
+        binding = getattr(self.worker, serving39_output._ATTRIBUTE)
+        self.assertEqual(binding.leases, set())
+
     def test_pending_off_health_show_current_phase_without_old_fault_effect(self):
         self.start();self.enqueue(0);self.enqueue(1)
         evidence = self.client.query()['response']['provider_state']['evidence']

@@ -128,3 +128,35 @@ SDK、镜像、库或 callable 身份不匹配时应报告未配置/不支持并
 黄区接入后仍须在同一实际 Worker 执行该机制已有普通 normal/F/OFF/health 或 Batch 六批协议。
 下一任务必须使用 fresh scope，不清零 attempted、不复用 seal 或过期地址。
 本交接不授予黄区主项目接线、C1/C2/C3/E5 或新增模型/版本的验收资格。
+
+## RC1.1 接入补充
+
+18/39 的公共普通任务均为 normal → fault → off → health 四请求，
+按到达顺序分配，宿主标签不起阶段选择作用。health 后不可再 advance。
+结果读取 response.provider_state.evidence 的 actual_requests[*].phase、
+complete、matched_off_and_health_confirmed、last_fault_effect。
+39 必须安装 runtime_only=True；False 的公共请求在 RC1.1 明确拒绝，
+不会调用历史 C1 provider，安装函数签名未变。
+
+正常结束：finish → disable → unregister → detach，再由宿主完成 remove。
+失败：先 recover 或 abort，并完成必要的实际 OFF/health，再 clean →
+unregister → detach/remove。即使只是多发了第五个 advance，也必须遵守
+Host 的失败恢复约束；不能绕过 OWNER_CLEAN_REQUIRED。
+完整 API 示例及参数见 [请求契约](yellow_rc1.md#固定四请求与结果出口)。
+
+18/39 同时要求 async_scheduling=False、enable_chunked_prefill=False、
+enable_prefix_caching=False、max_num_seqs=1、enforce_eager=True、
+TP/PP/DP/PCP/DCP=1，并关闭 speculative、DBO、上下文并行及 KV sharing fast prefill。
+须实际传入 worker_extension_cls；使用 add_request 返回的内部 ID，而非外部请求名。
+
+两条机制都需要 vllm-ascend 的 libcust_opapi.so 正常加载；18 没有新增自有
+Native 库，不等于不依赖已有 vllm-ascend 自定义算子环境。
+启动前核对 ASCEND_CUSTOM_OPP_PATH、libcust_opapi.so 的实际解析位置、
+ldd 解析出的 libstdc++.so.6 是否提供 GLIBCXX_3.4.29，以及
+LD_LIBRARY_PATH 的先后顺序。使用匹配环境的库，不伪造构建 SHA 或版本。
+黄区报告 v0.18.0-a3 / 6eda85a83d28 的 18/39 已通过测试部署闭环；
+这不是蓝区镜像，也不是现役多卡支持的证据。
+
+量化能力在 BF16 测试部署上为“待配置”。其测试前提是 Qwen3-0.6B 动态
+W8A8 权重、匹配 bundle、TP1/B8 首次纯 decode 和 max_num_seqs=8；
+仍按六批协议运行，不能套用 18/39 的四请求协议。
