@@ -20,11 +20,11 @@ SUCCESS = 'BLUE_ZONE_PUBLIC_ROPE22_SINGLE_TASK_ACCEPTED_NOT_MAIN_PROJECT'
 CPU_SUCCESS = 'CPU_ROPE22_TASK_DRIVER_CONTRACT_ONLY'
 PHASES = ('normal', 'fault', 'off', 'health')
 MODULES = tuple(('fault_injection.'+name, 'fault_injection/'+name+'.py') for name in (
-    'rope_census', 'rope_fused22', 'rope_triton_trace', 'rope_sites', 'rmsnorm_return', 'actions', 'effect_summary', '_scoped_dispatch', 'tensor_callable',
+    'prerequisites', 'rope_census', 'rope_fused22', 'rope_triton_trace', 'rope_sites', 'rmsnorm_return', 'actions', 'effect_summary', '_scoped_dispatch', 'tensor_callable',
     'tensor_observer', 'module_faults', 'core', 'catalog', 'delivery_scope')) + tuple(
     ('demoncat.runtime.vllm_ascend.worker_extension.'+name,
      'src/demoncat/runtime/vllm_ascend/worker_extension/'+name.replace('.', '/')+'.py')
-    for name in ('rope22_task', 'ordinary_admission', 'prerequisites', 'providers.rms18_task', 'providers.tensor_serving', 'providers._scope',
+    for name in ('deployment_acceptance','ordinary_evidence','rope22_task', 'ordinary_admission', 'prerequisites', 'providers.rms18_task', 'providers.tensor_serving', 'providers._scope',
         'providers.tensor_modules', 'rms18_request', 'serving_tensor_binding', 'serving',
         'serving_context', 'call_binding', 'host', 'config', 'runtime', 'identity', 'registry'))
 SOURCES = tuple(relative for _, relative in MODULES) + (
@@ -57,7 +57,7 @@ def digest(value):
     return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False, separators=(',', ':')).encode()).hexdigest()
 
 
-def setup(worker, identity, prompt, weights, pins):
+def setup(worker, identity, prompt, weights, pins, manifest_sha256):
     from vllm.v1.worker.worker_base import WorkerBase
     from demoncat.runtime.vllm_ascend.worker_extension.serving_tensor_binding import install_rope22_task_binding
     import torch
@@ -74,7 +74,21 @@ def setup(worker, identity, prompt, weights, pins):
     versions = dict(torch=torch.__version__, torch_npu=torch_npu.__version__, vllm=vllm.__version__)
     bound = install_rope22_task_binding(worker, prompt_token_ids=prompt, weight_manifest=weights,
         workload_sha256=digest(prompt), environment_sha256=digest(dict(versions=versions, sources=pins)))
+    from demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission import ordinary_route_report, require_ordinary_route
+    from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import install_blue_acceptance_permit, remove_blue_acceptance_permit
+    from demoncat.runtime.vllm_ascend.worker_extension.serving_tensor_binding import remove_tensor_serving_binding
+    try:
+        default=ordinary_route_report('22.wrong_row',worker,worker.model_runner.model)
+        require(not default['deployment_acceptance']['accepted'],'UNREVIEWED_ROPE22_DEFAULT_ACCEPTANCE')
+        install_blue_acceptance_permit(worker,mechanisms=['22.wrong_row'],attempt='ordinary22-two-scopes',
+            source_manifest_sha256=manifest_sha256)
+        blue=require_ordinary_route('22.wrong_row',worker,worker.model_runner.model)
+    except BaseException:
+        remove_tensor_serving_binding(worker,'22.wrong_row')
+        remove_blue_acceptance_permit(worker)
+        raise
     return dict(worker=identity, binding=bound, loaded_sources=loaded, versions=versions,
+                default_acceptance=default, blue_acceptance=blue,
                 no_model_forward=True, full_census=False, new_native_build=False)
 
 
@@ -82,7 +96,10 @@ def remove_binding(worker, identity):
     from demoncat.runtime.vllm_ascend.worker_extension.serving_tensor_binding import remove_tensor_serving_binding
     worker = actual_worker(worker)
     require(worker.demoncat_worker_identity().get('worker') == identity, 'CLEANUP_WORKER_CHANGED')
-    return remove_tensor_serving_binding(worker, '22.wrong_row')
+    result=remove_tensor_serving_binding(worker, '22.wrong_row')
+    from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import remove_blue_acceptance_permit
+    remove_blue_acceptance_permit(worker)
+    return result
 
 
 def verify_normal(row, *, cpu_contract=False):
@@ -236,7 +253,7 @@ def main(argv=None):
         report['prompt_token_ids'] = tokens
         def binding(identity, config):
             require(config == FaultConfig(22, 'wrong_row'), 'FIXED_MECHANISM_REQUIRED')
-            replies = llm.collective_rpc(setup, args=(identity, tokens, report['weights'], report['source']['pins']), timeout=120)
+            replies = llm.collective_rpc(setup, args=(identity, tokens, report['weights'], report['source']['pins'],report['source']['manifest_sha256']), timeout=120)
             require(len(replies) == 1 and replies[0]['worker'] == identity, 'TP1_ACTUAL_SETUP_ROUTE_REQUIRED')
             report['binding'] = replies[0]
             return {}
