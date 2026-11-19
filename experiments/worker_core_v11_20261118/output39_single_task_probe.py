@@ -153,7 +153,12 @@ def drive(llm, client, *, prompt, params, out, report, cpu_contract=False, stop_
         nonlocal last
         last = getattr(client, name)(*args)
         require(last['status'] == expected, 'PUBLIC_TASK_ACTION_FAILED:'+name+':'+last['status'])
-        return last.get('response', {}).get('provider_state') or {}
+        state = last.get('response', {}).get('provider_state') or {}
+        if 'request_plan' in state:
+            require(report.get('request_plan', state['request_plan']) == state['request_plan'],
+                    'REQUEST_PLAN_CHANGED_WITHIN_SCOPE')
+            report['request_plan'] = state['request_plan']
+        return state
     def request(phase, *, recovery=False):
         nonlocal pending
         require(len(seen) < 6 and not llm.llm_engine.has_unfinished_requests(), 'BOUNDED_IDLE_REAL_QUEUE_REQUIRED')
@@ -239,6 +244,7 @@ def main(argv=None):
         parser.add_argument('--'+name, required=True)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--memory', type=float, default=.35)
+    parser.add_argument('--scopes', type=int, choices=(1, 2), default=1)
     parser.add_argument('--deadline-seconds', type=int, default=480)
     args = parser.parse_args(argv)
     require(1 <= args.deadline_seconds <= 1500 and .1 <= args.memory <= .8, 'BOUNDED_ACCEPTANCE_REQUEST_REQUIRED')
@@ -272,21 +278,42 @@ def main(argv=None):
         tokens = llm.get_tokenizer().encode(PROMPT, add_special_tokens=True)
         require(2 <= len(tokens) <= 128, 'BOUNDED_ACTUAL_PROMPT_REQUIRED')
         report['prompt_token_ids'] = tokens
-        def binding(identity, config):
-            require(config == FaultConfig(39, 'output_proxy'), 'FIXED_MECHANISM_REQUIRED')
-            replies = llm.collective_rpc(setup, args=(identity, args.library, args.sha256,
-                tokens, report['source']['pins']), timeout=120)
-            require(len(replies) == 1 and replies[0]['worker'] == identity, 'TP1_ACTUAL_SETUP_ROUTE_REQUIRED')
-            report['binding'] = replies[0]
-            return {}
-        client = WorkerFaultClient(HostAdapter(llm, prepare_binding=binding, timeout=120), FaultConfig(39, 'output_proxy'))
-        drive(llm, client, prompt=dict(prompt_token_ids=tokens),
-            params=SamplingParams(temperature=0, max_tokens=1, ignore_eos=True),
-            out=args.out, report=report, stop_fault_budget=recovery_budget)
-        if report.get('ownership_retained') is False and report.get('binding'):
-            report['binding_removal'] = llm.collective_rpc(remove_binding, args=(report['worker'],), timeout=120)
-            require(len(report['binding_removal']) == 1 and report['binding_removal'][0]['status'] == 'SERVING_DEPLOYMENT_REMOVED',
-                    'OWNED_DEPLOYMENT_REMOVAL_UNCONFIRMED')
+        scopes = []
+        for scope_index in range(args.scopes):
+            scope = report if args.scopes == 1 else dict(index=scope_index, status='STARTED', requests=[])
+            scope_out = args.out if args.scopes == 1 else args.out / ('scope'+str(scope_index))
+            if args.scopes == 2:
+                scope_out.mkdir(exist_ok=False)
+                scopes.append(scope)
+                report['scopes'] = scopes
+                write(args.out/'result.json', report)
+            def binding(identity, config):
+                require(config == FaultConfig(39, 'output_proxy'), 'FIXED_MECHANISM_REQUIRED')
+                replies = llm.collective_rpc(setup, args=(identity, args.library, args.sha256,
+                    tokens, report['source']['pins']), timeout=120)
+                require(len(replies) == 1 and replies[0]['worker'] == identity, 'TP1_ACTUAL_SETUP_ROUTE_REQUIRED')
+                scope['binding'] = replies[0]
+                return {}
+            client = WorkerFaultClient(HostAdapter(llm, prepare_binding=binding, timeout=120), FaultConfig(39, 'output_proxy'))
+            drive(llm, client, prompt=dict(prompt_token_ids=tokens),
+                params=SamplingParams(temperature=0, max_tokens=1, ignore_eos=True),
+                out=scope_out, report=scope, stop_fault_budget=recovery_budget)
+            if scope.get('ownership_retained') is False and scope.get('binding'):
+                scope['binding_removal'] = llm.collective_rpc(remove_binding, args=(scope['worker'],), timeout=120)
+                require(len(scope['binding_removal']) == 1 and scope['binding_removal'][0]['status'] == 'SERVING_DEPLOYMENT_REMOVED',
+                        'OWNED_DEPLOYMENT_REMOVAL_UNCONFIRMED')
+            scope['owner'] = client.snapshot()['owner']
+            require(scope['status'] == SUCCESS and scope.get('ownership_retained') is False,
+                    'STOP_AFTER_FIRST_FAILED_SCOPE')
+            if args.scopes == 1: scopes.append(scope)
+            if args.scopes == 2:
+                report['scopes'] = scopes
+                write(args.out/'result.json', report)
+        if args.scopes == 2:
+            require(scopes[0]['worker'] == scopes[1]['worker'] and scopes[0]['owner'] != scopes[1]['owner'],
+                    'SAME_WORKER_DISTINCT_OWNERS_REQUIRED')
+            report.update(status=SUCCESS, same_worker=True, independent_owners=True,
+                          nominal_requests=8, max_total_requests_with_recovery=12)
     except BaseException as error:
         report.setdefault('error', repr(error))
         report.setdefault('traceback', traceback.format_exc())

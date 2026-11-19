@@ -8,7 +8,7 @@ from .fault41 import Fault41ServingProvider, require
 from ._scope import reject_unknown
 from ..first_decode_health import FirstDecodeHealth
 
-PHASES=('normal','normal_repeat','lossless','fault','off','health')
+from fault_injection.request_plan import KV41 as PHASES
 _NATIVE=('observe','observe','lossless','fault','off')
 
 

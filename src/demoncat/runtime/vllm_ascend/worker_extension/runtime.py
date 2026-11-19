@@ -266,6 +266,9 @@ class WorkerFaultRuntime:
                 if use is not None:state=dict(state,deployment_acceptance_use=use)
                 from .ordinary_evidence import bound_state
                 state=bound_state(state,ordinary=getattr(lease.provider,'ordinary_only',False))
+                if getattr(lease.provider,'_deployment_admission',None) is not None:
+                    from fault_injection.request_plan import task_state
+                    state=task_state(lease.mechanism,state)
                 if state.get('evidence_limit_error'):lease.recovery_required=True
             if not isinstance(state, dict):
                 return None

@@ -26,6 +26,25 @@ class Rms18ProbeTests(unittest.TestCase):
         self.driver = Driver(self.case)
         self.report = dict(status='STARTED', C1=False, C2=False, C3=False, E5=False)
 
+    def test_two_scopes_keep_actual_worker_with_distinct_owners(self):
+        from demoncat.runtime.vllm_ascend.worker_extension.host import WorkerFaultClient
+        from demoncat.runtime.vllm_ascend.worker_extension import serving_tensor_binding as bindings
+        first_client = self.case.client
+        first = self.drive()
+        self.assertEqual(first['status'], probe.CPU_SUCCESS, first)
+        first_owner = first_client.snapshot()['owner']
+        first_worker = first_client.snapshot()['worker']
+        bindings.remove_tensor_serving_binding(self.case.worker, '18.api_half')
+        self.out = self.out / 'scope1'; self.out.mkdir()
+        self.report = dict(status='STARTED')
+        self.case.client = WorkerFaultClient(first_client.host, first_client.config)
+        second = self.drive()
+        self.assertEqual(second['status'], probe.CPU_SUCCESS, second)
+        self.assertEqual(self.case.client.snapshot()['worker'], first_worker)
+        self.assertNotEqual(self.case.client.snapshot()['owner'], first_owner)
+        self.assertEqual(self.case.model.forward_calls, 8)
+        self.assertFalse(self.case.client.snapshot()['ownership_retained'])
+
     def drive(self):
         return probe.drive(self.driver, self.case.client, prompt=dict(prompt_token_ids=[1, 2, 3, 4]),
             params=object(), out=self.out, report=self.report, cpu_contract=True)

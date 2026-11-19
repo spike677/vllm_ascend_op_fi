@@ -352,6 +352,17 @@ class ActualPublicRuntimeHarness(unittest.TestCase):
             '--source-manifest-sha256', probe.sha_file(self.source / 'source_manifest.json'), '--model-sha256', 'm'*64])
         return code, json.loads((self.evidence / 'result.json').read_bytes()), json.loads((self.evidence / 'host-core-receipts.json').read_bytes())
 
+    def test_existing_worker_driver_does_not_construct_another_llm(self):
+        with patch.object(sys.modules['vllm'], 'LLM', side_effect=AssertionError('must reuse Worker')):
+            seen = []
+            code = probe.main(['--build-sha256', 'b'*64, '--source-commit', 'a'*40,
+                '--source-manifest-sha256', probe.sha_file(self.source / 'source_manifest.json'),
+                '--model-sha256', 'm'*64], existing_llm=self.llm, llm_observer=seen.append)
+        self.assertEqual(code, 0)
+        self.assertEqual(seen, [self.llm])
+        self.assertEqual(self.scheduled.count('decode'), 6)
+        self.assertEqual(self.removals, [True])
+
     def test_six_batches_public_host_runtime_and_two_health_calls_cleanly_release(self):
         code, result, host = self.run_probe()
         self.assertEqual(code, 0, result)

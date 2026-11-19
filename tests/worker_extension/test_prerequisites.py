@@ -29,6 +29,22 @@ class PrerequisitesTests(unittest.TestCase):
         self.assertEqual(report['status'], 'pending')
         self.assertTrue(all(row['actual']=={'missing':True} for row in report['unmet']))
 
+    def test_missing_pcp_is_aggregated_with_other_mismatches_not_defaulted(self):
+        runner = fixture()[0]
+        del runner.pcp_size
+        runner.use_async_scheduling = True
+        runner.is_multimodal_model = True
+        with self.assertRaises(ContextRefused) as caught:
+            require_serial_eager(runner)
+        report = caught.exception.prerequisites
+        rows = {row['field']: row for row in report['unmet']}
+        self.assertEqual(set(rows), {'pcp_size', 'use_async_scheduling', 'is_multimodal_model'})
+        self.assertEqual(rows['pcp_size']['expected'], 1)
+        self.assertEqual(rows['pcp_size']['actual'], {'missing': True})
+        self.assertEqual(rows['pcp_size']['status'], 'pending')
+        self.assertFalse(hasattr(runner, 'pcp_size'))
+        self.assertFalse(report['execution_authorized'])
+
     def test_boolean_does_not_satisfy_integer_parallel_contract(self):
         runner = fixture()[0]
         runner.vllm_config.parallel_config.tensor_parallel_size = True

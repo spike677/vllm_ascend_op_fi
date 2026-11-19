@@ -69,6 +69,7 @@ def main(argv=None):
     parser.add_argument('--model', default=MODEL)
     parser.add_argument('--card', type=int, choices=(2, 5), default=5)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--scopes', type=int, choices=(1, 2), default=1)
     args = parser.parse_args(argv)
     source = Path(args.source_root).resolve(strict=True)
     manifest = source / 'source_manifest.json'
@@ -101,6 +102,19 @@ def main(argv=None):
         raise ValueError('ONE_REVIEWED_BASE_CASE_REQUIRED')
     case = adapt(base[0], source_root=source, source_commit=args.source_commit, source_sha=probe.sha_file(manifest),
                  model_sha=model['sha256'], build_sha=build_sha)
+    if args.scopes == 2:
+        entry = source/'experiments/worker_core_v11_20261118/probe_quant_two_scopes.py'
+        if not entry.is_file(): raise ValueError('TWO_SCOPE_SOURCE_REQUIRED')
+        case['command'] = case['command'].replace('exec python3 /probe.py',
+            'exec python3 /source/experiments/worker_core_v11_20261118/probe_quant_two_scopes.py')
+        case['id'] += '-two-scopes'
+        case['timeout'] = 1800
+        case['review']['experiment_id'] = case['id']
+        case['review']['resource_budget'].update(timeout_seconds=1800, protocol_batches=12,
+            health_batches=4, fault_model_calls=2, same_worker_scopes=2,
+            independent_owners=True, work_seconds=1560,
+            recovery_and_final_evidence_deadline_seconds=1740)
+        validate_cases([case], [args.card])
     case['review']['model_identity'] = model
     case['review']['native_compile_source_commit'] = build['source_commit']
     with args.out.open('x') as stream:

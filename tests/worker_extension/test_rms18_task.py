@@ -113,6 +113,37 @@ class Rms18TaskTests(unittest.TestCase):
         self.assertEqual(self.client.detach()['status'], 'DETACHED')
         return state
 
+    def test_plan_on_prepare_query_short_and_exhausted(self):
+        from fault_injection.request_plan import request_plan
+        created=self.ok(self.client.prepare())
+        self.assertEqual(created['request_plan'],request_plan('18.api_half'))
+        self.provider=self.worker._demoncat_worker_fault_runtime._leases['18.api_half'].provider
+        for action in ('register','check','enable'):self.ok(getattr(self.client,action)())
+        self.enqueue('short-normal')
+        short=self.client.query()['response']['provider_state']
+        self.assertFalse(short['complete']);self.assertEqual(short['next_phase'],'fault')
+        self.assertEqual(short['request_plan'],created['request_plan'])
+        for phase in ('fault','off','health'):self.enqueue(phase)
+        done=self.client.query()['response']['provider_state']
+        self.assertTrue(done['complete']);before=self.model.forward_calls
+        extra=self.client.advance('extra-request')
+        self.assertNotEqual(extra['status'],'ACTION_COMPLETED')
+        self.assertIn('PHASES_EXHAUSTED',str(extra.get('response')))
+        self.assertEqual(before,self.model.forward_calls)
+
+    def test_short_plan_abort_cleans_without_fault_or_extra_forward(self):
+        self.start(); self.enqueue('normal-only')
+        state = self.client.query()['response']['provider_state']
+        self.assertFalse(state['complete'])
+        calls = self.model.forward_calls
+        self.ok(self.client.abort())
+        self.ok(self.client.unregister())
+        self.assertEqual(self.client.detach()['status'], 'DETACHED')
+        self.assertEqual(self.model.forward_calls, calls)
+        self.assertFalse(self.provider.fault_started)
+        state = self.provider.session.readback()
+        self.assertEqual((state['owned_hooks'], state['leases'], state['inflight']), (0, 0, 0))
+
     def test_four_actual_requests_one_return_no_group_census_or_files(self):
         from demoncat.runtime.vllm_ascend.worker_extension.providers.tensor_natural import NaturalTensorGroupProvider
         original = {}

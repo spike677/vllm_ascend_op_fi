@@ -4,6 +4,7 @@ Control RPCs only queue real request IDs. The existing Runtime owns this
 provider; actual model execution stays entirely in the normal serving path.
 """
 from copy import deepcopy
+from fault_injection.request_plan import FOUR
 
 from ._scope import ProviderError, reject_unknown
 from .tensor_serving import TensorServingProvider, require
@@ -35,8 +36,8 @@ class Rms18TaskProvider(TensorServingProvider):
 
     @property
     def phase(self):
-        return self.recovering or (('normal', 'fault', 'off', 'health')[self.index]
-                                  if self.index < 4 else 'complete')
+        return self.recovering or (FOUR[self.index]
+                                  if self.index < len(FOUR) else 'complete')
 
     def dispatch(self, action, settings, *, owner, generation):
         if action == 'prepare': self.bind(owner, generation)
@@ -161,7 +162,7 @@ class Rms18TaskProvider(TensorServingProvider):
             if phase == 'health': self.complete = True
         else:
             self.index += 1
-            self.complete = self.index == 4
+            self.complete = self.index == len(FOUR)
 
     def fail(self, error, action='actual_request'):
         message = type(error).__name__ + ': ' + str(error)

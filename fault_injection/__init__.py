@@ -49,7 +49,9 @@ def inspect_model(model, *, runner=None):
 
 def attach(model, fault, *, arm='fault', unsupported='error', evidence_dir=None, runtime=None,
            _required_binding=None):
-    """Return a scoped session; entering it automatically binds actual modules."""
+    """Return a scoped public session; historical research routes remain closed."""
+    from .research_entries import refuse_public_historical
+    refuse_public_historical(fault)
     capability = resolve(fault)
     if not callable(getattr(model, 'named_modules', None)):
         raise UnsupportedCall('Expected an actual model with named_modules(); no fault was installed')

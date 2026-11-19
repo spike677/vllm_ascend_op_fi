@@ -33,7 +33,7 @@
 |26 residual_stomp|普通适配待做|普通0；历史Source54/68自然QMM单点，非完整135目标|普通null；Source54 ce82ca5f历史；清单未在本次普通证据中核定|无|关闭|普通待接；保留实际inventory/R/L/qualification_OFF/F/O/H|必须真实独立块邻接；135中27项未解决，不伪造相邻|
 |26 fia_destination|普通适配待做|普通0；历史Source62/89 SmolLM自然推理TP1，非训练|普通null；Source62 dc40a87d，E26|无|关闭|普通待接；历史资格与F/OFF保留|typed FIA及allocator当前邻接要重验；历史模型非当前Qwen|
 |28 legal（FA/FIA）|历史保留，关闭|普通0；旧限定模型/形状不继承至Worker|普通null；历史证据保留|无|关闭|无当前普通协议|本轮不重开legal路线|
-|28 denominator|TND正常链已观察，F未接通|普通0；S、Qwen真实TND，仅正常关联|普通null；Source123正常关联不是F清单|无|关闭|正常观察；F/OFF未验|Execute借用/typed plan待审；不可继承旧HF结果|
+|28 denominator（[限时决策](fault28_status_decision_20261119.md)）|TND正常链已观察，F未接通|普通0；S、Qwen真实TND，仅正常关联|普通null；Source123正常关联不是F清单|无|关闭|正常观察；F/OFF未验|Execute借用/typed plan待审；不可继承旧HF结果|
 |33 Source105|研究单点通过，普通待接|S但FP16，Qwen3-0.6B，首decode Q1/KV1025/page16；普通0|8796f84d；E33|无|关闭|R/L/qualification_OFF/F/recovery_OFF；新增独立health待接|新包须重新stock/private正常桥接；27个匹配点未授proof|
 |39 output_proxy|通过单目标|S，Qwen3-0.6B BF16，Source116普通1|134e1188；E39|RC1/RC1.1/RC2|用户报告RC1.1两作用域；RC2未登记|N/F/O/H|受控有限值→Inf代理；不等于历史越界，黄区回执待审|
 |39 matmul_range|历史Native保留，非普通子集|普通0；历史Source42修复路线，非全8.x/9.x|null普通；历史构建范围见CONVERGENCE_DECISIONS|无|关闭|历史校准/F/OFF，非普通协议|未适配普通任务；不能用output_proxy替代|
@@ -66,3 +66,11 @@
 |28真实TND F/OFF|codex|审查既有未提交改动；完成前关闭|
 |41发行及新增接口修正|codex|另冻结RC2.2，不能进入登记专用RC2.1|
 |A3现役摸底/精确模型制品|openchamber、负责人|Qwen→DeepSeek V4.1 W4A8→W8A8；无GLM，当前无DeepSeek实测|
+
+28研究入口：三个历史变体研究保留，不属于交付；详见[单独决策说明](fault28_status_decision_20261119.md)。最新NPU限额4小时，真实TND通过前公共入口关闭。
+
+## 后续优先级调整与黄区回传
+
+负责人最新版任务书取代原执行顺序：P0维护；P1黄区现役摸底/0.26门禁/同架构小模型；P2 RC2.2（41、request_plan、28研究入口、缺项汇总、18/39/Batch同Worker双作用域）；P3 20/26/33与28限时。RC2.2冻结后测试部署线只维护。
+
+黄区文本回传已到，见[yellow_intake_20261119.md](yellow_intake_20261119.md)。尚非RC2登记总结，因此RC2.1不建分支。硬件代际缺证据；pcp_size按部署不匹配归RC3。旧表是接收前快照，新增材料不能回填蓝区列。

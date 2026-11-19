@@ -237,7 +237,9 @@ class BundleTests(unittest.TestCase):
             bundle.create_review(self.source, 'missing-rope-contract')
         names = bundle._ROPE_CONTRACTS | {'tests/worker_extension/test_core_rope22.py'}
         for name in names:
-            (self.source / name).write_bytes((ROOT / name).read_bytes())
+            target = self.source / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((ROOT / name).read_bytes())
         history = self.source / 'experiments/unreviewed/rope_receipt.json'
         history.parent.mkdir(parents=True)
         history.write_text('{"accepted": true}', encoding='utf-8')
@@ -262,10 +264,13 @@ class BundleTests(unittest.TestCase):
             bundle.create_review(self.source, 'missing-kv41-contract')
         names = bundle._KV41_CONTRACTS | {'tests/worker_extension/test_core_kv41.py'}
         for name in names:
-            (self.source / name).write_bytes((ROOT / name).read_bytes())
+            target = self.source / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((ROOT / name).read_bytes())
         review, _ = self.export()
         self.assertTrue(names <= {row['source_path'] for row in review['files']})
-        self.assertFalse(any(row['source_path'].startswith('experiments/') for row in review['files']))
+        self.assertEqual({row['source_path'] for row in review['files'] if row['source_path'].startswith('experiments/')},
+                         {name for name in names if name.startswith('experiments/')})
         (self.source / 'tests/test_postwrite_providers.py').unlink()
         with self.assertRaisesRegex(bundle.BundleError, 'REQUIRED_SOURCE_MISSING'):
             bundle.create_review(self.source, 'incomplete-kv41-fixture')
@@ -289,7 +294,9 @@ class BundleTests(unittest.TestCase):
             bundle.create_review(self.source, 'missing-output39-contract')
         names = bundle._OUTPUT39_CONTRACTS | {'tests/worker_extension/test_core_output39.py'}
         for name in names:
-            (self.source / name).write_bytes((ROOT / name).read_bytes())
+            target = self.source / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((ROOT / name).read_bytes())
         review, _ = self.export()
         self.assertTrue(names <= {row['source_path'] for row in review['files']})
         self.assertFalse(any(row['source_path'].startswith('experiments/') for row in review['files']))

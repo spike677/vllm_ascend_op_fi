@@ -16,7 +16,7 @@ import traceback
 
 EVIDENCE = Path('/evidence')
 SOURCE = Path('/source')
-PHASES = ('normal', 'reference', 'lossless', 'calibration_off', 'fault', 'off')
+from fault_injection.request_plan import BATCH as PHASES
 PROMPTS = ('Explain why the sky looks blue.', 'Name the capital city of France.',
     'Complete this sentence: Water freezes at', 'Write a Python function to add two integers.',
     'What is the result of seven multiplied by nine?', 'Describe a forest in spring.',
@@ -195,11 +195,12 @@ def one_batch(llm, client, phase, prompts, params, *, seen, record, save, map_re
     return state
 
 
-def main(argv=None):
+def main(argv=None, *, existing_llm=None, evidence_dir=None, llm_observer=None):
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('build-sha256', 'source-commit', 'source-manifest-sha256', 'model-sha256'):
         parser.add_argument('--' + name, required=True)
     args = parser.parse_args(argv)
+    evidence = Path(evidence_dir) if evidence_dir is not None else EVIDENCE
     started = time.monotonic()
     work_deadline, final_deadline = started + 660, started + 840  # Queue hard limit900s includes bootstrap/cleanup.
     report = dict(status='STARTING', scope='BLUE_ZONE_ACCEPTANCE_NOT_MAIN_PROJECT_WIRING', phases=[],
@@ -213,9 +214,9 @@ def main(argv=None):
     def save():
         report['elapsed_seconds'] = time.monotonic() - started
         for name, value in [('result.json', report)] + ([] if client is None else [('host-core-receipts.json', client.snapshot())]):
-            temp = EVIDENCE / (name + '.tmp')
+            temp = evidence / (name + '.tmp')
             temp.write_text(json.dumps(value, indent=2, allow_nan=False) + '\n')
-            temp.replace(EVIDENCE / name)
+            temp.replace(evidence / name)
 
     def retain_secondary(error):
         report.setdefault('secondary_errors', []).append(repr(error))
@@ -249,12 +250,13 @@ def main(argv=None):
         from demoncat.runtime.vllm_ascend.worker_extension.serving_context import require_host_driven_core, actual_driver_request_map
         map_requests = actual_driver_request_map
         phase = 'LLM_CONSTRUCTION'
-        llm = LLM(model='/model', load_format='safetensors', dtype='bfloat16', tensor_parallel_size=1,
+        llm = existing_llm if existing_llm is not None else LLM(model='/model', load_format='safetensors', dtype='bfloat16', tensor_parallel_size=1,
             enforce_eager=True, max_model_len=128, max_num_seqs=8, max_num_batched_tokens=256,
             num_gpu_blocks_override=64, enable_prefix_caching=False, enable_chunked_prefill=False,
             async_scheduling=False, gpu_memory_utilization=.85, seed=42, trust_remote_code=False,
             disable_log_stats=True, worker_extension_cls='demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension')
         require_host_driven_core(llm)
+        if llm_observer is not None: llm_observer(llm)
         tokens = [llm.get_tokenizer().encode(text, add_special_tokens=True) for text in PROMPTS]
         report['prompt_token_ids'] = tokens
         prompts = [dict(prompt_token_ids=value) for value in tokens]
@@ -276,7 +278,7 @@ def main(argv=None):
             record = {}
             report['phases'].append(record)
             state = one_batch(llm, client, phase, prompts, params, seen=seen, record=record, save=save, map_requests=map_requests)
-            reference = write_original(EVIDENCE / ('phase-' + phase + '.json'), record)
+            reference = write_original(evidence / ('phase-' + phase + '.json'), record)
             record.clear()
             record.update(phase=phase, completed=True, original=reference,
                           next_phase=state['serving']['next_phase'])
@@ -318,7 +320,7 @@ def main(argv=None):
             try:
                 if report.get('error'):
                     try:
-                        report['failure_readback'] = write_original(EVIDENCE / 'failure-readback.json', client.query())
+                        report['failure_readback'] = write_original(evidence / 'failure-readback.json', client.query())
                     except BaseException as secondary:
                         retain_secondary(secondary)
                 # Recover first. Never uninstall observers before the actual

@@ -74,6 +74,9 @@ def rpc_provider_capabilities():
     from fault_injection.delivery_scope import describe_delivery
     for row in rows:
         row['current_delivery'] = describe_delivery(row['mechanism'])
+        from fault_injection.request_plan import request_plan
+        row['request_plan'] = request_plan(row['mechanism'])
+        row['research_entry'] = row['current_delivery'].get('research_entry')
         from .ordinary_admission import ordinary_route_report
         row['ordinary_task_prerequisites'] = ordinary_route_report(row['mechanism'])
         # A deployed single-site driver exists; this does not grant a fresh

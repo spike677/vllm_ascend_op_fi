@@ -66,12 +66,15 @@ _SCOPES = {
 
 def describe_delivery(mechanism):
     """Machine-readable scope, not a claim about a caller's current model."""
+    from .request_plan import request_plan
+    from .research_entries import research_entry
     state, requirements, next_step = _SCOPES[mechanism]
     selected = state not in ('UNSUPPORTED', 'HISTORICAL_ONLY')
     from .rc1_profile import test_candidate
     from .rc2_profile import RC_ID, test_candidate as rc2_candidate
     return deepcopy(dict(
         revision=REVISION, state=state, selected_for_current_delivery=selected,
+        request_plan=request_plan(mechanism), research_entry=research_entry(mechanism),
         rc_id=RC_ID, rc1_test_candidate=test_candidate(mechanism),
         rc1_candidate_grants_live_admission=False,
         rc2_test_candidate=rc2_candidate(mechanism),rc2_candidate_grants_live_admission=False,

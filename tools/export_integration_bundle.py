@@ -103,6 +103,11 @@ _WRITER26_CONTRACTS = {'tests/worker_extension/'+name+'.py' for name in (
     'experiments/c2c3_closure_20261117/providers26_build_group.py'}
 _V11_ENDPOINTS = 'src/demoncat/runtime/vllm_ascend/worker_extension/endpoints.py'
 _V11_CONTRACTS = {
+    'experiments/worker_core_v11_20261118/probe_quant_two_scopes.py',
+    'fault_injection/request_plan.py', 'fault_injection/research_entries.py',
+    'tests/test_request_plan.py', 'tests/test_fault28_research_entry.py',
+    'docs/worker_core_v1/yellow_rc22.md',
+    'docs/worker_core_v1/fault28_status_decision_20261119.md',
     'docs/worker_core_v1/rc3_inspect_migration_resources_20261119.md',
     'experiments/worker_core_v11_20261118/ordinarybatch_a3_20261119_summary.json',
     'tools/check_rc2_install.py','tests/test_rc2_handoff.py',
