@@ -74,10 +74,14 @@ def setup(worker, identity, prompt, weights, pins):
     versions = dict(torch=torch.__version__, torch_npu=torch_npu.__version__, vllm=vllm.__version__)
     bound = install_restore8_task_binding(worker, prompt_token_ids=prompt, weight_manifest=weights,
         workload_sha256=digest(prompt), environment_sha256=digest(dict(versions=versions, sources=pins)))
-    from demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission import ordinary_route_report
-    acceptance=ordinary_route_report('8.restore_offset',worker,worker.model_runner.model)
-    require(acceptance['can_prepare'] and acceptance['deployment_acceptance']['accepted'],
-        'ACTUAL_ACCEPTED_MOE8_DEPLOYMENT_REQUIRED:'+json.dumps(acceptance,sort_keys=True))
+    from demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission import require_ordinary_route
+    try:
+        acceptance=require_ordinary_route('8.restore_offset',worker,worker.model_runner.model)
+        require(acceptance['deployment_acceptance']['accepted'],'ACTUAL_ACCEPTED_MOE8_DEPLOYMENT_REQUIRED')
+    except BaseException:
+        from demoncat.runtime.vllm_ascend.worker_extension.serving_tensor_binding import remove_tensor_serving_binding
+        remove_tensor_serving_binding(worker,'8.restore_offset')
+        raise
     return dict(worker=identity, binding=bound, loaded_sources=loaded, versions=versions,acceptance=acceptance,
                 no_model_forward=True, full_census=False, new_native_build=False)
 

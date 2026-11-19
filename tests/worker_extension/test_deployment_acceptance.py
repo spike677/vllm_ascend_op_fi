@@ -54,6 +54,14 @@ class DeploymentAcceptanceTests(unittest.TestCase):
     def test_public_configuration_has_no_acceptance_bypass(self):
         from demoncat.runtime.vllm_ascend.worker_extension.config import FaultConfig
         with self.assertRaises(TypeError):FaultConfig(22,'wrong_row',blue_acceptance=True)
+    def test_loaded_torch_version_subclass_is_canonical_string(self):
+        class Version(str):pass
+        import sys
+        with patch.dict(sys.modules,{'torch':NS(__version__=Version('2.9.0+cpu'))}):
+            actual=a.observe_deployment(self.worker,self.model)
+        self.assertIs(type(actual['torch']),str)
+        self.assertEqual(actual['torch'],'2.9.0+cpu')
+
     def test_actual_observer_does_not_import_or_execute_models(self):
         with patch('importlib.import_module',side_effect=AssertionError('no dynamic import')):
             result=a.observe_deployment(self.worker,self.model)

@@ -49,7 +49,8 @@ def observe_deployment(worker,model):
     config=_get(runner,'vllm_config.model_config')
     actual={}
     for name in ('torch','torch_npu','vllm'):
-        actual[name]=getattr(sys.modules.get(name),'__version__',None)
+        version=getattr(sys.modules.get(name),'__version__',None)
+        actual[name]=str(version) if isinstance(version,str) else None
     try:actual['vllm_ascend']=metadata.version('vllm-ascend')
     except metadata.PackageNotFoundError:actual['vllm_ascend']=None
     from fault_injection.environment import _toolkit
