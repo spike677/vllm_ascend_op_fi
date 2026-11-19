@@ -80,6 +80,8 @@ def setup(worker, identity, library, library_sha256, prompt, pins):
     from fault_injection.deployments.postwrite import NativePostwriteLibrary
     from demoncat.runtime.vllm_ascend.worker_extension.serving39_output import install_fault39_output_serving_binding
     worker = actual_worker(worker)
+    from demoncat.runtime.vllm_ascend.worker_extension.deployment_authorization import configure_deployment_acceptance, authority_for
+    if authority_for(worker) is None:configure_deployment_acceptance(worker, source='BLUE_COMBINATION', authorize_operator=lambda principal,operation:False)
     require(isinstance(worker, WorkerBase) and worker.demoncat_worker_identity().get('worker') == identity,
             'ACTUAL_INITIALIZED_STANDARD_WORKER_CHANGED')
     loaded = {}

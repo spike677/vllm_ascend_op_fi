@@ -10,6 +10,8 @@ from demoncat.runtime.vllm_ascend.worker_extension.serving_tensor_binding import
 class DeploymentAcceptanceTests(unittest.TestCase):
     def setUp(self):
         self.model=object();self.worker=NS(model_runner=NS(model=self.model))
+        from demoncat.runtime.vllm_ascend.worker_extension.deployment_authorization import configure_deployment_acceptance
+        configure_deployment_acceptance(self.worker,source='BLUE_COMBINATION',authorize_operator=lambda principal,operation:True)
     def actual(self,key):
         record=a._CONFIGS[key]
         return dict(a._COMMON,model_config_sha256=record[0],model_class=record[1],live_config_matches_file=True)

@@ -1,6 +1,6 @@
 """Reviewed deployment acceptance, separate from structural/live-call admission.
 
-Only a trusted blue-zone harness may install a scoped experimental permit.
+Only a trusted deployment operator may install a scoped acceptance permit.
 FaultConfig has no switch for this. A permit never creates an accepted record
 or bypasses a mechanism's actual source, ABI, scheduler or call checks.
 """
@@ -20,7 +20,7 @@ _BLUE = '_demoncat_blue_acceptance_permit'
 _PENDING_REVALIDATION={}
 _COMMON = dict(torch='2.9.0+cpu', torch_npu='2.9.0.post1+gitee7ba04',
     vllm='0.18.0', vllm_ascend='0.18.0', cann=['8.5.1'], dtype='torch.bfloat16',
-    tp=1, pp=1, dp=1, eager=True)
+    tp=1, pp=1, dp=1, eager=True, hardware_family='A2')
 # These are accepted *combinations*, not structural support rules. Exact model
 # config identity prevents a model-name alias granting a new model acceptance.
 _CONFIGS = {
@@ -47,7 +47,7 @@ def _get(root,path,default=None):
 
 
 def observe_deployment(worker,model):
-    """Read existing objects/files only; no package import, model or NPU call."""
+    """Read metadata; query hardware only if torch_npu is already initialized."""
     runner=getattr(worker,'model_runner',None)
     config=_get(runner,'vllm_config.model_config')
     actual={}
@@ -60,6 +60,9 @@ def observe_deployment(worker,model):
     toolkit=_toolkit()
     actual['cann']=sorted({item['fields'].get('version') for item in toolkit['installations']
         if item['fields'].get('version')})
+    from fault_injection.environment import _live_soc
+    soc, _ = _live_soc()
+    actual['hardware_family']=(soc or {}).get('family')
     actual['dtype']=str(getattr(config,'dtype',None))
     for key,name in (('tp','tensor'),('pp','pipeline'),('dp','data')):
         actual[key]=_get(runner,'vllm_config.parallel_config.'+name+'_parallel_size')
@@ -94,22 +97,21 @@ class BlueAcceptancePermit:
     source_manifest_sha256: str
     pid: int
     thread: int
+    source: str = 'BLUE_COMBINATION'
+    operator: str = 'blue-harness'
+    permit_id: str = ''
 
 
 def install_blue_acceptance_permit(worker,*,mechanisms,attempt,source_manifest_sha256):
-    """Trusted deployment harness only. Never an option in public FaultConfig."""
-    if hasattr(worker,_BLUE):raise RuntimeError('BLUE_ACCEPTANCE_PERMIT_ALREADY_BOUND')
-    if (not isinstance(mechanisms,(tuple,list)) or not mechanisms or len(mechanisms)>17
-        or any(type(x) is not str for x in mechanisms) or len(set(mechanisms))!=len(mechanisms)
-        or not isinstance(attempt,str) or not 1<=len(attempt)<=128
-        or not isinstance(source_manifest_sha256,str) or len(source_manifest_sha256)!=64
-        or any(c not in '0123456789abcdef' for c in source_manifest_sha256)):
-        raise ValueError('EXPLICIT_BOUNDED_BLUE_ACCEPTANCE_SCOPE_REQUIRED')
-    model=worker.model_runner.model
-    permit=BlueAcceptancePermit(worker,model,tuple(mechanisms),attempt,source_manifest_sha256,
-        os.getpid(),threading.get_ident())
-    setattr(worker,_BLUE,permit)
-    return dict(mode='BLUE_ACCEPTANCE_ONLY',attempt=attempt,acceptance_granted=False)
+    """Compatibility API for the trusted blue harness, not a yellow bypass."""
+    from .deployment_authorization import configure_deployment_acceptance, install_deployment_acceptance_permit, authority_for
+    authority=authority_for(worker)
+    if authority is None:
+        authority=configure_deployment_acceptance(worker,source='BLUE_COMBINATION',
+            authorize_operator=lambda principal,operation: principal=='blue-harness')
+    if authority.source!='BLUE_COMBINATION':raise RuntimeError('BLUE_HELPER_REFUSES_YELLOW_CONTEXT')
+    return install_deployment_acceptance_permit(worker,authority=authority,operator='blue-harness',
+        mechanisms=mechanisms,attempt=attempt,source_manifest_sha256=source_manifest_sha256)
 
 
 def remove_blue_acceptance_permit(worker):
@@ -133,25 +135,42 @@ def _cpu_fixture(worker,model,mechanism):
 
 
 def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=True):
+    from .deployment_authorization import authority_for
+    authority=authority_for(worker)
+    source=authority.source if authority is not None else 'UNCONFIGURED'
     record=_CONFIGS.get(mechanism)
     actual=observe_deployment(worker,model) if worker is not None and model is not None else None
     expected=dict(_COMMON,model_config_sha256=record[0],model_class=record[1],live_config_matches_file=True) if record else None
     checks=([expectation('deployment_identity','accepted_combination.'+k,v,
         (actual or {}).get(k), 'ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT') for k,v in expected.items()]
         if expected else [])
-    accepted=bool(expected and actual and mechanism not in _PENDING_REVALIDATION and all(c['status']=='matched' for c in checks))
+    accepted=bool(source=='BLUE_COMBINATION' and expected and actual and mechanism not in _PENDING_REVALIDATION and all(c['status']=='matched' for c in checks))
+    # Yellow records are release-reviewed constants; operator permits never append them.
+    from .reviewed_deployments import YELLOW_RECORDS
+    for candidate in YELLOW_RECORDS:
+        if candidate['source']==source and candidate['mechanism']==mechanism and candidate['expected']==actual:
+            expected=dict(candidate['expected']);accepted=mechanism not in _PENDING_REVALIDATION
+            checks=[expectation('deployment_identity','accepted_combination.'+k,v,actual.get(k),'ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT') for k,v in expected.items()]
+            record=(expected['model_config_sha256'],expected['model_class'],candidate['review_reference'])
+            break
     permit=getattr(worker,_BLUE,None)
     blue=(type(permit) is BlueAcceptancePermit and permit.worker is worker and permit.model is model
         and worker.model_runner.model is model and mechanism in permit.mechanisms
-        and permit.pid==os.getpid() and permit.thread==threading.get_ident())
+        and permit.pid==os.getpid() and permit.thread==threading.get_ident()
+        and authority is not None and permit.source==source)
     cpu=worker is not None and model is not None and _cpu_fixture(worker,model,mechanism)
     status=('NOT_IMPLEMENTED' if not implemented else 'ACCEPTED_DEPLOYMENT' if accepted
         else 'IMPLEMENTED_NOT_ACCEPTED_FOR_DEPLOYMENT')
     return dict(schema='demoncat.deployment_acceptance.v1',status=status,accepted=accepted,
         can_prepare=bool(implemented and (accepted or blue or cpu)),
-        mode='CPU_FIXTURE_ONLY' if cpu else 'BLUE_ACCEPTANCE_ONLY' if blue else 'DEFAULT',
+        mode='CPU_FIXTURE_ONLY' if cpu else ('BLUE_ACCEPTANCE_ONLY' if source=='BLUE_COMBINATION' else 'DEPLOYMENT_ACCEPTANCE_ONLY') if blue else 'DEFAULT',
+        registration_source=source,
+        acceptance_permit=(dict(permit_id=permit.permit_id,source=permit.source,operator=permit.operator,
+            attempt=permit.attempt,source_manifest_sha256=permit.source_manifest_sha256,pid=permit.pid,thread=permit.thread,
+            accepted_record_created=False) if blue else None),
         explicit_blue_attempt=permit.attempt if blue else None,
         reviewed_combination=record[2] if record else None,
+        registration_reason=('REVIEWED_COMBINATION_MATCHED' if accepted else 'NO_REVIEWED_COMBINATION_FOR_SOURCE' if source!='BLUE_COMBINATION' else 'COMBINATION_NOT_MATCHED'),
         pending_revalidation=_PENDING_REVALIDATION.get(mechanism),
         expected=expected,actual=actual,checks=checks,acceptance_granted=False,
         structural_compatibility='CHECKED_SEPARATELY_NOT_AN_ACCEPTANCE_CERTIFICATE',

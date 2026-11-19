@@ -22,7 +22,7 @@ PROMPTS = ('Explain why the sky looks blue.', 'Name the capital city of France.'
     'What is the result of seven multiplied by nine?', 'Describe a forest in spring.',
     'Translate good morning into Spanish.', 'Give one reason to read books.')
 PREFIX = 'demoncat.runtime.vllm_ascend.worker_extension.'
-MODULES = tuple(PREFIX + name for name in ('deployment_acceptance','ordinary_admission','ordinary_evidence','serving_quant_projection', 'serving_quant', 'quant_row_provenance',
+MODULES = tuple(PREFIX + name for name in ('deployment_authorization','reviewed_deployments','deployment_acceptance','ordinary_admission','ordinary_evidence','serving_quant_projection', 'serving_quant', 'quant_row_provenance',
     'call_binding', 'batch_context', 'serving', 'serving_context', 'serving20_qmm', 'providers.quant',
     'providers._scope', 'host', 'host_receipt_ledger', 'runtime', 'config', 'identity', 'registry')) + (
     'fault_injection.prerequisites', 'fault_injection.quant_group_native', 'fault_injection.quant_native_isolation',

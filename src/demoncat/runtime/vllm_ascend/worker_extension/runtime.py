@@ -261,6 +261,9 @@ class WorkerFaultRuntime:
         try:
             state = lease.provider.query(owner=lease.native_owner, generation=lease.generation)
             if isinstance(state,dict):
+                from .deployment_authorization import acceptance_use
+                use=acceptance_use(lease.provider,'query')
+                if use is not None:state=dict(state,deployment_acceptance_use=use)
                 from .ordinary_evidence import bound_state
                 state=bound_state(state,ordinary=getattr(lease.provider,'ordinary_only',False))
                 if state.get('evidence_limit_error'):lease.recovery_required=True
@@ -479,6 +482,12 @@ class WorkerFaultRuntime:
             lease.phase = 'ATTEMPTED'
         result = {'ticket': lease.ticket(), 'action': action}
         try:
+            from .deployment_authorization import acceptance_use
+            use=acceptance_use(lease.provider,action)
+            if use is not None:
+                result['deployment_acceptance_use']=use
+                if action not in _RESTORE and not use['scope_valid']:
+                    raise RuntimeError('DEPLOYMENT_ACCEPTANCE_SCOPE_CHANGED')
             reply = lease.provider.dispatch(action, settings, owner=lease.native_owner,
                                             generation=lease.generation)
             if not isinstance(reply, dict):

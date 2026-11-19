@@ -12,7 +12,7 @@ MAX_PROVIDER_STATE_BYTES=2*1024*1024
 _CONTROL=('execution_boundary','state_source','hook_state_available','hook_owned',
     'owner','generation','native_loaded','native_registered','registered','enabled',
     'inflight','leases','owned_hooks','replay_pending','replay_failed','recovery_validation_pending',
-    'ordinary_task','mechanism','simulation','current_request_phase')
+    'ordinary_task','mechanism','simulation','current_request_phase','deployment_acceptance_use')
 
 
 def encoded(value):
