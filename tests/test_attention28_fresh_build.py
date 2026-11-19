@@ -4,6 +4,8 @@ import hashlib
 import json
 from pathlib import Path
 import tempfile
+import subprocess
+import sys
 import unittest
 from unittest.mock import patch
 
@@ -15,6 +17,24 @@ spec.loader.exec_module(build)
 
 
 class FreshBuildTests(unittest.TestCase):
+    def test_tnd_single_path_launcher_preserves_real_child_argv_once(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder); source = root / 'source'; source.mkdir()
+            evidence = root / 'evidence with spaces'; evidence.mkdir()
+            launcher = build.tnd28_input_launcher(sys.executable, source, evidence)
+            self.assertNotIn(';', str(launcher))
+            record = root / 'actual argv.json'
+            compiler = root / 'record compiler.py'
+            compiler.write_text('import json,sys\nfrom pathlib import Path\n'
+                'with Path(sys.argv[1]).open("x") as f: json.dump(sys.argv[2:],f)\n')
+            actual = ['-DVALUE=space value', 'a;b', '--', '$literal', 'unit.cpp']
+            subprocess.run([sys.executable, str(launcher), sys.executable, str(compiler), str(record), *actual],
+                           check=True, capture_output=True, timeout=20)
+            self.assertEqual(json.loads(record.read_text()), actual)
+            self.assertFalse((evidence / 'tnd28_compiled_input_observer.json').exists())
+            with self.assertRaises(FileExistsError):
+                build.tnd28_input_launcher(sys.executable, source, evidence)
+
     def test_alternate_sdk_requires_complete_exact_source_probe(self):
         from types import SimpleNamespace
         with tempfile.TemporaryDirectory() as root:

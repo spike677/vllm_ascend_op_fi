@@ -123,6 +123,25 @@ def require(condition, message):
     if not condition:raise RuntimeError(message)
 
 
+def tnd28_input_launcher(python, source, evidence):
+    """Keep fixed flags out of the upstream ExternalProject CMake cache value."""
+    python = str(Path(python).resolve(strict=True))
+    require(not any(c.isspace() for c in python), 'LAUNCHER_SHEBANG_INTERPRETER_PATH')
+    source, evidence = Path(source).resolve(strict=True), Path(evidence).resolve(strict=True)
+    launcher = evidence / 'tnd28_input_launcher'
+    require(';' not in str(launcher), 'CMAKE_SINGLE_LAUNCHER_PATH_REQUIRED')
+    driver = str(HERE / 'tnd28_input_compile.py')
+    fixed = [driver, '--source', str(source), '--evidence', str(evidence),
+             '--variant', TND28_REPLAY_VARIANT, '--']
+    code = ('#!' + python + '\nimport runpy, sys\n'
+            'sys.argv = ' + repr(fixed) + ' + sys.argv[1:]\n'
+            'runpy.run_path(' + repr(driver) + ', run_name="__main__")\n')
+    with launcher.open('x', encoding='utf-8', newline='\n') as stream:
+        stream.write(code)
+    launcher.chmod(0o700)
+    return launcher
+
+
 def git(repo, *args):
     return subprocess.check_output(['git', '-C', str(repo), *args], text=True).strip()
 
@@ -566,9 +585,12 @@ class Builder:
             'HI_PYTHON': args.python, 'ASCEND_PYTHON_EXECUTABLE': args.python,
             'CMAKE_BUILD_TYPE': 'Release', 'CMAKE_INSTALL_PREFIX': source / 'build_out'}
         if self.variant == TND28_REPLAY_VARIANT:
-            flags['CMAKE_CXX_COMPILER_LAUNCHER'] = ';'.join(str(x) for x in (
-                args.python,HERE/'tnd28_input_compile.py','--source',source,
-                '--evidence',self.ev,'--variant',self.variant,'--'))
+            # The upstream ExternalProject forwards this cache value to child
+            # CMake. A semicolon list leaked our -- flags into CMake itself.
+            launcher = tnd28_input_launcher(args.python, source, self.ev)
+            flags['CMAKE_CXX_COMPILER_LAUNCHER'] = str(launcher)
+            self.report['tnd28_input_launcher'] = dict(path=str(launcher), sha256=sha(launcher),
+                driver_sha256=sha(HERE/'tnd28_input_compile.py'), single_cmake_cache_argument=True)
         self.run('configure', ['cmake', '-S', source, '-B', build] + ['-D' + key + '=' + str(value) for key, value in flags.items()], env=self.env)
         cache = (build / 'CMakeCache.txt').read_text()
         require(re.search(r'^ENABLE_TEST:[^=\n]+=OFF$', cache, re.MULTILINE) is not None,
