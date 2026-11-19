@@ -4,6 +4,7 @@ No acceptance of NPU execution or actual inner main-project wiring is claimed.
 """
 from pathlib import Path
 import sys
+import types
 import unittest
 from unittest.mock import patch
 
@@ -15,6 +16,30 @@ from fault_injection.deployments.postwrite import PostwriteRefused
 from fault_injection.deployments.output39_execution import Output39SingleExecution
 import test_core_output39 as fixture
 from test_postwrite_providers import Projection
+from output39_custom_fixture import CustomProjection
+
+
+class SuperCustomProjection(CustomProjection):
+    def forward(self, x):
+        return super().forward(x)
+
+
+class AlternateSuperParent(CustomProjection):
+    pass
+
+
+class WrongSelfSuperProjection(CustomProjection):
+    def forward(self, x):
+        if hasattr(self, 'guard_target'):
+            from fault_injection.deployments.output39_execution import _ClassCellProjectionGuard
+            return _ClassCellProjectionGuard(self.guard_target, 'projection')
+        return super().forward(x)
+
+
+def foreign_forward(original):
+    def forward(self, x):
+        return original(self, x)
+    return forward
 
 
 class EarlyUnconsumedModel(fixture.ActualProjectionModel):
@@ -105,11 +130,11 @@ class Output39TaskTests(unittest.TestCase):
         self.assertIsNot(self.transport.opened[0].tensor, self.transport.opened[1].tensor)
         self.assertEqual(state['evidence']['last_fault_effect']['changed_elements'], 1)
 
-    def _custom_protocol(self, consumer):
+    def _custom_protocol(self, consumer, projection_type=None):
         from output39_custom_fixture import CustomOperators, CustomProjection
         ops = self.enterContext(CustomOperators())
         self.enterContext(patch.dict(sys.modules, {'torch_npu': ops.npu}))
-        projection = CustomProjection(consumer)
+        projection = (projection_type or CustomProjection)(consumer)
         if consumer == 'swiglu':
             projection.weight = torch.nn.Parameter(torch.full((8, 4), .25, dtype=torch.bfloat16), requires_grad=False)
         self.model.projection = self.model.projection_alias = projection
@@ -120,12 +145,89 @@ class Output39TaskTests(unittest.TestCase):
         self.assertEqual(rows[1]['report']['target']['operator'], 'vllm.unquantized_gemm.default')
         self.assertIsNotNone(rows[1]['report']['consumers'][0]['reviewed_consumer'])
         self.assertTrue(state['evidence']['matched_off_and_health_confirmed'])
+        return state
 
     def test_source_bound_custom_gemm_and_rms_registration_cpu_contract(self):
         self._custom_protocol('rms')
 
     def test_source_bound_custom_gemm_and_swiglu_registration_cpu_contract(self):
         self._custom_protocol('swiglu')
+
+    def test_actual_super_forward_chain_custom_gemm_no_full_census(self):
+        from fault_injection.deployments.postwrite_inventory import ProjectionWorkloadInventory
+        with patch.object(ProjectionWorkloadInventory, '__init__', side_effect=AssertionError('full census')):
+            state = self._custom_protocol('rms', SuperCustomProjection)
+        binding = state['evidence']['actual_requests'][0]['report']['target']['callable_binding']
+        self.assertEqual(binding['policy'], 'SOURCE_BOUND_CLASS_CELL_AND_ACTUAL_SUPER_FRAMES_ONLY')
+        self.assertEqual(len(binding['methods']), 2)
+        self.assertFalse(binding['full_census_constructed'] or binding['profiler_installed'])
+
+    def _start_super_normal(self):
+        from output39_custom_fixture import CustomOperators
+        self.enterContext(CustomOperators())
+        self.model.projection = self.model.projection_alias = SuperCustomProjection('rms')
+        self.start()
+        self.enqueue(0)
+        return self.provider.p.normal['callable']
+
+    def test_same_class_mro_change_refused_with_original_target_retained(self):
+        guard = self._start_super_normal()
+        before = SuperCustomProjection.__bases__
+        try:
+            SuperCustomProjection.__bases__ = (AlternateSuperParent,)
+            with self.assertRaisesRegex(PostwriteRefused, 'CLASS_MRO_CHANGED'): guard.verify()
+        finally:
+            SuperCustomProjection.__bases__ = before
+        self.finish_task(1)
+
+    def test_parent_forward_replacement_refused_even_when_child_function_unchanged(self):
+        guard = self._start_super_normal()
+        with patch.object(CustomProjection, 'forward', foreign_forward(CustomProjection.forward)):
+            with self.assertRaisesRegex(PostwriteRefused, 'SUPER_FORWARD_OR_DEFAULTS_CHANGED'): guard.verify()
+        self.finish_task(1)
+
+    def test_foreign_forward_closure_is_not_a_class_cell_exception(self):
+        from output39_custom_fixture import CustomOperators
+        self.enterContext(CustomOperators())
+        projection = CustomProjection('rms')
+        projection.forward = types.MethodType(foreign_forward(CustomProjection.forward), projection)
+        self.model.projection = self.model.projection_alias = projection
+        self.start()
+        with self.assertRaisesRegex(PostwriteRefused, 'CLASS_CELL_FORWARD_REQUIRED'): self.enqueue(0)
+        self.assertFalse(self.provider.p._fault_attempted)
+        self.assertEqual(self.transport.opened, [])
+        self.ok(self.client.recover()); self.ok(self.client.unregister())
+
+    def test_real_forward_frame_wrong_self_does_not_prove_selected_module(self):
+        actual, foreign = WrongSelfSuperProjection(), WrongSelfSuperProjection()
+        actual.guard_target = foreign
+        with self.assertRaisesRegex(PostwriteRefused, 'FRAME_ACTUAL_OWNER_CHANGED'):
+            actual.forward(torch.ones(1, 4, dtype=torch.bfloat16))
+
+    def test_class_cell_must_be_exact_declaring_class(self):
+        from fault_injection.deployments.output39_execution import _ClassCellProjectionGuard
+        actual = SuperCustomProjection()
+        original = SuperCustomProjection.forward
+        # A real cell with the wrong class, not a string/name approximation.
+        def closure(value):
+            return (lambda: value).__closure__
+        forged = types.FunctionType(original.__code__, original.__globals__,
+            original.__name__, original.__defaults__, closure(AlternateSuperParent))
+        forged.__qualname__ = original.__qualname__
+        with patch.object(SuperCustomProjection, 'forward', forged):
+            with self.assertRaisesRegex(PostwriteRefused, 'UNREVIEWED_FORWARD_CLOSURE'):
+                _ClassCellProjectionGuard(actual, 'projection')
+
+    def test_class_cell_loaded_code_must_match_source_bytes(self):
+        from fault_injection.deployments.output39_execution import _ClassCellProjectionGuard
+        original = SuperCustomProjection.forward
+        previous = original.__code__
+        try:
+            original.__code__ = previous.replace(co_firstlineno=previous.co_firstlineno + 1)
+            with self.assertRaisesRegex(PostwriteRefused, 'FRAME_CODE_SOURCE_CHANGED'):
+                _ClassCellProjectionGuard(SuperCustomProjection(), 'projection')
+        finally:
+            original.__code__ = previous
 
     def test_query_never_drives_forward_and_spent_provider_cannot_reenable(self):
         self.start()

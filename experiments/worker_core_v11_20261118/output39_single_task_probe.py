@@ -25,7 +25,7 @@ MODULES = tuple(('fault_injection.'+name, 'fault_injection/'+name.replace('.', '
     ('demoncat.runtime.vllm_ascend.worker_extension.'+name,
      'src/demoncat/runtime/vllm_ascend/worker_extension/'+name.replace('.', '/')+'.py')
     for name in ('providers.output39_task', 'providers.fault39_output', 'providers._scope', 'output39_task',
-                 'serving39_output', 'serving', 'serving41', 'serving_context', 'call_binding',
+                 'serving39_output', 'serving39_output_discovery', 'serving', 'serving41', 'serving_context', 'call_binding',
                  'gemm_lineage', 'host', 'config', 'runtime', 'identity', 'registry'))
 HELPERS = ('experiments/worker_core_v11_20261118/output39_single_task_probe.py',
     'experiments/worker_core_v11_20261118/prepare_output39_single_task.py',

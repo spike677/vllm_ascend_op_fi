@@ -195,3 +195,41 @@ queue bounds and source/installed mismatch. Run them with
 `python -B -m unittest test_output39_single_task_probe -v` under the same
 `PYTHONPATH` as above. CPU success is named `CPU_OUTPUT39_TASK_DRIVER_CONTRACT_ONLY`;
 it does not grant NPU, main-project, C1/C2/C3 or E5 acceptance.
+
+### Source114 normal refusal and limited callable adaptation
+
+The first Source114 acceptance attempt that passed the device gate used commit
+`0b677c7e4ba14e955602a65157cbc38d8ca765f1`, source manifest
+`6b15fe311d4f3a2a358b6b98b3a6f783217f032efc132ce2469a9e31420e4445`.
+Its first normal request refused with
+`UNREVIEWED_TENSOR_CALLABLE_CLOSURE:forward`. It never reached F. The owned
+pending request was aborted, Runtime ownership was released and the deployment
+binding removed. This is cleanup after a rejected normal request, **not** a
+successful numerical OFF/health comparison. The original failed result and
+Host receipt remain unchanged and are not published as raw data here.
+
+The actual trace goes through `AscendQKVParallelLinear.forward`, whose reviewed
+image source calls `super().forward(input_)`. Python creates a `__class__` cell
+for that method. The generic TensorCallableGuard rejects all closures. The
+fixed-image files copied read-only from an already running, verified no-device
+build container were `vllm_ascend/ops/linear.py` (SHA
+`fcf2520f8818cb02e6b27a7b9a926745c5c36f1af08a01d9be0627ce2c87316e`)
+and `vllm/model_executor/layers/linear.py` (SHA
+`b8be54d8f4849818da7b1ca97315854f5e60fcb3b5c6837cd13501589e47f6c1`).
+This source check did not instantiate a model or call a device.
+
+The adaptation is local to an already reviewed custom-GEMM return. It allows
+only the implicit `__class__` cell pointing to the exact declaring class in the
+current module MRO. The existing `_SourceCache`/`_FrameBinding` pure identity
+helpers compile and compare the loaded source, bind the original function,
+code, globals, defaults and super-chain owners, and verify actual producer-time
+frames with the same `self`. MRO changes, parent-forward replacement, wrong
+class cells, foreign closures, loaded-code changes or wrong-frame owners refuse.
+The generic TensorCallableGuard, Native finite guard and original operation
+remain unchanged. No discovery observer, profiler or full census is created;
+the helper's source identity is added to the acceptance driver's pins.
+
+Seven CPU regressions cover the supported super-chain and these refusal cases,
+including all four actual public-Host requests with the explicit CPU Native
+and scheduler doubles. A new root-scheduled attempt is still required to
+establish this deployment's normal/F/OFF/health behavior.

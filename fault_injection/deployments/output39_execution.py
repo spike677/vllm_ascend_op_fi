@@ -9,7 +9,9 @@ from copy import deepcopy
 import hashlib
 import os
 import struct
+import sys
 import threading
+import types
 
 import torch
 from torch.utils._python_dispatch import TorchDispatchMode
@@ -63,6 +65,97 @@ def _consumer_semantics(row):
         operand_views=[{key: value[key] for key in ('shape', 'stride', 'storage_offset', 'dtype', 'device')}
                        for value in row['actual_operands']],
         scalars=(row.get('reviewed_consumer') or {}).get('scalars'))
+
+
+class _ClassCellProjectionGuard:
+    """Only an actual class-owned zero-argument-super chain, never a wrapper.
+
+    Reuse the reviewed frame/source identity helpers without constructing a
+    discovery observer or installing a profiler. This exception is local to
+    the already source-bound custom GEMM return, not the generic Tensor guard.
+    """
+    def __init__(self, module, path):
+        from fault_injection.module_faults import _original_standard_forward
+        from fault_injection.tensor_callable import _literal
+        from demoncat.runtime.vllm_ascend.worker_extension.serving39_output_discovery import _SourceCache, _FrameBinding
+        original = _original_standard_forward(module)
+        function = getattr(original, '__func__', None)
+        require(isinstance(function, types.FunctionType) and original.__self__ is module
+            and function.__code__.co_freevars == ('__class__',)
+            and not hasattr(module, '_forward_method'), 'OUTPUT39_CLASS_CELL_FORWARD_REQUIRED')
+        self.module, self.mro, self.sources, self.chain = module, type(module).__mro__, _SourceCache(), []
+        while True:
+            owners = [owner for owner in self.mro if vars(owner).get('forward') is function]
+            require(len(owners) == 1, 'OUTPUT39_CLASS_CELL_DECLARING_OWNER_UNPROVEN')
+            owner = owners[0]
+            cells = function.__closure__ or ()
+            require((not cells and not function.__code__.co_freevars) or
+                (function.__code__.co_freevars == ('__class__',) and len(cells) == 1
+                 and cells[0].cell_contents is owner and 'super' in function.__code__.co_names),
+                'OUTPUT39_UNREVIEWED_FORWARD_CLOSURE')
+            require(function.__module__ == owner.__module__
+                and function.__qualname__ == owner.__qualname__ + '.forward',
+                'OUTPUT39_CLASS_CELL_FUNCTION_OWNER_CHANGED')
+            binding = _FrameBinding(module, path, 'forward', types.MethodType(function, module), self.sources)
+            self.chain.append(dict(owner=owner, binding=binding,
+                defaults=_literal(function.__defaults__), kwdefaults=_literal(function.__kwdefaults__)))
+            require(len(self.chain) <= 8, 'OUTPUT39_SUPER_CHAIN_BOUND_EXCEEDED')
+            if not cells:
+                break
+            following = [vars(cls)['forward'] for cls in self.mro[self.mro.index(owner)+1:]
+                         if 'forward' in vars(cls)]
+            require(following and isinstance(following[0], types.FunctionType),
+                    'OUTPUT39_SUPER_FORWARD_UNPROVEN')
+            function = following[0]
+        self.verify_at_dispatch()
+
+    def verify(self):
+        from fault_injection.tensor_callable import _literal
+        require(type(self.module).__mro__ == self.mro, 'OUTPUT39_CLASS_MRO_CHANGED')
+        self.sources.verify()
+        for row in self.chain:
+            function = row['binding'].function
+            require(vars(row['owner']).get('forward') is function
+                and _literal(function.__defaults__) == row['defaults']
+                and _literal(function.__kwdefaults__) == row['kwdefaults'],
+                'OUTPUT39_SUPER_FORWARD_OR_DEFAULTS_CHANGED')
+            row['binding'].verify()
+        return True
+
+    def verify_at_dispatch(self):
+        self.verify()
+        frame, seen = sys._getframe(), []
+        try:
+            for _ in range(96):
+                if frame is None: break
+                seen.append(frame)
+                frame = frame.f_back
+            for row in self.chain:
+                binding = row['binding']
+                matches = [item for item in seen if item.f_code is binding.code]
+                require(len(matches) == 1, 'OUTPUT39_ACTUAL_SUPER_FRAME_UNPROVEN')
+                binding.verify(matches[0])  # Exact frame globals and self object.
+        finally:
+            del frame, seen
+        return True
+
+    def report(self):
+        return dict(module_object_id=id(self.module),
+            policy='SOURCE_BOUND_CLASS_CELL_AND_ACTUAL_SUPER_FRAMES_ONLY',
+            mro=[dict(module=cls.__module__, qualname=cls.__qualname__, identity=id(cls)) for cls in self.mro],
+            methods=[dict(binding=row['binding'].report(), declaring_class_identity=id(row['owner']),
+                          defaults=row['defaults'], kwdefaults=row['kwdefaults']) for row in self.chain],
+            full_census_constructed=False, profiler_installed=False)
+
+
+def _projection_callable_guard(module, path, operation):
+    from fault_injection.module_faults import _original_standard_forward
+    from fault_injection.tensor_callable import TensorCallableGuard
+    function = getattr(_original_standard_forward(module), '__func__', None)
+    if (operation == 'vllm.unquantized_gemm.default' and isinstance(function, types.FunctionType)
+            and function.__closure__):
+        return _ClassCellProjectionGuard(module, path)
+    return TensorCallableGuard(module)
 
 
 class Output39SingleExecution(Fault39OutputProxyProvider):
@@ -256,9 +349,10 @@ class _SingleReturnWindow(TorchDispatchMode):
             if p.normal is not None: raise
             return result
         require(result.numel() >= p.prefix_elements, 'OUTPUT39_SELECTED_RETURN_TOO_SMALL')
-        from fault_injection.tensor_callable import TensorCallableGuard
-        guard = TensorCallableGuard(module) if p.normal is None else p.normal['callable']
+        guard = _projection_callable_guard(module, path, operation) if p.normal is None else p.normal['callable']
         guard.verify()
+        if isinstance(guard, _ClassCellProjectionGuard):
+            guard.verify_at_dispatch()
         if p.normal is not None:
             require(_shape(result) == p.normal['geometry'] and weight is p.normal['weight'],
                     'OUTPUT39_SELECTED_RETURN_OR_WEIGHT_CHANGED')
@@ -325,7 +419,8 @@ class _SingleReturnWindow(TorchDispatchMode):
                 native_lossless_timing='AFTER_NORMAL_ACTUAL_CONSUMER_BEFORE_REQUEST_RETURN',
                 target=dict(module_path=candidate['path'], module_object=id(candidate['module']),
                     operator=candidate['key'][1], ordinal=candidate['key'][2],
-                    returned_storage=tensor_geometry(candidate['tensor']), producer=candidate['proof']),
+                    returned_storage=tensor_geometry(candidate['tensor']), producer=candidate['proof'],
+                    callable_binding=candidate['callable'].report()),
                 consumers=deepcopy(self.consumers), effect=deepcopy(self.effect),
                 applied=int(self.phase == 'fault'), recovered_storage_exact=True,
                 output_sha256=output_sha256, exact_normal_output=output_sha256 == p.normal_output,
