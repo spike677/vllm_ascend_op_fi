@@ -1,0 +1,317 @@
+{
+  "artifacts": {
+    "controller.json": {
+      "bytes": 110954,
+      "sha256": "0035ddc750a9fac33c0678d2bb9062b4507d2ea948dce76d3d10283758a00017"
+    },
+    "host-core-receipts.json": {
+      "bytes": 11629792,
+      "sha256": "4a0a61952cb010262cc15de0900546f59b1c18f22633a937102a40046b0925ed"
+    },
+    "phase-calibration_off.json": {
+      "bytes": 155432,
+      "sha256": "2d9fc922f08db8d44b6b84c2b3ab7c0eed53d847e9ceca9f26e340f9b4cab030"
+    },
+    "phase-fault.json": {
+      "bytes": 228107,
+      "sha256": "81f1bfb73621ea479795991e067502265f34958a108d6b1b22725005de488443"
+    },
+    "phase-lossless.json": {
+      "bytes": 110571,
+      "sha256": "766ba1ca4afda1c6cde9b2664aed6ec078587e83b97ffcb5d2e138a9a4328731"
+    },
+    "phase-normal.json": {
+      "bytes": 20825,
+      "sha256": "9f85e9bb8d9b4596eabef48351b4105eef2dee3bccfc91885718c47c975b343f"
+    },
+    "phase-off.json": {
+      "bytes": 234183,
+      "sha256": "22f04f86941a8ed25f14c851b3c0cc6bf9950282cf33121a6d73a394e429dd9b"
+    },
+    "phase-reference.json": {
+      "bytes": 65722,
+      "sha256": "6f5c6bf2aaf6d71daa6ffef4f2330cc9a0dc3cf523d63ff628fa34308cb3be7f"
+    },
+    "result.json": {
+      "bytes": 340811,
+      "sha256": "be61dd097fb5472402cc0b65c69c148dd03dfb7d780109e347de80de8812ddc6"
+    }
+  },
+  "c1": false,
+  "c2": false,
+  "c3": false,
+  "controller_elapsed_seconds": 319.39034,
+  "e5": "NOT_ASSESSED_NO_STATISTICS_RUN",
+  "effect": {
+    "changed_quant_elements": 5565,
+    "changed_scale_elements": 7,
+    "current_input_unchanged": true,
+    "current_qmm_original_calls": 1,
+    "native_changed_quant_bytes": 5565,
+    "native_changed_scale_bytes": 21,
+    "nonfinite_values": 0,
+    "quant_max_abs_diff_finite": 58,
+    "reference_and_effect_native_children": 2,
+    "same_model_invocation_count": 1,
+    "scale_max_abs_diff_finite": 0.009165847674012184,
+    "total_quant_elements": 8192,
+    "total_scale_elements": 8,
+    "unchanged_quant_elements": 2627,
+    "unchanged_scale_elements": 1
+  },
+  "evidence_limits": [
+    "Complete CPU-readback hashes/counts are reconciled from originals; full tensor payloads are not in this local package and were not independently recomputed.",
+    "QMM current Q/scale identity, immediate full reread and model-owned parameters are enforced by source-bound live code; consumer JSON does not retain all QMM argument objects and reread hashes.",
+    "Native DSO and model weight bytes are not local; this review reconciles recorded hashes and before/after manifests, not a fresh byte read of those remote files.",
+    "Fixed Native metadata journal storage remains resident for diagnostics; zero resources here means owned fault resources, callbacks/hooks and leases, not zero process memory.",
+    "Source118 pending-OFF current_request_effect can still show historical F before actual OFF collect; completed OFF/current effect is null. A separate display-only repair is pending.",
+    "Six current-scope batches remain required by the existing ABI. This is a blue-zone public Host/Runtime single-site run, not main-project integration, all-target coverage, C2/C3 or E5."
+  ],
+  "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+  "issues": [],
+  "known_display_issue": {
+    "action": "advance",
+    "actual_fault_hits_remain": 1,
+    "completed_off_effect_is_null": true,
+    "completed_rows": 5,
+    "host_history_index": 25,
+    "pending_phase": "off",
+    "source_line": "serving_quant_projection.py:715",
+    "stale_field": "current_request_effect",
+    "status": "CONFIRMED_NON_CAUSAL_REPORTING_DEFECT_SEPARATE_FIX_PENDING"
+  },
+  "logical_device": 0,
+  "main_project_integration_verified": false,
+  "model": {
+    "artifact_sha256": "3b2707bbac7ef5190dc8f1bca54a950bc7736e71aa6d53af528842409affa703",
+    "before_after_recorded_files_equal": true,
+    "config_sha256": "bf644c8607476632c4ece502205dbd5b4793723025471c375fe9626688a19816",
+    "description_sha256": "611a5a4feea1b68921179abba823a31951bcdad4b8f4b214b6a9558e817abb82",
+    "weights_sha256": "b27e6b55f62951633f4d91c1f6072a2f936283402bd04eb9fd3a278b2780d93a"
+  },
+  "native_build": {
+    "build_sha256": "b4ac9a2b68ff58c3a5f6b54c1f052170ce5d1f6d1f8c53a6a571d175ed9328ac",
+    "library_sha256": "6eb6c19cff6006bc9cd0b1072504dc5d6b7db3a0d7b393af7c88f4db1c8bd2fd",
+    "source_commit": "46cd8ad153ad07ce1057cfcbac73d7d9fb76e226"
+  },
+  "native_receipts": [
+    {
+      "lifetime_token": 1,
+      "mode": 1,
+      "native_children": 1,
+      "native_event_count": 5,
+      "parent_token": 2521,
+      "phase": "reference",
+      "sha256": "27b7d28c02c554b84067eac7143bf0d0635628ef6501204f163531d39634fcfc"
+    },
+    {
+      "lifetime_token": 2,
+      "mode": 2,
+      "native_children": 1,
+      "native_event_count": 5,
+      "parent_token": 3361,
+      "phase": "lossless",
+      "sha256": "fe9b125b593758407bb083341759ae058b0ef39b15d500746f1c6ab00564c035"
+    },
+    {
+      "lifetime_token": 3,
+      "mode": 4,
+      "native_children": 1,
+      "native_event_count": 5,
+      "parent_token": 4201,
+      "phase": "calibration_off",
+      "sha256": "e70d7574066ed4dee65253f6784dbf5822cc3b1d4b602739b1ccfdfb6970c7aa"
+    },
+    {
+      "lifetime_token": 4,
+      "mode": 3,
+      "native_children": 2,
+      "native_event_count": 9,
+      "parent_token": 5041,
+      "phase": "fault",
+      "sha256": "5b645a901363f21479acb14298e1488daf2a781ddca8403a0de4c8b595c5895f"
+    }
+  ],
+  "original_check_count": 377,
+  "original_checks": {
+    "consumer": 18,
+    "controller": 9,
+    "effect": 7,
+    "health": 2,
+    "host": 40,
+    "known_display_issue": 2,
+    "model": 4,
+    "native": 81,
+    "native_event": 85,
+    "native_integrity": 4,
+    "originals": 7,
+    "phase_join": 24,
+    "recovery": 6,
+    "recovery_hashes": 28,
+    "requests": 30,
+    "scope": 6,
+    "source": 24
+  },
+  "phases": [
+    {
+      "hashes": {
+        "input": "c6ffe3e48520360d285fed42728bf662a39f8082619955271933e27ea8ecfd05",
+        "quant": "eda08430dbb7d6fd9356fec30682368bd5b1b9caaf828d8a8706ed4dc5fe16bf",
+        "scale": "bfbe56c7d26810d62c14499986a51482e6cc87dc5dbba4e5e0a3fbd8adcc1801"
+      },
+      "helper_calls": 0,
+      "hidden_sha256": "39ddaaf2edece08a671ddba81b75963f0843268c9111f53164becead44c6ace4",
+      "logits_sha256": "7f5a164548ea2b7e2247282c1cfc98b3549e0847d8e09e3947682ee70d31098e",
+      "model_calls": 1,
+      "native_executes": 1,
+      "native_prepares": 1,
+      "phase": "normal",
+      "qmm_original_calls": 1,
+      "requests": 8
+    },
+    {
+      "hashes": {
+        "input": "c6ffe3e48520360d285fed42728bf662a39f8082619955271933e27ea8ecfd05",
+        "quant": "eda08430dbb7d6fd9356fec30682368bd5b1b9caaf828d8a8706ed4dc5fe16bf",
+        "scale": "bfbe56c7d26810d62c14499986a51482e6cc87dc5dbba4e5e0a3fbd8adcc1801"
+      },
+      "helper_calls": 0,
+      "hidden_sha256": "39ddaaf2edece08a671ddba81b75963f0843268c9111f53164becead44c6ace4",
+      "logits_sha256": "7f5a164548ea2b7e2247282c1cfc98b3549e0847d8e09e3947682ee70d31098e",
+      "model_calls": 1,
+      "native_executes": 1,
+      "native_prepares": 1,
+      "phase": "reference",
+      "qmm_original_calls": 1,
+      "requests": 8
+    },
+    {
+      "hashes": {
+        "input": "c6ffe3e48520360d285fed42728bf662a39f8082619955271933e27ea8ecfd05",
+        "quant": "eda08430dbb7d6fd9356fec30682368bd5b1b9caaf828d8a8706ed4dc5fe16bf",
+        "scale": "bfbe56c7d26810d62c14499986a51482e6cc87dc5dbba4e5e0a3fbd8adcc1801"
+      },
+      "helper_calls": 0,
+      "hidden_sha256": "39ddaaf2edece08a671ddba81b75963f0843268c9111f53164becead44c6ace4",
+      "logits_sha256": "7f5a164548ea2b7e2247282c1cfc98b3549e0847d8e09e3947682ee70d31098e",
+      "model_calls": 1,
+      "native_executes": 1,
+      "native_prepares": 1,
+      "phase": "lossless",
+      "qmm_original_calls": 1,
+      "requests": 8
+    },
+    {
+      "hashes": {
+        "input": "c6ffe3e48520360d285fed42728bf662a39f8082619955271933e27ea8ecfd05",
+        "quant": "eda08430dbb7d6fd9356fec30682368bd5b1b9caaf828d8a8706ed4dc5fe16bf",
+        "scale": "bfbe56c7d26810d62c14499986a51482e6cc87dc5dbba4e5e0a3fbd8adcc1801"
+      },
+      "helper_calls": 0,
+      "hidden_sha256": "39ddaaf2edece08a671ddba81b75963f0843268c9111f53164becead44c6ace4",
+      "logits_sha256": "7f5a164548ea2b7e2247282c1cfc98b3549e0847d8e09e3947682ee70d31098e",
+      "model_calls": 1,
+      "native_executes": 1,
+      "native_prepares": 1,
+      "phase": "calibration_off",
+      "qmm_original_calls": 1,
+      "requests": 8
+    },
+    {
+      "hashes": {
+        "input": "c6ffe3e48520360d285fed42728bf662a39f8082619955271933e27ea8ecfd05",
+        "quant": "a8bfd72fdca389050b5dd11b58a673653518d6c2c2d460e5ec99cf5bc645e148",
+        "scale": "45027b0547241d99f055cabc3aa686c76eda42702e22b49a5e9cd22db74b1f82"
+      },
+      "helper_calls": 1,
+      "hidden_sha256": "2209e5e478edef2b2be176818062983fdd02df3f775fb14c3e7d31ee6a674a55",
+      "logits_sha256": "17834e9814a08d89c9847f5f44e81b47112022090840b178279bf6938d728250",
+      "model_calls": 1,
+      "native_executes": 2,
+      "native_prepares": 2,
+      "phase": "fault",
+      "qmm_original_calls": 1,
+      "requests": 8
+    },
+    {
+      "hashes": {
+        "input": "c6ffe3e48520360d285fed42728bf662a39f8082619955271933e27ea8ecfd05",
+        "quant": "eda08430dbb7d6fd9356fec30682368bd5b1b9caaf828d8a8706ed4dc5fe16bf",
+        "scale": "bfbe56c7d26810d62c14499986a51482e6cc87dc5dbba4e5e0a3fbd8adcc1801"
+      },
+      "helper_calls": 0,
+      "hidden_sha256": "39ddaaf2edece08a671ddba81b75963f0843268c9111f53164becead44c6ace4",
+      "logits_sha256": "7f5a164548ea2b7e2247282c1cfc98b3549e0847d8e09e3947682ee70d31098e",
+      "model_calls": 1,
+      "native_executes": 1,
+      "native_prepares": 1,
+      "phase": "off",
+      "qmm_original_calls": 1,
+      "requests": 8
+    }
+  ],
+  "physical_cards": [
+    5
+  ],
+  "preserved_source117": {
+    "first_error": "NATIVE_ROW_SOURCE_FRAME_CONTEXT_CHANGED",
+    "new_attempt_does_not_rewrite_old_failure": true,
+    "normal_phase_sha256": "473488af83b13cb80add2802b77593adfe7d50607d9aa8c9bb14a11a2a223dc0",
+    "result_sha256": "9663072fd76dcfa367d576770a87122c5b6a11b8f7801f17b1389654c6a0dc02",
+    "status": "NORMAL_COMPLETED_REFERENCE_REFUSED_BEFORE_NATIVE_ADMISSION_NO_F"
+  },
+  "qualification_granted": false,
+  "ranks": [
+    0
+  ],
+  "recovery": {
+    "complete_hidden_logits_hashes_equal_normal": true,
+    "complete_input_q_scale_hashes_equal_normal": true,
+    "hooks_api_method_row_modes_zero": true,
+    "native_owned_resources_zero": true,
+    "no_late_public_restore": true,
+    "public_owner_released": true,
+    "real_off_same_worker": true,
+    "retained_fixed_metadata_journal_bytes": 10682368,
+    "retained_journal_is_not_an_active_lease": true
+  },
+  "review_kind": "LOCAL_STDLIB_RAW_JSON_RECONCILIATION_AND_FROZEN_SOURCE_REVIEW",
+  "reviewed_at": "2026-11-19",
+  "runtime_elapsed_seconds": 313.0359699699329,
+  "schema": "demoncat.review.quant_ordinary_source118.v1",
+  "scope": "ONE_ORDINARY_W8A8_PROJECTION_TP1_B8_FIRST_DECODE",
+  "selected": {
+    "all_target_inventory_run": false,
+    "automatically_selected": 1,
+    "input_dtype": "bfloat16",
+    "input_shape": [
+      8,
+      1024
+    ],
+    "module_path": "model.layers.0.self_attn.qkv_proj",
+    "quant_dtype": "int8",
+    "quant_shape": [
+      8,
+      1024
+    ],
+    "scale_dtype": "float32",
+    "scale_shape": [
+      8
+    ],
+    "structural_candidates": 84
+  },
+  "source_commit": "51bdd40654648ffafcd3fbb203743f80ff4cf641",
+  "source_files_rehashed_from_frozen_git": 22,
+  "source_manifest_sha256": "53a42f8ad28fbbd57e8ab6d9618d90b8e5ff7dbf96dc9b691f3ea788d7de5a36",
+  "status": "BLUE_ZONE_SINGLE_PROJECTION_EFFECT_AND_OFF_CONSISTENT",
+  "tokens": {
+    "all_healthy_before_after_pairs_equal": true,
+    "changed_second_token_row": 7,
+    "fault_second_token": 653,
+    "first_tokens_all_phases_equal": true,
+    "healthy_before_after_request_count": 8,
+    "normal_second_token": 374,
+    "off_second_token": 374,
+    "unaffected_second_tokens": 7
+  }
+}
