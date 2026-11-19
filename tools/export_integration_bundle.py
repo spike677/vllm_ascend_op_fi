@@ -50,6 +50,7 @@ _OBSERVERS = {'engineering_closure/__init__.py', 'engineering_closure/path_disco
 _CORE_DOCS = {'docs/worker_core_v1/README.md', 'docs/worker_core_v1/census_contract.md'}
 _PRODUCT_ACTIONS = 'fault_injection/actions.py'
 _PRODUCT_CONTRACTS = {
+    'tests/historical_frozen_policy.py',
     'fault_injection/actions.py', 'fault_injection/effect_summary.py',
     'fault_injection/delivery_scope.py', 'tests/test_common_actions.py',
     'tests/test_module_faults.py', 'tests/test_alias_auto.py', 'tests/test_rope_fused22.py',

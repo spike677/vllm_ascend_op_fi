@@ -75,11 +75,17 @@ class CapabilityScopeTests(unittest.TestCase):
     def test_missing_dynamic_paths_are_not_marked_supported(self):
         model = torch.nn.Identity().eval()
         expected = {'8.restore_offset':'LEGACY_EVIDENCE_ONLY', '22.wrong_row':'LEGACY_EVIDENCE_ONLY',
-                    '25.reduce_scatter':'NOT_IMPLEMENTED', '41.tail_column':'NOT_IMPLEMENTED',
+                    '25.reduce_scatter':'NO_SUPPORTED_CANDIDATE', '41.tail_column':'NOT_IMPLEMENTED',
                     '28.fa.legal_tiling':'STRATEGY_BRIDGE_ONLY', '15.alias_detach':'RUNTIME_OBSERVATION_REQUIRED',
                     '17.spatial_padding':'NO_SUPPORTED_CANDIDATE'}
         for name, status in expected.items():
-            self.assertEqual(inspect_support(model, name)['status'], status)
+            report=inspect_support(model,name)
+            self.assertEqual(report['status'],status)
+            self.assertFalse(report['current_model_npu_accepted'])
+            self.assertFalse(report['provider_loaded_or_called'])
+        from demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission import ordinary_route_report
+        self.assertFalse(ordinary_route_report('25.reduce_scatter')['can_prepare'])
+        self.assertEqual(ordinary_route_report('25.reduce_scatter')['checks'][0]['code'],'FAULT25_UNSUPPORTED_NO_SUBSTITUTE')
 
     def test_standard_modules_use_structure_and_not_names(self):
         class Model(torch.nn.Module):

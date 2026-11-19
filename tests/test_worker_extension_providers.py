@@ -1,4 +1,7 @@
-"""Worker bridge tests with explicit host fakes at the native ABI boundary."""
+"""Historical bridge lifecycle doubles plus explicit public-route exclusion.
+
+Research providers are called explicitly; they are not ordinary product routes.
+"""
 
 from contextlib import contextmanager, nullcontext
 from importlib.util import find_spec
@@ -7,7 +10,8 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from demoncat.runtime.vllm_ascend.worker_extension.providers import provider_capabilities, resolve_provider
+from demoncat.runtime.vllm_ascend.worker_extension.providers import provider_capabilities, resolve_provider as public_resolve_provider
+from demoncat.runtime.vllm_ascend.worker_extension.registry import create_research_provider as resolve_provider
 from demoncat.runtime.vllm_ascend.worker_extension.providers import fault20, fault39
 from demoncat.runtime.vllm_ascend.worker_extension.providers._scope import ProviderError
 from demoncat.runtime.vllm_ascend.worker_extension.runtime import NativePreloadNotAttached
@@ -48,9 +52,12 @@ class ProviderTests(unittest.TestCase):
         self.assertEqual({row['mechanism'] for row in provider_capabilities()},
                          {'20.buffer_substitute','39.matmul_range','26.fia_destination','quant.batch_shared_scale',
                           '15.alias_detach','17.spatial_padding','18.api_half','8.restore_offset','22.wrong_row',
-                          '25.reduce_scatter','26.residual_stomp'})
+                          '26.residual_stomp','39.output_proxy','41.tail_column','28.fa.legal_tiling',
+                          '28.fia.legal_tiling','28.fia.denominator_replay','33.paged_decode'})
         with patch.object(fault20.ctypes, 'CDLL', side_effect=AssertionError('loaded')):
             resolve_provider(fault20.MECHANISM, '1', object(), object(), IDENTITY)
+            with self.assertRaisesRegex(RuntimeError,'ORDINARY_TASK_ADAPTER_PENDING'):
+                public_resolve_provider(fault20.MECHANISM,'1',object(),object(),IDENTITY)
             with self.assertRaisesRegex(RuntimeError, 'NOT_ADAPTED'):
                 resolve_provider(fault20.MECHANISM, 'other', object(), object(), IDENTITY)
 

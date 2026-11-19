@@ -41,6 +41,8 @@ class CoreRoPE22Tests(unittest.TestCase):
     def setUp(self):
         JIT.skip_launch = JIT.replace_position = False
         self.patches = ExitStack()
+        from demoncat.runtime.vllm_ascend.worker_extension import runtime,registry
+        self.patches.enter_context(patch.object(runtime,'_resolve_provider',registry.create_research_provider))
         fake_logits = ModuleType('vllm.model_executor.layers.logits_processor')
         fake_logits.LogitsProcessor = Processor
         fake_context = ModuleType('vllm.forward_context')

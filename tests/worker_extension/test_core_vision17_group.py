@@ -20,6 +20,9 @@ from demoncat.runtime.vllm_ascend.worker_extension.providers.vision17_group impo
 class Vision17GroupTests(unittest.TestCase):
     def setUp(self):
         self.patches=ExitStack();self.worker=_extended_worker(rank=7);self.worker.load_model()
+        if type(self) is Vision17GroupTests:
+            from demoncat.runtime.vllm_ascend.worker_extension.registry import create_research_provider
+            self.patches.enter_context(patch.object(runtime,'_resolve_provider',create_research_provider))
         self.model=CompleteModel().eval();self.runner=Runner(self.model);self.worker.model_runner=self.runner
         self.patches.enter_context(patch.object(identity,'_current_device',return_value=0))
         self.patches.enter_context(patch.object(torch.distributed,'is_initialized',return_value=True))

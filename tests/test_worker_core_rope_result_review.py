@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from historical_frozen_policy import frozen_source_check
 from unittest.mock import patch
 
 import torch
@@ -215,6 +216,7 @@ class CoreRoPEResultReviewTests(unittest.TestCase):
             self.assertEqual(report['status'], 'EVIDENCE_REJECTED')
             self.assertFalse(report['c2_review_passed'] or report['c3_review_passed'])
 
+    @frozen_source_check
     def test_source_bytes_hash_chain_and_unmanifested_code_are_checked(self):
         root = Path(__file__).resolve().parents[1]
         paths = list(root.glob('fault_injection/*.py'))

@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from historical_frozen_policy import frozen_source_check
 
 import torch
 
@@ -13,6 +14,7 @@ from experiments.c2c3_closure_20261117.collective25_supervisor import assess
 
 
 class Collective25Closure(unittest.TestCase):
+    @frozen_source_check
     def test_reviewed_smoke_has_valid_hccl_timeout_and_frozen_source(self):
         root = Path(__file__).resolve().parents[1]
         path = root / 'experiments/c2c3_closure_20261117/collective25_queue_smoke.json'

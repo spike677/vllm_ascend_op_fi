@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from historical_frozen_policy import frozen_source_check
 from unittest.mock import patch
 
 import test_core_tensor_serving as core
@@ -220,6 +221,7 @@ class PublicTensorOriginalReviewTests(unittest.TestCase):
             a = review.Review(); review.load_artifacts(a, path, review.file_sha(path))
             self.assertIn('ORIGINAL_RPC_BYTES_AND_HOST_HISTORY', a.errors)
 
+    @frozen_source_check
     def test_frozen_source_scope_is_recomputed_and_source_edit_is_rejected(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder); files = []
@@ -238,6 +240,7 @@ class PublicTensorOriginalReviewTests(unittest.TestCase):
                 a = review.Review(); review.source_review(a, root)
                 self.assertIn('FROZEN_SOURCE_REHASH', a.errors)
 
+    @frozen_source_check
     def test_actual_public_group_and_targets_use_complete_binding_source_aggregate(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder); files = []

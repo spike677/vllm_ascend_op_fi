@@ -3,6 +3,7 @@ import copy
 import ctypes as C
 import hashlib
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
@@ -387,9 +388,12 @@ class OwnerAndLayoutTests(unittest.TestCase):
             expected = dict(path=str(library), file_sha256=hashlib.sha256(library.read_bytes()).hexdigest(),
                 file_bytes=library.stat().st_size, segments=[dict(vaddr=200, size=200)])
             address, start, name = 1300, 1000, b'actual_symbol'
+            # c_char_p returned by dladdr is borrowed, not a temporary Python
+            # assignment. Keep the encoded path alive across callback return.
+            encoded_library=os.fsencode(str(library))
             def locate(pointer, target):
                 info = C.cast(target, C.POINTER(base._DlInfo)).contents
-                info.dli_fname = str(library).encode(); info.dli_fbase = start
+                info.dli_fname = encoded_library; info.dli_fbase = start
                 info.dli_sname = name; info.dli_saddr = address
                 return 1
             lookup = Mock(side_effect=locate)
