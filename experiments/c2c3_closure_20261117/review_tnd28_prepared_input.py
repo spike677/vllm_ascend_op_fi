@@ -33,6 +33,8 @@ LSE_SOURCES={
     'attention/fused_infer_attention_score/op_api/aclnn_fused_infer_attention_score_inner.cpp':
         '1efdfba88a2463376d11df2dbd7b9aed515f6f42a875314406c15b39e4119808'}
 RPC_ACTIONS=['attach','prepare','register','check','enable','advance','query','advance','disable','unregister','detach']
+RPC_ITEM_LIMIT=32*1024**2
+RPC_TOTAL_LIMIT=128*1024**2
 SCALARS=('num_heads','pre_tokens','next_tokens','num_key_value_heads','sparse_mode','inner_precise',
     'block_size','antiquant_mode','key_antiquant_mode','value_antiquant_mode','query_quant_mode','pse_type','out_dtype')
 V3_FIXED={'antiquant_mode':0,'key_antiquant_mode':0,'value_antiquant_mode':0,'query_quant_mode':0,'pse_type':0,'out_dtype':0}
@@ -337,6 +339,32 @@ def public_rpc_summaries(result,public,records):
             'ACTUAL_COLLECT_DISABLE_RPC_OWNER_CHANGED')
 
 
+def original_rpc_records(root,refs):
+    # This one-request protocol repeats the complete 28-call metadata in later
+    # replies. Bound all eleven originals before reading any JSON; do not trim
+    # their evidence or relax the shared JSON reader's default limit.
+    need(type(refs) is list and len(refs)==len(RPC_ACTIONS)
+        and [r['action'] for r in refs]==RPC_ACTIONS,'ACTUAL_SINGLE_WINDOW_RPC_COUNT_OR_ORDER')
+    inputs=[];paths=set();total=0
+    for ref in refs:
+        path=E.child(root,ref['path']);size=path.stat().st_size
+        need(not path.is_symlink() and 0<size<=RPC_ITEM_LIMIT,'ORIGINAL_RPC_ITEM_BYTE_BOUND')
+        identity=str(path.resolve(strict=True))
+        need(identity not in paths,'ORIGINAL_RPC_PATH_REUSED');paths.add(identity)
+        total+=size;need(total<=RPC_TOTAL_LIMIT,'ORIGINAL_RPC_TOTAL_BYTE_BOUND')
+        inputs.append((path,size,ref))
+    records=[]
+    for path,size,ref in inputs:
+        raw=raw_file(path,RPC_ITEM_LIMIT)
+        need(len(raw)==size and hashlib.sha256(raw).hexdigest()==ref['sha256'],'ORIGINAL_RPC_ARTIFACT_CHANGED')
+        record=json.loads(raw,object_pairs_hook=E.unique,
+            parse_constant=lambda x:(_ for _ in ()).throw(ValueError('NONFINITE_JSON')))
+        need(record['action']==ref['action'],'ORIGINAL_RPC_ACTION_CHANGED');records.append(record)
+    return records,dict(expected_records=len(RPC_ACTIONS),record_count=len(records),
+        per_record_limit_bytes=RPC_ITEM_LIMIT,total_limit_bytes=RPC_TOTAL_LIMIT,
+        record_bytes=[size for _,size,_ in inputs],total_bytes=total)
+
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for name in ('public','returned','native','run','result','build','vendor','source','libraries','out'):
@@ -353,11 +381,8 @@ def main():
         result=json_file(a.result,128*1024**2);public_lifecycle(result,public)
         need(result['build_sha256']==a.build_sha256 and result['source_manifest_sha256']==a.source_manifest_sha256,
             'ACTUAL_DEPLOYMENT_SOURCE_OR_BUILD')
-        actions=[];original_rpc=[]
-        for ref in result['rpc']:
-            path=E.child(a.result.parent,ref['path']);need(E.sha(path)==ref['sha256'],'ORIGINAL_RPC_ARTIFACT_CHANGED')
-            record=json_file(path,16*1024**2);need(record['action']==ref['action'],'ORIGINAL_RPC_ACTION_CHANGED')
-            actions.append(record['action']);original_rpc.append(record)
+        original_rpc,report['rpc_input_budget']=original_rpc_records(a.result.parent,result['rpc'])
+        actions=[record['action'] for record in original_rpc]
         public_rpc_summaries(result,public,original_rpc)
         host=E.child(a.result.parent,result['host_receipt']['path'])
         need(E.sha(host)==result['host_receipt']['sha256'] and host.stat().st_size==result['host_receipt']['bytes'],

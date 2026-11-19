@@ -223,6 +223,52 @@ class VendorLinkContracts(unittest.TestCase):
                 R.vendor_link_rule(name,target)
 
 
+class RawRpcBudgetContracts(unittest.TestCase):
+    def setUp(self):
+        self.root=Path(self.enterContext(tempfile.TemporaryDirectory()));self.refs=[]
+        for i,action in enumerate(R.RPC_ACTIONS):
+            path=self.root/('%03d.json'%i);raw=json.dumps(dict(action=action,response={})).encode()
+            path.write_bytes(raw);self.refs.append(dict(path=path.name,action=action,sha256=R.E.sha(path)))
+
+    def test_original_metadata_above_old_16mib_limit_is_read_without_rewriting(self):
+        path=self.root/self.refs[7]['path']
+        raw=json.dumps(dict(action='advance',response={},cpu_only_padding='x'*(16*1024**2))).encode()
+        path.write_bytes(raw);self.refs[7]['sha256']=hashlib.sha256(raw).hexdigest()
+        records,budget=R.original_rpc_records(self.root,self.refs)
+        self.assertEqual([r['action'] for r in records],R.RPC_ACTIONS)
+        self.assertGreater(budget['record_bytes'][7],16*1024**2)
+        self.assertEqual(budget['per_record_limit_bytes'],32*1024**2)
+        self.assertEqual(budget['total_limit_bytes'],128*1024**2)
+        self.assertEqual(budget['total_bytes'],sum((self.root/r['path']).stat().st_size for r in self.refs))
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(),self.refs[7]['sha256'])
+
+    def test_over_item_budget_refuses_before_any_json_read(self):
+        path=self.root/self.refs[-1]['path']
+        with path.open('wb') as stream:stream.truncate(R.RPC_ITEM_LIMIT+1)
+        with patch.object(R,'raw_file') as read:
+            with self.assertRaisesRegex(ValueError,'RPC_ITEM_BYTE_BOUND'):R.original_rpc_records(self.root,self.refs)
+        read.assert_not_called()
+
+    def test_over_total_budget_refuses_before_any_json_read(self):
+        total=sum((self.root/r['path']).stat().st_size for r in self.refs)
+        with patch.object(R,'RPC_TOTAL_LIMIT',total-1),patch.object(R,'raw_file') as read:
+            with self.assertRaisesRegex(ValueError,'RPC_TOTAL_BYTE_BOUND'):R.original_rpc_records(self.root,self.refs)
+        read.assert_not_called()
+
+    def test_extra_missing_and_reordered_rpc_are_not_the_bounded_protocol(self):
+        variants=(self.refs+[self.refs[-1]],self.refs[:-1],[self.refs[1],self.refs[0],*self.refs[2:]])
+        for refs in variants:
+            with self.subTest(count=len(refs)),patch.object(R,'raw_file') as read:
+                with self.assertRaisesRegex(ValueError,'RPC_COUNT_OR_ORDER'):R.original_rpc_records(self.root,refs)
+                read.assert_not_called()
+
+    def test_byte_change_and_reused_artifact_are_not_hidden_by_larger_limit(self):
+        path=self.root/self.refs[-1]['path'];path.write_bytes(path.read_bytes()+b' ')
+        with self.assertRaisesRegex(ValueError,'ARTIFACT_CHANGED'):R.original_rpc_records(self.root,self.refs)
+        refs=deepcopy(self.refs);refs[7]['path']=refs[5]['path']
+        with self.assertRaisesRegex(ValueError,'RPC_PATH_REUSED'):R.original_rpc_records(self.root,refs)
+
+
 class RawRpcSummaryContracts(unittest.TestCase):
     def fixture(self):
         public={'owner':'b'*32,'generation':1}

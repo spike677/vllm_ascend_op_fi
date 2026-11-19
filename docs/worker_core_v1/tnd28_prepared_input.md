@@ -145,6 +145,16 @@ After normal completion, read originals on the host CPU. `TOKEN` is the one
 recorded public window token, not a chosen layer name. The reader reopens all
 original RPC files and verifies the final legacy Host receipt and token-health
 scope; a probe success flag is not proof.
+
+For this exact one-request protocol, the reader accepts exactly 11 original
+RPC records, at most 32 MiB each and 128 MiB combined. It checks count, order,
+paths and the total byte budget before parsing any record, then verifies each
+original SHA and the precise collect/disable response joins. This dedicated
+limit accommodates Source123's complete 28-call metadata repeated in its later
+18.8 MB replies. It changes neither the shared reader limits nor original
+bytes; the initial 16 MiB rejection remains a separate failed review. Host and
+result limits remain 128 MiB. Re-reading the same originals requires no new NPU
+execution and grants no additional qualification.
 The completed request summary must equal the original collect `advance` RPC's
 `provider_state.evidence.requests[0]`, and the cleanup summary must equal the
 original `disable` RPC's full provider state with the same owner/generation.
