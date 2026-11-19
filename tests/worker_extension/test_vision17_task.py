@@ -1,7 +1,7 @@
 """Public ordinary image task with actual CPU model and explicit scheduler doubles."""
 import unittest
 from unittest.mock import patch
-from test_core_vision17_group import Vision17GroupTests
+import test_core_vision17_group as group_fixture
 from demoncat.runtime.vllm_ascend.worker_extension.providers.vision17_task import (
     install_vision17_task_binding,remove_vision17_task_binding)
 from demoncat.runtime.vllm_ascend.worker_extension.host import HostAdapter,WorkerFaultClient
@@ -9,10 +9,10 @@ from demoncat.runtime.vllm_ascend.worker_extension.config import FaultConfig
 from test_core_host import ExistingExecutor
 
 class Vision17TaskTests(unittest.TestCase):
-    setUp=Vision17GroupTests.setUp
-    ok=Vision17GroupTests.ok
-    start=Vision17GroupTests.start
-    request=Vision17GroupTests.request
+    setUp=group_fixture.Vision17GroupTests.setUp
+    ok=group_fixture.Vision17GroupTests.ok
+    start=group_fixture.Vision17GroupTests.start
+    request=group_fixture.Vision17GroupTests.request
 
     def bind(self,actual,config):
         install_vision17_task_binding(self.worker,prompt_token_ids=[1,2,3],image_sha256='a'*64,

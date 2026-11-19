@@ -87,3 +87,23 @@ normal 从实际 encoder 调用选择单一投影；F 只把原 Torch Conv3d 参
 
 新增 CPU 定向检查：普通 8/17、共享 RMS 生命周期、路由及缓存控制 32 项通过；
 17 的实际 Conv/请求上下文加普通路径组合 35 项通过，两次选择有重叠。NPU 待新构建。
+
+## 部署验收准入（RC2 新约束）
+
+`deployment_acceptance.py` 将三种状态分开：`ACCEPTED_DEPLOYMENT`、
+`IMPLEMENTED_NOT_ACCEPTED_FOR_DEPLOYMENT`、`NOT_IMPLEMENTED`。能力查询和创建共同
+使用该结果。binding/结构候选不等于验收；未匹配组合返回
+`ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT`。已知组合按实际包版本、CANN安装信息、
+模型配置文件身份与当前内存配置、实际模型类、dtype、并行及 eager 条件匹配；各机制的
+源码/ABI/权重/真实调用检查仍独立执行。这个记录不授予本次目标资格。
+
+Batch 的新模型即使结构可兼容，也没有自动进入已验收集合；Qwen3.5/3.8、DeepSeek-V4
+等必须完成自己的实际验收。CANN 不同版本同样不会自动继承组合验收，这不是将底层
+8.x/9.x ABI 适配改回单版本白名单。RC1.1 冻结包不受本次开发变更影响。
+
+可信蓝区验收器可以显式安装 `install_blue_acceptance_permit`：限定现有 Worker/model、
+机制、attempt、源码清单 SHA、进程与线程。公共 FaultConfig 没有此参数；许可不绕过
+机制兼容/源码/ABI/本次调用检查，也不会把一次试验写成 accepted。结束后先释放 owner，
+再移除许可。CPU模拟 binding 仅接受纯CPU参数/缓冲，报告 CPU_FIXTURE_ONLY，不能借此
+取得NPU准入。7项新增准入测试与普通路由/8/17/22/RMS生命周期合计33项CPU通过；新门禁
+尚待124按实际组合补验。

@@ -59,12 +59,18 @@ def ordinary_route_report(mechanism, worker=None, model=None):
                        '18.api_half':'RMS18_ORDINARY_BINDING_REQUIRED',
                        '39.output_proxy':'OUTPUT39_ORDINARY_TASK_BINDING_REQUIRED',
                        'quant.batch_shared_scale':'QUANT_ORDINARY_PROJECTION_BINDING_REQUIRED'}[mechanism]))
+    from .deployment_acceptance import deployment_acceptance_report
+    accepted=deployment_acceptance_report(mechanism,worker,model,implemented=code is None)
+    if code is None:
+        checks.append(expectation('deployment_identity','accepted_deployment_or_explicit_blue_validation',
+            True,accepted['can_prepare'],'ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT'))
     checks.append(expectation('actual_call','source_bound_live_call',True,_MISSING,
                   'ACTUAL_CALL_NOT_YET_OBSERVED'))
     report=assessment(checks)
     # Real request observation is deliberately pending until normal inference.
     report['can_prepare']=not any(row['status']!='matched' and row['layer']!='actual_call'
                                   for row in report['checks'])
+    report['deployment_acceptance']=accepted
     report['mechanism']=mechanism
     report['public_route']='ordinary_task_only'
     report['historical_validation_inherited']=False
