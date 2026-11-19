@@ -231,5 +231,10 @@ the helper's source identity is added to the acceptance driver's pins.
 
 Seven CPU regressions cover the supported super-chain and these refusal cases,
 including all four actual public-Host requests with the explicit CPU Native
-and scheduler doubles. A new root-scheduled attempt is still required to
-establish this deployment's normal/F/OFF/health behavior.
+and scheduler doubles. The subsequent root-scheduled Source116 attempt passed
+the actual normal/F/OFF/health sequence on card5. Its independent review is
+[recorded separately](output39_source116_single_task_review.md): one finite
+element became positive infinity, the actual SwiGLU consumed it, and the same
+Worker's OFF/health hidden and logits hashes exactly matched normal. This is
+the declared blue-zone single-task scope, not main-project integration or
+the earlier cumulative C3 qualification.
