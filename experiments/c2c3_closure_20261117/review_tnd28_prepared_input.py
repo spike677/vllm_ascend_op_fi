@@ -253,6 +253,14 @@ def runtime_join(run,rows,public,events,abi,kernel_sha):
         pre_tiling_fault_permission=False)
 
 
+def vendor_link_rule(name,target):
+    # This is the packaged public alias, not the real ELF's basename. The
+    # caller still verifies its resolved vendor-root boundary and target bytes.
+    need(name=='op_impl/ai_core/tbe/op_tiling/liboptiling.so'
+        and target=='lib/linux/aarch64/libcust_opmaster_rt2.0.so',
+        'UNREVIEWED_VENDOR_LINK')
+
+
 def bundle(completion,expected,vendor,source,source_sha):
     need(E.sha(completion)==expected,'EXACT_NEW_BUILD_COMPLETION_REQUIRED');build=json_file(completion)
     need(build['status']=='CPU_BUILD_ONLY_REQUIRES_NATIVE_QUALIFICATION' and build['variant']==VARIANT
@@ -275,8 +283,7 @@ def bundle(completion,expected,vendor,source,source_sha):
         path=E.child(vendor,name)
         if path.is_symlink():
             import os
-            need(name.endswith('/libcust_opmaster_rt2.0.so') and os.readlink(path)=='lib/linux/aarch64/libcust_opmaster_rt2.0.so',
-                'UNREVIEWED_VENDOR_LINK')
+            vendor_link_rule(name,os.readlink(path))
         need(path.stat().st_size==r['bytes']<=128*1024**2 and E.sha(path)==r['sha256'],'VENDOR_BYTES_CHANGED:'+name)
     path=source/base/'launch.py';tree=ast.parse(path.read_bytes());names={'derive_fia_kernel_abi','bundle_kernel_abi'}
     nodes=[n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name in names]

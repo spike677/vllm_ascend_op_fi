@@ -200,6 +200,29 @@ class TypedReadbackContracts(unittest.TestCase):
         self.assertEqual(result.returncode,0,result.stderr)
 
 
+class VendorLinkContracts(unittest.TestCase):
+    def test_exact_packaged_alias_and_relative_target_are_accepted(self):
+        R.vendor_link_rule('op_impl/ai_core/tbe/op_tiling/liboptiling.so',
+            'lib/linux/aarch64/libcust_opmaster_rt2.0.so')
+
+    def test_other_aliases_including_old_elf_basename_are_rejected(self):
+        target='lib/linux/aarch64/libcust_opmaster_rt2.0.so'
+        for name in ('op_impl/ai_core/tbe/op_tiling/libcust_opmaster_rt2.0.so',
+                'foreign/op_tiling/liboptiling.so',
+                'op_impl/ai_core/tbe/op_tiling/../op_tiling/liboptiling.so'):
+            with self.subTest(name=name),self.assertRaisesRegex(ValueError,'UNREVIEWED_VENDOR_LINK'):
+                R.vendor_link_rule(name,target)
+
+    def test_wrong_absolute_or_traversing_targets_are_rejected(self):
+        name='op_impl/ai_core/tbe/op_tiling/liboptiling.so'
+        for target in ('lib/linux/aarch64/other.so',
+                '/lib/linux/aarch64/libcust_opmaster_rt2.0.so',
+                '../op_tiling/lib/linux/aarch64/libcust_opmaster_rt2.0.so',
+                'lib/linux/aarch64/./libcust_opmaster_rt2.0.so'):
+            with self.subTest(target=target),self.assertRaisesRegex(ValueError,'UNREVIEWED_VENDOR_LINK'):
+                R.vendor_link_rule(name,target)
+
+
 class RawRpcSummaryContracts(unittest.TestCase):
     def fixture(self):
         public={'owner':'b'*32,'generation':1}
