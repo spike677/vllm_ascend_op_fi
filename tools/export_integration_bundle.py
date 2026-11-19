@@ -48,6 +48,14 @@ _LEGACY = 'fault20_fast_validation/source/'
 _OBSERVERS = {'engineering_closure/__init__.py', 'engineering_closure/path_discovery.py',
               'engineering_closure/native_observer.py'}
 _CORE_DOCS = {'docs/worker_core_v1/README.md', 'docs/worker_core_v1/census_contract.md'}
+_PRODUCT_ACTIONS = 'fault_injection/actions.py'
+_PRODUCT_CONTRACTS = {
+    'fault_injection/actions.py', 'fault_injection/effect_summary.py',
+    'fault_injection/delivery_scope.py', 'tests/test_common_actions.py',
+    'tests/test_module_faults.py', 'tests/test_alias_auto.py', 'tests/test_rope_fused22.py',
+    'tests/worker_extension/test_product_scope.py',
+    'docs/worker_core_v1/product_delivery_20261119.md',
+}
 _CENSUS = 'src/demoncat/runtime/vllm_ascend/worker_extension/call_census.py'
 _ROPE_PROVIDER = 'src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault22.py'
 _ROPE_CONTRACTS = {'tests/worker_extension/rope22_fixture.py',
@@ -393,7 +401,7 @@ _SUPPORT = {
 } | {
     _LEGACY + 'fault26_fia_writer_proxy_v1/' + name for name in ('fault26_fia_writer_lossless.cpp', 'build.sh')
 }
-_EXACT = set(_DISTRIBUTIONS) | _SUPPORT | _OBSERVERS | _CORE_DOCS | _KV41_CONTRACTS | _OUTPUT39_CONTRACTS | _TENSOR_SERVING_CONTRACTS | _WRITER26_CONTRACTS | _V11_CONTRACTS | {
+_EXACT = set(_DISTRIBUTIONS) | _SUPPORT | _OBSERVERS | _CORE_DOCS | _KV41_CONTRACTS | _OUTPUT39_CONTRACTS | _TENSOR_SERVING_CONTRACTS | _WRITER26_CONTRACTS | _V11_CONTRACTS | _PRODUCT_CONTRACTS | {
     'fault39/tools/version_profile.py', 'fault39/tools/deployment_profile.py',
     'native_execution_strategy/native/build_requirements.txt',
     'fault39/tests/test_contracts.py', 'tests/test_integration_contract.py',
@@ -405,7 +413,7 @@ _EXACT = set(_DISTRIBUTIONS) | _SUPPORT | _OBSERVERS | _CORE_DOCS | _KV41_CONTRA
     'docs/worker_core_v1/host_contract.md', 'docs/worker_core_v1/integration_bundle.md',
     'docs/worker_core_v1/rope22_host_contract.md',
 }
-_REQUIRED = (_EXACT - _CORE_DOCS - _ROPE_CONTRACTS - _KV41_CONTRACTS - _OUTPUT39_CONTRACTS - _TENSOR_SERVING_CONTRACTS - _WRITER26_CONTRACTS - _V11_CONTRACTS) | {
+_REQUIRED = (_EXACT - _CORE_DOCS - _ROPE_CONTRACTS - _KV41_CONTRACTS - _OUTPUT39_CONTRACTS - _TENSOR_SERVING_CONTRACTS - _WRITER26_CONTRACTS - _V11_CONTRACTS - _PRODUCT_CONTRACTS) | {
     'fault_injection/integration.py', 'fault_injection/lifecycle.py',
     'fault_injection/native_build/manager.py', 'fault_injection/native_build/recipes.py',
     'fault_injection/native_adapters/build_qmm.sh',
@@ -423,6 +431,7 @@ def _required(names):
     # Older reviewed snapshots may lack census entirely. A snapshot that ships
     # it must also ship the actual observer package, fixture and its contracts.
     return (_REQUIRED | (_CORE_DOCS if _CENSUS in names else set())
+            | (_PRODUCT_CONTRACTS if _PRODUCT_ACTIONS in names else set())
             | (_V11_CONTRACTS if _V11_ENDPOINTS in names else set())
             | (_ROPE_CONTRACTS | {'tests/worker_extension/test_core_rope22.py'}
                if _ROPE_PROVIDER in names else set())

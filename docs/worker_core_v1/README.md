@@ -1,5 +1,11 @@
 # Worker Core V1 — integration checkpoint
 
+Current delivery decisions and implementation status:
+[2026-11-19 product scope](product_delivery_20261119.md). Fault25 is unsupported;
+39 output uses independent single-request scopes,33 uses Source105 single-site,
+and28 TND denominator fault implementation remains incomplete. Actual inner
+project wiring remains unverified; the contracts below are not that wiring.
+
 The serving runtime creates, loads and schedules Workers. DemonCATPFI attaches
 to the existing Worker, discovers its actual model and delegates fault actions
 to the existing provider lifecycle. It does not restart Workers, reload global
@@ -30,7 +36,7 @@ remain explicit refusals.
 |---|---|---|
 | Identity, generation, tenants, ownership | existing `identity.py` / `runtime.py` | one actual Worker; uncertain actions retain owner |
 | Public configuration and routing | `config.py` / `host.py` | all17 catalog IDs resolve; this does not qualify their factories |
-| Provider inventory | `registry.py`, exposed in capabilities/discovery |13 callable RPC routes;4 entries explicitly awaiting RPC adaptation; factory availability grants no qualification |
+| Provider inventory | `registry.py`, exposed in capabilities/discovery |17 historical entries,16 factories;25 explicitly unsupported; `current_delivery` is declaration only, not live admission |
 | Structural CandidateSet | `discovery.py` using existing model discovery | all aliases and unknown roles retained; no model forward or device load |
 | Natural call census | `call_census.py` using existing path/request/native observers | one naturally scheduled prefill or first-decode request; bounded capture |
 | Native build | existing `fault_injection.native_build.NativeBuildManager` | explicit recipes, source/compiler/ABI/library fingerprints; no universal8.x/9.x promise |

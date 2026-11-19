@@ -1,5 +1,12 @@
 # Worker Core V1.1 + 17 Fault Provider Completion
 
+**Current task scope (2026-11-19):** see the
+[product delivery matrix](../../docs/worker_core_v1/product_delivery_20261119.md).
+The accepted historical scopes below remain intact. Their old next-step research
+lists are superseded:25 stopped;33 Source105 single-site;39 output single-request;
+28 TND denominator only;Batch ordinary W8A8 first. No new main-project acceptance
+is claimed. Runtime/experiment separation and actual host wiring remain pending.
+
 Base: `027916b3a2e021d107e41cc063d29e66d879ee6b`. Preserve the six accepted
 C2/C3 scopes and all earlier source snapshots, failures and raw evidence.
 This workstream does not reset or transfer their qualification.

@@ -1,4 +1,8 @@
-"""Actual Host/Runtime and original CPU projections; no NPU qualification."""
+"""Retained research group contracts, not the current single-target public route.
+
+Actual Host/Runtime and original CPU projections; no NPU qualification.
+"""
+import importlib
 from copy import copy, deepcopy
 from dataclasses import replace
 import os
@@ -39,6 +43,11 @@ class CoreOutput39GroupTests(unittest.TestCase):
         self.enterContext(patch.object(serving39_output, 'install_fault39_output_serving_binding',
             lambda *a, **kw: install(*a, stage='c2_c3', max_live_leases=8, **kw)))
         c1.CoreOutput39Tests.setUp(self)
+        # The current public registry rejects group bindings. Keep testing the
+        # historical implementation explicitly, without restoring that route.
+        legacy = importlib.import_module('demoncat.runtime.vllm_ascend.worker_extension.providers.fault39_output')
+        self.enterContext(patch.object(legacy, 'create_single_request_provider',
+                                      side_effect=legacy.Fault39OutputServingProvider))
         self.transport.lease_capacity = 8
         self.transport.lease_byte_capacity = MAX_POSTWRITE_SPAN_BYTES
 

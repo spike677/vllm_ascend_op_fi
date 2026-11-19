@@ -134,6 +134,17 @@ class Paged33S2ServingProvider(AttentionServingProvider):
         return result
 
 
+def resolve_current_paged_decode_provider(worker, model, identity):
+    """No implicit group escalation through the ordinary public registry."""
+    table = getattr(worker, ATTRIBUTE, None)
+    binding = table.get('33.paged_decode') if type(table) is dict else None
+    if binding is not None:
+        from ..paged33_group_native import GroupEffectsNativeCall
+        require(not isinstance(binding.native, GroupEffectsNativeCall),
+                'PAGED33_CURRENT_DELIVERY_SINGLE_SITE_REQUIRED')
+    return resolve_paged_decode_provider(worker, model, identity)
+
+
 def resolve_paged_decode_provider(worker,model,identity):
     """Registry mapping keeps stock census available, selects only exact driver."""
     table=getattr(worker,ATTRIBUTE,None);binding=table.get('33.paged_decode') if type(table) is dict else None

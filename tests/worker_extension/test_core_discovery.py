@@ -71,17 +71,21 @@ class CoreDiscoveryTests(unittest.TestCase):
 
 
 class RegistryTests(unittest.TestCase):
-    def test_seventeen_rpc_routes_do_not_grant_attention_fault_admission(self):
+    def test_inventory_retains_history_but_fault25_has_no_rpc_route(self):
         manifest = registry.worker_core_manifest()
         self.assertEqual(manifest['mechanism_count'], 17)
-        self.assertEqual(manifest['rpc_provider_count'], 17)
-        self.assertEqual(len(provider_capabilities()), 17)
+        self.assertEqual(manifest['rpc_provider_count'], 16)
+        self.assertEqual(len(provider_capabilities()), 16)
         pending = [r for r in manifest['mechanisms'] if not r['rpc_available']]
-        self.assertEqual(len(pending), 0)
+        self.assertEqual([row['mechanism'] for row in pending], ['25.reduce_scatter'])
+        self.assertEqual(pending[0]['status'], 'UNSUPPORTED')
+        self.assertIsNone(pending[0]['entrypoint'])
         self.assertTrue(all(r['qualification_required'] and not r['qualification_granted'] for r in manifest['mechanisms']))
         attention = [r for r in manifest['mechanisms'] if r['mechanism'].startswith(('28.', '33.'))]
         self.assertEqual(len(attention), 4)
-        self.assertTrue(all(r['route']['fault_execution_ready'] is False for r in attention))
+        self.assertTrue(all(r['route']['fault_execution_ready'] is False for r in attention if r['mechanism'].startswith('28.')))
+        self.assertEqual(next(r['route']['execution_scope'] for r in attention if r['mechanism'] == '33.paged_decode'),
+                         'SOURCE105_SINGLE_SITE_ONLY')
         with patch('importlib.import_module') as loader:
             for row in attention:
                 with self.assertRaisesRegex(RuntimeError, 'WORKER_PROVIDER_NOT_ADAPTED'):
@@ -92,7 +96,7 @@ class RegistryTests(unittest.TestCase):
         constructors = {'28.fa.legal_tiling': 'FaLegalTilingServingProvider',
             '28.fia.legal_tiling': 'FiaLegalTilingServingProvider',
             '28.fia.denominator_replay': 'FiaDenominatorReplayServingProvider',
-            '33.paged_decode': 'resolve_paged_decode_provider'}
+            '33.paged_decode': 'resolve_current_paged_decode_provider'}
         for mechanism, name in constructors.items():
             with self.subTest(mechanism=mechanism), patch('importlib.import_module') as loader:
                 resolve_provider(mechanism, '1', 'worker', 'model', {'rank': 7})

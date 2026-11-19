@@ -17,6 +17,19 @@ def require(value, reason):
 _PHASES = ('observe', 'observe_repeat', 'baseline', 'fault', 'off', 'health')
 
 
+def create_single_request_provider(worker, model, identity):
+    """Current public scope; retained group classes are research-only entrypoints.
+
+    Reject before native readback, hooks or Runtime ownership. Reusing a spent
+    object is still forbidden by the existing single-attempt state machine.
+    """
+    binding = getattr(worker, _ATTRIBUTE, None)
+    require(type(binding) is Output39ServingBinding, 'REVIEWED_OUTPUT39_SERVING_BINDING_REQUIRED')
+    require(binding.stage == 'c1' and binding.max_live_leases == 1,
+            'OUTPUT39_CURRENT_DELIVERY_SINGLE_REQUEST_SINGLE_TARGET_REQUIRED')
+    return Fault39OutputServingProvider(worker, model, identity)
+
+
 class Fault39OutputServingProvider(Scope):
     execution_boundary = 'native'
     session_type = Serving39OutputSession

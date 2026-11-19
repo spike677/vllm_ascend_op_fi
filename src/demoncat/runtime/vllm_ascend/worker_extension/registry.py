@@ -8,10 +8,9 @@ _TENSOR = (
     ('17.spatial_padding', ['torch.nn.Conv3d']),
     ('18.api_half', ['torch.nn.RMSNorm']),
     ('22.wrong_row', ['vllm::npu_rotary_embedding.positions', 'RoPE_consumer']),
-    ('25.reduce_scatter', ['torch.distributed.reduce_scatter_tensor']),
 )
 _NATIVE = (
-    ('39.output_proxy', 'fault39_output', 'Fault39OutputServingProvider', ['aten.mm', 'aten.matmul', 'aten.linear'],
+    ('39.output_proxy', 'fault39_output', 'create_single_request_provider', ['aten.mm', 'aten.matmul', 'aten.linear'],
      'reviewed_public_acl_native_span', 'trusted_single_site_or_complete_set_fresh_prefill_real_enqueue'),
     ('41.tail_column', 'fault41', 'Fault41ServingProvider', ['torch_npu.npu_fused_infer_attention_score'],
      'reviewed_public_acl_native_span', 'trusted_first_decode_live_kv_group_real_enqueue_required'),
@@ -67,15 +66,31 @@ def rpc_provider_capabilities():
         fault_admission='new_actual_stock_private_bridge_required',
         executable_stages=['actual_call_observation', 'matched_native_baseline'])
         for name, _, ops in _ATTENTION]
+    from fault_injection.delivery_scope import describe_delivery
+    for row in rows:
+        row['current_delivery'] = describe_delivery(row['mechanism'])
+        # A deployed single-site driver exists; this does not grant a fresh
+        # Worker's live normal/input/ownership admission or main-host wiring.
+        if row['mechanism'] == '33.paged_decode':
+            row.update(fault_execution_ready=True, execution_scope='SOURCE105_SINGLE_SITE_ONLY',
+                       fault_admission='CURRENT_LIVE_SINGLE_SITE_NORMAL_CONTROLS_REQUIRED',
+                       executable_stages=['actual_call_observation', 'matched_native_baseline',
+                                          'single_site_fault', 'recovery_off'])
+        if row['mechanism'] == '39.output_proxy':
+            row['execution'] = 'trusted_single_site_fresh_prefill_real_enqueue'
     return deepcopy(rows)
 
 def describe_worker_provider(mechanism):
     from fault_injection.catalog import resolve
     capability = resolve(mechanism)
+    from fault_injection.delivery_scope import describe_delivery
+    delivery = describe_delivery(mechanism)
     route = next((row for row in rpc_provider_capabilities() if row['mechanism'] == mechanism), None)
     return dict(mechanism=mechanism, implementation_version='1', rpc_available=route is not None,
-        entrypoint=('demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension' if route else _SEPARATE[mechanism]),
-        route=route, status='DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED' if route else 'WORKER_RPC_ADAPTATION_PENDING',
+        entrypoint=('demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension' if route else _SEPARATE.get(mechanism)),
+        route=route, status=('UNSUPPORTED' if delivery['state'] == 'UNSUPPORTED' else
+                            'DEPLOYMENT_AND_TARGET_QUALIFICATION_REQUIRED' if route else 'WORKER_RPC_ADAPTATION_PENDING'),
+        current_delivery=delivery,
         mechanism_boundary=capability.boundary, target_selection='actual_objects_and_calls',
         qualification_required=True, qualification_granted=False,
         diagnostic_limits=['A catalog or structural candidate is not an observed eligible call.',
@@ -95,6 +110,8 @@ def worker_core_manifest():
 def create_worker_provider(mechanism, version, worker, model, identity):
     from fault_injection.catalog import resolve
     resolve(mechanism)
+    if mechanism == '25.reduce_scatter':
+        raise RuntimeError('FAULT25_UNSUPPORTED_NO_SUBSTITUTE')
     if version != '1':
         raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')
     if (mechanism == '17.spatial_padding'
@@ -126,7 +143,7 @@ def create_worker_provider(mechanism, version, worker, model, identity):
         if name == mechanism:
             if mechanism == '33.paged_decode':
                 module = importlib.import_module(__package__ + '.providers.paged33_s2')
-                return module.resolve_paged_decode_provider(worker, model, identity)
+                return module.resolve_current_paged_decode_provider(worker, model, identity)
             module = importlib.import_module(__package__ + '.providers.attention_serving')
             return getattr(module, class_name)(worker, model, identity)
     raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')

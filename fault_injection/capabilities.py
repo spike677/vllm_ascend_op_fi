@@ -9,6 +9,7 @@ from dataclasses import asdict
 
 from .catalog import audit_mechanism, list_faults, resolve
 from .coverage import CoverageCapability
+from .delivery_scope import describe_delivery
 
 INTEGRATION_STATUS = 'INNER_FRAMEWORK_INTEGRATION_PENDING'
 
@@ -31,9 +32,9 @@ _DETAILS = {
     '22.wrong_row': ('legacy_evidence_only', 'index_select_return_row_proxy',
         'Missing reusable worker; real RoPE cache/index/consumer mapping required; not address overflow.',
         'IndexSelect post-return proxy or downstream consumer, depending on collection boundary.'),
-    '25.reduce_scatter': ('not_implemented', 'collective_reduction',
-        'No accepted dedicated implementation; actual collective, process group and rank semantics are required.',
-        'Unspecified until an actual mechanism and observable boundary are implemented.'),
+    '25.reduce_scatter': ('unsupported', 'collective_reduction',
+        'Not supported; research stopped. No substitute communication-result corruption.',
+        'No accepted fault phenomenon.'),
     '26.residual_stomp': ('deployment_provider_required', 'native_output_underflow_proxy',
         'Actual allocator adjacency, live residual and exact writer/consumer lifecycle are mandatory.',
         'Residual consumer may differ while the restored normal output agrees; statistics alone do not prove memory aliasing.'),
@@ -70,6 +71,7 @@ def describe_mechanism(name):
     return dict(schema='demoncat.mechanism.capability.v1', name=name,
         mechanism=mechanism, boundary=capability.boundary,
         integration_status=INTEGRATION_STATUS, implementation_status=status,
+        current_delivery=describe_delivery(name),
         target='auto', user_layer_names_required=False,
         dispatch_adapter_present=status in ('automatic_adapter', 'deployment_provider_required'),
         runtime_factory_required=capability.integration in (

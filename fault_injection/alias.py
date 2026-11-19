@@ -249,12 +249,11 @@ class AliasSession:
             before = self._cpu(base)
             selected = self.selected_call is None or self.selected_call == (path, event['ordinal'])
             injecting = self.arm == 'fault' and selected
-            argument = self.provider.convert(base) if injecting else base
+            from .actions import independent_storage
+            argument = independent_storage(base, self.provider.convert) if injecting else base
             converted_values = self._cpu(argument)
             if not torch.equal(before, converted_values):
                 raise UnsupportedCall('Format conversion changed logical base values')
-            if injecting and argument.untyped_storage()._cdata == base.untyped_storage()._cdata:
-                raise UnsupportedCall('Format conversion did not create independent storage')
             if injecting and self.provider.format(argument) not in (0, 2):
                 raise UnsupportedCall('Conversion did not produce a base format')
             # This is the only injected factor and the only original view call.

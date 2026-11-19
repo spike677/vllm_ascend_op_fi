@@ -155,6 +155,20 @@ class CoreTensorServingTests(unittest.TestCase):
         with patch.object(self.worker, 'demoncat_worker_identity', side_effect=AssertionError('recursive RPC')):
             for index in range(10):
                 self.request('actual-' + str(index))
+                queried = self.client.query()
+                self.assertEqual(queried['status'], 'QUERY_OK')
+                state = queried['response']['provider_state']
+                effect = state['current_request_effect']
+                if self.mechanism == '18.api_half' and index in (4, 6, 7):
+                    self.assertEqual(effect['status'], 'MATCHED_SAME_RETURN_VALUES_OBSERVED')
+                    self.assertEqual(effect['scope']['request_id'], 'actual-' + str(index))
+                    self.assertEqual(effect['matched_effects'], 2)
+                    self.assertTrue(all(item['actual_consumer_observed'] for item in effect['positions']))
+                    self.assertTrue(all(item['values']['changed_elements'] > 0 for item in effect['positions']))
+                else:
+                    self.assertEqual(effect['status'], 'EFFECT_NOT_VERIFIED')
+                self.assertFalse(effect['recovery_proven'])
+                self.assertFalse(effect['qualification_granted'])
             state = self.ok(self.client.finish())
         c2, c3 = state['coverage']['C2'], state['coverage']['C3']
         self.assertEqual((c2['hits'], c3['hits']), (2, 4))

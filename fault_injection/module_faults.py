@@ -220,7 +220,8 @@ class ModuleFaultSession:
                 event.update(status='applied' if injecting else 'baseline', original_execution_verified=True,
                              output_shape=list(output.shape), dtype=str(output.dtype),
                              boundary='module_return_gain_proxy', gain=0.5 if injecting else 1.0)
-                return output * 0.5 if injecting else None
+                from .actions import scale_value
+                return scale_value(output, 0.5) if injecting else None
             if event['status'] == 'observed':
                 event.update(status='unsupported', reason='No public Functional.conv3d call observed')
                 if self.unsupported == 'error':

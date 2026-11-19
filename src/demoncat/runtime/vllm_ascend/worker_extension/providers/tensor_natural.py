@@ -48,11 +48,13 @@ class NaturalTensorGroupProvider:
         import fault_injection.moe_census as moe_observer
         import fault_injection.moe_restore as moe_restore
         import fault_injection.conv3d_natural as conv
+        import fault_injection.actions as actions
+        import fault_injection.effect_summary as effects
         host = Path(__file__).resolve().parents[1]
         self.source_sha = _sha({str(Path(p).name): hashlib.sha256(Path(p).read_bytes()).hexdigest()
             for p in (__file__, rms.__file__, rope.__file__, observer.__file__,
                       callable_proof.__file__, scoped.__file__, module_faults.__file__,
-                      moe.__file__, moe_observer.__file__, moe_restore.__file__, conv.__file__,
+                      moe.__file__, moe_observer.__file__, moe_restore.__file__, conv.__file__, actions.__file__, effects.__file__,
                       host/'serving_tensor.py', host/'serving_moe.py')})
         self.scope = CoverageScope(mechanism, workload_sha256, environment_sha256, self.source_sha,
             evidence_kind='cpu_contract' if simulation else

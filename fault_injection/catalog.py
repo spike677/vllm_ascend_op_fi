@@ -1,5 +1,6 @@
 """Capability inventory; a catalog entry is not an executable adapter."""
 from dataclasses import asdict, dataclass
+from .delivery_scope import describe_delivery
 
 MODEL_SESSION_ROUTES = frozenset({
     'automatic_attention', 'automatic_operator', 'automatic_module',
@@ -152,7 +153,8 @@ CAPABILITIES = (
 
 def list_faults():
     return [dict(name=item.name, boundary=item.boundary, integration=item.integration,
-                 validation=item.validation, limitation=item.limitation, audit=_audit(item))
+                 validation=item.validation, limitation=item.limitation, audit=_audit(item),
+                 current_delivery=describe_delivery(item.name))
             for item in CAPABILITIES]
 
 

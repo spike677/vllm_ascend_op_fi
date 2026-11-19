@@ -94,9 +94,10 @@ class WrongRowSession(ScopedDispatch):
                 raise UnsupportedCall('Original lookup or independent result storage was not verified')
             injecting = self.arm == 'fault' and self.is_selected(event)
             if injecting:
-                replacement = source[int(before_index[0])].clone()
+                from .actions import independent_storage, replace_row_
+                replacement = independent_storage(source[int(before_index[0])])
                 self.temps.append(replacement)
-                result[-1].copy_(replacement)
+                replace_row_(result, -1, replacement)
                 self.synchronize()
             after = self.cpu(result)
             desired = native.clone()

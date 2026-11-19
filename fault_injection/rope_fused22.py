@@ -86,7 +86,8 @@ class FusedWrongRowSession(ScopedDispatch):
                 raise UnsupportedCall('NON_TARGET_INPUT_OR_CACHE_CHANGED_FROM_HEALTHY_SITE')
             native=dict(values)
             if selected:
-                replacement=p.clone();replacement[-1].copy_(p[0]);self.synchronize()
+                from .actions import independent_storage, replace_row_
+                replacement=independent_storage(p);replace_row_(replacement,-1,p[0]);self.synchronize()
                 expected=before_p.clone();expected[-1]=expected[0]
                 if (replacement.untyped_storage()._cdata==p.untyped_storage()._cdata
                         or not torch.equal(self.cpu(replacement),expected)):

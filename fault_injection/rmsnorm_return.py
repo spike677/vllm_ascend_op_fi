@@ -13,6 +13,8 @@ from ._scoped_dispatch import ScopedDispatch
 from .core import UnsupportedCall
 from .module_faults import _original_standard_forward
 from .tensor_observer import tensors
+from .actions import scale_value
+from .effect_summary import numeric_change
 
 
 _CANONICAL = '''def forward(self, hidden_states):
@@ -201,7 +203,7 @@ class RMSNormReturnSession(ScopedDispatch):
         # Healthy *1 is checked against an entirely unhooked model baseline.
         gain = 0.5 if injecting else 1.0
         with self.diagnostics():
-            changed = values[0] * gain
+            changed = scale_value(values[0], gain)
             before, after = self.cpu(values[0]), self.cpu(changed)
             if not bool(torch.isfinite(before).all()) or not torch.equal(after, before * gain):
                 raise UnsupportedCall('RMSNORM_COMPLETE_RETURN_GAIN_READBACK_FAILED')
@@ -211,6 +213,10 @@ class RMSNormReturnSession(ScopedDispatch):
                 native_reduce_error_claimed=False, return_readback_exact=True, consumers=[],
                 output_changed=not torch.equal(before, after),
                 auxiliary_return_storage_unchanged=True)
+            if injecting:
+                event['effect'] = dict(comparison='SAME_ACTUAL_RETURN_BEFORE_AFTER',
+                    semantic_position=dict(path=event['path'], ordinal=event['ordinal'], forward=event['forward']),
+                    values=numeric_change(before, after))
             self.returns.append((changed, event))
         if isinstance(output, tuple):
             if not isinstance(output[0], torch.Tensor) or output[0] is not values[0]:

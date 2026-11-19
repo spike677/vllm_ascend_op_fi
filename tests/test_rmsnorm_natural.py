@@ -151,6 +151,7 @@ class NaturalRMSNormTests(unittest.TestCase):
         self.assertTrue(torch.equal(native, lossless))
         rows = baseline.report()['events']
         self.assertEqual([row['path'] for row in rows], ['left', 'right'])
+        self.assertTrue(all('effect' not in row for row in rows))
         self.assertTrue(all(row['consumers'] for row in rows))
         selected = [(row['path'], row['ordinal']) for row in rows]
         with RMSNormReturnSession(model, arm='fault', selected_calls=selected, simulation=True) as fault:
@@ -159,6 +160,15 @@ class NaturalRMSNormTests(unittest.TestCase):
         hits = fault.report()['events']
         self.assertTrue(all(row['applied'] and row['return_readback_exact'] for row in hits))
         self.assertTrue(all(not row['native_reduce_error_claimed'] for row in hits))
+        for row in hits:
+            effect = row['effect']
+            self.assertEqual(effect['comparison'], 'SAME_ACTUAL_RETURN_BEFORE_AFTER')
+            self.assertEqual(effect['semantic_position'],
+                             {key: row[key] for key in ('path', 'ordinal', 'forward')})
+            self.assertGreater(effect['values']['changed_elements'], 0)
+            self.assertGreater(effect['values']['max_abs_diff_finite'], 0)
+            self.assertLessEqual(len(effect['values']['samples']), 4)
+            self.assertFalse(effect['values']['qualification_granted'])
         self.assertTrue(torch.equal(model(x), native))
         self.assertEqual(fault.runtime_state()['leases'], 0)
 

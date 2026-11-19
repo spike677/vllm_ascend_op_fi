@@ -20,6 +20,14 @@ SPEC.loader.exec_module(bundle)
 
 
 class BundleTests(unittest.TestCase):
+    def test_actual_common_actions_and_product_scope_survive_export(self):
+        payload = bundle._inventory(ROOT)
+        self.assertFalse(bundle._PRODUCT_CONTRACTS - payload.keys())
+        for name in bundle._PRODUCT_CONTRACTS:
+            self.assertEqual(payload[name], (ROOT / name).read_bytes(), name)
+        missing = payload.keys() - {'fault_injection/effect_summary.py'}
+        self.assertIn('fault_injection/effect_summary.py', bundle._required(missing))
+
     def test_optional_host_cursor_dependency_and_contracts_survive_export(self):
         payload = bundle._inventory(ROOT)
         required = {
