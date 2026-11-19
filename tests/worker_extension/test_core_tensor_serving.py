@@ -213,6 +213,45 @@ class CoreTensorServingTests(unittest.TestCase):
         self.ok(self.client.unregister())
         self.assert_clean()
 
+    def test_pending_off_and_health_do_not_borrow_last_fault_effect(self):
+        self.first_four()
+        self.request('actual-fault')
+        state = self.client.query()['response']['provider_state']
+        history = state['last_fault_effect']
+        self.assertTrue(history['historical'])
+        self.assertEqual(history['scope']['request_id'], 'actual-fault')
+        self.assertGreater(history['applied_events'], 0)
+        if self.mechanism == '18.api_half':
+            self.assertEqual(history['status'], 'MATCHED_SAME_RETURN_VALUES_OBSERVED')
+        calls = self.model.forward_calls
+        state = self.ok(self.client.advance('actual-off'))
+        self.assertEqual(state['serving']['pending_request'], ['actual-off', 'c2_off'])
+        self.assertEqual(state['current_request_effect']['status'], 'EFFECT_NOT_VERIFIED')
+        self.assertIsNone(state['current_request_effect']['scope'])
+        self.assertEqual(state['last_fault_effect'], history)
+        self.assertEqual(self.model.forward_calls, calls)
+        self.actual('actual-off')
+        state = self.ok(self.client.collect_replay())
+        self.assertEqual(state['current_request_effect']['status'], 'EFFECT_NOT_VERIFIED')
+        self.assertEqual(state['current_request_effect']['scope']['request_id'], 'actual-off')
+        self.assertEqual(state['last_fault_effect'], history)
+        for request_id in ('repeat-fault-0', 'repeat-fault-1', 'repeat-off'):
+            self.request(request_id)
+        state = self.ok(self.client.advance('actual-healthy'))
+        self.assertEqual(state['current_request_effect']['status'], 'EFFECT_NOT_VERIFIED')
+        self.assertIsNone(state['current_request_effect']['scope'])
+        self.assertEqual(state['last_fault_effect']['scope']['request_id'], 'repeat-fault-1')
+        self.actual('actual-healthy')
+        state = self.ok(self.client.collect_replay())
+        self.assertEqual(state['current_request_effect']['status'], 'EFFECT_NOT_VERIFIED')
+        self.assertIsNone(state['current_request_effect']['scope'])
+        self.assertEqual(state['last_fault_effect']['scope']['request_id'], 'repeat-fault-1')
+        self.assertFalse(state['last_fault_effect']['qualification_granted'])
+        self.assertFalse(state['last_fault_effect']['recovery_proven'])
+        self.ok(self.client.finish())
+        self.ok(self.client.unregister())
+        self.assert_clean()
+
     def test_default_missing_binding_refuses_before_runtime_owner(self):
         client = WorkerFaultClient(HostAdapter(self.executor), self.config)
         row = client.prepare()

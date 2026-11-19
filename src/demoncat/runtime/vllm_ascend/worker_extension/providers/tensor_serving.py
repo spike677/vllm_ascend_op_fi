@@ -18,7 +18,7 @@ from .tensor_natural import _sha
 from .. import identity as identity_reader
 from ..serving_tensor_binding import TensorServingBinding, MECHANISMS, _ATTRIBUTE
 from ..serving_context import snapshot_fresh_prefill
-from fault_injection.effect_summary import actual_request_effect
+from fault_injection.effect_summary import actual_request_effect, current_completed_row
 
 
 def require(condition, reason):
@@ -348,6 +348,22 @@ class TensorServingProvider(Scope):
         group_provider = getattr(session, 'provider', None)
         group = getattr(group_provider, 'group', None)
         rows = getattr(group_provider, 'rows', [])
+        current_row = rows[-1] if rows else None
+        pending_matches = self.pending is not None and current_row is not None and (
+            current_row.get('request_id'), current_row.get('phase')) == self.pending
+        # An enqueued OFF/health request cannot borrow the preceding F values.
+        # The final health request has its own receipt rather than a mechanism
+        # row; after completion it also has no current mechanism effect.
+        health = self.reports.get('same_worker_healthy')
+        health_without_row = self.pending is None and health is not None and (
+            current_row is None or current_row.get('request_id') != health.get('request_id'))
+        current_row = current_completed_row(current_row,
+            pending=self.pending is not None or health_without_row,
+            pending_matches_latest=pending_matches)
+        last_fault_row = next((row for row in reversed(rows) if any(event.get('applied') is True
+            for event in (row.get('mechanism') or {}).get('events', ()))), None)
+        last_fault_effect = actual_request_effect(last_fault_row)
+        last_fault_effect['historical'] = True
         error = self.error or getattr(session, 'request_error', None)
         return deepcopy(dict(execution_boundary='python_hook', state_source='OWNED_PYTHON_HOOKS',
             hook_state_available=True, owner=owner, generation=generation,
@@ -360,7 +376,7 @@ class TensorServingProvider(Scope):
                 or self.health_current is not None or self.health_callbacks)), leases=state['leases'],
             replay_pending=bool(self.attempted and not self.stopped), replay_failed=bool(error),
             mechanism=self.mechanism, constructed_replay_fallback=False,
-            current_request_effect=actual_request_effect(rows[-1] if rows else None),
+            current_request_effect=actual_request_effect(current_row), last_fault_effect=last_fault_effect,
             serving=dict(next_phase=('recovery_' + self.recovering if self.recovering else
                 REQUESTS[self.index][0] if self.index < len(REQUESTS) else 'complete'),
                 pending_request=self.pending, complete=self.complete, recovered=self.recovered,

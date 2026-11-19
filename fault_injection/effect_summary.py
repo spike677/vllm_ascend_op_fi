@@ -9,6 +9,19 @@ import hashlib
 import json
 
 
+def current_completed_row(latest_row, *, pending=False, pending_matches_latest=False):
+    """Select display evidence only; pending work cannot borrow an older row.
+
+    The caller compares actual request/phase identities. Some serving paths
+    publish a completed row before explicit collection, so they may prove that
+    the pending ticket already matches it. This selector executes no work and
+    grants no identity, effect or recovery qualification.
+    """
+    if type(pending) is not bool or type(pending_matches_latest) is not bool:
+        raise ValueError('Explicit completed/pending request match flags are required')
+    return None if pending and not pending_matches_latest else latest_row
+
+
 def _scalar(value):
     value = value.item()
     if isinstance(value, float) and not math.isfinite(value):

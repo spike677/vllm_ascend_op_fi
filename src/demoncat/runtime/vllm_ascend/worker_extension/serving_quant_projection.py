@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 import threading
 
-from fault_injection.effect_summary import numeric_change
+from fault_injection.effect_summary import numeric_change, current_completed_row
 from fault_injection.quant_group_native import Config, Lease, QuantGroupNative, key, snapshot as native_snapshot
 from fault_injection.deployments.quant_group_c1 import public_views_match, verify_completion
 from fault_injection.deployments.quant_group_inventory import verify_public_group_call
@@ -695,6 +695,8 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
 
     def report(self):
         effect = next((row['projection']['effect'] for row in self.rows if row['phase'] == 'fault'), None)
+        current = current_completed_row(self.rows[-1] if self.rows else None,
+                                        pending=self.expected is not None)
         clean = not self.installed and self.native.config is None and not self.row_observer.active
         return snapshot(dict(schema='demoncat.quant.ordinary_projection.v1', scope=SCOPE,
             status='FUNCTIONAL_EFFECT_AND_OFF_OBSERVED' if self.recovered and clean and not self.error else 'PENDING_OR_REFUSED',
@@ -712,7 +714,7 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
             structural_candidate_count=len(self.candidates), all_target_inventory_run=False,
             native_build=self.native.identity, native_receipts=self.receipts, callback_counts=self.callback_counts,
             recovery=self.recovery, fault_effect=effect,
-            current_request_effect=(self.rows[-1]['projection']['effect'] if self.rows else None),
+            current_request_effect=current['projection']['effect'] if current is not None else None,
             functional_effect_observed=effect is not None, recovery_proven=self.recovered and clean,
             owned_hooks=len(self.handles), owned_method_patches=len(self.patches),
             owned_api_patches=len(self.api_patches), owned_row_modes=int(self.row_observer.active),

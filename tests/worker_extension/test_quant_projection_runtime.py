@@ -73,11 +73,13 @@ class OrdinaryQuantTests(unittest.TestCase):
     def dispatch(self, action, settings=None):
         return self.provider.dispatch(action, settings or {}, owner='ordinary-owner', generation=4)
 
-    def phase(self, *, collect=True):
+    def phase(self, *, collect=True, after_advance=None):
         index = self.batch_number
         self.batch_number += 1
         ids = ['ordinary-%d-%d' % (index, value) for value in range(8)]
         self.dispatch('advance', {'request_ids': ids})
+        if after_advance is not None:
+            after_advance()
         self.runner.requests = {value: NS(prompt_token_ids=[1, 2], output_token_ids=[]) for value in ids}
         self.runner.with_prefill = True
         with torch.inference_mode():
@@ -162,6 +164,29 @@ class OrdinaryQuantTests(unittest.TestCase):
         self.dispatch('unregister')
         with self.assertRaisesRegex(RuntimeError, 'SINGLE_REVIEWED_ATTEMPT'):
             self.dispatch('enable')
+
+    def test_pending_off_hides_old_current_effect_but_retains_fault_history(self):
+        self.host_client()
+        self.calibrated();self.phase()
+        fault = self.session.report()['fault_effect']
+        self.assertIsNotNone(fault)
+        self.assertEqual(self.session.report()['current_request_effect'], fault)
+        calls = list(self.binding.selected_modes)
+        def pending_off():
+            report = self.dispatch('query')['serving']
+            self.assertEqual(report['next_phase'], 'off')
+            self.assertIsNotNone(self.session.expected)
+            self.assertIsNone(report['current_request_effect'])
+            self.assertEqual(report['fault_effect'], fault)
+            self.assertEqual(len(report['rows']), 5)
+            self.assertEqual(self.binding.selected_modes, calls)
+        self.phase(after_advance=pending_off)
+        report = self.dispatch('finish')['serving']
+        self.assertTrue(report['recovered'])
+        self.assertEqual(report['rows'][-1]['phase'], 'off')
+        self.assertIsNone(report['current_request_effect'])
+        self.assertEqual(report['fault_effect'], fault)
+        self.dispatch('unregister')
 
     def actual_dispatch(self):
         # Real CPU OpOverload -> real TorchDispatchMode -> typed Native double.

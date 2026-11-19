@@ -4,7 +4,7 @@ import torch
 
 from fault_injection.actions import independent_storage, replace_row_, scale_value
 from fault_injection.core import UnsupportedCall
-from fault_injection.effect_summary import numeric_change, actual_request_effect
+from fault_injection.effect_summary import numeric_change, actual_request_effect, current_completed_row
 
 
 class ActionsTest(unittest.TestCase):
@@ -67,6 +67,13 @@ class ActionsTest(unittest.TestCase):
 
 
 class EffectTest(unittest.TestCase):
+    def test_current_completed_row_requires_matching_pending_request(self):
+        row = dict(request_id='completed', phase='fault')
+        self.assertIs(current_completed_row(row), row)
+        self.assertIsNone(current_completed_row(row, pending=True))
+        self.assertIs(current_completed_row(row, pending=True, pending_matches_latest=True), row)
+        self.assertIsNone(current_completed_row(None, pending=True, pending_matches_latest=True))
+        with self.assertRaises(ValueError): current_completed_row(row, pending='off')
     def test_bounded_display_retains_missing_scope_and_partial_observation(self):
         values = numeric_change(torch.tensor([1.]), torch.tensor([.5]))
         event = dict(applied=True, original_execution_verified=True,

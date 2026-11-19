@@ -1,6 +1,7 @@
 """Ordinary Runtime-owned output39 task; historical C1/C2/C3 are separate."""
 from copy import deepcopy
 import hashlib
+from fault_injection.effect_summary import current_completed_row
 
 from ._scope import ProviderError, reject_unknown
 from .fault39_output import Fault39OutputServingProvider, require
@@ -125,13 +126,16 @@ class Output39TaskProvider(Fault39OutputServingProvider):
     def evidence(self):
         effect = next((row['report']['effect'] for row in reversed(self.rows)
                        if row['phase'] == 'fault' and row['report']), None)
+        pending = self.session is not None and (
+            self.session.expected is not None or self.session.current is not None)
+        current = current_completed_row(self.rows[-1] if self.rows else None, pending=pending)
         return dict(mechanism='39.output_proxy', scope='SINGLE_TASK_SINGLE_TARGET_MATCHED_PREFILL',
             boundary='actual_public_projection_return_then_value_consumer', native_out_of_bounds_claim=False,
             runtime_only=True, full_census=False, dump_enabled=False, msprobe_enabled=False,
             actual_requests=deepcopy(self.rows), failures=deepcopy(self.failures),
             last_fault_effect=deepcopy(effect), effect_scope='THIS_TASK_MATCHED_NORMAL_AND_FAULT',
-            current_request_phase=self.rows[-1]['phase'] if self.rows else None,
-            current_request_effect=deepcopy((self.rows[-1].get('report') or {}).get('effect')) if self.rows else None,
+            current_request_phase=self.phase if pending else current['phase'] if current is not None else None,
+            current_request_effect=deepcopy((current.get('report') or {}).get('effect')) if current is not None else None,
             native_restore_confirmed=self.p is not None and not self.p.live_lease_count,
             matched_off_and_health_confirmed=self.recovered, complete=self.complete,
             next_task='NEW_RUNTIME_OWNER_AND_PROVIDER_REQUIRED',

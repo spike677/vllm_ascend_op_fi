@@ -116,6 +116,31 @@ class Output39TaskTests(unittest.TestCase):
         self.assertEqual((state['owned_hooks'], state['leases'], state['inflight']), (0, 0, 0))
         self.assertFalse(self.evidence_root.exists())
 
+    def test_pending_off_health_show_current_phase_without_old_fault_effect(self):
+        self.start();self.enqueue(0);self.enqueue(1)
+        evidence = self.client.query()['response']['provider_state']['evidence']
+        history = evidence['last_fault_effect']
+        self.assertIsNotNone(history)
+        self.assertEqual(evidence['current_request_effect'], history)
+        for index, phase in ((2, 'off'), (3, 'health')):
+            self.actual_request_id = 'actual-output39-' + str(index)
+            calls = self.model.forward_calls
+            state = self.ok(self.client.advance(self.actual_request_id))
+            evidence = state['evidence']
+            self.assertEqual(evidence['current_request_phase'], phase)
+            self.assertIsNone(evidence['current_request_effect'])
+            self.assertEqual(evidence['last_fault_effect'], history)
+            self.assertEqual(self.model.forward_calls, calls)
+            with torch.inference_mode():
+                self.forward(self.provider.session)
+            evidence = self.client.query()['response']['provider_state']['evidence']
+            self.assertEqual(evidence['current_request_phase'], phase)
+            self.assertIsNone(evidence['current_request_effect'])
+            self.assertEqual(evidence['last_fault_effect'], history)
+        self.ok(self.client.finish());self.ok(self.client.unregister())
+        self.assertEqual(self.client.detach()['status'], 'DETACHED')
+        self.assertEqual(self.model.forward_calls, 4)
+
     def test_normal_discovery_ignores_unconsumed_pending_candidate_then_never_switches(self):
         self.model = EarlyUnconsumedModel().eval()
         self.runner.model = self.model
