@@ -70,7 +70,7 @@ OFF/health不安装RMS观察器，比较完整hidden/logits哈希；新任务必
 |Batch shared_scale|普通W8A8新入口单点实测及原件复核通过|Qwen3-0.6B W8A8，TP1/B8首decode，自动qkv投影；六个当前作用域batch|Source118的Q有5565/8192元素变化、scale有7/8变化，实际QMM消费；主项目待验|同Worker OFF的Q/scale及完整hidden/logits哈希精确恢复，前后健康请求一致|实际宿主接线；既有Native ABI仍需作用域校准，不等待routed GMM1|
 |28 FA legal|仅历史保留|旧FA限定范围|本轮不做|旧证据保留|退出当前关键路径|
 |28 FIA legal|仅历史保留|旧FIA限定范围|本轮不做|旧证据保留|退出当前关键路径|
-|28 denominator_replay|TND kernel/host已构建；整条实现未完成|真实TND在线softmax分母重复累计|未验|未验|原物理核调度全部FD已拒；新22项矩阵、SDK及10个实际key构建通过，prepared-input绑定和正常对照待完成，F关闭|
+|28 denominator_replay|TND kernel/host已构建；实际正常输入关联独审通过；整条实现未完成|真实TND在线softmax分母重复累计|F未验|F/OFF未验|Source123当前对象/typed输入/实际launch关联通过；当前Execute借用、取消和故障准入仍待接通，F关闭|
 |33 paged_decode|采用Source105单点|真实paged decode，受控S2策略扰动|原单点有内部/logits变化；主项目未验|原单点精确；主项目待验|普通运行/验收拆分与宿主接线；整组路线停止|
 |39 matmul_range|保留已验收范围|匹配Native MatMul有限输入/算术边界|未接线验收|原范围通过；主项目待验|宿主接线，不声称全部8.x/9.x|
 |39 output_proxy|新独立单任务运行时已接公共registry并实测|finite检查、实际consumer、单次F及恢复|Source116实际1元素变Inf，SwiGLU消费，首token变化；主项目未验|同Worker OFF/health完整hidden/logits哈希恢复一致，资源归零|实际宿主接线；累计C3不再必做|
@@ -109,12 +109,15 @@ SplitCore检查，但嵌套CMake误拆编译launcher参数，在host包构建时
 完成回执SHA为`58dfd1021a8a77267ab94e2a3b17d0a913c22365d4f0e7d2d84ba49473485181`，
 kernel SHA仍为`d99ce5e9435a3df59ff4432f53f997305638de40e4b306918f587faf8d96dd81`。
 Source123沿用完全相同Native字节，在卡5完成一个正常请求和解除绑定后的同Worker健康请求，
-controller退出0；这仍不是输入关联或F资格。原独立reader先因单RPC约18.8MB超过16MiB
+controller退出0；单凭该退出状态不是输入关联或F资格。原独立reader先因单RPC约18.8MB超过16MiB
 而拒绝，原报告保留。后继只读解析对该固定11条协议采用单条32MiB、总计128MiB，
 解析前核全部预算并继续验证原件SHA及精确字段关联；37项相关CPU检查通过。
 小原件另显示观察器的`GetStorageFormat()`为Q/K/V/output的47（SDK NCL），mask/LSE为2（ND），
-原reader统一按ND检查过窄，正在依据实际SDK做按角色核验。当前F gate仍拒绝，
-分母故障的当前输入授权及取消路径尚未完成。
+原reader统一按ND检查过窄，后继依据实际SDK做按角色核验，并核对实际安装链接及
+K/V描述符逻辑shape。Source127离线reader对同一批原件完整复核通过，详见
+[Source123正常关联总结](tnd28_source123_normal_review.md)。11条RPC、Host、14条typed事件、
+当前public对象及实际launch已对应；未执行F，未证明stock/private数值相等或M128对照。
+当前F gate仍拒绝，分母故障的当前输入授权及取消路径尚未完成。
 
 ## 每项通过及停止条件
 
@@ -145,7 +148,7 @@ Host/Runtime单点、实际请求模拟、恢复和源码交付闭包。CPU fixt
 不作为124或实际主项目验收。后续新增65项39/量化合同全部通过；源码包29项中28通过、
 1项Windows符号链接权限跳过。Source116已有上述39 NPU实测；量化首轮加载失败0F，
 Source117加载/normal通过但reference在admission前拒绝，仍为0F；Source118六阶段及健康实测通过，
-28只有无设备构建。普通量化frame修复的67项定向CPU通过；当前请求显示修复的97项组合通过。
+28完成上述正常输入关联，尚无F验收。普通量化frame修复的67项定向CPU通过；当前请求显示修复的97项组合通过。
 没有新增msprobe原始数据或完整张量发布。
 SDK接线、真实输入观察读取、构建入口及导出组合共89项，88通过、1项Windows符号链接
 权限跳过（104.571秒）；包含预期的RPC失败负例。此为CPU检查，不授予NPU或主项目资格。
