@@ -55,6 +55,26 @@ match the typed placeholder snapshot. No bytes at that temporary address are
 read and no post-GWS descriptor lifetime is claimed. The reader rehashes the
 retained build's exact V3/helper sources against SHA `551cc8b6...` and
 `1efdfba8...` before applying this source-bound rule.
+The captured `format` field is the actual `aclTensor::GetStorageFormat()`
+result; this observer does not call `GetViewFormat()`. The fixed CANN 8.5.1
+SDK defines `C_FORMAT_ND=2` and `C_FORMAT_NCL=47` (`C_FORMAT_NYUV=45`, then
+`C_FORMAT_NYUV_A`, then `C_FORMAT_NCL`). `graph/types.h` maps its C++ enum to
+those C enum values. The independently rehashed SDK sources are:
+
+- `include/graph/types.h`: `0582beb87dfc4aaf9019005150fd8a34ece1120fabbd2159abee2aecce51416a`
+- `include/graph/c_types.h`: `365ba1e3c0cee98494c322969a7ac80e7304139acc00e69c3dbf2cafd5d6d21d`
+
+Source123 records NCL for rank-three Q/K/V and attention output, ND for the
+rank-two mask, and ND for the separate temporary LSE placeholder. The reader
+requires these exact role-specific formats; NCL is not the public FIA
+`input_layout='TND'`. It keeps all address, dtype, shape, stride, offset and
+view-extent comparisons, and also matches each nonempty typed flat storage
+shape to the public storage byte count. Unknown formats or swapped roles
+remain refusals. This reader-only correction passed the 14 typed records in
+the original Source123 public/return/Native JSON; it does not establish the
+remaining full RPC, registered binary and raw launch joins. Originals and
+their initial review failures are unchanged; no new NPU execution occurred.
+
 The NNOPBASE owner must have reviewed production SHA
 `6dc3b4fcfcf57b10be0018e89f4edbc079f02b4bb0aaadb109df350939fd4c99`.
 The actual Contiguous owner is checked against the explicitly supplied,

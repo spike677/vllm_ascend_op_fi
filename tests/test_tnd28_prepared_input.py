@@ -26,8 +26,9 @@ def fixture():
             storage_bytes=(storage or n)*width,storage_offset=offset,element_bytes=width,shape=shape,stride=stride,
             dtype=dtype,device='npu:0')
         typed=dict(descriptor=base+3,storage_address=base,data_address=public['data_address'],offset=offset,
-            native_storage_offset=0,dtype={'torch.float16':1,'torch.int8':2,'torch.float32':0}[dtype],format=2,
-            shape=shape,stride=stride,storage_shape=shape)
+            native_storage_offset=0,dtype={'torch.float16':1,'torch.int8':2,'torch.float32':0}[dtype],
+            format=47 if name in ('query','key','value','out') else 2,
+            shape=shape,stride=stride,storage_shape=[storage or n])
         return public,typed
     tensors={};native={}
     for name,shape,stride,base,dtype,offset,storage in (
@@ -86,7 +87,9 @@ def launch_fixture(data):
             attentionOut=p['output']['data_address'],softmaxLse=p['lse']['data_address']).items():
         struct.pack_into('<Q',raw,slots[name],value)
     for name,address in (('key',p['key']['members'][0]['data_address']),('value',data['contiguous_execute_enter']['prepared_v_address'])):
-        pairs.append((slots[name],len(raw)));raw+=struct.pack('<QIIqqqQ',40,3,1,2048,8,128,address)
+        shape=p['key']['members'][0]['storage_shape'] if name=='key' else p['value']['members'][0]['shape']
+        pairs.append((slots[name],len(raw)))
+        raw+=struct.pack('<QII',16+len(shape)*8,len(shape),1)+struct.pack('<'+'q'*len(shape),*shape)+struct.pack('<Q',address)
     for name in ('actualSeqLengths','actualSeqLengthsKV'):
         pairs.append((slots[name],len(raw)));raw+=struct.pack('<q',2048)
     return dict(argument_layout='aclrt_host_placeholders',args_hex=raw.hex(),args_size=len(raw),
@@ -94,6 +97,34 @@ def launch_fixture(data):
 
 
 class TypedReadbackContracts(unittest.TestCase):
+    def test_sdk_ncl_is_limited_to_actual_rank3_roles_and_nd_to_mask(self):
+        p,r,e=fixture();native=e[0]['data'];R.protocol(p,r,e)
+        for role,typed in (('query',native['query']),('key',native['key']['members'][0]),
+                ('value',native['value']['members'][0]),('output',native['output'])):
+            self.assertEqual(typed['format'],47,role);self.assertEqual(len(typed['shape']),3)
+            self.assertEqual(len(typed['storage_shape']),1)
+        self.assertEqual(native['mask']['format'],2);self.assertEqual(native['lse']['format'],2)
+
+    def test_wrong_role_or_unknown_storage_format_cannot_be_widened(self):
+        for role,value in (('query',2),('key',2),('value',2),('output',2),('mask',47),('query',48)):
+            p,r,e=fixture();typed=e[0]['data'][role]
+            if role in ('key','value'):typed=typed['members'][0]
+            typed['format']=value
+            with self.subTest(role=role,value=value),self.assertRaisesRegex(ValueError,'STORAGE_FORMAT_FOR_ROLE'):
+                R.protocol(p,r,e)
+
+    def test_native_and_public_storage_extents_still_must_match_actual_view(self):
+        for kind in ('native_extent','public_extent','address','stride','offset'):
+            p,r,e=fixture();typed=e[0]['data']['value']['members'][0]
+            if kind=='native_extent':typed['storage_shape'][0]-=1
+            if kind=='public_extent':p['tensors']['value']['storage_bytes']-=2
+            if kind=='address':typed['data_address']+=2
+            if kind=='stride':typed['stride'][0]-=1
+            if kind=='offset':typed['offset']-=1
+            p['input_sha256']=R.E.digest(p['tensors']);r['input_sha256']=p['input_sha256']
+            for row in e:row['input_sha256']=p['input_sha256']
+            with self.subTest(kind=kind),self.assertRaises(ValueError):R.protocol(p,r,e)
+
     def test_complete_actual_shape_fixture_and_prepared_address_join(self):
         p,r,e=fixture();d=R.protocol(p,r,e);raw,abi=launch_fixture(d)
         result=R.launch_inputs(raw,abi,d)

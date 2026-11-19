@@ -38,6 +38,10 @@ RPC_TOTAL_LIMIT=128*1024**2
 SCALARS=('num_heads','pre_tokens','next_tokens','num_key_value_heads','sparse_mode','inner_precise',
     'block_size','antiquant_mode','key_antiquant_mode','value_antiquant_mode','query_quant_mode','pse_type','out_dtype')
 V3_FIXED={'antiquant_mode':0,'key_antiquant_mode':0,'value_antiquant_mode':0,'query_quant_mode':0,'pse_type':0,'out_dtype':0}
+STORAGE_FORMATS={'query':47,'key':47,'value':47,'output':47,'atten_mask':2}
+FORMAT_ENUM_SOURCES={
+    'include/graph/types.h':'0582beb87dfc4aaf9019005150fd8a34ece1120fabbd2159abee2aecce51416a',
+    'include/graph/c_types.h':'365ba1e3c0cee98494c322969a7ac80e7304139acc00e69c3dbf2cafd5d6d21d'}
 
 
 def need(ok,why):
@@ -67,8 +71,12 @@ def lines(path,limit):
 def tensor_join(public,typed,where):
     need(type(public) is dict and type(typed) is dict,'MISSING_TYPED_TENSOR:'+where)
     dtype={'torch.float16':1,'torch.int8':2,'torch.float32':0}.get(public['dtype'])
+    # The compiled header calls GetStorageFormat(), not GetViewFormat(). In
+    # this pinned SDK, 47 is NCL; the public FIA input_layout remains TND.
+    need(where in STORAGE_FORMATS and type(typed['format']) is int
+        and typed['format']==STORAGE_FORMATS[where],'TENSOR_STORAGE_FORMAT_FOR_ROLE:'+where)
     need(dtype is not None and public['device'].startswith('npu:') and typed['dtype']==dtype
-        and typed['format']==2 and typed['descriptor']>0 and typed['native_storage_offset']==0,
+        and typed['descriptor']>0 and typed['native_storage_offset']==0,
         'TENSOR_DTYPE_DEVICE_OR_DESCRIPTOR:'+where)
     for left,right in (('storage_address','storage_address'),('data_address','data_address'),
             ('storage_offset','offset'),('shape','shape'),('stride','stride')):
@@ -76,6 +84,11 @@ def tensor_join(public,typed,where):
     need(public['object_id']>0 and public['storage_identity']>0 and public['element_bytes'] in (1,2,4)
         and public['data_address']==public['storage_address']+public['storage_offset']*public['element_bytes'],
         'PUBLIC_STORAGE_VIEW_IDENTITY:'+where)
+    need(len(public['shape'])==(2 if where=='atten_mask' else 3)
+        and type(public['storage_bytes']) is int and public['storage_bytes']>=0
+        and public['storage_bytes']%public['element_bytes']==0
+        and typed['storage_shape']==[public['storage_bytes']//public['element_bytes']],
+        'ACTUAL_NATIVE_FLAT_STORAGE_EXTENT:'+where)
     if all(public['shape']):
         last=public['storage_offset']+sum((n-1)*s for n,s in zip(public['shape'],public['stride']))+1
         need(len(public['shape'])==len(public['stride']) and all(s>0 for s in public['stride'])
@@ -372,7 +385,10 @@ def main():
     for name in ('build-sha256','source-manifest-sha256','libraries-sha256'):p.add_argument('--'+name,required=True)
     a=p.parse_args();report=dict(schema='demoncat.tnd28.prepared_input_review.v1',status='INCOMPLETE_OR_REJECTED',issues=[],
         C1=False,C2=False,C3=False,E5=False,fault_authorized=False,normal_stock_private_exact_proven=False,
-        old_journal_result_rewritten=False,slice_pod_decoded=False,reader_sha256=E.sha(__file__))
+        old_journal_result_rewritten=False,slice_pod_decoded=False,reader_sha256=E.sha(__file__),
+        storage_format_rule=dict(getter='aclTensor::GetStorageFormat',sdk='CANN 8.5.1',
+            roles=STORAGE_FORMATS,enum_source_sha256=FORMAT_ENUM_SOURCES,
+            ncl_value=47,nd_value=2,public_input_layout='TND',view_format_observed=False))
     sys.addaudithook(E.prohibit_runtime)
     try:
         build,files,metadata,abi=bundle(a.build,a.build_sha256,a.vendor,a.source,a.source_manifest_sha256)
