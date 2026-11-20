@@ -106,5 +106,18 @@ int main(){
     assert(callback_count==2);
     assert(!tnd28_input::CheckPublic(tnd28_input::Plan().scope,2,tnd28_input::Plan().typed));
     assert(callback_count==2); // A repeated stage is rejected before invoking the callback again.
+    Reset();auto& read=tnd28_input::Plan();assert(tnd28_input::Current(read.scope));
+    read.callback=+[](const char*,uint32_t,const char*,size_t){return 1;};
+    read.checking=read.prepare_admitted=read.execute_entered=read.value_check_requested=true;
+    read.value_addresses[0]=0x12340000;
+    assert(!tnd28_input::ValueReadReady(read,token.c_str(),0,8388608));
+    read.value_read_window=true;
+    assert(tnd28_input::ValueReadReady(read,token.c_str(),0,8388608));
+    assert(!tnd28_input::ValueReadReady(read,token.c_str(),0,8388607));
+    assert(!tnd28_input::ValueReadReady(read,token.c_str(),5,8388608));
+    assert(!tnd28_input::ValueReadReady(read,std::string(32,'d').c_str(),0,8388608));
+    read.value_read_mask=1;assert(!tnd28_input::ValueReadReady(read,token.c_str(),0,8388608));
+    read.value_read_mask=0;read.checking=false;
+    assert(!tnd28_input::ValueReadReady(read,token.c_str(),0,8388608));
     std::cout<<"PASS_CPU_TND28_TYPED_INPUT_OBSERVATION_NO_DEVICE_NO_F\n";
 }

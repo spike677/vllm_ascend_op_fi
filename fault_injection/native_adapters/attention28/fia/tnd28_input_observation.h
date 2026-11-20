@@ -9,6 +9,7 @@
 #include <memory>
 #endif
 #include <cstdint>
+#include <array>
 #include <cstring>
 #include <cstdlib>
 #include <dlfcn.h>
@@ -113,6 +114,9 @@ struct PublicPlan {
     Scope scope; PublicCheck callback=nullptr; std::string typed;
     bool checking=false,prepare_entered=false,prepare_accepted=false,prepare_admitted=false,execute_entered=false;
     bool safe_release=false,terminal_uncertain=false; uint32_t first_error=0;
+    bool value_check_requested=false,value_read_window=false;
+    uint32_t value_read_mask=0;
+    std::array<uint64_t,5> value_addresses{};
 };
 inline PublicPlan& Plan(){static thread_local PublicPlan value;return value;}
 inline bool PlanOwner(const PublicPlan& plan,const char* token){
@@ -120,12 +124,23 @@ inline bool PlanOwner(const PublicPlan& plan,const char* token){
       &&plan.scope.pid==static_cast<uint64_t>(getpid())&&plan.scope.tid==static_cast<uint64_t>(syscall(SYS_gettid))
       &&plan.scope.start==ProcessStart();
 }
+constexpr std::array<size_t,5> kValueReadSizes{8388608,4194304,16777216,4194304,4194304};
+inline bool ValueReadReady(PublicPlan& p,const char* token,uint32_t index,size_t capacity){
+    Scope current;
+    return index<kValueReadSizes.size()&&capacity==kValueReadSizes[index]
+      &&PlanOwner(p,token)&&Current(current)&&Same(current,p.scope)
+      &&p.callback&&p.checking&&p.prepare_admitted&&p.execute_entered&&!p.first_error
+      &&p.value_check_requested&&p.value_read_window&&p.value_addresses[index]
+      &&!(p.value_read_mask&(1U<<index));
+}
 inline std::string PlanRecord(){const auto& p=Plan();
     return "{\"schema\":\"demoncat.tnd28.live_typed_plan.v2\",\"bound\":"+std::to_string(p.callback!=nullptr)
       +",\"prepare_entered\":"+std::to_string(p.prepare_entered)+",\"prepare_accepted\":"+std::to_string(p.prepare_accepted)
       +",\"prepare_admitted\":"+std::to_string(p.prepare_admitted)
       +",\"execute_entered\":"+std::to_string(p.execute_entered)+",\"safe_release\":"+std::to_string(p.safe_release)
       +",\"terminal_uncertain\":"+std::to_string(p.terminal_uncertain)+",\"first_error\":"+std::to_string(p.first_error)
+      +",\"value_check_requested\":"+std::to_string(p.value_check_requested)
+      +",\"value_read_mask\":"+std::to_string(p.value_read_mask)
       +",\"fault_authorized\":false}";
 }
 inline bool CheckPublic(const Scope& scope,uint32_t stage,const std::string& body){
@@ -201,7 +216,12 @@ struct Prepare:Log{
                   +",\"output\":"+Tensor(out)+",\"lse\":"+Tensor(lse)+",\"optionals\":"+Array(pointers)
                   +",\"scalars\":"+Array(scalars)+",\"scale\":"+([&]{std::ostringstream o;o<<std::setprecision(17)<<scale;return o.str();})()
                   +",\"layout\":"+Quote(layout)+",\"softmax_lse\":"+(softmax?"true":"false")+'}';
-                if(guarded)admitted=CheckPublic(scope,1,body);
+                if(guarded){
+                    Need(q&&k&&k->Size()==1&&(*k)[0]&&mask,"value read requires actual typed tensors");
+                    Plan().value_addresses={Ptr(q->GetData()),Ptr((*k)[0]->GetData()),
+                        Ptr(value->GetStorageAddr()),Ptr(mask->GetData()),0};
+                    admitted=CheckPublic(scope,1,body);
+                }
                 return body;});
         }catch(const std::exception& e){Fail(e.what());}catch(...){Fail("prepare entry exception");}
     }
@@ -312,11 +332,19 @@ struct Execute:Log{
         if(borrow_requested&&!borrow){Fail("execute borrow not constructed");return ACLNN_ERR_PARAM_INVALID;}
         if(borrow&&(!first_error.empty()||!borrow->PrepareParent(static_cast<aclOpExecutor*>(executor),workspace,bytes,stream))){
           borrow->CancelBeforeParent();Fail("execute borrow parent preparation refused");return ACLNN_ERR_PARAM_INVALID;}
-        // Still only the existing normal metadata guard. Draining first enables
-        // a future fresh prepared-input check, but does not make saved typed
-        // JSON a numerical proof or authorize denominator replay.
-        if(borrow&&!CheckPublic(scope,2,Plan().typed)){
-          borrow->CancelBeforeParent();Fail("live public input changed before parent execute");return ACLNN_ERR_PARAM_INVALID;}
+        // Optional live value readback is legal only after the actual child
+        // returned and PrepareParent drained this borrowed stream/workspace.
+        // It is observation, not a host/F authorization implementation.
+        bool current_ok=true;
+        if(borrow){
+          auto& p=Plan();p.value_addresses[4]=child_workspace+pending.offsets.at(0);
+          p.value_read_window=p.value_check_requested;
+          current_ok=CheckPublic(scope,2,p.typed);
+          p.value_read_window=false;
+          if(p.value_check_requested&&p.value_read_mask!=31)current_ok=false;
+        }
+        if(!current_ok){
+          borrow->CancelBeforeParent();Fail("live public or prepared values changed before parent execute");return ACLNN_ERR_PARAM_INVALID;}
         if(borrow&&!borrow->CommitParent(static_cast<aclOpExecutor*>(executor),workspace,bytes,stream)){
           borrow->CancelBeforeParent();Fail("execute borrow parent admission refused");return ACLNN_ERR_PARAM_INVALID;}
         try{status=f(executor,stream,workspace,bytes);ran=true;}
@@ -353,8 +381,24 @@ extern "C" __attribute__((visibility("default"))) int dcat_tnd28_public_plan_bin
       if(!token||!callback||!tnd28_input::Current(scope)||scope.token!=token
         ||tnd28_input::Env("DCAT28_INPUT_EXECUTE_BORROW")!="normal_guard"
         ||tnd28_input::Plan().callback||tnd28_input::Live().executor)return -1;
-      tnd28_input::PublicPlan value;value.scope=scope;value.callback=callback;tnd28_input::Plan()=std::move(value);return 0;
+      tnd28_input::PublicPlan value;value.scope=scope;value.callback=callback;
+      value.value_check_requested=tnd28_input::Env("DCAT28_INPUT_CHECK_VALUES")=="1";
+      tnd28_input::Plan()=std::move(value);return 0;
     }catch(...){return -2;}
+}
+// Bounded D2H only. No caller-supplied device address and no operator dispatch.
+// Same-thread callback + same owner + after-child/pre-parent lifetime required.
+extern "C" __attribute__((visibility("default"))) int dcat_tnd28_value_read_v1(
+    const char* token,uint32_t index,void* output,size_t capacity) noexcept {
+    try{auto& p=tnd28_input::Plan();
+      if(!output||!tnd28_input::ValueReadReady(p,token,index,capacity))return -1;
+      // Consume even a failed read: never replay a partial device observation.
+      p.value_read_mask|=(1U<<index);
+      const auto status=aclrtMemcpy(output,capacity,reinterpret_cast<const void*>(p.value_addresses[index]),
+                                   capacity,ACL_MEMCPY_DEVICE_TO_HOST);
+      if(status){if(!p.first_error)p.first_error=5;return -2;}
+      return 0;
+    }catch(...){return -3;}
 }
 extern "C" __attribute__((visibility("default"))) int dcat_tnd28_public_plan_clear_v2(
     const char* token,tnd28_input::PublicCheck callback) noexcept {

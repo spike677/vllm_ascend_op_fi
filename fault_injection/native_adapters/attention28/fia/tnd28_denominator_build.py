@@ -99,6 +99,14 @@ def finish_check(builder,base):
         query=[line.split() for line in exports if line.split() and line.split()[-1].split('@',1)[0]==symbol]
         base.require(len(query)==1 and len(query[0])==3 and query[0][1]=='T',
             'TND28_LIVE_BORROW_SYMBOL_NOT_EXPORTED:'+symbol)
+    reader='dcat_tnd28_value_read_v1'
+    matches=[line.split() for line in exports if line.split() and line.split()[-1].split('@',1)[0]==reader]
+    base.require(len(matches)==1 and len(matches[0])==3 and matches[0][1]=='T',
+        'TND28_LIVE_VALUE_READER_NOT_EXPORTED')
+    report['tnd28_optional_value_reader']=dict(symbol=reader,library_sha256=base.sha(private),
+        opt_in_environment='DCAT28_INPUT_CHECK_VALUES',default_enabled=False,
+        read_only=True,fault_authorized=False,caller_device_address_accepted=False,
+        requires_live_execute_callback=True)
     report['tnd28_execute_borrow_query']=dict(symbol='dcat_tnd28_execute_borrow_query_v1',
         library_sha256=base.sha(private),exports_sha256=base.sha(ev/'tnd28_execute_borrow_exports.log'),
         live_public_plan_symbols=list(symbols[1:]),

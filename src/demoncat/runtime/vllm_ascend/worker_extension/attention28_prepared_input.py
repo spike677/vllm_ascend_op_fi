@@ -54,13 +54,16 @@ def _open_borrow_query(path,expected):
 class PreparedInputCapture:
     """One natural matched object, one original invocation; not F authority."""
     def __init__(self,worker,*,build_completion,build_sha256,evidence_dir,
-                 execute_borrow_library=None,execute_borrow_sha256=None):
+                 execute_borrow_library=None,execute_borrow_sha256=None,check_live_values=False):
         path=Path(build_completion).resolve(strict=True)
         before=path.stat();require(0<before.st_size<=4*1024**2,'TND_INPUT_BUILD_IDENTITY_OR_BOUND')
         raw=path.read_bytes();after=path.stat()
         require(hashlib.sha256(raw).hexdigest()==build_sha256 and
             (before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns)==
             (after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns),'TND_INPUT_BUILD_IDENTITY_OR_BOUND')
+        require(type(check_live_values) is bool and (not check_live_values or execute_borrow_library is not None),
+                'TND_LIVE_VALUES_REQUIRE_EXECUTE_BORROW')
+        self.check_live_values=check_live_values
         self.build=json.loads(raw);observation=self.build.get('tnd28_compiled_input_observer',{})
         require(self.build.get('variant')=='tnd_prefill_denominator_replay'
             and self.build.get('status')=='CPU_BUILD_ONLY_REQUIRES_NATIVE_QUALIFICATION'
@@ -129,6 +132,7 @@ class PreparedInputCapture:
             PID=str(self.owner['pid']),TID=str(self.owner['native_tid']),START=self.owner['process_start_ticks'],
             LOG=str(self.root/(token+'.jsonl')))
         if self.borrow_query is not None:values['EXECUTE_BORROW']='normal_guard'
+        if self.check_live_values:values['CHECK_VALUES']='1'
         self.refs=tuple(actual[name] for name in ('query','key','value','atten_mask'))
         self.used=True;self.active={};desired={PREFIX+k:v for k,v in values.items()}
         self.receipt=dict(packet,public_artifact=str(self.root/(token+'.public.json')),native_artifact=values['LOG'],
@@ -148,7 +152,11 @@ class PreparedInputCapture:
                     if os.environ.get(key)==value:self.active[key]=value
             if self.borrow_query is not None:
                 from .attention28_typed_plan import LiveTypedPlan
-                self.typed_plan=LiveTypedPlan(self.borrow_query,self.replay_binding,self.live_plan,token)
+                if self.check_live_values:
+                    from .attention28_value_plan import LivePreparedValuePlan
+                    factory=LivePreparedValuePlan
+                else:factory=LiveTypedPlan
+                self.typed_plan=factory(self.borrow_query,self.replay_binding,self.live_plan,token)
                 self.typed_plan.install()
                 self.receipt['live_typed_plan']=self.typed_plan.snapshot()
         except BaseException as error:

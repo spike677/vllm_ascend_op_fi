@@ -17,7 +17,7 @@ FIA='fault_injection/native_adapters/attention28/fia/'
 EXTRA=(EXP+'tnd28_control_observation.py',EXP+'tnd28_research_observation.py',EXP+'prepare_tnd28_prepared_input.py',EXP+'natural_tnd28_prepared_input_probe.py',
     E.EXPERIMENT+'review_tnd28_prepared_input.py',E.EXPERIMENT+'attention28_census_raw.py',
     E.WORKER+'attention28_prepared_input.py',E.WORKER+'attention28_replay_binding.py',
-    E.WORKER+'attention28_typed_plan.py','fault_injection/fia_input_journal.py',
+    E.WORKER+'attention28_typed_plan.py',E.WORKER+'attention28_value_plan.py','fault_injection/fia_input_journal.py',
     'fault_injection/quant_container_native.py','fault_injection/metadata_arrays.py',
     *(FIA+n for n in ('tnd28_input_compile.py','tnd28_input_observation.h','test_tnd28_input_observation.cpp',
         'tnd28_execute_borrow.h','test_tnd28_execute_borrow.cpp','tnd28_denominator_build.py','build_fresh.py')))
@@ -62,6 +62,9 @@ def make_case(args,source,observer,build,library_mounts,installed_pins):
     E.need(args.card in (2,5) and type(args.timeout) is int and 1<=args.timeout<=1800,'ONE_CARD_ORIGINAL_TIMEOUT_BOUND')
     name='tnd28-one-prepared-input-normal'
     if getattr(args,'execute_borrow',False):name='tnd28-one-prepared-input-borrow-normal'
+    if getattr(args,'check_live_values',False):
+        E.need(getattr(args,'execute_borrow',False),'LIVE_VALUES_REQUIRE_EXECUTE_BORROW')
+        name='tnd28-one-current-values-borrow-normal'
     mounts=[[str(args.source),'/repo','ro'],[str(args.installed),'/installed','ro'],[str(args.model),'/model','ro'],
         [str(args.build_root),'/native-run','ro'],[str(args.vendor),'/native','ro'],
         [str(observer['folder']),'/build/attention-preflight','ro']]
@@ -72,6 +75,7 @@ def make_case(args,source,observer,build,library_mounts,installed_pins):
         '--source','/repo','--source-manifest-sha256',args.source_manifest_sha256,
         '--observer-receipt','/build/attention-preflight/result.json','--observer-receipt-sha256',observer['sha256']]
     if getattr(args,'execute_borrow',False):argv.append('--execute-borrow')
+    if getattr(args,'check_live_values',False):argv.append('--check-live-values')
     case=dict(id=name,image=E.IMAGE,timeout=args.timeout,mounts=mounts,
         env=dict(PYTHONPATH='/installed:/repo:/repo/src:/repo/fault39/src:/msprobe_packages',PYTHONDONTWRITEBYTECODE='1',
             VLLM_ENABLE_V1_MULTIPROCESSING='0',VLLM_WORKER_MULTIPROC_METHOD='spawn',VLLM_ASCEND_ENABLE_NZ='0',
@@ -94,6 +98,7 @@ def make_case(args,source,observer,build,library_mounts,installed_pins):
             diagnostic_only=True,statistics=False,fault_authorized=False,C1=False,C2=False,C3=False,E5=False,
             normal_stock_private_exact_proven=False,host_tiling_precedes_prepared_input=True,
             execute_borrow_guard_requested=bool(getattr(args,'execute_borrow',False)),
+            current_values_requested=bool(getattr(args,'check_live_values',False)),
             actual_cached_api_route_proven=False,slice_pod_decoded=False))
     return validate_cases([case],[args.card])
 
@@ -115,6 +120,7 @@ def main():
     for name in ('source','installed','observer','model','build-root','vendor','libraries','out'):p.add_argument('--'+name,type=Path,required=True)
     for name in ('source-manifest-sha256','build-sha256','libraries-sha256'):p.add_argument('--'+name,required=True)
     p.add_argument('--card',type=int,choices=(2,5),default=5);p.add_argument('--timeout',type=int,default=1800)
+    p.add_argument('--check-live-values',action='store_true',help='Read current values inside the drained normal Execute window; never F')
     p.add_argument('--execute-borrow',action='store_true',help='Request the new compiled normal Execute borrow guard, never F')
     args=p.parse_args();sys.dont_write_bytecode=True;sys.addaudithook(E.prohibit_runtime)
     library_out=args.out.with_name(args.out.stem+'-expected-libraries.json')

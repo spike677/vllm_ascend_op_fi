@@ -1,5 +1,6 @@
 import copy
 import unittest
+from unittest.mock import patch
 from types import SimpleNamespace as NS
 import torch
 from demoncat.runtime.vllm_ascend.worker_extension.v026_text_observer import TextPrefillTrace, SourceBoundTextObserver
@@ -80,5 +81,59 @@ class TextTraceTests(unittest.TestCase):
         r,s,t=self.fixture();observer=SourceBoundTextObserver(r,t.expected)
         with self.assertRaisesRegex(RuntimeError,'EXACT_REVIEWED'):observer.install()
         self.assertEqual(observer.snapshot()['owned_wrappers'],0)
+
+class ObserverHookTests(unittest.TestCase):
+    fixture=TextTraceTests.fixture
+    def hooked(self):
+        r,s,t=self.fixture()
+        class Model(torch.nn.Module):
+            def __init__(self):
+                super().__init__();self.visual=torch.nn.Sequential(torch.nn.Identity())
+                self.call_visual=False
+            def embed_input_ids(self,input_ids,**kwargs):return torch.zeros(5,8)
+            def forward(self,input_ids=None,positions=None,intermediate_tensors=None,inputs_embeds=None):
+                if self.call_visual:self.visual(inputs_embeds)
+                return inputs_embeds+1
+        Model.__name__='Qwen3_5ForConditionalGeneration';Model.__module__='vllm.model_executor.models.qwen3_5'
+        class Runner:
+            def _preprocess(self,scheduler,total,intermediate=None):
+                embed=self.model.embed_input_ids(self.input_ids.gpu,multimodal_embeddings=[],is_multimodal=None)
+                self.inputs_embeds.gpu.copy_(embed)
+                return (None,self.inputs_embeds.gpu,self.mrope_positions.gpu,None,{},None)
+            def _model_forward(self,**kwargs):return self.model(**kwargs)
+            def execute_model(self,scheduler,intermediate=None):
+                ids,embeds,positions,intermediate,kwargs,ec=self._preprocess(scheduler,5,intermediate)
+                hidden=self._model_forward(input_ids=ids,positions=positions,inputs_embeds=embeds,intermediate_tensors=intermediate)
+                self.execute_model_state=NS(scheduler_output=scheduler,logits=torch.zeros(2,20),hidden_states=hidden,sample_hidden_states=hidden[:2])
+                return None
+            def sample_tokens(self,grammar=None):
+                self.execute_model_state=None;return NS(req_ids=['b','a'])
+        Runner.__name__='NPUModelRunner';Runner.__module__='vllm_ascend.worker.model_runner_v1'
+        runner=Runner();runner.__dict__.update(vars(r));runner.model=Model()
+        runner.device='npu:0'  # CPU fixture only; source verifier is explicitly mocked below.
+        runner.use_async_scheduling=False;runner.speculative_config=None
+        runner.supports_mm_inputs=True;runner.enable_prompt_embeds=False;runner.uses_mrope=True
+        runner.vllm_config.model_config=NS(enforce_eager=True,multimodal_config=NS(get_limit_per_prompt=lambda name:0))
+        return runner,s,t.expected
+    def install_fixture(self,r,expected):
+        seam=self.enterContext(patch('demoncat.runtime.vllm_ascend.worker_extension.v026_text_observer._verify_function',return_value={'CPU_FIXTURE_NOT_SOURCE_REVIEW':True}))
+        return SourceBoundTextObserver(r,expected).install()
+    def test_hooks_observe_actual_calls_and_restore_instance_methods(self):
+        r,s,p=self.hooked();original=r.execute_model.__func__;o=self.install_fixture(r,p)
+        self.assertIsNone(r.execute_model(s));out=r.sample_tokens()
+        self.assertEqual(out.req_ids,['b','a']);self.assertEqual(o.snapshot()['status'],'OBSERVED')
+        o.close();self.assertIs(r.execute_model.__func__,original)
+        self.assertEqual(o.snapshot()['owned_hooks'],0);self.assertEqual(o.snapshot()['owned_wrappers'],0)
+    def test_failed_visual_call_restores_owned_hooks(self):
+        r,s,p=self.hooked();o=self.install_fixture(r,p);r.model.call_visual=True
+        with self.assertRaisesRegex(RuntimeError,'VISUAL_EXECUTION'):r.execute_model(s)
+        o.close();report=o.snapshot();self.assertIsNotNone(report['first_error'])
+        self.assertFalse(report['visual_execution_excluded']);self.assertEqual(report['owned_hooks'],0)
+    def test_foreign_replacement_cannot_be_deleted_by_cleanup(self):
+        r,s,p=self.hooked();o=self.install_fixture(r,p);owned=r.sample_tokens
+        foreign=lambda:None;r.sample_tokens=foreign
+        with self.assertRaisesRegex(RuntimeError,'FOREIGN_OWNER'):o.close()
+        self.assertIs(r.sample_tokens,foreign)
+        r.sample_tokens=owned;o.close()
 
 if __name__=='__main__':unittest.main()
