@@ -97,6 +97,23 @@ def launch_fixture(data):
 
 
 class TypedReadbackContracts(unittest.TestCase):
+    def test_normal_borrow_exit_requires_complete_exact_native_state(self):
+        p,r,e=fixture()
+        borrow=dict(schema='demoncat.tnd28.execute_borrow.v1',first_error=0,
+            pid=p['identity']['pid'],tid=p['identity']['native_tid'],child_started=1,child_consumed=1,
+            parent_started=1,parent_returned=1,drained=1,detached=0,reset_attempted=0,reset_returned=0,
+            cancelled=0,complete=1,terminal_uncertain=0,left=1,child_status=0,parent_status=0,
+            drain_status=0,detach_status=0,reset_status=0,fault_authorized=False)
+        e[-1]['data']['execute_borrow']=borrow
+        R.protocol(p,r,e)
+        for key,value in [('drained',0),('first_error',3),('pid',999),('fault_authorized',True)]:
+            changed=deepcopy(e);changed[-1]['data']['execute_borrow'][key]=value
+            with self.assertRaisesRegex(ValueError,'BORROW_EXIT'):R.protocol(p,r,changed)
+        del e[-1]['data']['execute_borrow']['drained']
+        with self.assertRaisesRegex(ValueError,'BORROW_EXIT'):R.protocol(p,r,e)
+        e[-1]['data']['execute_borrow']=None
+        R.protocol(p,r,e)  # explicitly unobserved borrow, not an authorized one
+
     def test_sdk_ncl_is_limited_to_actual_rank3_roles_and_nd_to_mask(self):
         p,r,e=fixture();native=e[0]['data'];R.protocol(p,r,e)
         for role,typed in (('query',native['query']),('key',native['key']['members'][0]),
@@ -417,6 +434,56 @@ class RawRpcSummaryContracts(unittest.TestCase):
             if kind=='collect_name':records[7]['action']='collect_replay'
             if kind=='extra_request':records[7]['response']['provider_state']['evidence']['requests'].append({})
             with self.subTest(kind=kind),self.assertRaises(ValueError):R.public_rpc_summaries(result,public,records)
+
+
+class ResearchProtocolContracts(unittest.TestCase):
+    def test_explicit_research_records_are_not_public_rpc_records(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);refs=[]
+            for i,action in enumerate(R.RESEARCH_ACTIONS):
+                path=root/('%02d.json'%i)
+                path.write_text(json.dumps(dict(action=action,research_direct_provider=True,response={})))
+                refs.append(dict(path=path.name,action=action,sha256=R.E.sha(path)))
+            rows,budget=R.original_rpc_records(root,refs,R.RESEARCH_PROTOCOL)
+            self.assertEqual(budget['record_count'],10)
+            self.assertEqual([r['action'] for r in rows],R.RESEARCH_ACTIONS)
+            with self.assertRaisesRegex(ValueError,'COUNT_OR_ORDER'):R.original_rpc_records(root,refs)
+            with self.assertRaisesRegex(ValueError,'UNKNOWN_INPUT'):R.original_rpc_records(root,refs,'unknown')
+            with self.assertRaisesRegex(ValueError,'COUNT_OR_ORDER'):
+                R.original_rpc_records(root,refs[:-1],R.RESEARCH_PROTOCOL)
+    def test_research_summaries_bind_raw_collect_and_disable(self):
+        base=RawRpcSummaryContracts();result,public,legacy=base.fixture()
+        result['entry_protocol']=R.RESEARCH_PROTOCOL
+        records=[dict(action=a,research_direct_provider=True,response={}) for a in R.RESEARCH_ACTIONS]
+        records[6]['response']=deepcopy(legacy[7]['response']);records[7]['response']=deepcopy(legacy[8]['response'])
+        R.public_rpc_summaries(result,public,records)
+        records[3]['research_direct_provider']=False
+        with self.assertRaisesRegex(ValueError,'RESEARCH_RECORD_KIND'):R.public_rpc_summaries(result,public,records)
+        records[3]['research_direct_provider']=True
+        result['cleanup']['owned_hooks']=1
+        with self.assertRaisesRegex(ValueError,'CLEANUP_SUMMARY'):R.public_rpc_summaries(result,public,records)
+
+
+class FreshCurrentValueReview(unittest.TestCase):
+    def fixture(self):
+        names=[('query',8388608,8388608),('key',4194304,4194304),('value',16777216,4194304),
+               ('atten_mask',4194304,4194304),('prepared_value',4194304,4194304)]
+        rows=[dict(name=n,read_bytes=r,logical_bytes=b,sha256='a'*64,initial_public_sha256='a'*64,unchanged=True) for n,r,b in names]
+        public={'api':{'inputs':{n:{'snapshot':dict(bytes=b,sha256='a'*64)} for n,r,b in names[:-1]}}}
+        native=dict(value_check_requested=1,value_read_mask=31,prepare_admitted=1,execute_entered=1,safe_release=1,terminal_uncertain=0,first_error=0)
+        binding=dict(value_checks=rows,events=[dict(stage=1,read_input_values=False),dict(stage=2,read_input_values=True,fresh_value_checks=deepcopy(rows))],first_error=None,bound=False,clear_attempted=True)
+        return {'binding_removal':{'input_window':dict(live_typed_plan=binding,native_typed_plan_return=native)}},public
+    def test_complete_current_native_window(self):
+        r,p=self.fixture();self.assertTrue(R.current_values(r,p)['observed'])
+    def test_incomplete_native_and_disagreeing_callback_refuse(self):
+        for key,value in [('value_read_mask',15),('safe_release',0),('first_error',5)]:
+            r,p=self.fixture();r['binding_removal']['input_window']['native_typed_plan_return'][key]=value
+            with self.assertRaises(ValueError):R.current_values(r,p)
+        r,p=self.fixture();r['binding_removal']['input_window']['live_typed_plan']['value_checks'][4]['sha256']='b'*64
+        with self.assertRaises(ValueError):R.current_values(r,p)
+    def test_public_reference_changed_refuses(self):
+        r,p=self.fixture();p['api']['inputs']['value']['snapshot']['sha256']='b'*64
+        with self.assertRaises(ValueError):R.current_values(r,p)
 
 
 class CompilerHookContracts(unittest.TestCase):

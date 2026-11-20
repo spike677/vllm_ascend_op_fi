@@ -34,6 +34,13 @@ LSE_SOURCES={
     'attention/fused_infer_attention_score/op_api/aclnn_fused_infer_attention_score_inner.cpp':
         '1efdfba88a2463376d11df2dbd7b9aed515f6f42a875314406c15b39e4119808'}
 RPC_ACTIONS=['attach','prepare','register','check','enable','advance','query','advance','disable','unregister','detach']
+RESEARCH_PROTOCOL='EXPLICIT_RESEARCH_PROVIDER_NOT_PUBLIC_RUNTIME'
+RESEARCH_ACTIONS=['prepare','register','check','enable','advance','query','collect_replay','disable','unregister','detach']
+
+def protocol_actions(protocol):
+    need(protocol is None or protocol==RESEARCH_PROTOCOL,'UNKNOWN_INPUT_OBSERVATION_PROTOCOL')
+    return RESEARCH_ACTIONS if protocol==RESEARCH_PROTOCOL else RPC_ACTIONS
+
 RPC_ITEM_LIMIT=32*1024**2
 RPC_TOTAL_LIMIT=128*1024**2
 SCALARS=('num_heads','pre_tokens','next_tokens','num_key_value_heads','sparse_mode','inner_precise',
@@ -201,8 +208,19 @@ def protocol(public,returned,events):
         need(data[phase]['status']==0 and data[phase]['original_calls']==1,'ORIGINAL_CALL_DID_NOT_RETURN_ONCE:'+phase)
     for phase in ('prepare_return','execute_return'):
         need(data[phase]['status']==0 and data[phase]['original_returns']==1,'ORIGINAL_API_RETURN:'+phase)
-    need(data['prepare_exit']=={'workspace_called':True,'original_returned':True}
-        and data['execute_exit']=={'fia_called':True,'original_returned':True},'INCOMPLETE_ORIGINAL_API_EXIT')
+    need(data['prepare_exit']=={'workspace_called':True,'original_returned':True},'INCOMPLETE_ORIGINAL_API_EXIT')
+    exit_record=data['execute_exit']
+    need(set(exit_record) in ({'fia_called','original_returned'}, {'fia_called','original_returned','execute_borrow'})
+        and exit_record['fia_called'] is True and exit_record['original_returned'] is True,
+        'INCOMPLETE_ORIGINAL_API_EXIT')
+    if exit_record.get('execute_borrow') is not None:
+        expected=dict(schema='demoncat.tnd28.execute_borrow.v1',first_error=0,
+            pid=public['identity']['pid'],tid=public['identity']['native_tid'],
+            child_started=1,child_consumed=1,parent_started=1,parent_returned=1,drained=1,
+            detached=0,reset_attempted=0,reset_returned=0,cancelled=0,complete=1,terminal_uncertain=0,
+            left=1,child_status=0,parent_status=0,drain_status=0,detach_status=0,reset_status=0,
+            fault_authorized=False)
+        need(exit_record['execute_borrow']==expected,'INCOMPLETE_NORMAL_EXECUTE_BORROW_EXIT')
     need(data['workspace_enter']['executor']==wr['executor']==data['prepare_return']['executor']==data['execute_enter']['executor']>0,
         'ACTUAL_PARENT_EXECUTOR_CHANGED')
     ce=data['contiguous_execute_enter'];fe=data['fia_execute_enter']
@@ -370,10 +388,12 @@ def public_lifecycle(result,public):
 
 
 def public_rpc_summaries(result,public,records):
-    need([r['action'] for r in records]==RPC_ACTIONS,'ACTUAL_SINGLE_WINDOW_PUBLIC_RPC_PROTOCOL')
+    research=result.get('entry_protocol')==RESEARCH_PROTOCOL
+    need([r['action'] for r in records]==protocol_actions(result.get('entry_protocol')),'ACTUAL_SINGLE_WINDOW_PUBLIC_RPC_PROTOCOL')
+    if research:need(all(r.get('research_direct_provider') is True for r in records),'RESEARCH_RECORD_KIND_REQUIRED')
     # collect_replay is an advance RPC. Use the raw response that produced each
     # summary; matching action names/history alone cannot bind copied summaries.
-    collected=records[7]['response']['provider_state'];stopped=records[8]['response']['provider_state']
+    collected=records[6 if research else 7]['response']['provider_state'];stopped=records[7 if research else 8]['response']['provider_state']
     need(collected['evidence']['requests']==[result['request']['worker']],
         'ACTUAL_COLLECT_RPC_REQUEST_SUMMARY_DIFFERS')
     need(stopped==result['cleanup'],'ACTUAL_DISABLE_RPC_CLEANUP_SUMMARY_DIFFERS')
@@ -382,12 +402,13 @@ def public_rpc_summaries(result,public,records):
             'ACTUAL_COLLECT_DISABLE_RPC_OWNER_CHANGED')
 
 
-def original_rpc_records(root,refs):
+def original_rpc_records(root,refs,protocol=None):
+    expected_actions=protocol_actions(protocol)
     # This one-request protocol repeats the complete 28-call metadata in later
     # replies. Bound all eleven originals before reading any JSON; do not trim
     # their evidence or relax the shared JSON reader's default limit.
-    need(type(refs) is list and len(refs)==len(RPC_ACTIONS)
-        and [r['action'] for r in refs]==RPC_ACTIONS,'ACTUAL_SINGLE_WINDOW_RPC_COUNT_OR_ORDER')
+    need(type(refs) is list and len(refs)==len(expected_actions)
+        and [r['action'] for r in refs]==expected_actions,'ACTUAL_SINGLE_WINDOW_RPC_COUNT_OR_ORDER')
     inputs=[];paths=set();total=0
     for ref in refs:
         path=E.child(root,ref['path']);size=path.stat().st_size
@@ -403,9 +424,39 @@ def original_rpc_records(root,refs):
         record=json.loads(raw,object_pairs_hook=E.unique,
             parse_constant=lambda x:(_ for _ in ()).throw(ValueError('NONFINITE_JSON')))
         need(record['action']==ref['action'],'ORIGINAL_RPC_ACTION_CHANGED');records.append(record)
-    return records,dict(expected_records=len(RPC_ACTIONS),record_count=len(records),
+    return records,dict(expected_records=len(expected_actions),record_count=len(records),
         per_record_limit_bytes=RPC_ITEM_LIMIT,total_limit_bytes=RPC_TOTAL_LIMIT,
         record_bytes=[size for _,size,_ in inputs],total_bytes=total)
+
+
+
+def current_values(result,public):
+    window=result['binding_removal']['input_window']
+    binding=window.get('live_typed_plan',{})
+    if not binding.get('value_checks'):
+        need(not binding.get('current_value_proof'),'CURRENT_VALUES_CLAIM_WITHOUT_BYTES')
+        return dict(observed=False,fault_authorized=False)
+    native=window['native_typed_plan_return']
+    need(native['value_check_requested']==1 and native['value_read_mask']==31
+        and native['prepare_admitted']==native['execute_entered']==native['safe_release']==1
+        and native['terminal_uncertain']==native['first_error']==0,'LIVE_VALUE_NATIVE_WINDOW_INCOMPLETE')
+    events=binding['events'];checks=binding['value_checks']
+    need(len(events)==2 and [e['stage'] for e in events]==[1,2]
+        and events[0]['read_input_values'] is False and events[1]['read_input_values'] is True
+        and events[1]['fresh_value_checks']==checks and binding['first_error'] is None
+        and binding['bound'] is False and binding['clear_attempted'] is True,
+        'LIVE_VALUE_CALLBACK_OR_RELEASE_INCOMPLETE')
+    expected=[('query',8388608,8388608),('key',4194304,4194304),('value',16777216,4194304),
+              ('atten_mask',4194304,4194304),('prepared_value',4194304,4194304)]
+    need(len(checks)==5,'LIVE_VALUE_COMPLETE_SET_REQUIRED')
+    for row,(name,read_bytes,logical_bytes) in zip(checks,expected):
+        reference=public['api']['inputs']['value' if name=='prepared_value' else name]['snapshot']
+        need(row['name']==name and row['read_bytes']==read_bytes and row['logical_bytes']==logical_bytes
+            and reference['bytes']==logical_bytes and row['sha256']==row['initial_public_sha256']==reference['sha256']
+            and len(row['sha256'])==64 and row['unchanged'] is True,'LIVE_VALUE_HASH_OR_SPAN_DIFFERS:'+name)
+    need(checks[2]['sha256']==checks[4]['sha256'],'CURRENT_PREPARED_VALUE_NOT_PUBLIC_VALUE')
+    return dict(observed=True,checks=checks,read_mask=native['value_read_mask'],
+                first_error=0,callback_released=True,fault_authorized=False)
 
 
 def main():
@@ -427,7 +478,7 @@ def main():
         result=json_file(a.result,128*1024**2);public_lifecycle(result,public)
         need(result['build_sha256']==a.build_sha256 and result['source_manifest_sha256']==a.source_manifest_sha256,
             'ACTUAL_DEPLOYMENT_SOURCE_OR_BUILD')
-        original_rpc,report['rpc_input_budget']=original_rpc_records(a.result.parent,result['rpc'])
+        original_rpc,report['rpc_input_budget']=original_rpc_records(a.result.parent,result['rpc'],result.get('entry_protocol'))
         actions=[record['action'] for record in original_rpc]
         public_rpc_summaries(result,public,original_rpc)
         host=E.child(a.result.parent,result['host_receipt']['path'])
@@ -435,9 +486,24 @@ def main():
             'ORIGINAL_HOST_RECEIPT_CHANGED')
         host=json_file(host,128*1024**2)
         need(host['ownership_retained'] is False and [r['action'] for r in host['history']]==actions
-            and host['history']==original_rpc and host['attachment'] is None and host['ticket'] is None,'ACTUAL_HOST_FINAL_RELEASE')
+            and host['history']==original_rpc,'ACTUAL_HOST_FINAL_RELEASE')
+        if result.get('entry_protocol')==RESEARCH_PROTOCOL:
+            # Research client retains only its historical owner label after detach;
+            # it has no public attachment/ticket capability. Raw cleanup above and
+            # the final direct-provider query must prove zero actual resources.
+            final=original_rpc[-1]['response']['provider_state']
+            need(host.get('protocol')==RESEARCH_PROTOCOL and 'attachment' not in host
+                and host['owner']==public['owner'] and host['ticket']=={'owner':public['owner']}
+                and host['worker']==result['setup']['worker'] and not final['registered']
+                and not any(final[k] for k in ('owned_hooks','owned_api_wrappers','inflight','leases')),
+                'ACTUAL_RESEARCH_OWNER_RELEASE')
+        else:need(host['attachment'] is None and host['ticket'] is None,'ACTUAL_HOST_FINAL_RELEASE')
         need(public['build_sha256']==a.build_sha256,'PUBLIC_NEW_BUILD_BINDING')
+        report['fresh_current_values']=current_values(result,public)
         typed=protocol(public,returned,events)
+        if typed['execute_exit'].get('execute_borrow') is not None:
+            need(result['binding_removal']['input_window']['execute_borrow']['borrow']==typed['execute_exit']['execute_borrow'],
+                 'NATIVE_BORROW_RETURN_AND_RAW_EVENT_DIFFER')
         need(E.sha(a.libraries)==a.libraries_sha256,'TRUSTED_LIBRARY_MANIFEST_CHANGED');libraries=json_file(a.libraries)
         entries={r['recorded_path']:r for r in libraries['files']}
         need(len(entries)==len(libraries['files'])<=32,'MAPPED_LIBRARY_MANIFEST_AMBIGUOUS')

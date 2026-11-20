@@ -13,3 +13,23 @@ Python 只在内存中计算完整逻辑 SHA，按已核对的 stride/offset 从
 - 当前仍缺：新 vendor 实际加载后的正常路径取证、Native 两阶段准入与实际 copy/launch 绑定，以及 B3/B4/B5。`TND_REPLAY_NATIVE_TWO_STAGE_ADMISSION_UNBOUND` 不得通过删除拒绝检查来消除。
 
 组合限制：124 A2 / CANN 8.5.1 / 原生成 FIA 路径 / 固定已审查 TND 几何。CPU 编译不构成 NPU 或其他形状资格。
+
+## 124 正常路径独立复核通过
+
+实际源码 `88e5bfa7`，清单 `f796e135f0c7636492606d578d85ac1d3dad38d825b672ce65ffb55cad7ab6ca`，新 build `54fc75ce71fafaff41a8070692abe78382c8e7612a3c313f4c79ce5b77a88ae0`。A2 / CANN8.5.1 / vLLM-Ascend0.18 / Qwen3-0.6B FP16 / TP1 / 2048-token prefill / 卡2。
+
+全部28层自然调用保留，只选择一个实际对象做原生观察。14条 typed 事件、10条研究 RPC、实际注册 ELF、Slice→FIA 参数对应及5份当前值完整哈希独立复核通过。当前 V 与连续化后的 V 哈希一致，Native read_mask=31，callback 已释放。真实 key 为 Slice 524000000、FIA 5000000000000200103；没有运行 replay key。
+
+审查器明确区分10步研究协议与旧11步公共协议，旧协议检查不放宽。首次审查因旧 reader 未识别 execute_borrow 退出字段而拒绝；后继 reader 完整核对借用退出字段及反例，以同一原件重审通过。未改写运行数据。源码包缺少研究文件、控制器导入路径错误均在NPU运行前修正。
+
+UTC 12:00:54.388316—12:02:58.175201，总窗口123.786914秒（含初始化及隔离）；28剩余预算13607.024709秒。health仍仅比较token；B3/B4/B5未通过，F仍关闭。B2依负责人决定按完整stock/private桥接通过，保留FUNCTION_BIND_NOT_UNIQUE限制；M128对照不再重跑。
+
+抢占：12:00:54.579385起仅停止卡5的 `ptq_dcde1a8de6b13b34_list61-less-full-01_dev5_slot0_8d2aadea`，镜像 `cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8`，12:00:55.622871返回0。卡2运行、卡5空闲。有界清理器12:02:58.175296结束并join；未修改派发器、Docker入口、驱动或CANN，未删除外部容器或数据。
+
+[总结与原件SHA](../../experiments/worker_core_v11_20261118/tnd28_fresh_values_20261120_summary.json)。原始回执只保存在D盘和124。
+
+## 后续只读 live-launch 接口（仅 CPU）
+
+新增 `dcat_attention_observer_launch_count_v1` / `dcat_attention_observer_last_launch_v1`，仅返回本线程、当前 Native scope 中真实记录的 launch。结束 scope 即清空；未知 binary、失败 launch、记录失败、超限或异常会让整个窗口不可用，不回退到上一条成功记录。该接口不选择 key、不修改参数、不提供故障许可。
+
+CANN8.5.1 无设备编译与局部状态机自测通过（失配token、未发生launch、小缓冲区、失败后禁止恢复、跨scope旧记录、字节/次数超限）。observer 源码 SHA `4713447df2dfc01dd223fe1c3481fd8891d85410398870b3d141b2a8aed5fe96`，库 SHA `e08f45d35302188f4d9131696d68d94f50c42a90c1c7d0af308a8a9d64d02c37`。此新observer未参与上面的NPU验收，不能套用其通过结果。下一步需将它与同次child调用前后窗口、两阶段Native门禁连接并实测。

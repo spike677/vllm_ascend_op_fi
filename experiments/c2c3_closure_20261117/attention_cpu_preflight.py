@@ -103,6 +103,11 @@ def main():
             memory_rc = observer.dcat_attention_observer_memory_selftest_v1()
             report['observer_memory_selftest'] = dict(exit_code=memory_rc,
                 **json.loads(observer.dcat_attention_observer_memory_status_v1().decode()))
+            observer.dcat_attention_observer_launch_readback_selftest_v1.restype = ctypes.c_int
+            readback_rc = observer.dcat_attention_observer_launch_readback_selftest_v1()
+            report['observer_launch_readback_selftest'] = dict(exit_code=readback_rc,
+                cpu_fixture_only=True,actual_launch_observed=False,fault_authorized=False)
+            if readback_rc != 0:raise RuntimeError('OBSERVER_LIVE_READBACK_CPU_CONTRACT_FAILED')
             if memory_rc != 0:
                 raise RuntimeError('OBSERVER_BOUNDED_SELF_MEMORY_READ_FAILED')
         probe = a.out/'abi.cpp'

@@ -43,6 +43,25 @@ bool fits_capture_budget(uint64_t length,uint64_t count,uint64_t bytes) {
     return length>0 && length<=max_binary_bytes && count<max_capture_count &&
         bytes<=max_capture_bytes && length<=max_capture_bytes-bytes;
 }
+// Current-scope, read-only launch readback. This is observation, never a
+// permission callback. Unknown/unbounded observations poison this window.
+struct LaunchReadback {
+    std::string scope,last;uint64_t count=0;bool healthy=false;
+    void Clear(){scope.clear();last.clear();count=0;healthy=false;}
+    void Begin(const std::string& id){Clear();scope=id;healthy=true;}
+    void Record(const std::string& payload,bool valid){
+        if(scope.empty())return;
+        if(count<65)++count;
+        healthy=healthy&&valid&&count<=64&&!payload.empty()&&payload.size()<65536;
+        last=healthy?payload:std::string{};
+    }
+    bool Matches(const char* id)const{return id&&!scope.empty()&&scope==id&&healthy;}
+    int Read(const char* id,char* out,size_t capacity)const{
+        if(!Matches(id)||!count||!out||capacity>65536||last.size()+1>capacity)return -1;
+        std::memcpy(out,last.c_str(),last.size()+1);return 0;
+    }
+};
+thread_local LaunchReadback launch_readback;
 thread_local std::string token;
 thread_local bool nested=false;
 thread_local int memory_vm_errno=0,memory_proc_errno=0;
@@ -168,16 +187,20 @@ void launched(const char* api,void* handle,uint64_t key,uint32_t blocks,rtStream
         <<",\"argument_layout\":\""<<(s.aclHostArgs?"aclrt_host_placeholders":"rtArgsEx")<<"\""
         <<",\"function_handle\":"<<reinterpret_cast<uintptr_t>(function)
         <<",\"placeholders_hex\":\""<<hex(s.placeholders.data(),s.placeholders.size())<<"\"";
-    emit(row.str());
+    const auto text=row.str();const bool written=emit(text);
+    const auto payload="{\"schema\":\"demoncat.live_launch_readback.v1\",\"pid\":"+std::to_string(getpid())
+        +",\"tid\":"+std::to_string(syscall(SYS_gettid))+",\"call_id\":\""+token+"\",\"sequence\":"
+        +std::to_string(launch_readback.count+1)+","+text+"}";
+    launch_readback.Record(payload,written&&s.valid&&result==0&&binary.generation>0&&!binary.file.empty());
 }
 }
 
 extern "C" int dcat_attention_observer_begin_v1(const char* id) {
     if(!id || !token.empty() || !safe(id) || directory().empty())return -1;
-    token=id;if(!emit("\"event\":\"begin\"")){token.clear();return -2;}return 0;
+    token=id;if(!emit("\"event\":\"begin\"")){token.clear();return -2;}launch_readback.Begin(token);return 0;
 }
 extern "C" int dcat_attention_observer_end_v1() {
-    if(token.empty())return -1;bool ok=emit("\"event\":\"end\"");token.clear();return ok?0:-2;
+    if(token.empty())return -1;bool ok=emit("\"event\":\"end\"");launch_readback.Clear();token.clear();return ok?0:-2;
 }
 // Host-only TLS readback. It neither creates a scope nor touches a device.
 // Public Worker owners use this after a failed end/ack before releasing a lease.
@@ -187,6 +210,28 @@ extern "C" int dcat_attention_observer_scope_active_v1() {
 extern "C" int dcat_attention_observer_scope_matches_v1(const char* id) {
     if(token.empty())return 0;
     return id && token==id?1:2;
+}
+extern "C" int64_t dcat_attention_observer_launch_count_v1(const char* id) {
+    return launch_readback.Matches(id)?static_cast<int64_t>(launch_readback.count):-1;
+}
+extern "C" int dcat_attention_observer_last_launch_v1(const char* id,char* out,size_t capacity) {
+    return launch_readback.Read(id,out,capacity);
+}
+extern "C" int dcat_attention_observer_launch_readback_selftest_v1() {
+    // CPU local fixture only. Does not enter a live scope, emit, or call ACL.
+    LaunchReadback value;char output[32]{};
+    if(value.Matches("a")||value.Read("a",output,sizeof(output))==0)return -1;
+    value.Begin("a");if(!value.Matches("a")||value.count||value.Read("a",output,sizeof(output))==0)return -2;
+    value.Record("{\"fixture\":true}",true);
+    if(value.count!=1||value.Read("b",output,sizeof(output))==0||value.Read("a",output,2)==0
+        ||value.Read("a",output,sizeof(output))||std::string(output)!="{\"fixture\":true}")return -3;
+    value.Record("{}",false);value.Record("{}",true);
+    if(value.Matches("a")||value.Read("a",output,sizeof(output))==0)return -4;
+    value.Begin("b");if(value.count||value.Matches("a"))return -5;
+    value.Record(std::string(65536,'x'),true);if(value.Matches("b"))return -6;
+    value.Begin("b");for(int i=0;i<65;++i)value.Record("{}",true);
+    if(value.Matches("b"))return -7;
+    value.Clear();return value.scope.empty()&&value.last.empty()&&value.count==0&&!value.healthy?0:-8;
 }
 extern "C" int dcat_attention_observer_memory_selftest_v1() {
     // Host-only budget boundary checks; no allocation, file or NPU operation.
@@ -224,7 +269,7 @@ extern "C" rtError_t rtKernelLaunchWithHandleV2(void* handle,const uint64_t key,
     if(token.empty() || nested)return real(handle,key,blocks,args,sm,stream,config);
     nested=true;Snapshot s;try{s=snapshot(args,config);}catch(...){}const auto begin=now();
     const auto rc=real(handle,key,blocks,args,sm,stream,config);
-    try{launched("rtKernelLaunchWithHandleV2",handle,key,blocks,stream,s,begin,rc);}catch(...){}
+    try{launched("rtKernelLaunchWithHandleV2",handle,key,blocks,stream,s,begin,rc);}catch(...){launch_readback.healthy=false;launch_readback.last.clear();}
     nested=false;return rc;
 }
 extern "C" rtError_t rtKernelLaunchWithHandle(void* handle,const uint64_t key,uint32_t blocks,
@@ -233,7 +278,7 @@ extern "C" rtError_t rtKernelLaunchWithHandle(void* handle,const uint64_t key,ui
     if(token.empty() || nested)return real(handle,key,blocks,args,sm,stream,info);
     nested=true;Snapshot s;try{s=snapshot(args,nullptr);}catch(...){}const auto begin=now();
     const auto rc=real(handle,key,blocks,args,sm,stream,info);
-    try{launched("rtKernelLaunchWithHandle",handle,key,blocks,stream,s,begin,rc);}catch(...){}
+    try{launched("rtKernelLaunchWithHandle",handle,key,blocks,stream,s,begin,rc);}catch(...){launch_readback.healthy=false;launch_readback.last.clear();}
     nested=false;return rc;
 }
 extern "C" rtError_t rtDeviceSynchronize() {
@@ -328,7 +373,7 @@ extern "C" aclError aclrtLaunchKernelWithHostArgs(aclrtFuncHandle function,uint3
     nested=true;Snapshot s;try{s=acl_snapshot(args,size,placeholders,count,cfg);}catch(...){}
     Function f;{std::lock_guard<std::mutex> lock(gate);auto i=functions.find(function);if(i!=functions.end())f=i->second;}
     const auto begin=now();const auto rc=real(function,blocks,stream,cfg,args,size,placeholders,count);
-    try{launched("aclrtLaunchKernelWithHostArgs",f.binary,f.key,blocks,stream,s,begin,rc,function);}catch(...){}
+    try{launched("aclrtLaunchKernelWithHostArgs",f.binary,f.key,blocks,stream,s,begin,rc,function);}catch(...){launch_readback.healthy=false;launch_readback.last.clear();}
     nested=false;return rc;
 }
 #endif

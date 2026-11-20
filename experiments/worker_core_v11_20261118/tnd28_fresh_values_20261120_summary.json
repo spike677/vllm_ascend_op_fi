@@ -1,0 +1,125 @@
+{
+  "schema": "demoncat.tnd28.fresh_values_summary.v1",
+  "combination": {
+    "hardware": "Ascend910B4/A2",
+    "cann": "8.5.1",
+    "vllm_ascend": "0.18",
+    "model": "Qwen3-0.6B",
+    "dtype": "FP16",
+    "tp": 1,
+    "prefill_tokens": 2048,
+    "card": 2,
+    "image_id": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+    "installed_packages_same_image": {
+      "torch": "2.9.0+cpu",
+      "torch-npu": "2.9.0.post1+gitee7ba04",
+      "vllm": "0.18.0+empty",
+      "vllm-ascend": "0.18.0"
+    }
+  },
+  "source_commit": "88e5bfa7a3eea84b8df2715a87fcc8d4d03a24c2",
+  "source_manifest_sha256": "f796e135f0c7636492606d578d85ac1d3dad38d825b672ce65ffb55cad7ab6ca",
+  "build_sha256": "54fc75ce71fafaff41a8070692abe78382c8e7612a3c313f4c79ce5b77a88ae0",
+  "status": "SOURCE_BOUND_NORMAL_PREPARED_INPUT_JOIN_RECORDED_NO_F_AUTHORITY",
+  "issues": [],
+  "fresh_current_values": {
+    "observed": true,
+    "checks": [
+      {
+        "name": "query",
+        "read_bytes": 8388608,
+        "logical_bytes": 8388608,
+        "sha256": "f7428cbd763688f5e6fe68b86ee7989262702251695966d98719ed91029eb8cc",
+        "initial_public_sha256": "f7428cbd763688f5e6fe68b86ee7989262702251695966d98719ed91029eb8cc",
+        "unchanged": true
+      },
+      {
+        "name": "key",
+        "read_bytes": 4194304,
+        "logical_bytes": 4194304,
+        "sha256": "6a8843a0b7c94275df3b23f36cc02394dd2e95550bcedf6164f044110ad4d027",
+        "initial_public_sha256": "6a8843a0b7c94275df3b23f36cc02394dd2e95550bcedf6164f044110ad4d027",
+        "unchanged": true
+      },
+      {
+        "name": "value",
+        "read_bytes": 16777216,
+        "logical_bytes": 4194304,
+        "sha256": "fe8460c4b4319dff45880be1e9f0a65b7f275bdadcc70dbc251475f2d1b952dc",
+        "initial_public_sha256": "fe8460c4b4319dff45880be1e9f0a65b7f275bdadcc70dbc251475f2d1b952dc",
+        "unchanged": true
+      },
+      {
+        "name": "atten_mask",
+        "read_bytes": 4194304,
+        "logical_bytes": 4194304,
+        "sha256": "d016ca7be6be829fd102f03317c3eed915d3df3d3fd54279a8858caea2dd57de",
+        "initial_public_sha256": "d016ca7be6be829fd102f03317c3eed915d3df3d3fd54279a8858caea2dd57de",
+        "unchanged": true
+      },
+      {
+        "name": "prepared_value",
+        "read_bytes": 4194304,
+        "logical_bytes": 4194304,
+        "sha256": "fe8460c4b4319dff45880be1e9f0a65b7f275bdadcc70dbc251475f2d1b952dc",
+        "initial_public_sha256": "fe8460c4b4319dff45880be1e9f0a65b7f275bdadcc70dbc251475f2d1b952dc",
+        "unchanged": true
+      }
+    ],
+    "read_mask": 31,
+    "first_error": 0,
+    "callback_released": true,
+    "fault_authorized": false
+  },
+  "native_records": 14,
+  "observed_launches": [
+    {
+      "tiling_key": "524000000",
+      "block_dim": 40,
+      "registered_elf_sha256": "ceadb83454273d7a9dd67c343c2dd7ca0f756ff0f44340d42126ec584a36b63d"
+    },
+    {
+      "tiling_key": "5000000000000200103",
+      "block_dim": 20,
+      "registered_elf_sha256": "d99ce5e9435a3df59ff4432f53f997305638de40e4b306918f587faf8d96dd81"
+    }
+  ],
+  "raw_rpc_count": 10,
+  "protocol": "EXPLICIT_RESEARCH_PROVIDER_NOT_PUBLIC_RUNTIME",
+  "window_seconds": 123.78691428608727,
+  "start": "2026-11-20T12:00:54.388316+00:00",
+  "end": "2026-11-20T12:02:58.175201+00:00",
+  "isolation_removed": true,
+  "health_scope": "POST_UNREGISTER_TOKENS_ONLY",
+  "health_tokens_equal": true,
+  "source_artifacts": [
+    {
+      "name": "independent-review-a2.json",
+      "bytes": 14001,
+      "sha256": "78ef9afd0bb3412f4a93a143dac4c88759975d81fcb796ce5d227827ebcfd569"
+    },
+    {
+      "name": "controller.json",
+      "bytes": 67762,
+      "sha256": "3993a14df7beee1d485619d00a1c5f40fedd7c9e445907195bf94461665155d2"
+    },
+    {
+      "name": "result.json",
+      "bytes": 11111755,
+      "sha256": "46f1a8a954fb5890032edeba69dbcba2c2d349732e3c29be514d837ed917cf2d"
+    },
+    {
+      "name": "isolation.jsonl",
+      "bytes": 1085,
+      "sha256": "f1c402d6fa0e382bcbf871776083c92f2346cae9cb01c6eaa9c8d6ceeee3be7a"
+    }
+  ],
+  "limits": [
+    "normal observation only; no F authority or B3/B4/B5 acceptance",
+    "Slice POD not decoded",
+    "same Worker health compared tokens only",
+    "stock census FUNCTION_BIND_NOT_UNIQUE remains; B2 accepted by complete stock/private hash bridge",
+    "no current-value permission passed to host until two-stage native binding is implemented"
+  ],
+  "fault_authorized": false
+}
