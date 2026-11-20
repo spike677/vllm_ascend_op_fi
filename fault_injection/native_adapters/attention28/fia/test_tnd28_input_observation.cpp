@@ -119,5 +119,38 @@ int main(){
     read.value_read_mask=1;assert(!tnd28_input::ValueReadReady(read,token.c_str(),0,8388608));
     read.value_read_mask=0;read.checking=false;
     assert(!tnd28_input::ValueReadReady(read,token.c_str(),0,8388608));
+    read.checking=true;read.value_read_mask=31;read.copy_launch_requested=true;
+    read.copy_count_before=0;read.copy_count_after=1;read.copy_begin_ns=11;read.copy_end_ns=20;
+    read.copy_stream=123;read.copy_launch="{}";
+    assert(tnd28_input::CopyReadReady(read,token.c_str()));
+    read.copy_launch_read=true;assert(!tnd28_input::CopyReadReady(read,token.c_str()));
+    read.copy_launch_read=false;read.copy_count_after=2;assert(!tnd28_input::CopyReadReady(read,token.c_str()));
+    read.copy_count_after=1;read.value_read_mask=15;assert(!tnd28_input::CopyReadReady(read,token.c_str()));
+    read.value_read_mask=31;read.value_read_window=false;assert(!tnd28_input::CopyReadReady(read,token.c_str()));
+    read.value_read_window=true;read.checking=false;assert(!tnd28_input::CopyReadReady(read,token.c_str()));
+    Reset();auto& stage=tnd28_input::Plan();assert(tnd28_input::Current(stage.scope));
+    stage.callback=&PublicCallback;stage.prepare_accepted=stage.prepare_admitted=true;
+    stage.value_check_requested=stage.copy_launch_requested=stage.replay_requested=true;
+    stage.host_parent=11;stage.host_child=12;stage.host_child_bytes=4096;
+    for(const auto& pair:std::vector<std::pair<std::string,std::string>>{
+        {"MODE","denominator_replay"},{"PHASE","fault"},{"TOKEN",stage.scope.token},{"OWNER",stage.scope.owner},
+        {"GENERATION",stage.scope.generation},{"OBJECT",stage.scope.module},{"REQUEST_SHA256",stage.scope.request},
+        {"INPUT_SHA256",stage.scope.input},{"PID",std::to_string(stage.scope.pid)},
+        {"TID",std::to_string(stage.scope.tid)},{"PROCESS_START",stage.scope.start}})
+        assert(setenv(("DCAT28_TND_"+pair.first).c_str(),pair.second.c_str(),1)==0);
+    auto ready=[&]{return tnd28_input::HostPrepareReady(stage,token.c_str(),stage.scope.input.c_str(),1,9);};
+    assert(!ready());stage.host_window=true;assert(ready());
+    stage.checking=true;assert(!ready());stage.checking=false;
+    stage.execute_entered=true;assert(!ready());stage.execute_entered=false;
+    stage.host_gate_checks=64;assert(!ready());stage.host_gate_checks=1;
+    assert(!tnd28_input::HostPrepareReady(stage,token.c_str(),stage.scope.input.c_str(),1,10));
+    stage.host_window=false;stage.host_completed=true;stage.execute_entered=true;
+    assert(!tnd28_input::ReplayParentReady(stage,11,12)); // no current values / copy yet
+    stage.value_read_mask=31;stage.copy_launch_read=true;
+    assert(tnd28_input::ReplayParentReady(stage,11,12));
+    assert(!tnd28_input::ReplayParentReady(stage,11,13));
+    stage.value_read_window=true;assert(!tnd28_input::ReplayParentReady(stage,11,12));stage.value_read_window=false;
+    stage.replay_parent_committed=true;assert(!tnd28_input::ReplayParentReady(stage,11,12));
+    stage.replay_parent_committed=false;stage.first_error=1;assert(!tnd28_input::ReplayParentReady(stage,11,12));
     std::cout<<"PASS_CPU_TND28_TYPED_INPUT_OBSERVATION_NO_DEVICE_NO_F\n";
 }

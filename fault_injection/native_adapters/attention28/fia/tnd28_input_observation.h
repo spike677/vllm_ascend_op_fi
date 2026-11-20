@@ -1,7 +1,8 @@
 #ifndef DEMONCAT_TND28_INPUT_OBSERVATION_H
 #define DEMONCAT_TND28_INPUT_OBSERVATION_H
 // Included only in the source-pinned, freshly compiled FIA inner API unit.
-// No symbol interposition, extra prepare/execute, device read, or F permission.
+// No symbol interposition or extra prepare/execute. Optional bounded value
+// reads occur only after the original child drains. No F permission.
 #ifndef DCAT_TND28_INPUT_CPU_FIXTURE
 #include "opdev/common_types.h"
 #include "opdev/op_executor.h"
@@ -31,6 +32,8 @@
 #include <unistd.h>
 
 extern "C" int dcat_attention_observer_scope_matches_v1(const char*) __attribute__((weak));
+extern "C" int64_t dcat_attention_observer_launch_count_v1(const char*) __attribute__((weak));
+extern "C" int dcat_attention_observer_last_launch_v1(const char*,char*,size_t) __attribute__((weak));
 namespace tnd28_input {
 inline uint64_t Ptr(const void* p){return reinterpret_cast<uint64_t>(p);}
 inline uint64_t Now(){timespec t{};if(clock_gettime(CLOCK_MONOTONIC,&t))throw std::runtime_error("clock");return uint64_t(t.tv_sec)*1000000000ULL+t.tv_nsec;}
@@ -116,6 +119,13 @@ struct PublicPlan {
     bool safe_release=false,terminal_uncertain=false; uint32_t first_error=0;
     bool value_check_requested=false,value_read_window=false;
     uint32_t value_read_mask=0;
+    bool copy_launch_requested=false,copy_launch_read=false;
+    int64_t copy_count_before=-1,copy_count_after=-1;
+    uint64_t copy_begin_ns=0,copy_end_ns=0,copy_stream=0;
+    std::string copy_launch;
+    bool replay_requested=false,host_window=false,host_completed=false,replay_parent_committed=false;
+    uint64_t host_parent=0,host_child=0,host_child_bytes=0;
+    uint32_t host_gate_checks=0;
     std::array<uint64_t,5> value_addresses{};
 };
 inline PublicPlan& Plan(){static thread_local PublicPlan value;return value;}
@@ -133,6 +143,36 @@ inline bool ValueReadReady(PublicPlan& p,const char* token,uint32_t index,size_t
       &&p.value_check_requested&&p.value_read_window&&p.value_addresses[index]
       &&!(p.value_read_mask&(1U<<index));
 }
+inline bool CopyReadReady(PublicPlan& p,const char* token){
+    Scope current;
+    return PlanOwner(p,token)&&Current(current)&&Same(current,p.scope)&&p.callback&&p.checking
+      &&p.prepare_admitted&&p.execute_entered&&!p.first_error&&p.value_read_window
+      &&p.value_read_mask==31&&p.copy_launch_requested&&!p.copy_launch_read
+      &&p.copy_count_before>=0&&p.copy_count_after==p.copy_count_before+1
+      &&p.copy_begin_ns>0&&p.copy_end_ns>=p.copy_begin_ns&&p.copy_stream&&!p.copy_launch.empty();
+}
+inline bool ReplayScopeMatches(const PublicPlan& p){
+    return Env("DCAT28_TND_MODE")=="denominator_replay"&&Env("DCAT28_TND_PHASE")=="fault"
+      &&Env("DCAT28_TND_TOKEN")==p.scope.token&&Env("DCAT28_TND_OWNER")==p.scope.owner
+      &&Env("DCAT28_TND_GENERATION")==p.scope.generation&&Env("DCAT28_TND_OBJECT")==p.scope.module
+      &&Env("DCAT28_TND_REQUEST_SHA256")==p.scope.request&&Env("DCAT28_TND_INPUT_SHA256")==p.scope.input
+      &&Env("DCAT28_TND_PID")==std::to_string(p.scope.pid)&&Env("DCAT28_TND_TID")==std::to_string(p.scope.tid)
+      &&Env("DCAT28_TND_PROCESS_START")==p.scope.start;
+}
+inline bool HostPrepareReady(const PublicPlan& p,const char* token,const char* input,uint64_t generation,uint64_t object){
+    Scope current;
+    return PlanOwner(p,token)&&Current(current)&&Same(current,p.scope)&&input&&p.scope.input==input
+      &&p.scope.generation==std::to_string(generation)&&p.scope.module==std::to_string(object)
+      &&p.callback&&!p.checking&&!p.first_error&&p.prepare_accepted&&p.prepare_admitted&&!p.execute_entered
+      &&p.value_check_requested&&p.copy_launch_requested&&p.replay_requested&&ReplayScopeMatches(p)
+      &&p.host_window&&!p.host_completed&&p.host_parent&&p.host_child&&p.host_child_bytes&&p.host_gate_checks<64;
+}
+inline bool ReplayParentReady(const PublicPlan& p,uint64_t parent,uint64_t child){
+    return p.replay_requested&&ReplayScopeMatches(p)&&p.host_completed&&!p.host_window
+      &&p.host_gate_checks>0&&p.host_parent==parent&&p.host_child==child
+      &&!p.first_error&&p.value_read_mask==31&&p.copy_launch_read&&p.execute_entered
+      &&!p.checking&&!p.value_read_window&&!p.replay_parent_committed;
+}
 inline std::string PlanRecord(){const auto& p=Plan();
     return "{\"schema\":\"demoncat.tnd28.live_typed_plan.v2\",\"bound\":"+std::to_string(p.callback!=nullptr)
       +",\"prepare_entered\":"+std::to_string(p.prepare_entered)+",\"prepare_accepted\":"+std::to_string(p.prepare_accepted)
@@ -141,7 +181,12 @@ inline std::string PlanRecord(){const auto& p=Plan();
       +",\"terminal_uncertain\":"+std::to_string(p.terminal_uncertain)+",\"first_error\":"+std::to_string(p.first_error)
       +",\"value_check_requested\":"+std::to_string(p.value_check_requested)
       +",\"value_read_mask\":"+std::to_string(p.value_read_mask)
-      +",\"fault_authorized\":false}";
+      +",\"copy_launch_requested\":"+std::to_string(p.copy_launch_requested)
+      +",\"copy_launch_read\":"+std::to_string(p.copy_launch_read)
+      +",\"replay_requested\":"+std::to_string(p.replay_requested)
+      +",\"host_completed\":"+std::to_string(p.host_completed)+",\"host_gate_checks\":"+std::to_string(p.host_gate_checks)
+      +",\"replay_parent_committed\":"+std::to_string(p.replay_parent_committed)
+      +",\"fault_authorized\":"+(p.replay_parent_committed?"true":"false")+"}";
 }
 inline bool CheckPublic(const Scope& scope,uint32_t stage,const std::string& body){
     auto& p=Plan();Scope current;
@@ -248,7 +293,27 @@ struct Prepare:Log{
     }
     template<class F> aclnnStatus Workspace(F f,void* executor,uint64_t* bytes){
         Record("workspace_enter",[&]{return "{\"function\":"+Function(f)+",\"executor\":"+std::to_string(Ptr(executor))+'}';});
-        const auto status=f(executor,bytes);ran=true;
+        aclnnStatus status;
+#ifndef DCAT_TND28_INPUT_CPU_FIXTURE
+        auto& p=Plan();
+        if(active&&p.replay_requested){
+          aclOpExecutor* actual_child=nullptr;size_t actual_bytes=0;aclOpExecutor* view=nullptr;
+          if(first_error.size()||!child_ok||!p.prepare_admitted||p.host_parent||!ReplayScopeMatches(p)
+            ||NnopbaseGetUnContExecutor(executor,&actual_child,&actual_bytes)
+            ||Ptr(actual_child)!=pending.child||actual_bytes!=pending.child_bytes
+            ||NnopbaseGetViewCopyExecutor(executor,&view)||view){
+            Fail("replay host requires original live parent child relation");return ACLNN_ERR_PARAM_INVALID;}
+          p.host_parent=Ptr(executor);p.host_child=pending.child;p.host_child_bytes=pending.child_bytes;p.host_window=true;
+        }
+        try{status=f(executor,bytes);ran=true;}catch(...){p.host_window=false;throw;}
+        p.host_window=false;
+        if(active&&p.replay_requested){
+          p.host_completed=status==0&&p.host_gate_checks>0;
+          if(!p.host_completed){Fail("replay host pending admission not confirmed");return status?status:ACLNN_ERR_PARAM_INVALID;}
+        }
+#else
+        status=f(executor,bytes);ran=true;
+#endif
         Record("workspace_return",[&]{Need(bytes,"workspace output absent");pending.executor=Ptr(executor);
           pending.valid=!status&&child_ok&&first_error.empty();Live()=pending;
           return "{\"status\":"+std::to_string(status)+",\"original_calls\":1,\"executor\":"+std::to_string(pending.executor)
@@ -314,9 +379,27 @@ struct Execute:Log{
         if(borrow_requested&&!borrow){Fail("execute borrow not constructed");return ACLNN_ERR_PARAM_INVALID;}
         if(borrow&&(!first_error.empty()||!borrow->BeforeChild(executor,workspace,bytes,stream))){
           borrow->CancelBeforeParent();Fail("execute borrow child admission refused");return ACLNN_ERR_PARAM_INVALID;}
+        auto& live=Plan();
+        if(borrow&&live.copy_launch_requested){
+          if(!dcat_attention_observer_launch_count_v1||!dcat_attention_observer_last_launch_v1
+              ||(live.copy_count_before=dcat_attention_observer_launch_count_v1(scope.token.c_str()))<0){
+            borrow->CancelBeforeParent();Fail("current copy launch reader unavailable");return ACLNN_ERR_PARAM_INVALID;}
+          live.copy_begin_ns=Now();live.copy_stream=Ptr(stream);
+        }
         try{status=f(workspace,bytes,executor,stream);}
         catch(...){if(borrow)borrow->OriginalThrew();throw;}
-        if(borrow){borrow->AfterChild(status);if(status)borrow->CancelBeforeParent();}
+        if(borrow){
+          borrow->AfterChild(status);
+          if(live.copy_launch_requested){
+            live.copy_end_ns=Now();live.copy_count_after=dcat_attention_observer_launch_count_v1(scope.token.c_str());
+            std::array<char,65536> packet{};
+            if(status||live.copy_count_after!=live.copy_count_before+1
+                ||dcat_attention_observer_last_launch_v1(scope.token.c_str(),packet.data(),packet.size())!=0){
+              borrow->CancelBeforeParent();Fail("one fresh successful child launch required");return ACLNN_ERR_PARAM_INVALID;}
+            live.copy_launch=packet.data();
+          }
+          if(status)borrow->CancelBeforeParent();
+        }
 #else
         status=f(workspace,bytes,executor,stream);
 #endif
@@ -342,11 +425,15 @@ struct Execute:Log{
           current_ok=CheckPublic(scope,2,p.typed);
           p.value_read_window=false;
           if(p.value_check_requested&&p.value_read_mask!=31)current_ok=false;
+          if(p.copy_launch_requested&&!p.copy_launch_read)current_ok=false;
         }
         if(!current_ok){
           borrow->CancelBeforeParent();Fail("live public or prepared values changed before parent execute");return ACLNN_ERR_PARAM_INVALID;}
+        if(borrow&&Plan().replay_requested&&!ReplayParentReady(Plan(),parent,pending.child)){
+          borrow->CancelBeforeParent();Fail("replay final current-input admission refused");return ACLNN_ERR_PARAM_INVALID;}
         if(borrow&&!borrow->CommitParent(static_cast<aclOpExecutor*>(executor),workspace,bytes,stream)){
           borrow->CancelBeforeParent();Fail("execute borrow parent admission refused");return ACLNN_ERR_PARAM_INVALID;}
+        if(borrow&&Plan().replay_requested)Plan().replay_parent_committed=true;
         try{status=f(executor,stream,workspace,bytes);ran=true;}
         catch(...){if(borrow)borrow->OriginalThrew();throw;}
         const bool borrow_complete=!borrow||borrow->AfterParent(status);
@@ -383,8 +470,26 @@ extern "C" __attribute__((visibility("default"))) int dcat_tnd28_public_plan_bin
         ||tnd28_input::Plan().callback||tnd28_input::Live().executor)return -1;
       tnd28_input::PublicPlan value;value.scope=scope;value.callback=callback;
       value.value_check_requested=tnd28_input::Env("DCAT28_INPUT_CHECK_VALUES")=="1";
+      value.copy_launch_requested=tnd28_input::Env("DCAT28_INPUT_CHECK_COPY_LAUNCH")=="1";
+      if(value.copy_launch_requested&&!value.value_check_requested)return -4;
+      value.replay_requested=tnd28_input::Env("DCAT28_TND_MODE")=="denominator_replay";
+      if(value.replay_requested&&(!value.copy_launch_requested||!tnd28_input::ReplayScopeMatches(value)))return -5;
       tnd28_input::Plan()=std::move(value);return 0;
     }catch(...){return -2;}
+}
+// VERSIONED stage-1 permission: only prepare tiling within the original GWS.
+// It does NOT mean prepared values exist and cannot authorize Execute. The
+// original Execute performs a separate post-copy gate before CommitParent.
+extern "C" __attribute__((visibility("default"))) int dcat_tnd28_replay_prepare_gate_v2(
+    const char* token,const char* input,uint64_t generation,uint64_t object) noexcept {
+    try{auto& p=tnd28_input::Plan();
+      if(!tnd28_input::HostPrepareReady(p,token,input,generation,object))return 0;
+      aclOpExecutor* child=nullptr;size_t bytes=0;aclOpExecutor* view=nullptr;
+      auto* parent=reinterpret_cast<void*>(p.host_parent);
+      if(NnopbaseGetUnContExecutor(parent,&child,&bytes)||tnd28_input::Ptr(child)!=p.host_child
+          ||bytes!=p.host_child_bytes||NnopbaseGetViewCopyExecutor(parent,&view)||view)return 0;
+      ++p.host_gate_checks;return 1;
+    }catch(...){return 0;}
 }
 // Bounded D2H only. No caller-supplied device address and no operator dispatch.
 // Same-thread callback + same owner + after-child/pre-parent lifetime required.
@@ -398,6 +503,21 @@ extern "C" __attribute__((visibility("default"))) int dcat_tnd28_value_read_v1(
                                    capacity,ACL_MEMCPY_DEVICE_TO_HOST);
       if(status){if(!p.first_error)p.first_error=5;return -2;}
       return 0;
+    }catch(...){return -3;}
+}
+// Read-only copy of THIS original child call, available once in the drained
+// stage-2 callback. Saved observations and caller device addresses are not used.
+extern "C" __attribute__((visibility("default"))) int dcat_tnd28_copy_launch_read_v1(
+    const char* token,char* output,size_t capacity) noexcept {
+    try{auto& p=tnd28_input::Plan();
+      if(!output||capacity!=131072||!tnd28_input::CopyReadReady(p,token))return -1;
+      p.copy_launch_read=true;
+      const auto text="{\"schema\":\"demoncat.tnd28.current_copy_launch.v1\",\"before\":"+std::to_string(p.copy_count_before)
+        +",\"after\":"+std::to_string(p.copy_count_after)+",\"begin_ns\":"+std::to_string(p.copy_begin_ns)
+        +",\"end_ns\":"+std::to_string(p.copy_end_ns)+",\"stream\":"+std::to_string(p.copy_stream)
+        +",\"prepared_v_address\":"+std::to_string(p.value_addresses[4])+",\"launch\":"+p.copy_launch+'}';
+      if(text.size()+1>capacity){if(!p.first_error)p.first_error=6;return -2;}
+      std::memcpy(output,text.c_str(),text.size()+1);return 0;
     }catch(...){return -3;}
 }
 extern "C" __attribute__((visibility("default"))) int dcat_tnd28_public_plan_clear_v2(

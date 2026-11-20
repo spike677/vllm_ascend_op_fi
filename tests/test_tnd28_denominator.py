@@ -175,8 +175,9 @@ class TndDenominatorSource(unittest.TestCase):
         self.assertNotIn('set_numOfFdHead',host)
         self.assertIn('!tnd28_denominator::UseRoute(context)',changed[recipe.ROUTE])
         contract=Path(recipe.__file__).with_name('tnd28_denominator_contract.h').read_text()
-        self.assertIn('TND28_REPLAY_ACTUAL_PREPARED_INPUT_BINDING_MISSING',contract)
-        self.assertIn('!dcat_tnd28_denominator_current_input_v1',contract)
+        self.assertIn('TND28_REPLAY_LIVE_PREPARE_STAGE_BINDING_MISSING',contract)
+        self.assertIn('RTLD_NOLOAD|RTLD_NOW|RTLD_LOCAL',contract)
+        self.assertIn('!CurrentPreparePermission(s)',contract)
         self.assertIn('consumed.insert(s.token).second',contract)
 
     def test_matrix_runs_original_physical_and_selected_schedules_without_editing_original_split(self):

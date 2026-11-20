@@ -54,7 +54,7 @@ def _open_borrow_query(path,expected):
 class PreparedInputCapture:
     """One natural matched object, one original invocation; not F authority."""
     def __init__(self,worker,*,build_completion,build_sha256,evidence_dir,
-                 execute_borrow_library=None,execute_borrow_sha256=None,check_live_values=False):
+                 execute_borrow_library=None,execute_borrow_sha256=None,check_live_values=False,check_live_copy_launch=False):
         path=Path(build_completion).resolve(strict=True)
         before=path.stat();require(0<before.st_size<=4*1024**2,'TND_INPUT_BUILD_IDENTITY_OR_BOUND')
         raw=path.read_bytes();after=path.stat()
@@ -63,6 +63,9 @@ class PreparedInputCapture:
             (after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns),'TND_INPUT_BUILD_IDENTITY_OR_BOUND')
         require(type(check_live_values) is bool and (not check_live_values or execute_borrow_library is not None),
                 'TND_LIVE_VALUES_REQUIRE_EXECUTE_BORROW')
+        require(type(check_live_copy_launch) is bool and (not check_live_copy_launch or check_live_values),
+                'TND_COPY_CHECK_REQUIRES_CURRENT_VALUES')
+        self.check_live_copy_launch=check_live_copy_launch
         self.check_live_values=check_live_values
         self.build=json.loads(raw);observation=self.build.get('tnd28_compiled_input_observer',{})
         require(self.build.get('variant')=='tnd_prefill_denominator_replay'
@@ -131,8 +134,11 @@ class PreparedInputCapture:
             MODULE=str(row['module_object_id']),REQUEST=packet['request_sha256'],HASH=packet['input_sha256'],
             PID=str(self.owner['pid']),TID=str(self.owner['native_tid']),START=self.owner['process_start_ticks'],
             LOG=str(self.root/(token+'.jsonl')))
-        if self.borrow_query is not None:values['EXECUTE_BORROW']='normal_guard'
+        if self.borrow_query is not None:
+            values['EXECUTE_BORROW']='normal_guard'
+            values['LIBRARY']=str(self.borrow_query.path)
         if self.check_live_values:values['CHECK_VALUES']='1'
+        if self.check_live_copy_launch:values['CHECK_COPY_LAUNCH']='1'
         self.refs=tuple(actual[name] for name in ('query','key','value','atten_mask'))
         self.used=True;self.active={};desired={PREFIX+k:v for k,v in values.items()}
         self.receipt=dict(packet,public_artifact=str(self.root/(token+'.public.json')),native_artifact=values['LOG'],
@@ -154,7 +160,7 @@ class PreparedInputCapture:
                 from .attention28_typed_plan import LiveTypedPlan
                 if self.check_live_values:
                     from .attention28_value_plan import LivePreparedValuePlan
-                    factory=LivePreparedValuePlan
+                    factory=lambda *a: LivePreparedValuePlan(*a,check_live_copy_launch=self.check_live_copy_launch)
                 else:factory=LiveTypedPlan
                 self.typed_plan=factory(self.borrow_query,self.replay_binding,self.live_plan,token)
                 self.typed_plan.install()

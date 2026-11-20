@@ -3,13 +3,15 @@
 #include "tnd28_prefill_contract.h"
 #include <array>
 #include <set>
+#include <dlfcn.h>
+#include <limits.h>
+#include <cstring>
 
-// A separately reviewed live input adapter must implement this symbol. A
-// journal window, saved report, bool from RPC or Python address/shape guess
-// cannot implement it. No current deployment supplies it; F stays refused.
-// The return must mean: THIS live original call's public operands, typed GWS
-// inputs and prepared kernel inputs have been joined by actual observations.
-extern "C" int dcat_tnd28_denominator_current_input_v1(
+// Stage 1 prepares tiling only inside the actual original parent GWS and
+// re-reads its live child relation. Version 2 does NOT claim that a prepared
+// tensor exists yet. The compiled Execute must separately validate fresh
+// child launch/current values before it commits the parent. Missing ABI refuses.
+extern "C" int dcat_tnd28_replay_prepare_gate_v2(
     const char*, const char*, uint64_t, uint64_t) __attribute__((weak));
 
 namespace tnd28_denominator {
@@ -57,12 +59,32 @@ inline bool Same(const Scope& a,const Scope& b) {
         && a.phase==b.phase && a.target==b.target && a.objectId==b.objectId && a.request==b.request
         && a.inputHash==b.inputHash && a.path==b.path && a.start==b.start && a.replay==b.replay;
 }
+inline bool CurrentPreparePermission(const Scope& s) {
+#ifdef DCAT_TND28_GATE_CPU_FIXTURE
+    return dcat_tnd28_replay_prepare_gate_v2&&dcat_tnd28_replay_prepare_gate_v2(
+        s.token.c_str(),s.inputHash.c_str(),std::stoull(s.generation),std::stoull(s.objectId))==1;
+#else
+    // Host and opapi may both be RTLD_LOCAL. Borrow the exact ALREADY LOADED
+    // private opapi; do not promote it globally or load a second implementation.
+    // Its live original GWS window is the authority, never this path string.
+    const auto path=Env("DCAT28_INPUT_LIBRARY");char canonical[PATH_MAX]{};
+    if(path.empty()||path.front()!='/'||path.size()>=PATH_MAX||!realpath(path.c_str(),canonical)
+        ||path!=canonical)return false;
+    void* handle=dlopen(path.c_str(),RTLD_NOLOAD|RTLD_NOW|RTLD_LOCAL);if(!handle)return false;
+    using Gate=int(*)(const char*,const char*,uint64_t,uint64_t);
+    auto function=reinterpret_cast<Gate>(dlsym(handle,"dcat_tnd28_replay_prepare_gate_v2"));
+    Dl_info owner{};char actual[PATH_MAX]{};
+    const bool owned=function&&dladdr(reinterpret_cast<void*>(function),&owner)&&owner.dli_fname
+        &&realpath(owner.dli_fname,actual)&&path==actual;
+    const int result=owned?function(s.token.c_str(),s.inputHash.c_str(),std::stoull(s.generation),std::stoull(s.objectId)):0;
+    const int closed=dlclose(handle);
+    return result==1&&closed==0;
+#endif
+}
 inline void RequireInput(const Scope& s) {
     if (!Same(s,CurrentScope())) throw std::runtime_error("TND28_REPLAY_SCOPE_CHANGED");
-    if (s.replay && (!dcat_tnd28_denominator_current_input_v1
-        || dcat_tnd28_denominator_current_input_v1(s.token.c_str(),s.inputHash.c_str(),
-            std::stoull(s.generation),std::stoull(s.objectId))!=1))
-        throw std::runtime_error("TND28_REPLAY_ACTUAL_PREPARED_INPUT_BINDING_MISSING");
+    if (s.replay && !CurrentPreparePermission(s))
+        throw std::runtime_error("TND28_REPLAY_LIVE_PREPARE_STAGE_BINDING_MISSING");
 }
 // Whole causal S2 reductions only, interpreted from the original SplitCore
 // endpoints. The matrices retain all original FD arrays; no FD flag is edited.

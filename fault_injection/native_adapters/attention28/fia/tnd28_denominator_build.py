@@ -107,6 +107,13 @@ def finish_check(builder,base):
         opt_in_environment='DCAT28_INPUT_CHECK_VALUES',default_enabled=False,
         read_only=True,fault_authorized=False,caller_device_address_accepted=False,
         requires_live_execute_callback=True)
+    for extra in ('dcat_tnd28_copy_launch_read_v1','dcat_tnd28_replay_prepare_gate_v2'):
+        found=[line.split() for line in exports if line.split() and line.split()[-1].split('@',1)[0]==extra]
+        base.require(len(found)==1 and len(found[0])==3 and found[0][1]=='T','TND28_TWO_STAGE_EXPORT_MISSING:'+extra)
+    report['tnd28_two_stage_candidate']=dict(
+        prepare_symbol='dcat_tnd28_replay_prepare_gate_v2',copy_launch_symbol='dcat_tnd28_copy_launch_read_v1',
+        library_sha256=base.sha(private),scope='ORIGINAL_GWS_THEN_DRAINED_CHILD_BEFORE_PARENT',
+        host_preparation_is_execution_permission=False,native_qualified=False,fault_authorized=False)
     report['tnd28_execute_borrow_query']=dict(symbol='dcat_tnd28_execute_borrow_query_v1',
         library_sha256=base.sha(private),exports_sha256=base.sha(ev/'tnd28_execute_borrow_exports.log'),
         live_public_plan_symbols=list(symbols[1:]),

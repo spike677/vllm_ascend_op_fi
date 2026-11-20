@@ -1,3 +1,4 @@
+#define DCAT_TND28_GATE_CPU_FIXTURE
 #include "tnd28_denominator_contract.h"
 #include "tnd28_causal_tile.h"
 #include <cassert>
@@ -6,7 +7,7 @@
 bool observer=true,input=false;
 extern "C" int dcat_attention_observer_scope_matches_v1(const char*) {return observer?1:0;}
 #ifndef DCAT_TND28_NO_INPUT_GATE
-extern "C" int dcat_tnd28_denominator_current_input_v1(const char*,const char*,uint64_t,uint64_t) {return input?1:0;}
+extern "C" int dcat_tnd28_replay_prepare_gate_v2(const char*,const char*,uint64_t,uint64_t) {return input?1:0;}
 #endif
 void env(const char* n,const std::string& v){assert(!setenv(n,v.c_str(),1));}
 template<class F> bool refused(F f){try{f();return false;}catch(const std::runtime_error&){return true;}}

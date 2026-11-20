@@ -65,6 +65,9 @@ def make_case(args,source,observer,build,library_mounts,installed_pins):
     if getattr(args,'check_live_values',False):
         E.need(getattr(args,'execute_borrow',False),'LIVE_VALUES_REQUIRE_EXECUTE_BORROW')
         name='tnd28-one-current-values-borrow-normal'
+    if getattr(args,'check_live_copy_launch',False):
+        E.need(getattr(args,'check_live_values',False),'LIVE_COPY_REQUIRES_CURRENT_VALUES')
+        name='tnd28-one-current-copy-values-borrow-normal'
     mounts=[[str(args.source),'/repo','ro'],[str(args.installed),'/installed','ro'],[str(args.model),'/model','ro'],
         [str(args.build_root),'/native-run','ro'],[str(args.vendor),'/native','ro'],
         [str(observer['folder']),'/build/attention-preflight','ro']]
@@ -76,6 +79,7 @@ def make_case(args,source,observer,build,library_mounts,installed_pins):
         '--observer-receipt','/build/attention-preflight/result.json','--observer-receipt-sha256',observer['sha256']]
     if getattr(args,'execute_borrow',False):argv.append('--execute-borrow')
     if getattr(args,'check_live_values',False):argv.append('--check-live-values')
+    if getattr(args,'check_live_copy_launch',False):argv.append('--check-live-copy-launch')
     case=dict(id=name,image=E.IMAGE,timeout=args.timeout,mounts=mounts,
         env=dict(PYTHONPATH='/installed:/repo:/repo/src:/repo/fault39/src:/msprobe_packages',PYTHONDONTWRITEBYTECODE='1',
             VLLM_ENABLE_V1_MULTIPROCESSING='0',VLLM_WORKER_MULTIPROC_METHOD='spawn',VLLM_ASCEND_ENABLE_NZ='0',
@@ -120,6 +124,7 @@ def main():
     for name in ('source','installed','observer','model','build-root','vendor','libraries','out'):p.add_argument('--'+name,type=Path,required=True)
     for name in ('source-manifest-sha256','build-sha256','libraries-sha256'):p.add_argument('--'+name,required=True)
     p.add_argument('--card',type=int,choices=(2,5),default=5);p.add_argument('--timeout',type=int,default=1800)
+    p.add_argument('--check-live-copy-launch',action='store_true',help='Observe the same original child launch; never F')
     p.add_argument('--check-live-values',action='store_true',help='Read current values inside the drained normal Execute window; never F')
     p.add_argument('--execute-borrow',action='store_true',help='Request the new compiled normal Execute borrow guard, never F')
     args=p.parse_args();sys.dont_write_bytecode=True;sys.addaudithook(E.prohibit_runtime)

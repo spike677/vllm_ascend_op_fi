@@ -33,3 +33,11 @@ UTC 12:00:54.388316—12:02:58.175201，总窗口123.786914秒（含初始化及
 新增 `dcat_attention_observer_launch_count_v1` / `dcat_attention_observer_last_launch_v1`，仅返回本线程、当前 Native scope 中真实记录的 launch。结束 scope 即清空；未知 binary、失败 launch、记录失败、超限或异常会让整个窗口不可用，不回退到上一条成功记录。该接口不选择 key、不修改参数、不提供故障许可。
 
 CANN8.5.1 无设备编译与局部状态机自测通过（失配token、未发生launch、小缓冲区、失败后禁止恢复、跨scope旧记录、字节/次数超限）。observer 源码 SHA `4713447df2dfc01dd223fe1c3481fd8891d85410398870b3d141b2a8aed5fe96`，库 SHA `e08f45d35302188f4d9131696d68d94f50c42a90c1c7d0af308a8a9d64d02c37`。此新observer未参与上面的NPU验收，不能套用其通过结果。下一步需将它与同次child调用前后窗口、两阶段Native门禁连接并实测。
+
+## 两阶段 Native 候选增量（未做 F 实机验收）
+
+新增 opt-in 同次 child launch 读回：原生 Contiguous 前后计数必须恰好增加一次；stage2 callback 在同步后校验当前 token/pid/tid、调用时窗、stream、成功状态及实际注册 Slice ELF。必须先完成五份当前值读取。默认关闭，旧数据不倒填为新证据。
+
+host 使用版本化 `dcat_tnd28_replay_prepare_gate_v2`，只在原 GWS 内重新读取实际 parent/child 关系，允许准备 tiling，不表示 prepared 值已经存在。host 通过精确库路径以 RTLD_NOLOAD 借用已加载的局部 opapi，不加载或提升全局可见性。Execute 在原 child 返回并同步后进行第二阶段校验，且 parent 必须为准备阶段的同一个对象，最后一次性 CommitParent。任何校验失败仍走既有安全取消路径；不删除拒绝检查来伪造通过。
+
+本增量仍未接到可公开调用的故障入口，F/B3/B4/B5 尚未验收。正常值、copy、host prepare、最终执行是分开的证据；CPU 夹具不构成实际 kernel 资格。

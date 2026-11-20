@@ -36,7 +36,8 @@ def setup(worker,expected,tokens,provenance,settings):
     capture=capture_type(worker,build_completion=settings['build'],build_sha256=settings['build_sha256'],
         evidence_dir=settings['input_folder'],execute_borrow_library=settings.get('execute_borrow_library'),
         execute_borrow_sha256=settings.get('execute_borrow_sha256'),
-        check_live_values=bool(settings.get('check_live_values',False)))
+        check_live_values=bool(settings.get('check_live_values',False)),
+        check_live_copy_launch=bool(settings.get('check_live_copy_launch',False)))
     from experiments.worker_core_v11_20261118.tnd28_control_observation import ControlTndPrefillCensus
     native_type=ControlTndPrefillCensus if settings.get('control_m128',False) else StockTndPrefillCensus
     native=native_type(mechanism=MECHANISM,observer_receipt=settings['observer'],
@@ -190,6 +191,9 @@ def run(args,bundle):
             need(getattr(args,'execute_borrow',False) and not getattr(args,'control_m128',False),
                  'LIVE_VALUES_NORMAL_EXECUTE_BORROW_ONLY')
             settings['check_live_values']=True
+        if getattr(args,'check_live_copy_launch',False):
+            need(getattr(args,'check_live_values',False),'LIVE_COPY_REQUIRES_CURRENT_VALUES')
+            settings['check_live_copy_launch']=True
         if getattr(args,'execute_borrow',False):
             library=args.vendor/'op_api/lib/libcust_opapi.so'
             settings.update(execute_borrow_library=str(library),execute_borrow_sha256=common.sha(library))
@@ -222,6 +226,7 @@ def main():
     p.add_argument('--memory',type=float,default=.25);p.add_argument('--child',action='store_true',help=argparse.SUPPRESS)
     p.add_argument('--control-m128',action='store_true')
     p.add_argument('--check-live-values',action='store_true')
+    p.add_argument('--check-live-copy-launch',action='store_true')
     p.add_argument('--execute-borrow',action='store_true',help='Single-target normal live-input/Execute-borrow guard; still no F')
     args=p.parse_args();need(args.out.resolve().is_relative_to('/evidence') and 0<args.memory<=.5,'OWNED_EVIDENCE_BOUNDED_MEMORY')
     return run(args,bootstrap(args))
