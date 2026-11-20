@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 
 from fault_injection.native_build import BuildError, NativeBuildManager, recipes, resolve_recipe
-from fault_injection.native_build.manager import _elf, _hash, _headers, _identity, _json_write, _source_inventory
+from fault_injection.native_build.manager import _elf, _hash, _headers, _identity, _json_write, _source_inventory, _toolchain
 
 
 def elf_fixture(path, machine=183, flags=5):
@@ -50,6 +50,28 @@ class RecipeTests(unittest.TestCase):
                 with self.assertRaisesRegex(BuildError, "NATIVE_BUILD_REQUIRES_LINUX_AARCH64"):
                     manager.inspect("39.matmul_range")
                 toolchain.assert_not_called()
+
+
+class ToolchainTests(unittest.TestCase):
+    def test_public_acl_compiles_without_unneeded_patchelf(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tool = Path(tmp) / 'tool'
+            tool.write_bytes(b'cpu fixture')
+            seen = []
+            def which(name):
+                seen.append(name)
+                return None if name == 'patchelf' else str(tool)
+            def run(args):
+                if args[-1] == '-dumpmachine': return 'aarch64-linux-gnu'
+                if str(args[-1]).startswith('-print-prog-name='): return str(tool)
+                return 'fixture-version'
+            with patch('fault_injection.native_build.manager.shutil.which', side_effect=which), patch('fault_injection.native_build.manager._run', side_effect=run):
+                value = _toolchain(require_patchelf=False)
+                self.assertNotIn('patchelf', seen)
+                self.assertNotIn('patchelf', value)
+                self.assertIn('cc1plus', value)
+                with self.assertRaisesRegex(BuildError, 'BUILD_TOOL_UNAVAILABLE: patchelf'):
+                    _toolchain()
 
 
 class FileIdentityTests(unittest.TestCase):

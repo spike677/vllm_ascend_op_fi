@@ -9,19 +9,21 @@ def current_worker(wrapper):
     for name in ('execute_model','sample_tokens','_preprocess','_model_forward'):
         value=getattr(runner,name,None)
         if value is None:functions[name]={'missing':True};continue
-        path=pathlib.Path(inspect.getsourcefile(value));functions[name]=dict(path=str(path),sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+        value=inspect.unwrap(getattr(value,'__func__',value));path=pathlib.Path(inspect.getsourcefile(value));functions[name]=dict(path=str(path),sha256=hashlib.sha256(path.read_bytes()).hexdigest())
     fields={name:dict(present=hasattr(runner,name),value=getattr(runner,name,None)) for name in ('pcp_size','dcp_size','use_async_scheduling')}
     return dict(identity=worker.demoncat_worker_identity(),runner_class=type(runner).__module__+'.'+type(runner).__name__,fields=fields,functions=functions)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--tp',type=int,choices=[1,2],required=True);a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--tp',type=int,choices=[1,2],required=True);p.add_argument('--qwen38-community',action='store_true');a=p.parse_args()
     r=dict(status='STARTED',tp=a.tp,fault_calls=0,qualification_granted=False,model='/model',requests=[])
     try:
         from vllm import LLM,SamplingParams
+        extra=dict(limit_mm_per_prompt={'image':0,'video':0},quantization='ascend',speculative_config=None,kv_transfer_config=None) if a.qwen38_community else {}
         llm=LLM(model='/model',dtype='bfloat16',tensor_parallel_size=a.tp,distributed_executor_backend='mp',
             enforce_eager=True,enable_prefix_caching=False,async_scheduling=False,enable_chunked_prefill=True,
-            max_num_batched_tokens=1024,max_model_len=1024,max_num_seqs=1,gpu_memory_utilization=.25,
-            seed=42,disable_log_stats=True,worker_extension_cls='demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension')
+            max_num_batched_tokens=1024,max_model_len=1024,max_num_seqs=1,gpu_memory_utilization=.8 if a.qwen38_community else .25,
+            seed=42,disable_log_stats=True,worker_extension_cls='demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension',**extra)
+        r['pure_text_multimodal_limits']=extra.get('limit_mm_per_prompt');r['community_artifact_not_yellow_identity']=a.qwen38_community
         r['workers_before']=llm.collective_rpc(current_worker,timeout=60)
         assert len(r['workers_before'])==a.tp
         tokens=llm.get_tokenizer().encode('Explain in one sentence why the sky appears blue.',add_special_tokens=True)

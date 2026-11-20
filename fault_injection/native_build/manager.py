@@ -122,9 +122,10 @@ def _headers(toolkit, required):
     return hashes
 
 
-def _toolchain():
+def _toolchain(*, require_patchelf=True):
     tools = {}
-    for name in ("bash", "g++", "nm", "readelf", "patchelf"):
+    names = ("bash", "g++", "nm", "readelf") + (("patchelf",) if require_patchelf else ())
+    for name in names:
         found = shutil.which(os.environ.get("CXX", name) if name == "g++" else name)
         if not found:
             raise BuildError("BUILD_TOOL_UNAVAILABLE", name)
@@ -239,9 +240,9 @@ class NativeBuildManager:
         version = info["fields"]["version"]
         if recipe.allowed_versions and version not in recipe.allowed_versions:
             raise BuildError("RECIPE_ABI_NOT_ADAPTED", {"recipe": recipe.id, "version": version})
-        toolchain = _toolchain()
-        libraries = {}
         public_acl = recipe.backend == "public_acl_postwrite"
+        toolchain = _toolchain(require_patchelf=not public_acl)
+        libraries = {}
         required = ["libascendcl.so"] if public_acl else ["libopapi.so", "libnnopbase.so", "libascendcl.so"]
         if recipe.requires_pta_wheel or recipe.requires_custom:
             required.append("libopapi_nn.so")
@@ -331,7 +332,9 @@ class NativeBuildManager:
                    if not k.startswith(("FAULT20_", "FAULT26_", "FAULT39_", "DEMONCAT_", "DCAT26_"))
                    and k not in ("LD_PRELOAD", "CXX", "CXXFLAGS", "CPPFLAGS", "LDFLAGS")}
             env.update({recipe.output_variable: str(native), "FAULT39_ASCEND_TOOLKIT": inputs["toolkit"],
-                        "DCAT_BUILD_TOOLKIT": inputs["toolkit"], "FAULT39_PATCHELF": str(tools / "patchelf")})
+                        "DCAT_BUILD_TOOLKIT": inputs["toolkit"]})
+            if "patchelf" in inputs["toolchain"]:
+                env["FAULT39_PATCHELF"] = str(tools / "patchelf")
             if inputs["custom"]:
                 env.update(DCAT_BUILD_CUSTOM_LIBRARY=inputs["custom"]["library"],
                            DCAT_BUILD_CUSTOM_HEADER=inputs["custom"]["header"])

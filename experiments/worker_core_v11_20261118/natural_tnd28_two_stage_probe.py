@@ -22,9 +22,15 @@ SUCCESS='TWO_SAME_WORKER_RESEARCH_SCOPES_RECORDED_PENDING_INDEPENDENT_REVIEW'
 def save_record(path,value):
     # Preserve every field/value, avoid quadratic pretty-print indentation cost.
     # Each RPC still has its own original artifact and a complete host history.
-    with Path(path).open('w',encoding='utf-8') as stream:
-        json.dump(value,stream,separators=(',',':'),allow_nan=False)
-        stream.write('\n')
+    # The C encoder retains the identical JSON bytes while avoiding per-token
+    # Python writes for large cumulative RPC histories. Replace atomically so
+    # external interruption preserves the previous complete checkpoint.
+    target=Path(path);temporary=target.with_name(target.name+'.partial')
+    encoded=json.dumps(value,separators=(',',':'),allow_nan=False)+'\n'
+    with temporary.open('w',encoding='utf-8',newline='\n') as stream:
+        stream.write(encoded)
+        stream.flush();os.fsync(stream.fileno())
+    os.replace(temporary,target)
 
 
 
