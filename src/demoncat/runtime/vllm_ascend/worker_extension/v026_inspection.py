@@ -25,7 +25,7 @@ def inspect_sources(roots):
 def parallel_assessment(runner, *, pcp_group, dcp_group, tp_group, expected_tp, source_profile="v026"):
     if type(expected_tp) is not int or expected_tp not in (1, 2):
         raise ValueError('V026_ONLY_TP1_TP2_REVIEWED')
-    if source_profile not in ('v026','preferred_a2_85a2bc5e'):
+    if source_profile not in ('v026','v026_installed_c9c9432b','preferred_a2_85a2bc5e'):
         raise ValueError('NEWSTACK_PARALLEL_PROFILE_NOT_REVIEWED')
     checks = []
     def check(path, expected, actual):
@@ -41,7 +41,7 @@ def parallel_assessment(runner, *, pcp_group, dcp_group, tp_group, expected_tp, 
     for name, group, size in (('pcp', pcp_group, 1), ('dcp', dcp_group, 1), ('tp', tp_group, expected_tp)):
         check(name + '_group.world_size', size, observed_field(group, 'world_size'))
     check('dcp_size', 1, observed_field(runner, 'dcp_size'))
-    if source_profile=='v026':
+    if source_profile in ('v026','v026_installed_c9c9432b'):
         check('use_dcp', False, observed_field(runner, 'use_dcp'))
     else:
         # This pinned 0.23 runner has no use_dcp; its source-defined use_cp

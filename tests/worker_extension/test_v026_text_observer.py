@@ -36,6 +36,19 @@ class TextTraceTests(unittest.TestCase):
         report=t.snapshot();self.assertEqual(report['status'],'OBSERVED')
         self.assertTrue(report['visual_execution_excluded']);self.assertTrue(report['model_input_association_verified'])
         self.assertFalse(report['execution_authorized']);self.assertFalse(report['device_input_values_compared'])
+    def test_post_sample_empty_cleanup_is_forwarded_not_another_model_request(self):
+        r,s,t=self.executed();t.before_sample();r.execute_model_state=None;t.after_sample(NS(req_ids=['b','a']))
+        cleanup=NS(total_num_scheduled_tokens=0,num_scheduled_tokens={},scheduled_new_reqs=[],
+            scheduled_cached_reqs=NS(req_ids=[]),scheduled_encoder_inputs={},scheduled_spec_decode_tokens={},finished_req_ids=['a','b'])
+        sentinel=object();calls=[]
+        def original(scheduler,intermediate):calls.append(scheduler);return sentinel
+        self.assertIs(t.cleanup(original,cleanup,None),sentinel)
+        self.assertEqual(calls,[cleanup]);self.assertEqual(t.snapshot()['cleanup_calls'],1)
+        cleanup.finished_req_ids=['foreign']
+        with self.assertRaisesRegex(RuntimeError,'NOT_EMPTY_FINISH_CLEANUP'):t.cleanup(original,cleanup,None)
+        cleanup.finished_req_ids=['a'];cleanup.num_scheduled_tokens={'a':1}
+        with self.assertRaisesRegex(RuntimeError,'NOT_EMPTY_FINISH_CLEANUP'):t.cleanup(original,cleanup,None)
+        self.assertEqual(len(calls),1)
     def test_token_id_branch_is_verified_without_embedding(self):
         r,s,_=self.fixture();r.supports_mm_inputs=False;t=TextPrefillTrace(r,{'a':[1,2],'b':[3,4,5]})
         t.enter(s);t.before_preprocess(s,5,None)

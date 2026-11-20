@@ -1,0 +1,126 @@
+{
+  "schema": "demoncat.v026_installed.source_review.v1",
+  "status": "SOURCE_REVIEW_ONLY_NOT_BLUE_FAULT_COMBINATION",
+  "image_id": "c9c9432b69767cf1855efad44f20eaa8ab02520ae05b75c936e67ea4e7eb2702",
+  "versions": {
+    "vllm": "0.26.0+empty",
+    "vllm_ascend": "0.26.0rc1",
+    "cann": "9.1.0"
+  },
+  "files": [
+    {
+      "path": "vllm/v1/worker/gpu_input_batch.py",
+      "sha256": "ca9b8a627cb8e5109c804970a09597c6aa019a78957df399e8b3022bd493ecfc",
+      "bytes": 47691,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm/v1/core/sched/output.py",
+      "sha256": "d5d61ff186bea8deb09edfae3148531eb981f0079879df4e79e65ce5ad516d06",
+      "bytes": 10757,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm/config/parallel.py",
+      "sha256": "a6581c267ab265e24905d2f5caa514482c28359f71380c6f894ceab25aa22541",
+      "bytes": 43449,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm/config/multimodal.py",
+      "sha256": "4df62382d49521afe0196cf18078f9d807939ea088c5442279235585ea3ce612",
+      "bytes": 14503,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm/model_executor/models/qwen3_5.py",
+      "sha256": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+      "bytes": 23654,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm/model_executor/layers/mamba/gdn/qwen_gdn_linear_attn.py",
+      "sha256": "1227d6f385a52296e9f08223544b1c5fdc7e8d9aa09a848e7a8e522a8dc51214",
+      "bytes": 65262,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm_ascend/worker/model_runner_v1.py",
+      "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a",
+      "bytes": 250872,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm_ascend/worker/worker.py",
+      "sha256": "eb0bb11de6dffecbed135979655cf032cccef3f3ea4fe3b93254933d47e0f8c0",
+      "bytes": 53076,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm_ascend/patch/worker/patch_qwen3_5.py",
+      "sha256": "cf7ec7aae45bc83c5a08020210c22b698e8f8cd2629179a85ac7d3e1d1419127",
+      "bytes": 9253,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm_ascend/ops/layernorm.py",
+      "sha256": "b173bf93aa86da125c02b8e2e3b3711ae8128742b7b0a4ffb2a7232433ed6755",
+      "bytes": 7400,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm_ascend/ops/triton/linearnorm/split_qkv_rmsnorm_mrope.py",
+      "sha256": "ba3c7e740c3a2a9c8850733d3be77fefac79bc3ed02a45b4be076b58d6f7632d",
+      "bytes": 13933,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm_ascend/device/device_op.py",
+      "sha256": "9b78eaa5232b6aba526d1ab23e04955b4b932e1cef4ef8d392891b00badec827",
+      "bytes": 70370,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "csrc/torch_binding.cpp",
+      "sha256": "2294a457c6f43491b7785635d13bd31580a339a6a01f27e1d1b7362b5f3a104a",
+      "bytes": 146851,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm/v1/worker/gpu_model_runner.py",
+      "sha256": "81b7627fbe81f7aaa2f77b4bf085faa353c69d03662ebfe369536a9773bb70d0",
+      "bytes": 348303,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm/distributed/parallel_state.py",
+      "sha256": "ecfa5eeda697e9982591c93eca835fcc53463267c1c22110700819efcecee74f",
+      "bytes": 85496,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm/entrypoints/llm.py",
+      "sha256": "a0b80b83771e36c4e8cbe3451952fc38bd93db60a1186e6ff4da4b4035618b7d",
+      "bytes": 40824,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm/v1/engine/llm_engine.py",
+      "sha256": "17e5edfc625c77e9663368c7d69136e5e5935ee81608a65be3996411d502225e",
+      "bytes": 17605,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm/v1/engine/core_client.py",
+      "sha256": "2d83952580e23abca33c3bb5f93edc349ea0e10da358bcb41b385f8d066e2a0b",
+      "bytes": 71714,
+      "official_tag_content_equal_ignoring_crlf": true
+    },
+    {
+      "path": "vllm/v1/engine/core.py",
+      "sha256": "3ae1381a6af841e21058c825702382dc66faae45c950ac5acb8495d2d3d05aad",
+      "bytes": 98400,
+      "official_tag_content_equal_ignoring_crlf": true
+    }
+  ]
+}

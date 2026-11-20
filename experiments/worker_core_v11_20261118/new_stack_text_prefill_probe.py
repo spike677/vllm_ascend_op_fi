@@ -25,11 +25,20 @@ def observation_rpc(wrapper,action,owner,expected=None,profile=None):
     assert action=='query';return observer.snapshot()
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--profile',choices=['v026','preferred_a2_85a2bc5e'],required=True);a=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--profile',choices=['v026_installed_c9c9432b','preferred_a2_85a2bc5e'],required=True);a=parser.parse_args()
     result=dict(status='STARTED',fault_calls=0,qualification_granted=False,scopes=[],source_profile=a.profile)
     llm=None;owner=None
     try:
         from vllm import LLM,SamplingParams
+        from demoncat.runtime.vllm_ascend.worker_extension.v026_text_observer import PROFILES
+        import inspect,hashlib
+        root=pathlib.Path(inspect.getsourcefile(LLM)).resolve().parents[1]
+        rows=json.loads(PROFILES[a.profile].read_bytes())['files']
+        result['host_scheduler_sources']=[]
+        for name in ('entrypoints/llm.py','v1/engine/llm_engine.py','v1/engine/core_client.py','v1/engine/core.py'):
+            raw=(root/name).read_bytes();sha=hashlib.sha256(raw).hexdigest()
+            assert any(row['path']=='vllm/'+name and row['sha256']==sha for row in rows),'HOST_SCHEDULER_SOURCE_NOT_REVIEWED:'+name
+            result['host_scheduler_sources'].append(dict(path='vllm/'+name,sha256=sha))
         llm=LLM(model='/model',dtype='bfloat16',tensor_parallel_size=2,distributed_executor_backend='mp',
             enforce_eager=True,enable_prefix_caching=False,async_scheduling=False,enable_chunked_prefill=True,
             max_num_batched_tokens=1024,max_model_len=1024,max_num_seqs=1,gpu_memory_utilization=.8,
@@ -40,6 +49,8 @@ def main():
         tokens=llm.get_tokenizer().encode('Explain in one sentence why the sky appears blue.',add_special_tokens=True)
         for number in range(2):
             assert llm.reset_prefix_cache(reset_running_requests=False) is True
+            llm.sleep(level=0,mode='wait')
+            assert llm.llm_engine.is_sleeping() is True
             ids=list(llm.enqueue([dict(prompt_token_ids=tokens)],SamplingParams(temperature=0,max_tokens=1),use_tqdm=False))
             assert len(ids)==1
             states=llm.llm_engine.output_processor.request_states
@@ -49,6 +60,8 @@ def main():
             scope=dict(owner=owner,internal_request_id=ids[0],external_request_id=external,prompt_tokens=tokens)
             result['scopes'].append(scope)
             scope['install']=llm.collective_rpc(observation_rpc,args=('install',owner,{ids[0]:tokens},a.profile),timeout=60)
+            llm.wake_up(tags=['scheduling'])
+            assert llm.llm_engine.is_sleeping() is False
             outputs=llm.wait_for_completion(use_tqdm=False)
             assert len(outputs)==1 and outputs[0].request_id==external
             scope['query']=llm.collective_rpc(observation_rpc,args=('query',owner),timeout=60)

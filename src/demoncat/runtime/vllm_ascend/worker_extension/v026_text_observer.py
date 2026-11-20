@@ -13,7 +13,7 @@ from pathlib import Path
 import threading
 from .serving_context import require, cpu_list, tensor_metadata
 from .v026_inspection import PROFILE, inspect_single_chunk, parallel_assessment
-PROFILES = {"v026": PROFILE, "preferred_a2_85a2bc5e": PROFILE.with_name("preferred_a2_source_review.json")}
+PROFILES = {"v026": PROFILE, "v026_installed_c9c9432b": PROFILE.with_name("v026_installed_source_review.json"), "preferred_a2_85a2bc5e": PROFILE.with_name("preferred_a2_source_review.json")}
 
 
 def _prefix(actual, buffer, shape):
@@ -33,7 +33,7 @@ class TextPrefillTrace:
         self.visual_calls=0;self.embedding_calls=0;self.model_calls=0
         self.embedding_branch=runner.supports_mm_inputs
         require(type(self.embedding_branch) is bool,"NEWSTACK_ACTUAL_TEXT_BRANCH_MISSING")
-        self.state=None;self.first_error=None;self.finished=False
+        self.state=None;self.first_error=None;self.finished=False;self.cleanup_calls=0
     def guard(self):
         require((os.getpid(),threading.get_ident())==(self.pid,self.thread)
                 and self.runner.model is self.model and not self.finished,
@@ -41,6 +41,22 @@ class TextPrefillTrace:
     def enter(self,scheduler):
         self.guard();require(not self.events and self.runner.execute_model_state is None,'V026_EXECUTE_ORDER')
         self.scheduler=scheduler;self.events.append('execute_enter')
+    def cleanup(self,original,scheduler,intermediate):
+        require(self.finished and self.first_error is None and intermediate is None
+                and (os.getpid(),threading.get_ident())==(self.pid,self.thread)
+                and self.runner.model is self.model and self.runner.execute_model_state is None,
+                'NEWSTACK_CLEANUP_OWNER_OR_STATE')
+        require(scheduler.total_num_scheduled_tokens==0 and scheduler.num_scheduled_tokens=={}
+                and scheduler.scheduled_new_reqs==[] and scheduler.scheduled_cached_reqs.req_ids==[]
+                and scheduler.scheduled_encoder_inputs=={} and scheduler.scheduled_spec_decode_tokens=={}
+                and set(scheduler.finished_req_ids).issubset(self.expected), 'NEWSTACK_NOT_EMPTY_FINISH_CLEANUP')
+        # Standard engine may issue a zero-token cleanup after sample, before
+        # the host can remove this observer. Call unchanged; model hooks still
+        # refuse any extra model/visual execution after the accepted request.
+        result=original(scheduler,intermediate)
+        require(self.runner.execute_model_state is None,'NEWSTACK_CLEANUP_CREATED_MODEL_STATE')
+        self.cleanup_calls+=1
+        return result
     def before_preprocess(self,scheduler,total,intermediate):
         self.guard();require(self.events==['execute_enter'] and scheduler is self.scheduler
                             and intermediate is None,'V026_PREPROCESS_ORDER')
@@ -96,10 +112,14 @@ class TextPrefillTrace:
         raise RuntimeError('V026_VISUAL_EXECUTION_FORBIDDEN_IN_TEXT_PROBE')
     def execute_return(self,result):
         self.guard();state=self.runner.execute_model_state
-        require(result is None and self.events[-1:]==['model_return'] and state is not None
-                and state.scheduler_output is self.scheduler and state.logits is not None
-                and state.hidden_states is not None and state.sample_hidden_states is not None,
-                'V026_EXECUTE_STATE_NOT_CURRENT_REQUEST')
+        facts=dict(returned_none=result is None,events=list(self.events),state_present=state is not None,
+                   scheduler_same=state is not None and state.scheduler_output is self.scheduler,
+                   logits_present=state is not None and state.logits is not None,
+                   hidden_present=state is not None and state.hidden_states is not None,
+                   sample_hidden_present=state is not None and state.sample_hidden_states is not None,
+                   scheduled_tokens=self.scheduler.total_num_scheduled_tokens)
+        require(all(facts[k] for k in ('returned_none','state_present','scheduler_same','logits_present','hidden_present','sample_hidden_present'))
+                and self.events[-1:]==['model_return'], 'V026_EXECUTE_STATE_NOT_CURRENT_REQUEST:'+json.dumps(facts))
         require(state.logits.shape[0]==len(self.expected) and self.visual_calls==0,'V026_LOGITS_ROW_OR_VISUAL_MISMATCH')
         self.state=state;self.events.append('execute_return_state_pending')
     def before_sample(self):
@@ -114,7 +134,7 @@ class TextPrefillTrace:
         self.events.append('sample_return');self.finished=True
     def snapshot(self):
         return dict(schema='demoncat.v026.text_prefill_trace.v1',events=list(self.events),
-            request_ids=list(self.expected),input_branch='embedding' if self.embedding_branch else 'token_ids',mapping=deepcopy(self.mapping),visual_calls=self.visual_calls,
+            cleanup_calls=self.cleanup_calls,request_ids=list(self.expected),input_branch='embedding' if self.embedding_branch else 'token_ids',mapping=deepcopy(self.mapping),visual_calls=self.visual_calls,
             embedding_calls=self.embedding_calls,model_calls=self.model_calls,
             status='OBSERVED' if self.finished and self.first_error is None else 'INCOMPLETE_OR_FAILED',
             visual_execution_excluded=self.finished and self.visual_calls==0 and self.first_error is None,
@@ -187,6 +207,8 @@ class SourceBoundTextObserver:
                 finally:self.inside-=1
             setattr(obj,name,wrapper);self.patches.append((obj,name,wrapper))
         def execute(original,scheduler_output,intermediate_tensors=None):
+            if self.trace.finished:
+                return self.trace.cleanup(original,scheduler_output,intermediate_tensors)
             self.trace.enter(scheduler_output)
             result=original(scheduler_output,intermediate_tensors)
             self.trace.execute_return(result);return result
