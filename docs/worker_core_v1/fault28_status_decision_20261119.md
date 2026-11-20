@@ -76,3 +76,8 @@ CANN9.x需要重新识别实际ABI、构建、stock/private桥接和F/OFF；版�
 |B5|同Worker新Runtime owner/provider第二作用域；request_plan与实际阶段对应|两个独立作用域不等于重启Worker；相同失败两次停止|未开始，0秒|
 
 预算用尽或止损后交负责人决定；不扩大预算。只有独立审查通过才登记精确A2 BLUE_COMBINATION并进入RC2.2；黄区默认关闭。不声明其他几何/新CANN/A3/现役模型。
+
+
+## 2026-11-20执行更新
+
+本页第5节“未开始”是19日只读历史快照。新B1构建、正常借用与stock/private完整公开哈希桥接已完成，M128控制接线两次拒绝后止损；B3–B5尚未通过、公共入口关闭。实际用时及原始身份见[npu_progress_20261120.md](npu_progress_20261120.md)追加复核，不将B1或值相同提升为完整验收。

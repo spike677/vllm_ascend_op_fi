@@ -91,6 +91,9 @@ class PreparedInputCapture:
     def _check(self):
         require(identity()==self.owner and self.worker.model_runner is self.runner and self.runner.model is self.model,
             'TND_INPUT_WORKER_OR_THREAD_IDENTITY_CHANGED')
+        self._check_policy()
+
+    def _check_policy(self):
         require(not any(k.startswith('DCAT28_TND_') for k in os.environ),'TND_INPUT_NORMAL_WINDOW_HAS_FOREIGN_POLICY')
 
     def prepare_plan(self,row):

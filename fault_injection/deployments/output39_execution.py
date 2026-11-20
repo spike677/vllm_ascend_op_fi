@@ -166,9 +166,11 @@ class Output39SingleExecution(Fault39OutputProxyProvider):
     pending candidate is not a failure or a claim about the full model. After
     binding, neither fault nor OFF may switch targets.
     """
-    def __init__(self, model, transport, *, guard, prefix_elements=1, proxy='pos_inf'):
+    def __init__(self, model, transport, *, guard, prefix_elements=1, proxy='pos_inf', group_guard=False):
         super().__init__(model, transport, prefix_elements=prefix_elements, proxy=proxy)
         require(callable(guard), 'OUTPUT39_LIVE_OWNER_GUARD_REQUIRED')
+        require(type(group_guard) is bool,'OUTPUT39_GROUP_GUARD_BOOL_REQUIRED')
+        self.group_guard=group_guard;self.guard_observed=False
         self.guard, self.pid = guard, os.getpid()
         self.normal = self.window = None
         self.normal_output = None
@@ -205,7 +207,10 @@ class Output39SingleExecution(Fault39OutputProxyProvider):
         require(isinstance(request_id, str) and 0 < len(request_id) <= 256 and request_id not in self.requests,
                 'OUTPUT39_FRESH_REQUEST_REQUIRED')
         require(len(self.requests) < 8, 'OUTPUT39_BOUNDED_TASK_REQUESTS_EXHAUSTED')
-        require(phase in ('normal', 'fault', 'off'), 'OUTPUT39_UNKNOWN_EXECUTION_PHASE')
+        require(phase in ('normal','fault','off') or phase=='guard' and self.group_guard, 'OUTPUT39_UNKNOWN_EXECUTION_PHASE')
+        if phase=='guard':
+            require(not self.guard_observed and not self._fault_attempted,'OUTPUT39_GUARD_ONCE_REQUIRED')
+            self.guard_observed=True
         digest = _hash_inputs(args, kwargs)
         if phase == 'normal':
             require(self.normal is None and not self.requests, 'OUTPUT39_NORMAL_BINDING_ONCE_ONLY')
@@ -214,6 +219,7 @@ class Output39SingleExecution(Fault39OutputProxyProvider):
             require(self.normal is not None and digest == self._input_hash,
                     'OUTPUT39_CURRENT_NORMAL_INPUT_BINDING_REQUIRED')
         if phase == 'fault':
+            require(not self.group_guard,'OUTPUT39_GUARD_MUST_NOT_WRITE')
             require(not self.failure and not self._fault_attempted, 'OUTPUT39_SINGLE_TASK_ALREADY_SPENT')
             self._fault_attempted = True  # Persist before entering any writer.
         self.requests.add(request_id)
@@ -423,6 +429,8 @@ class _SingleReturnWindow(TorchDispatchMode):
                     callable_binding=candidate['callable'].report()),
                 consumers=deepcopy(self.consumers), effect=deepcopy(self.effect),
                 applied=int(self.phase == 'fault'), recovered_storage_exact=True,
+                guard_boundary_unchanged=self.phase=='guard' and restored==self.before,
+                selected_return_sha256=hashlib.sha256(restored).hexdigest(),
                 output_sha256=output_sha256, exact_normal_output=output_sha256 == p.normal_output,
                 native_lease_receipt=deepcopy(p._last_native_lease_receipt),
                 c1=False, c2=False, c3=False, E5=False)

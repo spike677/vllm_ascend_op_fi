@@ -14,7 +14,7 @@ from experiments.c2c3_closure_20261117.queue_contract import validate_cases
 
 EXP='experiments/worker_core_v11_20261118/'
 FIA='fault_injection/native_adapters/attention28/fia/'
-EXTRA=(EXP+'tnd28_research_observation.py',EXP+'prepare_tnd28_prepared_input.py',EXP+'natural_tnd28_prepared_input_probe.py',
+EXTRA=(EXP+'tnd28_control_observation.py',EXP+'tnd28_research_observation.py',EXP+'prepare_tnd28_prepared_input.py',EXP+'natural_tnd28_prepared_input_probe.py',
     E.EXPERIMENT+'review_tnd28_prepared_input.py',E.EXPERIMENT+'attention28_census_raw.py',
     E.WORKER+'attention28_prepared_input.py',E.WORKER+'attention28_replay_binding.py',
     E.WORKER+'attention28_typed_plan.py','fault_injection/fia_input_journal.py',

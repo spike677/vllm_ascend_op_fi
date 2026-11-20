@@ -1,0 +1,58 @@
+{
+  "status": "LIVE_TWO_STAGE_BORROW_AND_RELEASE_REVIEWED_NO_BRIDGE_OR_F",
+  "source_manifest_sha256": "0d7a93d1cadb57cc80d8b3d6d2814e3da66fd3367ee7a98b484a35cb940a7022",
+  "build_sha256": "1b1ac86d6d85063ef7fa8a8f9d2ae99eae46d35560645de7bef3d4a482d4fe78",
+  "result_sha256": "97ec71c877644160a7045ad9698f724148cbf49547fc9da9da8da5e072ab3386",
+  "host_sha256": "1c84d8632903e00e66231a32bf4c4d4d1da6158e6612ba85fb5df789caf54f4f",
+  "actual_calls": 28,
+  "selected_path": "model.layers.0.self_attn.attn",
+  "native_events": 14,
+  "resources_zero": true,
+  "post_removal_token_health": true,
+  "full_output_bridge_proven": false,
+  "fault_authorized": false,
+  "qualification_granted": false,
+  "reader_sha256": "89e9606803d0e09aef6752fe35d0bfcf3733dbefa6022769617e56f5a02e9c4a",
+  "typed_stages": [
+    1,
+    2
+  ],
+  "borrow": {
+    "schema": "demoncat.tnd28.execute_borrow.v1",
+    "first_error": 0,
+    "child_started": 1,
+    "child_consumed": 1,
+    "parent_started": 1,
+    "parent_returned": 1,
+    "drained": 1,
+    "detached": 0,
+    "reset_attempted": 0,
+    "reset_returned": 0,
+    "cancelled": 0,
+    "complete": 1,
+    "terminal_uncertain": 0,
+    "left": 1,
+    "child_status": 0,
+    "parent_status": 0,
+    "drain_status": 0,
+    "detach_status": 0,
+    "reset_status": 0,
+    "fault_authorized": false
+  },
+  "launches": [
+    {
+      "api": "aclrtLaunchKernelWithHostArgs",
+      "tiling_key": "524000000",
+      "block_dim": 40,
+      "schedule_mode": 0,
+      "registered_elf_sha256": "ceadb83454273d7a9dd67c343c2dd7ca0f756ff0f44340d42126ec584a36b63d"
+    },
+    {
+      "api": "aclrtLaunchKernelWithHostArgs",
+      "tiling_key": "5000000000000200103",
+      "block_dim": 20,
+      "schedule_mode": 1,
+      "registered_elf_sha256": "d99ce5e9435a3df59ff4432f53f997305638de40e4b306918f587faf8d96dd81"
+    }
+  ]
+}

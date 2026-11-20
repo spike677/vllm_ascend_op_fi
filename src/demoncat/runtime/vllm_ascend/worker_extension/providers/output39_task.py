@@ -16,10 +16,22 @@ class Output39TaskProvider(Fault39OutputServingProvider):
             and self.binding.max_live_leases == 1 and self.binding.folder is None,
             'OUTPUT39_EXPLICIT_ORDINARY_TASK_BINDING_REQUIRED')
 
+    def make_execution(self):
+        from fault_injection.deployments.output39_execution import Output39SingleExecution
+        return Output39SingleExecution(self.model,self.binding.transport,guard=self._context)
+
+    def make_session(self):
+        from ..output39_task import Output39TaskSession
+        return Output39TaskSession(self)
+
     @property
     def phase(self):
         return self.recovering or (FOUR[self.index]
                                   if self.index < len(FOUR) else 'complete')
+
+    @property
+    def execution_phase(self):
+        return self.phase
 
     @property
     def native_phase(self):
@@ -37,13 +49,11 @@ class Output39TaskProvider(Fault39OutputServingProvider):
             require(not self.binding.leases and self.p is None, 'OUTPUT39_NEW_TASK_SCOPE_REQUIRED')
             self.binding.leases.add(self._ticket)
             self.binding_reserved = self._registered = True
-            from fault_injection.deployments.output39_execution import Output39SingleExecution
-            from ..output39_task import Output39TaskSession
-            self.p = Output39SingleExecution(self.model, self.binding.transport, guard=self._context)
+            self.p = self.make_execution()
             self.native_owner = int.from_bytes(hashlib.sha256(owner.encode()).digest()[:8], 'little') % (2**63-1)+1
             self.p.owner, self.p.generation = self.native_owner, generation
             self.native_generation = generation
-            self.session = Output39TaskSession(self)
+            self.session = self.make_session()
         elif action == 'check':
             require(self._registered and self.session is not None and not self.p.live_lease_count,
                     'OUTPUT39_REGISTER_OR_RECOVERY_REQUIRED')
@@ -90,7 +100,7 @@ class Output39TaskProvider(Fault39OutputServingProvider):
             require(_hash_inputs(args, kwargs) == self.p._input_hash and not self.p.live_lease_count,
                     'OUTPUT39_MATCHED_HEALTH_INPUT_REQUIRED')
             return None
-        window = self.p.begin(request_id, self.phase, args, kwargs)
+        window = self.p.begin(request_id, self.execution_phase, args, kwargs)
         self.native_generation = self.p.generation
         return window
 
@@ -106,7 +116,9 @@ class Output39TaskProvider(Fault39OutputServingProvider):
             model_output_sha256=request['model_output_sha256'], report=deepcopy(result)))
         if self.recovering:
             self.recovering = 'health' if phase == 'off' else False
-            if phase == 'health': self.complete, self.stopped = True, True
+            if phase == 'health':
+                self.index = len(FOUR)
+                self.complete, self.stopped = True, True
         else:
             self.index += 1
             self.complete = self.index == len(FOUR)

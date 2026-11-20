@@ -31,10 +31,14 @@ def setup(worker,expected,tokens,provenance,settings):
     from demoncat.runtime.vllm_ascend.worker_extension.serving_attention import install_attention_serving_binding
     worker=common.actual(worker)
     need(worker.demoncat_worker_identity().get('worker')==expected,'ACTUAL_WORKER_IDENTITY_CHANGED')
-    capture=PreparedInputCapture(worker,build_completion=settings['build'],build_sha256=settings['build_sha256'],
+    from experiments.worker_core_v11_20261118.tnd28_control_observation import ControlInputCapture
+    capture_type=ControlInputCapture if settings.get('control_m128',False) else PreparedInputCapture
+    capture=capture_type(worker,build_completion=settings['build'],build_sha256=settings['build_sha256'],
         evidence_dir=settings['input_folder'],execute_borrow_library=settings.get('execute_borrow_library'),
         execute_borrow_sha256=settings.get('execute_borrow_sha256'))
-    native=StockTndPrefillCensus(mechanism=MECHANISM,observer_receipt=settings['observer'],
+    from experiments.worker_core_v11_20261118.tnd28_control_observation import ControlTndPrefillCensus
+    native_type=ControlTndPrefillCensus if settings.get('control_m128',False) else StockTndPrefillCensus
+    native=native_type(mechanism=MECHANISM,observer_receipt=settings['observer'],
         observer_receipt_sha256=settings['observer_sha256'],evidence_dir=settings['calls'],prepared_input_capture=capture)
     install_attention_serving_binding(worker,MECHANISM,prompt_token_ids=tokens,provenance=provenance,native=native)
     return dict(worker=expected,actual_pid=os.getpid(),worker_object_id=id(worker),model_object_id=id(worker.model_runner.model),
@@ -49,7 +53,9 @@ def remove(worker,expected,settings):
     binding=getattr(worker,ATTRIBUTE,{}).get(MECHANISM)
     need(binding is not None,'OWNED_OBSERVATION_BINDING_MISSING')
     capture=binding.native.prepared_input_capture
-    need(type(capture) is PreparedInputCapture and capture.worker is worker
+    from experiments.worker_core_v11_20261118.tnd28_control_observation import ControlInputCapture
+    capture_type=ControlInputCapture if settings.get('control_m128',False) else PreparedInputCapture
+    need(type(capture) is capture_type and capture.worker is worker
         and capture.build_sha256==settings['build_sha256'] and str(capture.root)==settings['input_folder'],
         'FOREIGN_PREPARED_INPUT_BINDING')
     capture._check();need(capture.active is None and capture.refs is None,'PREPARED_INPUT_RESOURCES_REMAIN')
@@ -103,7 +109,9 @@ def drive(llm,client,prompt,params,args,report,settings):
         pending,mapping=enqueue();outputs=llm.wait_for_completion(use_tqdm=False)
         need(len(outputs)==1 and outputs[0].request_id==mapping['external_request_id'],'POST_UNREGISTER_REQUEST_MAPPING')
         report['health']=dict(mapping=mapping,output_tokens=list(outputs[0].outputs[0].token_ids),scope='POST_UNREGISTER_TOKENS_ONLY')
-        need(report['health']['output_tokens']==report['request']['output_tokens'],'SAME_WORKER_TOKEN_HEALTH_CHANGED')
+        if not settings.get('control_m128',False):
+            need(report['health']['output_tokens']==report['request']['output_tokens'],'SAME_WORKER_TOKEN_HEALTH_CHANGED')
+        report['control_m128_observation']=bool(settings.get('control_m128',False))
         pending=[];report['status']=SUCCESS
     except BaseException as error:
         report.update(status='REFUSED_OR_FAILED',error=repr(error),traceback=traceback.format_exc())
@@ -180,6 +188,9 @@ def run(args,bundle):
         if getattr(args,'execute_borrow',False):
             library=args.vendor/'op_api/lib/libcust_opapi.so'
             settings.update(execute_borrow_library=str(library),execute_borrow_sha256=common.sha(library))
+        if getattr(args,'control_m128',False):
+            need(getattr(args,'execute_borrow',False),'CONTROL_BORROW_REQUIRED')
+            settings['control_m128']=True
         report['execute_borrow_guard_requested']=bool(getattr(args,'execute_borrow',False))
         provenance=dict(model=report['model'],standard_worker=True,probe_sha256=report['probe_sha256'],
             source_manifest_sha256=args.source_manifest_sha256,build_sha256=args.build_sha256,observer_only=True)
@@ -204,6 +215,7 @@ def main():
     for name in ('model','out','build','vendor','source','observer-receipt'):p.add_argument('--'+name,type=Path,required=True)
     for name in ('build-sha256','source-manifest-sha256','observer-receipt-sha256'):p.add_argument('--'+name,required=True)
     p.add_argument('--memory',type=float,default=.25);p.add_argument('--child',action='store_true',help=argparse.SUPPRESS)
+    p.add_argument('--control-m128',action='store_true')
     p.add_argument('--execute-borrow',action='store_true',help='Single-target normal live-input/Execute-borrow guard; still no F')
     args=p.parse_args();need(args.out.resolve().is_relative_to('/evidence') and 0<args.memory<=.5,'OWNED_EVIDENCE_BOUNDED_MEMORY')
     return run(args,bootstrap(args))

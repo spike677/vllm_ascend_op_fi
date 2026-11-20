@@ -1,4 +1,4 @@
-[2026-11-20实机进展](docs/worker_core_v1/npu_progress_20261120.md)：18/39 TP1同Worker双作用域与18 TP2双作用域已独立复核；Batch双作用域已运行并披露health观测限制。28新构建完成，真实TND验收仍在推进，公共入口保持关闭。冻结版本不变。
+[2026-11-20实机进展](docs/worker_core_v1/npu_progress_20261120.md)：18/22/39的TP2同Worker双作用域及显式recover后的全rank OFF/health恢复已独立复核。18/39 TP1双作用域通过；Batch TP1同Worker双作用域已补齐完整hidden/logits健康恢复。28真实TND正常借用和stock/private数值桥接通过，但M128接线连续两次拒绝，按止损停止本轮重试，故障F/OFF未通过、公共入口保持关闭。冻结版本不变。
 
 [RC2已冻结发行](releases/demoncatpfi-yellow-rc2-20261119/README.md)：六能力子集与独立部署登记见 [RC2交付接口](docs/worker_core_v1/yellow_rc2.md)。Batch第二NPU作用域已补齐；具体冻结状态以releases发行清单为准，黄区组合尚待RC2实测回传登记。现役摸底和W4A8优先路线见[迁移清单](docs/worker_core_v1/rc3_inspect_migration_resources_20261119.md)。
 

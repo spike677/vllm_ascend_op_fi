@@ -37,7 +37,7 @@
 
 ## 多卡主线进度
 
-M1的18已通过上述限定实际分支。39/22的TP2 provider及Batch/41多卡尚未完成，不能由18或TP1结果推导。M2受0.26资源/驱动门禁及权重预算限制；M3待A3专用实例回传；M4待DeepSeek实际运行证据，蓝区不做DeepSeek实测。
+M1的18已通过上述限定实际分支。39/22的TP2 provider和两个同Worker作用域现已实机通过，见下方追加复核。Batch/41多卡尚未完成，不能由18/22/39或TP1结果推导。M2受0.26资源/驱动门禁及权重预算限制；M3待A3专用实例回传；M4待DeepSeek实际运行证据，蓝区不做DeepSeek实测。
 
 ## 现役路径进度
 
@@ -53,3 +53,63 @@ B1于2026-11-20 02:26:37 UTC开始；真实8.5.1 SDK对象/CPU借用合同通过
 
 
 CPU验证：共享TP1/TP2调用链与设备门禁128项通过；28打包/typed/借用/研究入口与总结审查76项通过；owner/绑定返回码修复后13项专项通过。集合重叠，不累计为独立测试总数。
+
+## 追加复核：22/39 TP2与28正常桥接
+
+以上初始检查点保留，以下为新attempt复核，不覆盖既有失败。
+
+|能力|组合|同Worker两个作用域结果|执行清单 SHA256|
+|---|---|---|---|
+|22 wrong_row|A2 / CANN8.5.1 / vLLM-Ascend0.18 / Qwen3-0.6B BF16 / TP2|8请求/16 rank请求观测；rank0第一层rotary源行4→0；rank1所选边界原值；两rank完整hidden/logits变化；OFF/health精确，资源0|c124d28dbd820394b6e19ed6906369bde64f3775a7126921608195e1073ceff4|
+|39 output_proxy|同上|8请求/16 rank请求观测；目标rank单元素BF16→+Inf、真实消费者读到；guard不写；两rank组合hidden/logits与独立logits变化，OFF/health精确；native open/apply/restore/release/live全通过，资源0|ad25b9105850b927144f75cfac0023ffff05e2dff7f64564883e83569828e555|
+
+[22独立总结](../../experiments/worker_core_v11_20261118/m1_rope22_tp2_20261120_summary.json)、[39独立总结](../../experiments/worker_core_v11_20261118/m1_output39_tp2_20261120_summary.json)。22审查直接比较B/F完整Q/K指纹，不采信guard的`same_complete_inputs_as_healthy`派生标记（原baseline分支该标记为false，实际完整Q/K相同）。对guard输入哈希和OFF哈希的内存负向修改均被审查器拒绝；原件未改。
+
+39只保留组合hidden/logits哈希及独立logits哈希，不能单凭组合哈希宣称hidden自身一定变；没有直接collective边界归因。两项仅为实际`use_all_gather=True`路径，不代表所有多卡executor/模型。现有三项M1结果不授A3、0.26或现役资格，也不并入RC2.x。
+
+补充的TP2统一recover路径要求：即使本rank是guard，或已经完成本地health，peer恢复时也重做实际OFF/health；CPU通过，最新源码实机矩阵正在补测。不能把早期通过清单自动等同于此后新增恢复分支的NPU验收。
+
+### 28新构建的事实边界
+
+A2 / CANN8.5.1 / vLLM-Ascend0.18 / Qwen3-0.6B FP16 / TP1 / TND2048。第三次正常借用经过两个typed阶段、真实child/parent执行及drain/clear，原始public对象、描述符、Slice/FIA实际launch与新ELF的关联通过独立审查。实际FIA key仍为`5000000000000200103`，不是预设M128 key。28层完整公开输入输出哈希、最终完整hidden与logits，与另一进程的stock请求精确一致。
+
+- [正常借用总结](../../experiments/worker_core_v11_20261118/tnd28_borrow_20261120_summary.json)
+- [完整stock/private数值桥接](../../experiments/worker_core_v11_20261118/tnd28_stock_private_20261120_summary.json)
+
+stock census仍有`CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE`，不能以完整值相同填补该原生关联不可观测项。正常解除后的health仅token层级，未证明全hidden/logits健康。
+
+M128控制对照连续两次在目标请求前被严格接线类型检查拒绝：第一次`TND_INPUT_EXACT_SINGLE_CAPTURE_NO_EXTERNAL_JOURNAL`，第二次`ATTENTION_REVIEWED_NATIVE_ADAPTER_REQUIRED`。两次均owner未保留、未发生目标控制FIA；初始化NPU用时仍计入预算。按同类接线问题两次止损，本轮不继续放宽检查重试。显式研究控制代码保留为**未接通、不可执行验收**；公共28入口仍关闭。
+
+B1构建通过；B2仅正常借用及公开数值桥接通过，M128对照与stock原生关联仍缺；B3–B5（分母F/OFF及第二作用域）未通过。实际`authorize_fault`仍拒绝`TND_REPLAY_NATIVE_TWO_STAGE_ADMISSION_UNBOUND`，是实现缺口，不写成“只差测试”。本轮6次28容器尝试累计669.188377秒（含初始化、失败、stock、health）；4小时预算剩余13730.811623秒。两个工作日从2026-11-20 02:26:37 UTC实际B1开始计，未自动延长。
+
+## 存储只读评估
+
+受用户另行要求，独立agent完成[存储评估](storage_review_20261120.md)，已回传指定侧会话。两目录134.40GiB不等于可释放；9.82GiB只是已备份日志检查范围，绝大多数含原始证据线索，尚无确认可直接删除项。无新增删除。当前构建、vendor、source、模型及当天增量继续保护。
+
+
+## 统一recover实机收尾
+
+同一BLUE组合（A2、CANN8.5.1、vLLM-Ascend0.18、Qwen3-0.6B BF16、TP2）完成18、22、39各两个作用域，均由normal→fault→显式recover→off→health结束。每项8个真实请求、16条rank请求观测；两个rank均精确OFF/health恢复、最终next_phase=complete、资源清零并解除owner。三项使用清单`29b1658dce59090da612ca883592d0d1bf0976a1f650d2fbcb8c2548a36b12b1`，源码基线7ee7a752加已披露开发修改。
+
+- [18恢复独立审查](../../experiments/worker_core_v11_20261118/m1_recovery_18_tp2_20261120_summary.json)
+- [22恢复独立审查](../../experiments/worker_core_v11_20261118/m1_recovery_22_tp2_20261120_summary.json)
+- [39恢复独立审查](../../experiments/worker_core_v11_20261118/m1_recovery_39_tp2_20261120_summary.json)
+
+此前a2的18实测发现计划索引缺陷：恢复health已经精确，但next_phase仍为off。a3修复恢复终态索引，保留a2失败。独立审查器对旧终态off、缺rank、未恢复peer和recover后再次F均拒绝；39回执的serving是资源字段、实际请求在evidence中，曾因解析错位拒绝，修正解析并以同一原件重审通过，未改原始数据。
+
+本轮验证显式recover调用，不宣称真实Worker崩溃或通信中断已经实机覆盖。三项跨rank传播不唯一证明all-reduce归因。开发线不授未登记部署资格，不修改RC1/RC1.1/RC2冻结标签或包。CPU最终大集合210项通过，之后恢复审查器7项和Batch健康观察/审查5项专项通过；集合有重叠，不相加。
+
+
+## Batch完整health补齐
+
+BLUE组合：A2、CANN8.5.1、vLLM-Ascend0.18、Qwen3-0.6B W8A8、TP1、B8，卡5。同一Worker两个owner作用域；每个作用域六批normal/reference/lossless/calibration_off/fault/off，加前后两个普通health批次，共16批、128请求。
+
+新增观察器只在无故障health请求记录完整prefill/decode hidden与logits哈希，不修改输出、不安装故障hook，不保存完整张量。两作用域均自动选中首个实际qkv_proj的decode调用，Q有5565个元素变化、scale有7个变化；完整OFF量化/hidden/logits与基线相同，前后health的四项完整哈希精确一致、token一致、观察hook清零，Native与公共owner资源清零。
+
+[独立总结](../../experiments/worker_core_v11_20261118/ordinary_batch_full_health_20261120_summary.json)以`--require-full-health`重算；旧[仅token健康报告](../../experiments/worker_core_v11_20261118/ordinary_batch_two_scopes_20261120_summary.json)保持原样，不将缺失健康张量观测追溯改为通过。新清单SHA为`401e54fa7876c90c9b640ed5c37792d8bfcef4a3e7ed89cf3ff976f28a005a17`，原Native构建SHA为`b4ac9a2b68ff58c3a5f6b54c1f052170ce5d1f6d1f8c53a6a571d175ed9328ac`。
+
+量化入口、完整health及恢复审查CPU回归60项通过。旧CPU generate替身原先仅返回token，已改为实际CPU模型prefill/decode并检查观察器回收；不能把替身结果称为NPU验收。实机初始化的forkserver signal警告保留，模型实际加载及完整两作用域均已完成。
+
+这些是TP1结果，Batch/41的TP2仍缺适配，20/26/33普通路线仍未闭合。0.26门禁、A3/现役组合没有新增通过。RC2.2尚未冻结，M1多卡成果不并入RC2.x；RC2.1仍仅等待黄区组合登记。
+
+本轮按明确授权仅停止Abs指定批次的卡2/5实例，包括重派实例；临时有界清理器已结束。未改Docker入口、宿主驱动/CANN或其他任务数据。Git仅包含已审查实现、测试和总结，不提交新的statistics/mix原件、模型或完整张量；冻结RC1、RC1.1、RC2标签保持原提交。

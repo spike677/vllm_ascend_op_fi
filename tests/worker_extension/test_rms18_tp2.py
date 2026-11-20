@@ -71,6 +71,20 @@ class TP2Rms18Tests(Rms18TaskTests):
         self.provider.commit_role(decision)
         with self.assertRaisesRegex(Exception,'ONCE'):self.provider.commit_role(decision)
 
+    def test_peer_recovery_after_local_complete_rechecks_off_health(self):
+        c=self.prepare_rank(1);self.enqueue('normal');self.provider.commit_role(self.decision(c));self.enqueue('fault');self.enqueue('off');self.enqueue('health')
+        self.assertTrue(self.provider.complete);self.ok(self.client.recover());self.assertEqual(self.provider.phase,'off');self.assertFalse(self.provider.complete)
+        self.enqueue('recovery-off');self.enqueue('recovery-health');state=self.finish();self.assertTrue(state['serving']['recovered'])
+
+    def test_recover_after_fault_finishes_host_plan(self):
+        c=self.prepare_rank(0);self.enqueue('normal');self.provider.commit_role(self.decision(c));self.enqueue('fault')
+        self.ok(self.client.recover());self.enqueue('recovery-off');self.enqueue('recovery-health')
+        reply=self.client.query();self.assertEqual(reply['status'],'QUERY_OK')
+        state=reply['response']['provider_state']
+        self.assertTrue(state['serving']['complete'])
+        self.assertEqual(state['serving']['next_phase'],'complete')
+        self.finish()
+
     def test_tp2_fault_without_agreement_refuses(self):
         self.prepare_rank(0);self.enqueue('normal')
         with self.assertRaisesRegex(Exception,'ROLE_DECISION_REQUIRED'):

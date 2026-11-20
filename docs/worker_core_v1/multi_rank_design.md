@@ -23,7 +23,7 @@ prepare→register→check→enable必须全rank成功；任意rank失败则任�
 用户FaultConfig只选择机制/版本，不增加rank/card/layer参数。部署侧typed group binding拥有固定成员列表与角色状态，和普通TP1 binding分开准入。
 
 - 18：副本RMSNorm正常实际返回及消费者在各rank确认后，默认rank0为目标。只允许其一次替换；其他rank对对应实际调用记录原返回身份/无写入，不能走F补丁。缺少rank0候选则拒绝，不悄悄改目标。
-- 39：各rank正常请求形成实际分片投影候选；部署策略从已满足Native/消费者约束的实际候选选一个确定性目标rank（rank升序，再本地真实调用顺序）。记录分片范围、实际返回、消费者。其他rank只守卫，不装可写Native租约。
+- 39：各rank正常请求形成实际分片投影候选；部署策略从已满足Native/消费者约束的实际候选选一个确定性目标rank（rank升序，再本地真实调用顺序）。记录分片范围、实际返回、消费者。其他rank在F阶段只守卫，不创建故障写入Native租约。正常校准阶段，各rank仍使用mode0无损Native租约核验实际边界；这不等同于其他rank完全没有Native调用。
 - 22：按真实各rank的Q/K head与RoPE调用选点，禁止套TP1 head形状；只在一个目标rank施加行错配，其他rank保持原实现。
 - Batch、41为第二批，不能因前三项通过自动加入。Batch需要B8同一请求集合和rank本地Q/scale映射；41需要rank本地KV/head范围、slot映射及恢复。
 
@@ -74,3 +74,16 @@ M2仍依赖0.26流式空间与官方驱动门禁、社区W8A8权重及磁盘预�
 
 
 角色提交接口为受信任部署回调`commit_roles(decision)`：协调器依据所有rank同一normal请求、成员指纹、输入指纹和真实候选选择单rank，再提交角色并查询全部rank确认；回调丢回复不重试、不放行F。该接口还需真实provider接线，不能由用户配置提供rank或伪造normal证据。CPU同时覆盖RMS缺少rank0时拒绝，以及分片投影rank0不合格时选择实际合格rank1。
+
+
+## 2026-11-20 实机状态更新
+
+上面的11月19日记录为历史检查点。现已在BLUE组合（Ascend910B4/A2、CANN8.5.1、vLLM-Ascend0.18、Qwen3-0.6B BF16、TP2）完成18、22、39的真实标准多进程执行及同Worker组两个作用域。每项normal→fault→off→health共8请求；自动选rank0，仅目标rank施加故障，rank1核对原始边界，两个rank均完成数值恢复与资源清零。
+
+具体原件哈希、源码清单与独立审查见[npu_progress_20261120.md](npu_progress_20261120.md)。本轮只接受实际`use_all_gather=True`路径，尚未适配非driver返回null logits的gather路径。39保存组合hidden/logits哈希及单独logits哈希，不能据此证明hidden单项变化；未直接观测collective边界，不能唯一归因到all-reduce。全部结果仅限BLUE组合，不变更公开部署登记或冻结发行包。
+
+显式全rank recover补测发现：恢复health结束后，旧index仍指向off，导致本地complete与next_phase矛盾。开发线修正恢复完成时的计划索引；CPU新增终态回归，实机以新attempt重验，并保留旧失败原件。显式recover测试不代替真实Worker崩溃/通信故障验收。
+
+Batch和41的TP2仍未接通：Batch当前身份和候选明确绑定TP1，B8请求行与rank本地Q/scale合同尚未扩展；41的writer/slot/consumer及health仍走TP1合同，缺少单rank注入与peer守卫接线。这些属于开发缺口，不是待重跑即可通过。20/26/33仍按普通入口适配预判与止损规则执行。28真实TND研究结果和失败限时另见专门记录，未授公共执行资格。
+
+三项显式recover的实机终态已独立复核通过；源码核对见[TP2运行文件身份](../../experiments/worker_core_v11_20261118/m1_tp2_runtime_sources_20261120.json)，11份待提交运行/probe文件与实测快照逐项SHA一致。Batch的TP1完整health缺口随后补齐，未改变TP2待适配状态。

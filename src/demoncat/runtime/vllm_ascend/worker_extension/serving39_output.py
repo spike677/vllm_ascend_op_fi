@@ -31,11 +31,12 @@ class Output39ServingBinding:
     max_live_leases: int = 1
     leases: set = field(default_factory=set, compare=False, repr=False)
     runtime_only: bool = False
+    group_context: object = None
 
 
 def install_fault39_output_serving_binding(worker, *, transport, prompt_token_ids,
         evidence_dir=None, stage='c1', max_live_leases=1, _simulation=False, _native_readback=None,
-        runtime_only=False):
+        runtime_only=False, group_contract=None):
     """Bind an already initialized Worker. No model, hooks or Native leases run."""
     from fault_injection.deployments.postwrite import NativePostwriteLibrary
     require(not hasattr(worker, _ATTRIBUTE), 'SERVING_DEPLOYMENT_ALREADY_BOUND')
@@ -56,14 +57,20 @@ def install_fault39_output_serving_binding(worker, *, transport, prompt_token_id
         require(folder.is_absolute() and folder.resolve().is_relative_to(Path('/evidence')),
                 'PRIVATE_EVIDENCE_DIRECTORY_REQUIRED')
     runner, model = worker.model_runner, worker.model_runner.model
-    require_serial_eager(runner, expected_max_seqs=1)
+    group_context=None
+    if group_contract is None:
+        require_serial_eager(runner, expected_max_seqs=1)
+    else:
+        require(runtime_only,'OUTPUT39_TP2_ORDINARY_ONLY')
+        from .rms18_tp2 import validate_tp2_group
+        group_context=validate_tp2_group(worker,'39.output_proxy',group_contract)
     require(not model.training, 'INFERENCE_MODEL_REQUIRED')
     sha = getattr(transport, 'sha256', None)
     require(isinstance(sha, str) and len(sha) == 64 and all(c in '0123456789abcdef' for c in sha),
             'OUTPUT39_REVIEWED_NATIVE_HASH_REQUIRED')
     binding = Output39ServingBinding(worker, runner, model, transport, tuple(prompt_token_ids), folder,
         os.getpid(), threading.get_ident(), sha, id(getattr(transport, 'lib', None)), _simulation, _native_readback,
-        stage, max_live_leases, runtime_only=runtime_only)
+        stage, max_live_leases, runtime_only=runtime_only, group_context=group_context)
     native = read_native_binding(binding)
     setattr(worker, _ATTRIBUTE, binding)
     return dict(status='SERVING_DEPLOYMENT_BOUND_NOT_QUALIFIED', mechanism='39.output_proxy',

@@ -126,11 +126,14 @@ class StockTndPrefillCensus:
         self.input_journal=input_journal;self._journal_current=None;self._journal_requests={}
         self.prepared_input_capture=prepared_input_capture
         if prepared_input_capture is not None:
-            from .attention28_prepared_input import PreparedInputCapture
-            require(type(prepared_input_capture) is PreparedInputCapture and input_journal is None,
-                    'TND_INPUT_EXACT_SINGLE_CAPTURE_NO_EXTERNAL_JOURNAL')
+            self._validate_prepared_capture(prepared_input_capture,input_journal)
         if input_journal is not None:self._validate_journal()
         self._check();self.folder.mkdir(parents=True)
+
+    def _validate_prepared_capture(self,capture,journal):
+        from .attention28_prepared_input import PreparedInputCapture
+        require(type(capture) is PreparedInputCapture and journal is None,
+                'TND_INPUT_EXACT_SINGLE_CAPTURE_NO_EXTERNAL_JOURNAL')
 
     def _validate_journal(self):
         from fault_injection.fia_input_journal import NativeFiaInputJournal, process_identity

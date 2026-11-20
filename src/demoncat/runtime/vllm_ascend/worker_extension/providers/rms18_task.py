@@ -163,7 +163,9 @@ class Rms18TaskProvider(TensorServingProvider):
         self.rows.append(deepcopy(row))
         if self.recovering:
             self.recovering = 'health' if phase == 'off' else None
-            if phase == 'health': self.complete = True
+            if phase == 'health':
+                self.index = len(FOUR)
+                self.complete = True
         else:
             self.index += 1
             self.complete = self.index == len(FOUR)

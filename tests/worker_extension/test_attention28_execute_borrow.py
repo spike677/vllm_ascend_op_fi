@@ -167,7 +167,7 @@ class BorrowCaptureContracts(unittest.TestCase):
                 original(*args)
                 return -1
             self.native.__dict__[T.SYMBOLS[0]].call=bind_then_fail
-            with self.assertRaisesRegex(RuntimeError,'BIND_FAILED'):self.enter(row)
+            with self.assertRaisesRegex(RuntimeError,'TND_LIVE_TYPED_BIND_RETURN:-1'):self.enter(row)
             self.assertIsNotNone(self.native.callback)
             self.assertIsNotNone(self.capture.live_plan)
             self.capture.stop()

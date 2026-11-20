@@ -1,0 +1,81 @@
+{
+  "status": "TP2_RMS18_TWO_SCOPES_INDEPENDENTLY_REVIEWED",
+  "mechanism": "18.api_half",
+  "source_manifest_sha256": "29b1658dce59090da612ca883592d0d1bf0976a1f650d2fbcb8c2548a36b12b1",
+  "combination": "BLUE_COMBINATION A2/CANN8.5.1/vLLM-Ascend0.18/Qwen3-0.6B BF16/TP2",
+  "scopes": [
+    {
+      "ranks": {
+        "0": {
+          "path": "model.layers.0.input_layernorm",
+          "applied": true,
+          "boundary_unchanged": false,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        },
+        "1": {
+          "path": "model.layers.0.input_layernorm",
+          "applied": false,
+          "boundary_unchanged": true,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        }
+      },
+      "token_changed": true,
+      "rank_request_alignment": true
+    },
+    {
+      "ranks": {
+        "0": {
+          "path": "model.layers.0.input_layernorm",
+          "applied": true,
+          "boundary_unchanged": false,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        },
+        "1": {
+          "path": "model.layers.0.input_layernorm",
+          "applied": false,
+          "boundary_unchanged": true,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        }
+      },
+      "token_changed": true,
+      "rank_request_alignment": true
+    }
+  ],
+  "scope_count": 2,
+  "request_count": 8,
+  "rank_request_observations": 16,
+  "collective_boundary_observed": false,
+  "limitation": "Guard rank hidden/logits propagation observed; unique all-reduce attribution not established. Only Ascend use_all_gather=True path validated.",
+  "qualification_granted": false,
+  "recovery_protocol": [
+    {
+      "explicit_recover_after_fault": true,
+      "off_health_requests_after_recover": 2,
+      "all_rank_terminal_phase": "complete"
+    },
+    {
+      "explicit_recover_after_fault": true,
+      "off_health_requests_after_recover": 2,
+      "all_rank_terminal_phase": "complete"
+    }
+  ],
+  "recovery_test_scope": "Explicit recover after successful F; no real worker crash injected.",
+  "input_sha256": "c3c146fd0229b3f5cb9a57835f4051b056838c6fd99805f4b495e2c115843fa9",
+  "host_sha256": [
+    "577511d459b5246daa1aa28bc88fd2178564b28a9e33575f1cc1f2cb25252604",
+    "4e0608d8d46e7690241def74cd6a4a8c308924d051fdd1107d6412b30bdeea5a"
+  ],
+  "reader_sha256": "2f3964572792329767ace1d1c1858f3df3e47bae27ea925446bde3cc72b09efe"
+}

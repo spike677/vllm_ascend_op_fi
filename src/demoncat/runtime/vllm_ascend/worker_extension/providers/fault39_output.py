@@ -29,6 +29,9 @@ def create_single_request_provider(worker, model, identity):
             'OUTPUT39_CURRENT_DELIVERY_SINGLE_REQUEST_SINGLE_TARGET_REQUIRED')
     require(type(binding.runtime_only) is bool, 'OUTPUT39_RUNTIME_MODE_BOOLEAN_REQUIRED')
     require(binding.runtime_only, 'OUTPUT39_ORDINARY_TASK_BINDING_REQUIRED')
+    if binding.group_context is not None:
+        from ..output39_tp2 import TP2Output39Provider
+        return TP2Output39Provider(worker,model,identity)
     from .output39_task import Output39TaskProvider
     return Output39TaskProvider(worker, model, identity)
 

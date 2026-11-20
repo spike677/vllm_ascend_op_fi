@@ -18,7 +18,7 @@ class _OneRoPE(FusedWrongRowSession):
         self.trace=trace
         self.actual=None
         super().__init__(task.model,simulation=task.binding.simulation,_runtime=trace,
-            arm='fault' if task.phase=='fault' else 'baseline',references=task.rope_references,
+            arm=task.injection_arm,references=task.rope_references,
             admission=self._admit)
         trace.diagnostics_context=self.diagnostics
 
@@ -80,6 +80,13 @@ class _OneRoPE(FusedWrongRowSession):
             require(reader['independent_position_transform']=='identity','ROPE22_NORMAL_POSITIONS_CHANGED')
             self.task.rope_references=dict(self.healthy_calls)
             self.task.normal_reader=reader
+        elif self.task.injection_arm=='baseline':
+            normal=self.task.normal_reader
+            require(not event['applied'] and not event['changed_from_healthy']
+                and reader['independent_position_transform']=='identity'
+                and reader['complete_output']==normal['complete_output']
+                and reader['cache_sha256']==normal['cache_sha256'],
+                'ROPE22_GUARD_ORIGINAL_OUTPUT_REQUIRED')
         else:
             normal=self.task.normal_reader
             require(event['same_complete_inputs_as_healthy'] and event['changed_from_healthy']

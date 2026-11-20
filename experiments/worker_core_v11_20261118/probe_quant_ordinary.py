@@ -263,7 +263,8 @@ def main(argv=None, *, existing_llm=None, evidence_dir=None, llm_observer=None):
         params = SamplingParams(temperature=0, max_tokens=2, ignore_eos=True)
         phase = 'HEALTHY_BEFORE'
         require_time(work_deadline, 180)
-        report['healthy_before'] = [list(value.outputs[0].token_ids) for value in llm.generate(prompts, params, use_tqdm=False)]
+        from experiments.worker_core_v11_20261118.quant_health_observer import generate as healthy_generate
+        report['healthy_before'], report['health_hashes_before'] = healthy_generate(llm, prompts, params)
         def prepare(identity, config):
             nonlocal bound
             value = rpc(llm, setup, identity, args.build_sha256, report['installed_sources'],args.source_manifest_sha256)
@@ -296,10 +297,11 @@ def main(argv=None, *, existing_llm=None, evidence_dir=None, llm_observer=None):
         bound = False
         phase = 'HEALTHY_AFTER'
         require_time(final_deadline, 60)
-        report['healthy_after'] = [list(value.outputs[0].token_ids) for value in llm.generate(prompts, params, use_tqdm=False)]
+        report['healthy_after'], report['health_hashes_after'] = healthy_generate(llm, prompts, params)
         report['worker_after'] = rpc(llm, 'demoncat_worker_identity')
         report['model_after'] = model_identity('/model')
         if (report['healthy_after'] != report['healthy_before']
+                or report['health_hashes_after'] != report['health_hashes_before']
                 or report['worker_after']['worker'] != report['deployment']['worker']['worker']
                 or report['worker_after'].get('quarantined') is not False
                 or report['model_after'] != report['model_before']):

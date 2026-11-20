@@ -1,0 +1,64 @@
+{
+  "status": "TP2_ROPE22_TWO_SCOPES_INDEPENDENTLY_REVIEWED",
+  "mechanism": "22.wrong_row",
+  "source_manifest_sha256": "c124d28dbd820394b6e19ed6906369bde64f3775a7126921608195e1073ceff4",
+  "combination": "BLUE_COMBINATION A2/CANN8.5.1/vLLM-Ascend0.18/Qwen3-0.6B BF16/TP2",
+  "scopes": [
+    {
+      "ranks": {
+        "0": {
+          "path": "model.layers.0.self_attn.rotary_emb",
+          "applied": true,
+          "boundary_unchanged": false,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        },
+        "1": {
+          "path": "model.layers.0.self_attn.rotary_emb",
+          "applied": false,
+          "boundary_unchanged": true,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        }
+      },
+      "token_changed": false,
+      "rank_request_alignment": true
+    },
+    {
+      "ranks": {
+        "0": {
+          "path": "model.layers.0.self_attn.rotary_emb",
+          "applied": true,
+          "boundary_unchanged": false,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        },
+        "1": {
+          "path": "model.layers.0.self_attn.rotary_emb",
+          "applied": false,
+          "boundary_unchanged": true,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        }
+      },
+      "token_changed": false,
+      "rank_request_alignment": true
+    }
+  ],
+  "scope_count": 2,
+  "request_count": 8,
+  "rank_request_observations": 16,
+  "collective_boundary_observed": false,
+  "limitation": "Guard rank hidden/logits propagation observed; unique all-reduce attribution not established. Only Ascend use_all_gather=True path validated.",
+  "qualification_granted": false,
+  "input_sha256": "afe8e4b8e41def5c4c14f08e2be5eac225e1592835157673756740c60dc071ff",
+  "reader_sha256": "e04224f64ed2d6a4c10e73e354e97831a3c63d93659f1b509c0a9d765c1ad1cd"
+}

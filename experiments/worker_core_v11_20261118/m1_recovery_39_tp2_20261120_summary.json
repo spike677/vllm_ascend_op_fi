@@ -1,0 +1,83 @@
+{
+  "status": "TP2_OUTPUT39_TWO_SCOPES_INDEPENDENTLY_REVIEWED",
+  "source_manifest_sha256": "29b1658dce59090da612ca883592d0d1bf0976a1f650d2fbcb8c2548a36b12b1",
+  "combination": "BLUE_COMBINATION A2/CANN8.5.1/vLLM-Ascend0.18/Qwen3-0.6B BF16/TP2",
+  "scopes": [
+    {
+      "ranks": {
+        "0": {
+          "path": "model.layers.0.mlp.gate_up_proj",
+          "applied": true,
+          "guard_boundary_unchanged": false,
+          "combined_hidden_logits_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        },
+        "1": {
+          "path": "model.layers.0.mlp.gate_up_proj",
+          "applied": false,
+          "guard_boundary_unchanged": true,
+          "combined_hidden_logits_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        }
+      },
+      "token_changed": true
+    },
+    {
+      "ranks": {
+        "0": {
+          "path": "model.layers.0.mlp.gate_up_proj",
+          "applied": true,
+          "guard_boundary_unchanged": false,
+          "combined_hidden_logits_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        },
+        "1": {
+          "path": "model.layers.0.mlp.gate_up_proj",
+          "applied": false,
+          "guard_boundary_unchanged": true,
+          "combined_hidden_logits_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        }
+      },
+      "token_changed": true
+    }
+  ],
+  "request_count": 8,
+  "rank_request_observations": 16,
+  "scope_count": 2,
+  "qualification_granted": false,
+  "limits": [
+    "One selected output proxy, not matmul_range OOB.",
+    "Combined full hidden/logits and separate logits hashes; no separate hidden-only digest retained.",
+    "No unique collective-boundary attribution.",
+    "Only actual use_all_gather=True path accepted."
+  ],
+  "recovery_protocol": [
+    {
+      "explicit_recover_after_fault": true,
+      "off_health_requests_after_recover": 2,
+      "all_rank_terminal_phase": "complete"
+    },
+    {
+      "explicit_recover_after_fault": true,
+      "off_health_requests_after_recover": 2,
+      "all_rank_terminal_phase": "complete"
+    }
+  ],
+  "mechanism": "39.output_proxy",
+  "recovery_test_scope": "Explicit recover after successful F; no real worker crash injected.",
+  "input_sha256": "2825a7916ce0950abfca60cc5c6a41bebac3f29548a78a15aeb0dd67abd1876a",
+  "host_sha256": [
+    "902b94e43bd857fad19aa6009c8dbd302c3c1406eb033a6897da3c03f9a05dbb",
+    "18b16f6574e51c426f109e20f630c7d0540adb7994322f3fe44490d91bf42d48"
+  ],
+  "reader_sha256": "2f3964572792329767ace1d1c1858f3df3e47bae27ea925446bde3cc72b09efe"
+}

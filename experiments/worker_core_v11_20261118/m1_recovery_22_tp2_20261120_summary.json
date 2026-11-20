@@ -1,0 +1,81 @@
+{
+  "status": "TP2_ROPE22_TWO_SCOPES_INDEPENDENTLY_REVIEWED",
+  "mechanism": "22.wrong_row",
+  "source_manifest_sha256": "29b1658dce59090da612ca883592d0d1bf0976a1f650d2fbcb8c2548a36b12b1",
+  "combination": "BLUE_COMBINATION A2/CANN8.5.1/vLLM-Ascend0.18/Qwen3-0.6B BF16/TP2",
+  "scopes": [
+    {
+      "ranks": {
+        "0": {
+          "path": "model.layers.0.self_attn.rotary_emb",
+          "applied": true,
+          "boundary_unchanged": false,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        },
+        "1": {
+          "path": "model.layers.0.self_attn.rotary_emb",
+          "applied": false,
+          "boundary_unchanged": true,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        }
+      },
+      "token_changed": false,
+      "rank_request_alignment": true
+    },
+    {
+      "ranks": {
+        "0": {
+          "path": "model.layers.0.self_attn.rotary_emb",
+          "applied": true,
+          "boundary_unchanged": false,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        },
+        "1": {
+          "path": "model.layers.0.self_attn.rotary_emb",
+          "applied": false,
+          "boundary_unchanged": true,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        }
+      },
+      "token_changed": false,
+      "rank_request_alignment": true
+    }
+  ],
+  "scope_count": 2,
+  "request_count": 8,
+  "rank_request_observations": 16,
+  "collective_boundary_observed": false,
+  "limitation": "Guard rank hidden/logits propagation observed; unique all-reduce attribution not established. Only Ascend use_all_gather=True path validated.",
+  "qualification_granted": false,
+  "recovery_protocol": [
+    {
+      "explicit_recover_after_fault": true,
+      "off_health_requests_after_recover": 2,
+      "all_rank_terminal_phase": "complete"
+    },
+    {
+      "explicit_recover_after_fault": true,
+      "off_health_requests_after_recover": 2,
+      "all_rank_terminal_phase": "complete"
+    }
+  ],
+  "recovery_test_scope": "Explicit recover after successful F; no real worker crash injected.",
+  "input_sha256": "c60a19ee43f020c7b08c34c15062a8e295797faf3240a5582cc9c5b773434697",
+  "host_sha256": [
+    "b5e7d2ff3ce95bc2e4afbd1bbf26ced0bb32af6b839f2ca62e1789522be8e7d1",
+    "ddfdeeae9753b937351f3ffefc3d493a1fe54d694ac41a9b1c8b0d9df0f30d2f"
+  ],
+  "reader_sha256": "2f3964572792329767ace1d1c1858f3df3e47bae27ea925446bde3cc72b09efe"
+}
