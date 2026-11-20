@@ -1,0 +1,211 @@
+{
+  "schema": "demoncat.yellow_rc21.release.v1",
+  "release_id": "demoncatpfi-yellow-rc2.1-20261120",
+  "source_commit": "8c358961d9db16bd2bcbf6916bd8d9f5722d3a18",
+  "base_release_commit": "de17267bdb7a600b0c97166a009f4a319b65c4fb",
+  "runtime_changed_files": [
+    "src/demoncat/runtime/vllm_ascend/worker_extension/reviewed_deployments.py"
+  ],
+  "delivery_commit": "Immutable release tag target",
+  "source_files": 818,
+  "git_blob_source_match_count": 818,
+  "distributions": {
+    "demoncatpfi": "0.3.0",
+    "demoncat-worker-extension": "0.2.0",
+    "demoncat-fault39-core": "0.2.0"
+  },
+  "package_version_policy": "Registration-only source change: distribution versions retained; install this release into a NEW EMPTY target using exact SHA-verified wheels. Never select by version alone.",
+  "yellow_records": [
+    {
+      "source": "YELLOW_TEST_DEPLOYMENT",
+      "mechanism": "18.api_half",
+      "expected": {
+        "cann": [
+          "8.5.1"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A3",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+        "model_config_sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+        "pp": 1,
+        "torch": "2.9.0+cpu",
+        "torch_npu": "2.9.0.post1+gitee7ba04",
+        "tp": 1,
+        "vllm": "0.18.0",
+        "vllm_ascend": "0.18.0"
+      },
+      "review_reference": "RC2.1-TEXT-REVIEW-20261120",
+      "evidence_level": "YELLOW_TEXT_ATTESTED",
+      "originals_retained_in": "YELLOW",
+      "summary_raw_bytes_preserved_outside_git": true,
+      "summary_text_sha256": "d32ece7ae09264cf948612e49be43d8dc85efa3574cd1388a1bf143fac5d84e8",
+      "summary_text_bytes": 7116,
+      "source_receipt_canonical_sha256": [
+        "f471738600e26872d3ecad78181f6859796d94604caec9d352c6a8e49f6069d3",
+        "260d212a0ca9c96fe77ea69124acdc166f7db9a33326a714dd7d526c01448813"
+      ],
+      "receipt_hash_semantics": "Frozen RC2 canonical JSON SHA256; raw receipt byte hashes not independently recomputed",
+      "scope_count": 2,
+      "same_worker_across_scopes": false,
+      "scope_limitation": "18 scopes use different Worker process/model identities; no same-Worker claim.",
+      "chip_name_attested": "Ascend910_9382",
+      "runtime_cann_observed": [
+        "8.5.1"
+      ],
+      "toolkit_version_cfg_attested": "8.5.0",
+      "cann_reader": "fault_injection.environment._toolkit().installations[].fields.version",
+      "rpc_wrapper_review": "ACCEPTED_TRUSTED_DEPLOYMENT_PUBLIC_BINDINGS_AND_PERMITS_NO_ADMISSION_CHANGE",
+      "install_check_evidence": "TEXT_EXCERPT_ONLY; full 148719-byte original retained in yellow",
+      "effect_evidence_note": "Text summary effects and recovery reviewed; raw receipts remain in yellow.",
+      "product_closed": false
+    },
+    {
+      "source": "YELLOW_TEST_DEPLOYMENT",
+      "mechanism": "39.output_proxy",
+      "expected": {
+        "cann": [
+          "8.5.1"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A3",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+        "model_config_sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+        "pp": 1,
+        "torch": "2.9.0+cpu",
+        "torch_npu": "2.9.0.post1+gitee7ba04",
+        "tp": 1,
+        "vllm": "0.18.0",
+        "vllm_ascend": "0.18.0"
+      },
+      "review_reference": "RC2.1-TEXT-REVIEW-20261120",
+      "evidence_level": "YELLOW_TEXT_ATTESTED",
+      "originals_retained_in": "YELLOW",
+      "summary_raw_bytes_preserved_outside_git": true,
+      "summary_text_sha256": "bffcf61bc5ca0923de8b25a87b7b6148cbf43e50d2f00c5e75304c3531d31674",
+      "summary_text_bytes": 7462,
+      "source_receipt_canonical_sha256": [
+        "39dfe73416919fdd97d2804df2f40eca038401aad2e124e6129de1e2d8f33582",
+        "7df9ef2a0c23997f6d0fcb1dbc00ee13bd1af77b730a9be85ae237c4e8f0e638"
+      ],
+      "receipt_hash_semantics": "Frozen RC2 canonical JSON SHA256; raw receipt byte hashes not independently recomputed",
+      "scope_count": 2,
+      "same_worker_across_scopes": true,
+      "scope_limitation": "Two scopes on the same Worker per summary identity.",
+      "chip_name_attested": "Ascend910_9382",
+      "runtime_cann_observed": [
+        "8.5.1"
+      ],
+      "toolkit_version_cfg_attested": "8.5.0",
+      "cann_reader": "fault_injection.environment._toolkit().installations[].fields.version",
+      "rpc_wrapper_review": "ACCEPTED_TRUSTED_DEPLOYMENT_PUBLIC_BINDINGS_AND_PERMITS_NO_ADMISSION_CHANGE",
+      "install_check_evidence": "TEXT_EXCERPT_ONLY; full 148719-byte original retained in yellow",
+      "effect_evidence_note": "Text summary effects and recovery reviewed; raw receipts remain in yellow.",
+      "product_closed": false
+    },
+    {
+      "source": "YELLOW_TEST_DEPLOYMENT",
+      "mechanism": "22.wrong_row",
+      "expected": {
+        "cann": [
+          "8.5.1"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A3",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3.Qwen3ForCausalLM",
+        "model_config_sha256": "660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd",
+        "pp": 1,
+        "torch": "2.9.0+cpu",
+        "torch_npu": "2.9.0.post1+gitee7ba04",
+        "tp": 1,
+        "vllm": "0.18.0",
+        "vllm_ascend": "0.18.0"
+      },
+      "review_reference": "RC2.1-TEXT-REVIEW-20261120",
+      "evidence_level": "YELLOW_TEXT_ATTESTED",
+      "originals_retained_in": "YELLOW",
+      "summary_raw_bytes_preserved_outside_git": true,
+      "summary_text_sha256": "6b615b0d5e6e3cb272b868416b47b6a4d596bf090db235f8377f9c9a7bd0c177",
+      "summary_text_bytes": 7076,
+      "source_receipt_canonical_sha256": [
+        "d5ebffbf244da54ed9f665cc484d29277118e5f775eea4315c116a877d92a8c1",
+        "aae4b44647930989ebe0ac4d6affe6b46ebe31f6349e974cdb81b89c6fb90124"
+      ],
+      "receipt_hash_semantics": "Frozen RC2 canonical JSON SHA256; raw receipt byte hashes not independently recomputed",
+      "scope_count": 2,
+      "same_worker_across_scopes": true,
+      "scope_limitation": "Two scopes on the same Worker per summary identity.",
+      "chip_name_attested": "Ascend910_9382",
+      "runtime_cann_observed": [
+        "8.5.1"
+      ],
+      "toolkit_version_cfg_attested": "8.5.0",
+      "cann_reader": "fault_injection.environment._toolkit().installations[].fields.version",
+      "rpc_wrapper_review": "ACCEPTED_TRUSTED_DEPLOYMENT_PUBLIC_BINDINGS_AND_PERMITS_NO_ADMISSION_CHANGE",
+      "install_check_evidence": "TEXT_EXCERPT_ONLY; full 148719-byte original retained in yellow",
+      "effect_evidence_note": "行级效果未进入 summary（工具缺口），以 hidden/logits 变化和 OFF/health 精确恢复为证；RC2.2 起 summary 工具输出 22 的 Q/K 或 rotary 行变化。",
+      "product_closed": false
+    }
+  ],
+  "evidence_level": "YELLOW_TEXT_ATTESTED",
+  "originals_retained_in": "YELLOW",
+  "full_install_check_received": false,
+  "install_evidence": "User text excerpt, full original retained in yellow",
+  "acceptance_scope": "A3 Ascend910_9382 / CANN runtime 8.5.1 / vLLM-Ascend 0.18 / Qwen3-0.6B BF16 / TP1 serial eager",
+  "product_closed": false,
+  "no_new_npu_validation": true,
+  "no_multirank_code": true,
+  "no_mechanism_changes": true,
+  "source_archive_sha256": "782dcfe2f5fe4be41e65eeb1de595107aa5ceaeb39b5ec4e075f0f5aac962249",
+  "source_review_sha256": "0127383a2cad8c099b0101ab666cb8e404054eb4f9c373da6ac63aba63416d49",
+  "files": [
+    {
+      "path": "demoncatpfi-yellow-rc2.1-20261120.tar.gz",
+      "bytes": 2647872,
+      "sha256": "782dcfe2f5fe4be41e65eeb1de595107aa5ceaeb39b5ec4e075f0f5aac962249"
+    },
+    {
+      "path": "install-summary.json",
+      "bytes": 49616,
+      "sha256": "423bc6c310207dcf5ffea813cc51e95fc501519cb9b2f5e312769ed00b8d4fb7"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2526,
+      "sha256": "f2b1fc7b8f9c24c25b8ac74455b3ba2a1b2ec4793d21f7dd410e19c193a106c4"
+    },
+    {
+      "path": "source-review.json",
+      "bytes": 162029,
+      "sha256": "0127383a2cad8c099b0101ab666cb8e404054eb4f9c373da6ac63aba63416d49"
+    },
+    {
+      "path": "UPGRADE.md",
+      "bytes": 2153,
+      "sha256": "be03a341717d8873fcfc25bef88096e4dfc5e564cef007a35e41501e07673654"
+    },
+    {
+      "path": "wheels/demoncat_fault39_core-0.2.0-py3-none-any.whl",
+      "bytes": 49094,
+      "sha256": "525b8640b7642290b0b564529e7c6cbf8225ac2942692bfd2716cc3b307a6a27"
+    },
+    {
+      "path": "wheels/demoncat_worker_extension-0.2.0-py3-none-any.whl",
+      "bytes": 500038,
+      "sha256": "3056d855d639bb738474050fc62cb3a47cf9f1984b465b1eecbe7dcd1f3d36f9"
+    },
+    {
+      "path": "wheels/demoncatpfi-0.3.0-py3-none-any.whl",
+      "bytes": 824359,
+      "sha256": "d75a3c7a5685eb1adb383041d35500eada839feb4eef94b7042f6555c542b007"
+    }
+  ]
+}
