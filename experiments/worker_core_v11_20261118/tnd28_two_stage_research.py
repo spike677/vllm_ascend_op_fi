@@ -199,3 +199,26 @@ class TwoStageResearchProvider(FiaDenominatorReplayServingProvider):
                 require(type(self.session) is HealthOnlyAdapter and not self.session.patches
                     and len(self.session.handles)==3 and all(not f['calls'] for f in row['forwards']),
                     'RESEARCH_HEALTH_FAULT_INTERCEPTION_REMAINED')
+
+
+def install_research_binding(worker, *, prompt_token_ids, provenance, native):
+    """Private experiment binding; leave public Native allowlist unchanged.
+
+    All ordinary Worker/prompt/deployment checks run with the inert discovery
+    binding first. Only this direct research function can substitute this exact
+    reviewed driver, after proving it has no live ownership.
+    """
+    from dataclasses import replace
+    from demoncat.runtime.vllm_ascend.worker_extension import serving_attention as S
+    require(type(native) is TwoStageNativeResearch and native.worker is worker,
+            'RESEARCH_EXACT_WORKER_NATIVE_REQUIRED')
+    state=native.state()
+    require(state['native_loaded'] is True and not state['scope_active'] and not state['scope_owned']
+        and state['environment_owned']==0 and not state.get('pending_drains')
+        and not state.get('pending_references') and not state.get('retained_input_objects'),
+        'RESEARCH_NATIVE_NOT_INERT')
+    binding=S.install_attention_serving_binding(worker,native.mechanism,
+        prompt_token_ids=prompt_token_ids,provenance=provenance)
+    research=replace(binding,native=native)
+    getattr(worker,S.ATTRIBUTE)[native.mechanism]=research
+    return research

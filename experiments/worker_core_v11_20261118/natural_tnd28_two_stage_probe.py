@@ -24,12 +24,11 @@ def need(ok,reason):
 
 
 def setup(worker,expected,tokens,provenance,settings):
-    from experiments.worker_core_v11_20261118.tnd28_two_stage_research import TwoStageNativeResearch
-    from demoncat.runtime.vllm_ascend.worker_extension.serving_attention import install_attention_serving_binding
+    from experiments.worker_core_v11_20261118.tnd28_two_stage_research import TwoStageNativeResearch,install_research_binding
     worker=common.actual(worker);need(worker.demoncat_worker_identity()['worker']==expected,'ACTUAL_WORKER_CHANGED')
     native=TwoStageNativeResearch(worker,settings,mechanism=MECHANISM,observer_receipt=settings['observer'],
         observer_receipt_sha256=settings['observer_sha256'],evidence_dir=settings['calls'])
-    install_attention_serving_binding(worker,MECHANISM,prompt_token_ids=tokens,provenance=provenance,native=native)
+    install_research_binding(worker,prompt_token_ids=tokens,provenance=provenance,native=native)
     return dict(worker=expected,pid=os.getpid(),model_object_id=id(worker.model_runner.model),public_entry=False)
 
 

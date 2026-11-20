@@ -33,6 +33,7 @@ def prepare(args):
         worker='same standard Qwen3 TP1 eager Worker; two distinct owners; actual phase mapping',
         expected_hits='Exactly one selected FIA replay in each fault request; two independent scopes; all other calls original',
         research_requested_fault=True,public_fault_authorized=False,
+        execute_borrow_guard_requested=True,current_values_requested=True,current_copy_launch_requested=True,
         fault_authorized=False,independent_review_required=True,
         recovery_plan='Actual OFF complete hidden/logits must equal baseline; remove Attention/API interception before '
           'health using three read-only root/logits observers; finish/unregister/detach; preserve owner on uncertainty.')

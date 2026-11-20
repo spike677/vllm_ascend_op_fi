@@ -10,6 +10,26 @@ from demoncat.runtime.vllm_ascend.worker_extension.attention28_typed_plan import
 from demoncat.runtime.vllm_ascend.worker_extension.providers.attention_serving import FiaDenominatorReplayServingProvider
 
 class ResearchContracts(unittest.TestCase):
+    def test_research_binding_reuses_worker_checks_without_public_allowlist_extension(self):
+        from demoncat.runtime.vllm_ascend.worker_extension import serving_attention as S
+        import os,threading
+        worker=NS(model_runner=NS(model=NS(training=False)))
+        native=R.TwoStageNativeResearch.__new__(R.TwoStageNativeResearch)
+        native.worker=worker;native.mechanism='28.fia.denominator_replay'
+        state=dict(native_loaded=True,scope_active=False,scope_owned=False,environment_owned=0)
+        with patch.object(R.TwoStageNativeResearch,'state',return_value=state),patch.object(S,'require_serial_eager'):
+            with self.assertRaisesRegex(RuntimeError,'ATTENTION_REVIEWED_NATIVE_ADAPTER_REQUIRED'):
+                S.install_attention_serving_binding(worker,native.mechanism,prompt_token_ids=[1],provenance={},native=native)
+            self.assertFalse(hasattr(worker,S.ATTRIBUTE))
+            bound=R.install_research_binding(worker,prompt_token_ids=[1],provenance={},native=native)
+            self.assertIs(bound.native,native);self.assertFalse(bound.simulation)
+            self.assertEqual(bound.pid,os.getpid());self.assertEqual(bound.thread,threading.get_ident())
+            S.remove_attention_serving_binding(worker,native.mechanism)
+            state['scope_owned']=True
+            with self.assertRaisesRegex(RuntimeError,'RESEARCH_NATIVE_NOT_INERT'):
+                R.install_research_binding(worker,prompt_token_ids=[1],provenance={},native=native)
+            self.assertFalse(getattr(worker,S.ATTRIBUTE))
+
     def native_state(self,value):
         p=R.ResearchTypedPlan.__new__(R.ResearchTypedPlan);p.binding=NS(_owner=lambda:None);p.token='a'*32
         def query(token,out,capacity):
