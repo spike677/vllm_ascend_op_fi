@@ -1,0 +1,174 @@
+{
+  "schema": "demoncat.m2.installed_identity_and_acl.v1",
+  "image_id": "sha256:85a2bc5e4d0bf77e04f30c63aeab136b63a389b0ccb7be9c90b12e1a116d907a",
+  "installed": {
+    "python": "3.12.13",
+    "packages": {
+      "vllm": "0.23.0+empty",
+      "vllm-ascend": "0.1.dev4229+g7495e9d69",
+      "torch": "2.10.0+cpu",
+      "torch-npu": "2.10.0.post4",
+      "transformers": "5.5.4",
+      "triton-ascend": "3.2.2"
+    },
+    "cann_identity_files": [
+      {
+        "path": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/ascend_toolkit_install.info",
+        "resolved": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/ascend_toolkit_install.info",
+        "sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848",
+        "text": "package_name=Ascend-cann-toolkit\nversion=9.1.0\ninnerversion=V100R001C11SPC001B243\ncompatible_version=[V100R001C15],[V100R001C21],[V100R001C23],[V100R001C10]\narch=aarch64\nos=linux\npath=/usr/local/Ascend/cann-9.1.0\n"
+      },
+      {
+        "path": "/usr/local/Ascend/cann-9.1.0/arm64-linux/ascend_toolkit_install.info",
+        "resolved": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/ascend_toolkit_install.info",
+        "sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848",
+        "text": "package_name=Ascend-cann-toolkit\nversion=9.1.0\ninnerversion=V100R001C11SPC001B243\ncompatible_version=[V100R001C15],[V100R001C21],[V100R001C23],[V100R001C10]\narch=aarch64\nos=linux\npath=/usr/local/Ascend/cann-9.1.0\n"
+      },
+      {
+        "path": "/usr/local/Ascend/cann/aarch64-linux/ascend_toolkit_install.info",
+        "resolved": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/ascend_toolkit_install.info",
+        "sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848",
+        "text": "package_name=Ascend-cann-toolkit\nversion=9.1.0\ninnerversion=V100R001C11SPC001B243\ncompatible_version=[V100R001C15],[V100R001C21],[V100R001C23],[V100R001C10]\narch=aarch64\nos=linux\npath=/usr/local/Ascend/cann-9.1.0\n"
+      },
+      {
+        "path": "/usr/local/Ascend/cann/arm64-linux/ascend_toolkit_install.info",
+        "resolved": "/usr/local/Ascend/cann-9.1.0/aarch64-linux/ascend_toolkit_install.info",
+        "sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848",
+        "text": "package_name=Ascend-cann-toolkit\nversion=9.1.0\ninnerversion=V100R001C11SPC001B243\ncompatible_version=[V100R001C15],[V100R001C21],[V100R001C23],[V100R001C10]\narch=aarch64\nos=linux\npath=/usr/local/Ascend/cann-9.1.0\n"
+      }
+    ],
+    "npu_calls": 0
+  },
+  "comparison": {
+    "vllm": {
+      "expected": "0.26.0",
+      "actual": "0.23.0+empty",
+      "equal": false
+    },
+    "vllm-ascend": {
+      "expected": "0.26.0rc1",
+      "actual": "0.1.dev4229+g7495e9d69",
+      "equal": false
+    },
+    "torch": {
+      "expected": "2.10.0+cpu",
+      "actual": "2.10.0+cpu",
+      "equal": true
+    },
+    "torch-npu": {
+      "expected": "2.10.0.post4",
+      "actual": "2.10.0.post4",
+      "equal": true
+    },
+    "transformers": {
+      "expected": "5.14.1",
+      "actual": "5.5.4",
+      "equal": false
+    }
+  },
+  "version_audit_sha256": "f626a3d89ecd74d2ad38b5d632e107eae0c2deb392bf71615d5a88eb7e7f9eb4",
+  "runtime_test": {
+    "status": "ACL_INITIALIZATION_AND_CLEANUP_PASSED",
+    "started": "2026-11-20T13:40:25.949400+00:00",
+    "pid": 1,
+    "calls": [
+      {
+        "api": "aclInit",
+        "status": 0
+      },
+      {
+        "api": "aclrtGetDeviceCount",
+        "status": 0
+      },
+      {
+        "api": "aclrtSetDevice",
+        "status": 0
+      },
+      {
+        "api": "aclrtCreateContext",
+        "status": 0
+      },
+      {
+        "api": "aclrtDestroyContext",
+        "status": 0
+      },
+      {
+        "api": "aclrtResetDevice",
+        "status": 0
+      },
+      {
+        "api": "aclFinalize",
+        "status": 0
+      }
+    ],
+    "model_loaded": false,
+    "operator_calls": 0,
+    "device_memory_allocations": 0,
+    "visible_device_count": 1,
+    "cleanup_complete": true,
+    "ended": "2026-11-20T13:40:28.512530+00:00",
+    "npu_smi_exit_code": 0
+  },
+  "runtime_receipt_sha256": "d450100ab7942c30eaf3a8c91c5461cec3d8c31d03339bd76b82b0f1bc8010fb",
+  "controller_sha256": "a19ea9cb16fba8607f708e0d0f71cafa237dfbd51a2deea223386574b7287d48",
+  "window_seconds": 18.089577492908575,
+  "isolation": [
+    {
+      "time": "2026-11-20T13:40:13.042125+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "maximum_seconds": 300,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-20T13:40:13.209435+00:00",
+      "event": "STOP_BEGIN",
+      "container": "/aq2-npu5-9.1.0-dev5",
+      "id": "9b681542216061c6f3174357cb7f023039ec78d5185edad41d896f1e7e53c0f4",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "cards": [
+        5
+      ]
+    },
+    {
+      "time": "2026-11-20T13:40:16.953611+00:00",
+      "event": "STOP_END",
+      "container": "/aq2-npu5-9.1.0-dev5",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "returncode": 0,
+      "stdout": "9b681542216061c6f3174357cb7f023039ec78d5185edad41d896f1e7e53c0f4",
+      "stderr": ""
+    },
+    {
+      "time": "2026-11-20T13:40:17.008217+00:00",
+      "event": "STOP_BEGIN",
+      "container": "/aq2-npu5-9.1.0-dev2",
+      "id": "5bde1c7216207af7053010ed84b58635122e2b2bcd317a9396b906fecd5b34a8",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "cards": [
+        2
+      ]
+    },
+    {
+      "time": "2026-11-20T13:40:20.776773+00:00",
+      "event": "STOP_END",
+      "container": "/aq2-npu5-9.1.0-dev2",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "returncode": 0,
+      "stdout": "5bde1c7216207af7053010ed84b58635122e2b2bcd317a9396b906fecd5b34a8",
+      "stderr": ""
+    },
+    {
+      "time": "2026-11-20T13:40:31.131646+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ],
+  "qualification_granted": false
+}
