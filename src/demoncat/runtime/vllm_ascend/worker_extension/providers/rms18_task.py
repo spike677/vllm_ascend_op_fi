@@ -197,6 +197,7 @@ class Rms18TaskProvider(TensorServingProvider):
             generation=generation, native_loaded=False, native_registered=False,
             registered=self._registered, enabled=self.session is not None and self.session.window is not None,
             inflight=state['inflight'], leases=state['leases'], owned_hooks=state['owned_hooks'],
+            owned_wrappers=state.get('owned_wrappers',0),
             replay_pending=self.attempted and not self.stopped, replay_failed=bool(self.error and not self.stopped),
             recovery_validation_pending=self.fault_started and not self.recovered,
             current_request_phase=self.phase if state['pending'] else current['phase'] if current else None,

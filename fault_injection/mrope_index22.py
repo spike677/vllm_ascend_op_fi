@@ -16,11 +16,12 @@ def call_mrope_index22(original, cache, positions, *, request_positions,
          'MROPE22_EXPLICIT_ARM_REQUIRED')
     need(callable(original) and callable(admit),'MROPE22_CURRENT_CALL_BOUNDARY_REQUIRED')
     need(positions is request_positions and positions.ndim==2 and positions.shape[0]==3
-         and positions.shape[1]>=2 and positions.is_contiguous()
+         and positions.shape[1]>=2 and positions.stride(1)==1
+         and positions.stride(0)>=positions.shape[1]
          and positions.dtype in (torch.int32,torch.int64),
          'MROPE22_ACTUAL_THREE_AXIS_REQUEST_POSITIONS_REQUIRED')
     need(cache.ndim==2 and cache.shape[1]>0 and cache.shape[1]%2==0 and cache.is_contiguous()
-         and cache.dtype in (torch.float16,torch.bfloat16) and cache.device==positions.device
+         and cache.dtype in (torch.float16,torch.bfloat16,torch.float32) and cache.device==positions.device
          and (simulation or cache.device.type=='npu'),'MROPE22_ACTUAL_CACHE_GEOMETRY_REQUIRED')
     p=positions.detach().cpu().clone();before=cache.detach().cpu().clone()
     need(p.tolist()==expected_positions and int(p.min())>=0 and int(p.max())<cache.shape[0],

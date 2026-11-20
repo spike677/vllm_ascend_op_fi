@@ -13,8 +13,9 @@ from .new_stack_request import NewStackTaskRequest
 
 PROFILE='v026_installed_c9c9432b'
 
-def install_rms18_newstack_binding(worker,*,prompt_token_ids,weight_manifest,
+def _install_newstack_tensor_binding(worker,mechanism,*,prompt_token_ids,weight_manifest,
         workload_sha256,environment_sha256,group_contract=None):
+    require(mechanism in ('18.api_half','22.wrong_row'),'NEWSTACK_MECHANISM_UNREVIEWED')
     require(isinstance(prompt_token_ids,(list,tuple)) and 2<=len(prompt_token_ids)<=4096
         and all(type(t) is int and t>=0 for t in prompt_token_ids),'BOUNDED_FRESH_PREFILL_PROMPT_REQUIRED')
     require(isinstance(weight_manifest,dict) and bool(weight_manifest),'WEIGHT_MANIFEST_REQUIRED')
@@ -31,7 +32,7 @@ def install_rms18_newstack_binding(worker,*,prompt_token_ids,weight_manifest,
     if tp==2:
         identified=worker.demoncat_worker_identity();require(identified['status']=='WORKER_IDENTIFIED','TP2_CURRENT_WORKER_REQUIRED')
         identity=identified['worker'];rank=identity['rank'];c=deepcopy(group_contract)
-        require(isinstance(c,dict) and c.get('mechanism')=='18.api_half' and c.get('tp')==2
+        require(isinstance(c,dict) and c.get('mechanism')==mechanism and c.get('tp')==2
             and c.get('injection_policy')=='ONE_AUTOMATIC_RANK' and c.get('group_generation')==1
             and isinstance(c.get('owner'),str) and c['owner'].startswith('worker-group-')
             and isinstance(c.get('members'),list) and [m['rank'] for m in c['members']]==[0,1]
@@ -40,13 +41,19 @@ def install_rms18_newstack_binding(worker,*,prompt_token_ids,weight_manifest,
         context=TP2GroupContext(c,identity,group)
     else:require(group_contract is None,'TP1_NO_GROUP_CONTRACT')
     bindings=getattr(worker,_ATTRIBUTE,{})
-    require(type(bindings) is dict and '18.api_half' not in bindings,'SERVING_DEPLOYMENT_ALREADY_BOUND')
-    binding=TensorServingBinding('18.api_half',worker,runner,model,tuple(prompt_token_ids),
+    require(type(bindings) is dict and mechanism not in bindings,'SERVING_DEPLOYMENT_ALREADY_BOUND')
+    binding=TensorServingBinding(mechanism,worker,runner,model,tuple(prompt_token_ids),
         json.dumps(weight_manifest,sort_keys=True,allow_nan=False),workload_sha256,environment_sha256,
         os.getpid(),threading.get_ident(),runtime_only=True,group_context=context,execution_profile=PROFILE)
-    bindings['18.api_half']=binding;setattr(worker,_ATTRIBUTE,bindings)
-    return dict(status='NEWSTACK_RMS18_BOUND_NOT_QUALIFIED',hooks_installed=0,qualification_granted=False,
+    bindings[mechanism]=binding;setattr(worker,_ATTRIBUTE,bindings)
+    return dict(status='NEWSTACK_TENSOR_BOUND_NOT_QUALIFIED',mechanism=mechanism,hooks_installed=0,qualification_granted=False,
         execution_profile=PROFILE,tp=tp,source_readback=validation.snapshot(),request_plan='EXISTING_FOUR_PHASE_PLAN')
+
+def install_rms18_newstack_binding(worker,**kwargs):
+    return _install_newstack_tensor_binding(worker,'18.api_half',**kwargs)
+
+def install_rope22_newstack_binding(worker,**kwargs):
+    return _install_newstack_tensor_binding(worker,'22.wrong_row',**kwargs)
 
 class NewStackRms18Provider(Rms18TaskProvider):
     def make_request(self):

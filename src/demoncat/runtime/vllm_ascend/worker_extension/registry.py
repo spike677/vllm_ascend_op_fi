@@ -190,10 +190,13 @@ def create_worker_provider(mechanism, version, worker, model, identity):
         raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')
     admission=require_ordinary_route(mechanism,worker,model)
     tensor_binding=getattr(worker,'_demoncat_natural_tensor_serving_bindings',{}).get(mechanism)
-    if mechanism=='18.api_half' and getattr(tensor_binding,'execution_profile',None) is not None:
+    if mechanism in ('18.api_half','22.wrong_row') and getattr(tensor_binding,'execution_profile',None) is not None:
         from .new_stack_rms18 import PROFILE,NewStackRms18Provider,NewStackTP2Rms18Provider
         if tensor_binding.execution_profile!=PROFILE:raise RuntimeError('UNREVIEWED_NEWSTACK_EXECUTION_PROFILE')
-        cls=NewStackTP2Rms18Provider if tensor_binding.group_context is not None else NewStackRms18Provider
+        if mechanism=='18.api_half':cls=NewStackTP2Rms18Provider if tensor_binding.group_context is not None else NewStackRms18Provider
+        else:
+            from .new_stack_rope22 import NewStackRope22Provider,NewStackTP2Rope22Provider
+            cls=NewStackTP2Rope22Provider if tensor_binding.group_context is not None else NewStackRope22Provider
         provider=cls(worker,model,identity)
     elif mechanism=='41.tail_column':
         from .providers.kv41_task import KV41TaskProvider

@@ -22,7 +22,7 @@ def digest(value):return hashlib.sha256(json.dumps(value,sort_keys=True,separato
 
 def setup(wrapper,identity,contract,prompt,weights,manifest,native):
     from demoncat.runtime.vllm_ascend.worker_extension.new_stack_rms18 import install_rms18_newstack_binding as install_rms18_tp2_binding
-    from demoncat.runtime.vllm_ascend.worker_extension.rope22_tp2 import install_rope22_tp2_binding
+    from demoncat.runtime.vllm_ascend.worker_extension.new_stack_rms18 import install_rope22_newstack_binding as install_rope22_tp2_binding
     from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import install_blue_acceptance_permit
     worker=actual_worker(wrapper)
     if worker.demoncat_worker_identity().get('worker')!=identity:return dict(status='NOT_TARGETED')
@@ -40,7 +40,7 @@ def setup(wrapper,identity,contract,prompt,weights,manifest,native):
 
 def commit(wrapper,decision):
     from demoncat.runtime.vllm_ascend.worker_extension.new_stack_rms18 import commit_newstack_rms18_role as commit_rms18_tp2_role
-    from demoncat.runtime.vllm_ascend.worker_extension.rope22_tp2 import commit_rope22_tp2_role
+    from demoncat.runtime.vllm_ascend.worker_extension.new_stack_rope22 import commit_newstack_rope22_role as commit_rope22_tp2_role
     from demoncat.runtime.vllm_ascend.worker_extension.output39_tp2 import commit_output39_tp2_role
     fn={'39.output_proxy':commit_output39_tp2_role,'18.api_half':commit_rms18_tp2_role,'22.wrong_row':commit_rope22_tp2_role}[decision['group']['mechanism']]
     return fn(actual_worker(wrapper),decision)
@@ -93,7 +93,7 @@ def verify(states):
 def main():
     from vllm import LLM,SamplingParams
     import argparse
-    parser=argparse.ArgumentParser();parser.add_argument('--mechanism',choices=['18.api_half'],default='18.api_half');parser.add_argument('--recover-after-fault',action='store_true');parser.add_argument('--native-library');parser.add_argument('--native-sha256');options=parser.parse_args();mechanism=options.mechanism
+    parser=argparse.ArgumentParser();parser.add_argument('--mechanism',choices=['18.api_half','22.wrong_row'],default='18.api_half');parser.add_argument('--recover-after-fault',action='store_true');parser.add_argument('--native-library');parser.add_argument('--native-sha256');options=parser.parse_args();mechanism=options.mechanism
     native=dict(path=options.native_library,sha256=options.native_sha256)
     if mechanism=='39.output_proxy':require(all(native.values()),'EXPLICIT_NATIVE_BUILD_REQUIRED')
     fault_id,variant=mechanism.split('.',1);status='TP2_'+{'18':'RMS18','22':'ROPE22','39':'OUTPUT39'}[fault_id]+'_TWO_SCOPES_READY_FOR_INDEPENDENT_REVIEW'

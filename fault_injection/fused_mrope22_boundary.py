@@ -63,6 +63,8 @@ class FusedMrope22Boundary:
                  'FUSED22_GATE_CHANGED')
         self.outputs=outputs;self.stage='fused'
         self.record.update(fused_original_calls=1,fused_q_sha256=tensor_sha(q),fused_k_sha256=tensor_sha(k),
+            fused_q_non_target_sha256=tensor_sha(q[:-1]),fused_k_non_target_sha256=tensor_sha(k[:-1]),
+            fused_q_last_sha256=tensor_sha(q[-1:]),fused_k_last_sha256=tensor_sha(k[-1:]),
             qkv_sha256=before,index_result_consumed=True,qkv_unchanged=True,value_and_gate_preserved=True,
             fused_qk_effect_verified=False,qualification_granted=False)
         return outputs

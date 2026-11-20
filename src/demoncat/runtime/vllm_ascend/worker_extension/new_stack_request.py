@@ -37,7 +37,7 @@ class NewStackTaskRequest:
         self.prompt=tuple(provider.binding.prompt);self.window_factory=window_factory
         self.expected=self.current=self.window=self.observer=None
         self.installed=False;self.root_running=self.logits_running=False
-        self.request_error=None;self.output=None;self.last_trace=None
+        self.request_error=None;self.output=None;self.last_trace=None;self.root_arguments=None
     def _same_worker(self):
         self.provider._context()
         require(self.provider.worker.model_runner is self.runner and self.runner.model is self.model,
@@ -73,6 +73,7 @@ class NewStackTaskRequest:
             input_sha256=hashlib.sha256(json.dumps([token_hash,position_hash]).encode()).hexdigest(),
             snapshot=self.observer.trace.snapshot(),device_input_bytes_equality='COMPLETE_DEVICE_READBACK_VERIFIED',
             root_returned=False)
+        self.root_arguments=kwargs
         self.provider.begin_actual(self.current)
         self.root_running=True
         if self.provider.phase in ('normal','fault'):
@@ -90,7 +91,7 @@ class NewStackTaskRequest:
             _,full,finite=complete_tensor(output);_,last,_=complete_tensor(output[-1:].contiguous())
         require(finite,'NEWSTACK_HIDDEN_NOT_FINITE')
         self.output=output;self.current.update(hidden_sha256=full,last_hidden_sha256=last,root_returned=True)
-        self.root_running=False;self.logits_running=True
+        self.root_running=False;self.logits_running=True;self.root_arguments=None
     def state_return(self,state):
         require(self.current is not None and self.current['root_returned'] and state.hidden_states is self.output,
                 'NEWSTACK_STATE_NOT_MODEL_OUTPUT')
@@ -127,7 +128,7 @@ class NewStackTaskRequest:
             self.request_error=row['first_error'];self.provider.fail(RuntimeError(self.request_error))
         state=self.window.runtime_state() if self.window else dict(ownership_verified=True,leases=0)
         require(state['ownership_verified'],'NEWSTACK_OWNED_DISPATCH_CHANGED')
-        return dict(installed=self.installed,owned_hooks=row.get('owned_hooks',0)+(len(self.window.hooks) if self.window else 0),
+        return dict(installed=self.installed,owned_hooks=row.get('owned_hooks',0)+(getattr(self.window,'owned_hook_count',len(self.window.hooks)) if self.window else 0),
             owned_wrappers=row.get('owned_wrappers',0),inflight=row.get('inflight',0),
             leases=state['leases'],pending=self.expected is not None or self.current is not None,
             request_trace=row or self.last_trace,qualification_granted=False)

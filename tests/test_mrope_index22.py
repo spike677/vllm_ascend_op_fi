@@ -25,6 +25,17 @@ class MropeIndexBoundary(unittest.TestCase):
         self.assertTrue(torch.equal(self.positions,p));self.assertTrue(torch.equal(self.cache,c))
         self.assertGreater(fr['changed_cache_elements'],0);self.assertEqual(br['changed_cache_elements'],0)
         self.assertFalse(fr['fused_qk_effect_verified']);self.assertFalse(fr['output_rewritten'])
+    def test_nonoverlapping_three_axis_runner_prefix_and_float_cache(self):
+        storage=torch.zeros((3,32),dtype=torch.int64);storage[:,:4].copy_(self.positions)
+        self.positions=storage[:,:4];self.cache=self.cache.float()
+        self.assertFalse(self.positions.is_contiguous())
+        before=storage.clone();b,_=self.call('baseline');f,report=self.call()
+        self.assertTrue(torch.equal(before,storage));self.assertTrue(torch.equal(f[:,:-1],b[:,:-1]))
+        self.assertTrue(torch.equal(f[:,-1],b[:,0]));self.assertGreater(report['changed_cache_elements'],0)
+    def test_overlapping_axis_view_refused(self):
+        self.positions=torch.tensor([0,1,2,3]).expand(3,4)
+        with self.assertRaisesRegex(UnsupportedCall,'THREE_AXIS'):self.call()
+        self.assertEqual(self.calls,0)
     def test_wrong_request_object_refused(self):
         with self.assertRaises(UnsupportedCall):self.call(request_positions=self.positions.clone())
         self.assertEqual(self.calls,0)
