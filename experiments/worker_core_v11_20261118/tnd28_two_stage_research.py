@@ -124,7 +124,7 @@ class TwoStageNativeResearch(StockTndPrefillCensus):
                 output=once();record['original_calls']=1;self.refs=(actual,output);capture.returned(output)
                 self._synchronize();self.scope.observer.synchronize();self.pending_drain=False
             self.stop()
-            launch=observe_scope(self.run,token,self.identity)
+            launch=observe_research_scope(self.run,token,self.identity)
             keys=[str(item['tiling_key']) for item in launch['launches']]
             expected='119000000030400003' if phase=='fault' else '5000000000000200103'
             require(keys==['524000000',expected],'RESEARCH_ACTUAL_COPY_FIA_KEYS_DIFFER:'+repr(keys))
@@ -231,3 +231,22 @@ def install_research_binding(worker, *, prompt_token_ids, provenance, native):
     research=replace(binding,native=native)
     getattr(worker,S.ATTRIBUTE)[native.mechanism]=research
     return research
+
+
+def observe_research_scope(run,token,identity):
+    """Offline cached-bind resolution after drain; never an Execute permission."""
+    from experiments.c2c3_closure_20261117 import attention28_census_raw as raw
+    from demoncat.runtime.vllm_ascend.worker_extension.attention_stock_launch import read_runtime
+    rows,prefix=read_runtime(run)
+    result=raw.scope(run,rows,token,expected_pid=identity['pid'])
+    scoped=[r for r in rows if r.get('call_id')==token]
+    require(all((r['pid'],r['tid'])==(identity['pid'],identity['native_tid']) for r in scoped),
+            'RESEARCH_NATIVE_THREAD_CHANGED')
+    for launch in result['launches']:
+        binary=launch['registered_binary']
+        launch['registered_entry_symbols']=raw.entry_symbols(binary['path'],binary['sha256'],selected_keys=[launch['tiling_key']])
+    result.update(status='RESEARCH_OFFLINE_CURRENT_LAUNCH_AND_EFFECTIVE_BIND_RESOLVED',
+        runtime_prefix=prefix,runtime_file_can_append=True,native_fault_qualified=False,
+        fault_authorized=False,all_runtime_entrypoints_covered=False,selected_aclnn_owner_observed=False,
+        scope='ACTUAL_LAUNCH_WITH_FRESH_OR_PREVIOUS_COMPLETED_BIND_NOT_NATIVE_ADMISSION')
+    return result
