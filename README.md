@@ -1,6 +1,8 @@
-[2026-11-20实机进展](docs/worker_core_v1/npu_progress_20261120.md)：18/22/39的TP2同Worker双作用域及显式recover后的全rank OFF/health恢复已独立复核。18/39 TP1双作用域通过；Batch TP1同Worker双作用域已补齐完整hidden/logits健康恢复。28真实TND正常借用和stock/private数值桥接通过，但M128接线连续两次拒绝，按止损停止本轮重试，故障F/OFF未通过、公共入口保持关闭。冻结版本不变。
+[2026-11-20最新实机进展](docs/worker_core_v1/npu_progress_20261120.md)：A2/0.18/Qwen3-0.6B的18、22、39、Batch、41 TP2已完成限定的同Worker双作用域闭环。新栈A2/0.26/CANN9.1/社区Qwen3.8 W8A8 TP2的18，已通过预热后双作用域的实际命中、全rank OFF/health精确恢复与资源清零；冷启动首请求有无注入差异，仍不在验收范围。22融合路径正在实测，39的社区量化out_proj不等价于黄区BF16目标。详见[新栈适配](docs/worker_core_v1/v026_adaptation_20261120.md)。
 
-[RC2已冻结发行](releases/demoncatpfi-yellow-rc2-20261119/README.md)：六能力子集与独立部署登记见 [RC2交付接口](docs/worker_core_v1/yellow_rc2.md)。Batch第二NPU作用域已补齐；具体冻结状态以releases发行清单为准，黄区组合尚待RC2实测回传登记。现役摸底和W4A8优先路线见[迁移清单](docs/worker_core_v1/rc3_inspect_migration_resources_20261119.md)。
+28已完成[真实TND两阶段Native研究闭环](docs/worker_core_v1/tnd28_fresh_values_20261120.md)：两个research owner、FIA与hidden/logits变化、完整OFF/health恢复。它不是普通Runtime B5验收，公共入口继续关闭；M128止损与其他限制保留。
+
+[RC2.1](https://github.com/spike677/vllm_ascend_op_fi/tree/demoncatpfi-yellow-rc2.1-20261120)和[RC2.2](https://github.com/spike677/vllm_ascend_op_fi/tree/demoncatpfi-yellow-rc2.2-20261120)均已冻结发行，标签与包保持不变。RC2.1仅登记黄区测试部署的文本证明；RC2.2不包含多卡和新软件栈代码。A2结果不代表A3或黄区现役，尚未发行RC3。
 
 # vLLM Ascend Operator Fault Injection
 
@@ -31,7 +33,7 @@ Batch因缺少动态W8A8权重和bundle待配置。黄区现役多卡支持及pr
 [RMS及历史检查关闭记录](docs/worker_core_v1/merged_plan_baseline_20261119.md)与
 [openchamber模型准备](docs/worker_core_v1/openchamber_rc2_preparation.md)已补齐。
 RC2六项子集已冻结；后继开发线41普通单点已完成124两个作用域，见[41验收边界](docs/worker_core_v1/kv41_ordinary_task.md)。20/26两变体/33普通路线及28 TND仍待完成，不宣称17项全通过或黄区现役支持。
-黄区master保持RC1.1，通过独立RC2验收并审查登记后直接升级RC2.1，转交[RC2清单](releases/RC2-HANDOFF-20261119.md)。
+RC2.1黄区测试部署登记已经冻结；master实际升级由负责人转交步骤后执行，不由本分支推定已升级。RC2原[补充单](releases/RC2-HANDOFF-20261119.md)保留历史口径，当前发行状态以页首链接为准。
 
 ## 当前统一接入
 

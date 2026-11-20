@@ -132,3 +132,16 @@ RC2.1、RC2.2已冻结发布；41 TP2同Worker两作用域通过独立复核，B
 ### 抢占与隔离
 
 UTC 10:44:25.053016–10:55:47.915877（北京时间18:44:25–18:55:47），窗口682.862899秒，probe内616.434005秒；这是整个测试窗口/进程墙钟，不是 kernel profiler 时间。只对卡2/5启用有界 docker-stop 清理器，未改调度器配置、Docker入口、驱动或CANN。停止卡5容器 `ptq_dcde1a8de6b13b34_list61-index-s0-01_dev5_slot0_eb2cd437`，镜像 `cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8`，10:44:25.220761开始、10:44:26.832965返回0。未删除外部容器/镜像/数据。结束清理器已join；10:58:06观察到新的外部卡5实例，确认派发继续。完整操作记录保留在私有 isolation.jsonl。
+
+
+## 新栈M2：18预热后TP2双作用域（15:24 UTC）
+
+A2/910B4、vLLM0.26.0+empty、Ascend0.26.0rc1、CANN9.1.0、社区Qwen3.8-27B W8A8、TP2。源码c3d5f993，清单f4c4fb14ce6cccc7ad26ccf38aaaa00d3c66ace0b0aa625d8e9959ef7f089101。自动首个实际RMS返回为language_model.model.layers.0.input_layernorm；两个owner都只在rank0修改25600个BF16元素，rank1本地边界不变，两边完整hidden/logits变化，OFF/health精确恢复，所有hook/wrapper/lease/inflight归零，生成首token不变。
+
+独立审查不读probe的checks或通过标志，重核两Worker身份、不同owner、真实请求/单chunk与设备完整token/position、实际消费者、恢复哈希和finish资源。基于原件改造的5个反例（OFF差异、guard写入、残留wrapper、错请求、预热不稳）全部拒绝。[原件SHA和精简总结](../../experiments/worker_core_v11_20261118/newstack_rms18_warmed_tp2_20261120.json)。不上传大回执或新统计原件。
+
+明确限制：冷启动第一次与后续无注入前向不同；后续4次交替有/无RMS观察的完整输出相同。原因未唯一定位。因此正式实验先运行3个无注入请求，并要求后两次全量精确一致；仅接受预热后同Worker组合，不把冷启动或任意文本质量写为通过。首个未预热的18 attempt因OFF不精确失败被保留，绝不修改旧回执或降低阈值。
+
+18容器窗口2026-11-20T15:19:34.878778Z—15:24:34.199955Z，299.321177秒。随后22加载模型被外部Docker signal15/9中断，exit137、OOMKilled=false；不计机制止损。共享窗口15:19:32—15:27:24，共472.584257秒，结束有界清理器已join。期间只停止一项明确映射卡2的外部容器，原名/镜像/绝对时刻保留isolation.jsonl；没有改Docker入口或其他卡。22使用同一源码新attempt继续。
+
+新CANN9.1独立V2量化后端无设备编译通过，库SHA e7df992a1aec907b7f54ebc7cc8b2bdff0e2266aec289bc2e48767431e1766e5，清单04f1c8af72231aec3d98ec071882e28c6960ccd7852381c9ea65e5fa212a3aa9。实际V2调用和新Worker B8 decode仍未验收，不继承0.18/M1资格。[构建总结](../../experiments/worker_core_v11_20261118/quant_v2_cann91_build_20261120.json)。
