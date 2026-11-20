@@ -39,6 +39,9 @@ class FirstDecodeTests(unittest.TestCase):
         root=torch.tensor([[float('nan')]])
         t.root_output=root;t.state=NS(hidden_states=root)
         with patch('demoncat.runtime.vllm_ascend.worker_extension.v026_generation_observer.TextPrefillTrace.execute_return'):
-            with self.assertRaisesRegex(RuntimeError,'first_decode.*nan_elements'):
+            with self.assertRaisesRegex(RuntimeError,'B8_NONFINITE_OUTPUT') as caught:
                 t.execute_return(None)
+            import json
+            facts=json.loads(str(caught.exception).split(':',1)[1])
+            self.assertEqual((facts['phase'],facts['field'],facts['nan_elements'],facts['fault_calls']),('first_decode','hidden_states',1,0))
 if __name__=='__main__':unittest.main()
