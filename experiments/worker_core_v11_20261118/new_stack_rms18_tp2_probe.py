@@ -123,6 +123,27 @@ def main():
             worker_extension_cls='demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension')
         prompt=llm.get_tokenizer().encode('The capital of France is',add_special_tokens=True)
         params=SamplingParams(temperature=0,max_tokens=1,ignore_eos=True);seen=[]
+        # Cold first-request behavior is independently recorded, never folded
+        # into fault attribution. Qualify only a warmed, exactly stable worker.
+        from new_stack_recovery_control import observation_rpc
+        report['preflight_controls']=[]
+        for number in range(3):
+            require(llm.reset_prefix_cache(reset_running_requests=False) is True,'CONTROL_CACHE_RESET')
+            llm.sleep(level=0,mode='wait')
+            pending=list(llm.enqueue([dict(prompt_token_ids=prompt)],params,use_tqdm=False))
+            mapping=read_enqueued_identity(llm,pending,seen_internal_request_ids=seen);seen.extend(pending)
+            owner='read-only-warmup-'+str(number)
+            llm.collective_rpc(observation_rpc,args=('install',owner,{pending[0]:prompt},'plain'),timeout=120)
+            llm.wake_up(tags=['scheduling']);outputs=llm.wait_for_completion(use_tqdm=False)
+            require(len(outputs)==1 and outputs[0].request_id==mapping['external_request_id'],'CONTROL_REQUEST_MAPPING')
+            rows=llm.collective_rpc(observation_rpc,args=('query',owner),timeout=120)
+            cleanup=llm.collective_rpc(observation_rpc,args=('remove',owner),timeout=120)
+            require(all(r['owned_hooks']==r['owned_wrappers']==r['inflight']==0 and not r['pending'] for r in cleanup),'CONTROL_RESOURCE_ZERO')
+            report['preflight_controls'].append(dict(mapping=mapping,rank_rows=rows,cleanup=cleanup,output=output(outputs[0])));save()
+        require(all(report['preflight_controls'][1]['rank_rows'][rank]['row']['output']==
+            report['preflight_controls'][2]['rank_rows'][rank]['row']['output'] for rank in range(2)),
+            'NO_FAULT_WARMED_HIDDEN_LOGITS_UNSTABLE')
+        report['validation_scope']='WARMED_WORKERS_ONLY_COLD_FIRST_REQUEST_NOT_QUALIFIED'
         for index in range(2):
             scope=dict(index=index,requests=[],status='STARTED');report['scopes'].append(scope);save()
             def bind(identity,config,contract):
