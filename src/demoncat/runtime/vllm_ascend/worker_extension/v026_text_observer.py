@@ -133,12 +133,12 @@ def _verify_function(function,rows):
     return dict(path=str(path),sha256=digest)
 
 
-def _parallel_report(runner, rows):
+def _parallel_report(runner, rows, source_profile):
     from vllm.distributed.parallel_state import get_pcp_group, get_dcp_group, get_tp_group
     sources=[_verify_function(f,rows) for f in (get_pcp_group,get_dcp_group,get_tp_group)]
     config=runner.vllm_config.parallel_config
     report=parallel_assessment(runner,pcp_group=get_pcp_group(),dcp_group=get_dcp_group(),
-        tp_group=get_tp_group(),expected_tp=config.tensor_parallel_size)
+        tp_group=get_tp_group(),expected_tp=config.tensor_parallel_size,source_profile=source_profile)
     require(report['status']=='matched','NEWSTACK_PARALLEL_GROUPS_UNPROVEN:'+json.dumps(report))
     return dict(assessment=report,sources=sources)
 
@@ -166,7 +166,6 @@ class SourceBoundTextObserver:
         require(type(runner.supports_mm_inputs) is bool and runner.enable_prompt_embeds is False
                 and runner.uses_mrope is True, 'V026_REVIEWED_MM_TEXT_BRANCH_REQUIRED')
         rows=json.loads(PROFILES[self.source_profile].read_bytes())['files']
-        self.parallel=_parallel_report(runner,rows)
         self.sources.append(_verify_function(mm.get_limit_per_prompt,rows))
         if self.source_profile=='preferred_a2_85a2bc5e':
             # The preferred runner overrides _preprocess but delegates the real
@@ -176,6 +175,7 @@ class SourceBoundTextObserver:
         for function in (runner.execute_model,runner.sample_tokens,runner._preprocess,runner._model_forward,
                          model.forward,model.embed_input_ids):
             self.sources.append(_verify_function(function,rows))
+        self.parallel=_parallel_report(runner,rows,self.source_profile)
         def patch(obj,name,handler):
             require(name not in vars(obj),'V026_EXISTING_INSTANCE_METHOD_OVERRIDE:'+name)
             original=getattr(obj,name)

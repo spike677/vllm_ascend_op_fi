@@ -25,6 +25,15 @@ class V026InspectionTests(unittest.TestCase):
         self.assertFalse(hasattr(r,'pcp_size'))
         self.assertFalse(report['execution_authorized'])
 
+    def test_preferred_stack_uses_its_actual_cp_property_not_missing_dcp_default(self):
+        r,_,_=self.fixture();del r.use_dcp;r.pcp_size=1;r.use_cp=False
+        kwargs=dict(pcp_group=NS(world_size=1),dcp_group=NS(world_size=1),tp_group=NS(world_size=2),expected_tp=2)
+        self.assertEqual(parallel_assessment(r,**kwargs)['status'],'pending')
+        self.assertEqual(parallel_assessment(r,source_profile='preferred_a2_85a2bc5e',**kwargs)['status'],'matched')
+        del r.use_cp
+        self.assertEqual(parallel_assessment(r,source_profile='preferred_a2_85a2bc5e',**kwargs)['status'],'pending')
+        with self.assertRaisesRegex(ValueError,'PROFILE_NOT_REVIEWED'):
+            parallel_assessment(r,source_profile='arbitrary',**kwargs)
     def test_config_and_live_group_must_agree(self):
         r,_,_=self.fixture();r.vllm_config.parallel_config.prefill_context_parallel_size=2
         p=parallel_assessment(r,pcp_group=NS(world_size=1),dcp_group=NS(world_size=1),tp_group=NS(world_size=2),expected_tp=2)
