@@ -1,0 +1,496 @@
+{
+  "schema": "demoncat.tnd28.attempt_summary.v1",
+  "combination": "A2 / CANN8.5.1 / vLLM0.18 / Qwen3-0.6B FP16 / TP1 / card2",
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "CASE_FAILED",
+      "started": null,
+      "ended": "2026-11-20T12:53:22.660391+00:00",
+      "elapsed_seconds": 121.04958038497716,
+      "isolation_removed": true,
+      "controller_sha256": "b880a8740c25c3bbbd2a52ce70ba879e841424134d7fa52b9d5d505fe5f3f5ef",
+      "result_sha256": "57a46601b37f6c69142bd47fae4ab2e57956d29cf9fd2cac9f40e7f963b8c671",
+      "source_manifest_sha256": "fc67f6bc775cbbde014c79e6fba463ff35a8ee2897d13709eafffb0442280401",
+      "build_sha256": "29c9b383d58f02e53c4a60d7f2ebbc205bcaab0714d320f8a189f166f636f462",
+      "error": "ContextRefused('ATTENTION_REVIEWED_NATIVE_ADAPTER_REQUIRED')",
+      "scopes": [],
+      "isolation": [
+        {
+          "time": "2026-11-20T12:51:21.610975+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+          "maximum_seconds": 1800,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-20T12:51:21.777225+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-s0-01_dev2_slot0_63396493",
+          "id": "353bcb1bcac62bbaa963973e563bac71d9160c2b42c38864fc2c00b032b57c78",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-20T12:51:28.037433+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-s0-01_dev2_slot0_63396493",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "353bcb1bcac62bbaa963973e563bac71d9160c2b42c38864fc2c00b032b57c78",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T12:53:05.428781+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-s0-02_dev5_slot0_04cae1c2",
+          "id": "948a7485c64c2306c8da8cbdc5d5b212d6f101ef92e44b6c72943882ab2daaf5",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T12:53:05.978587+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-s0-02_dev5_slot0_04cae1c2",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "948a7485c64c2306c8da8cbdc5d5b212d6f101ef92e44b6c72943882ab2daaf5",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T12:53:22.660483+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ]
+    },
+    {
+      "attempt": 2,
+      "status": "CASE_FAILED",
+      "started": null,
+      "ended": "2026-11-20T13:01:32.904924+00:00",
+      "elapsed_seconds": 137.0840619110968,
+      "isolation_removed": true,
+      "controller_sha256": "d2cf4cfa9aa309d05df6c18e211ec2e353633f4b3036a5b4a0f441b90383c43b",
+      "result_sha256": "61d21b8f1d637b92feb006384fc29eaa15b7c6d574c4a98dfe3cb9748574e1c6",
+      "source_manifest_sha256": "d778d5bfe642c38f5872ff8883c73f24f1d04e08e75a80fd71f21188d0e97e08",
+      "build_sha256": "29c9b383d58f02e53c4a60d7f2ebbc205bcaab0714d320f8a189f166f636f462",
+      "error": "ProviderError('ATTENTION_NO_STABLE_MATCHING_ACTUAL_CALL')",
+      "scopes": [
+        {
+          "index": 0,
+          "status": "REFUSED_OR_FAILED",
+          "phases": [
+            "observe",
+            "observe_repeat"
+          ],
+          "resources_zero": null,
+          "ownership_retained": false
+        }
+      ],
+      "isolation": [
+        {
+          "time": "2026-11-20T12:59:15.821021+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+          "maximum_seconds": 1800,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-20T12:59:15.987583+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-full-01_dev5_slot0_c09900c4",
+          "id": "f208814de38bf3af672d51bb45a0fd309a5c7111fc34fd2a5db03b12dc489281",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T12:59:16.744833+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-full-01_dev5_slot0_c09900c4",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "f208814de38bf3af672d51bb45a0fd309a5c7111fc34fd2a5db03b12dc489281",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:00:53.938693+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-01_dev5_slot0_c7abc957",
+          "id": "350ffbae3ac49ca6fee25ec56d0ae2023f4e0801881defc3a1a8038b8c509517",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T13:00:54.689374+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-01_dev5_slot0_c7abc957",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "350ffbae3ac49ca6fee25ec56d0ae2023f4e0801881defc3a1a8038b8c509517",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:01:32.905014+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ]
+    },
+    {
+      "attempt": 3,
+      "status": "CASE_FAILED",
+      "started": null,
+      "ended": "2026-11-20T13:07:11.206109+00:00",
+      "elapsed_seconds": 146.1670690990286,
+      "isolation_removed": true,
+      "controller_sha256": "23e80dcd37b3f584851fba9889f4dc6f51decab82879125813dfa84a97abe9a7",
+      "result_sha256": "1e41b411c1595e25140b28249d1e24755090c47e09055088539eb1b77931735b",
+      "source_manifest_sha256": "1287ef1d267d33a21b81f733c7aed2138e07368c4c793d181f8886d4e79d5b6c",
+      "build_sha256": "29c9b383d58f02e53c4a60d7f2ebbc205bcaab0714d320f8a189f166f636f462",
+      "error": "RuntimeError('operator():build/CMakeFiles/torch_npu.dir/compiler_depend.ts:415 NPU function error: call aclnnFusedInferAttentionScoreV3 failed, error code is 161002\\n[ERROR] 2026-11-20-13:06:57 (PID:1, Device:0, RankID:-1) ERR00100 PTA call acl api failed.\\n[PID: 1] 2026-11-20-13:06:57.007.229 AclNN_Parameter_Error(EZ1001): Check dcat_input.Run(&NnopbaseRunWithWorkspace, executor, stream, workspace, workspaceSize) failed\\n')",
+      "scopes": [
+        {
+          "index": 0,
+          "status": "REFUSED_OR_FAILED",
+          "phases": [
+            "observe",
+            "observe_repeat"
+          ],
+          "resources_zero": null,
+          "ownership_retained": false
+        }
+      ],
+      "isolation": [
+        {
+          "time": "2026-11-20T13:04:45.039197+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+          "maximum_seconds": 1800,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-20T13:04:45.204160+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-02_dev2_slot0_6fd7016c",
+          "id": "e24986aff007c10af31ba0b8a4390194f43ade0b79be782bc46c23e0646e1129",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-20T13:04:46.192767+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-02_dev2_slot0_6fd7016c",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "e24986aff007c10af31ba0b8a4390194f43ade0b79be782bc46c23e0646e1129",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:06:38.740946+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-03_dev5_slot0_f94ac23b",
+          "id": "a44effac2f37691cd4fc854e8fabda4f4633ddf72f1cac981081be2a388b174f",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T13:06:39.527499+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-03_dev5_slot0_f94ac23b",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "a44effac2f37691cd4fc854e8fabda4f4633ddf72f1cac981081be2a388b174f",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:07:11.206202+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ]
+    },
+    {
+      "attempt": 4,
+      "status": "CASE_FAILED",
+      "started": null,
+      "ended": "2026-11-20T13:12:15.932923+00:00",
+      "elapsed_seconds": 142.06924313900527,
+      "isolation_removed": true,
+      "controller_sha256": "40c103bb02227c5294170952edeefde1116d1a4f3e8d01baa24d52847e4d672c",
+      "result_sha256": "cea6d4b49d5322ec67c49bfd2ce3cdcd5042b8ee735f7b550384052000be76ab",
+      "source_manifest_sha256": "0931a1924f7dbb9a75e4c60e524e9b14d534ceb7154acafb42abed3b08ec9d87",
+      "build_sha256": "29c9b383d58f02e53c4a60d7f2ebbc205bcaab0714d320f8a189f166f636f462",
+      "error": "ValueError('CURRENT_SCOPE_FUNCTION_BIND_NOT_UNIQUE')",
+      "scopes": [
+        {
+          "index": 0,
+          "status": "REFUSED_OR_FAILED",
+          "phases": [
+            "observe",
+            "observe_repeat"
+          ],
+          "resources_zero": null,
+          "ownership_retained": false
+        }
+      ],
+      "isolation": [
+        {
+          "time": "2026-11-20T13:09:53.863835+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+          "maximum_seconds": 1800,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-20T13:09:54.027551+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-04_dev2_slot0_db9d6ab7",
+          "id": "35b0e8b1e314d9db850ad7eb54693b05960168cc85233154b88e50e31220cfa4",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-20T13:09:55.295933+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-04_dev2_slot0_db9d6ab7",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "35b0e8b1e314d9db850ad7eb54693b05960168cc85233154b88e50e31220cfa4",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:11:32.471987+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-05_dev5_slot0_53a87af0",
+          "id": "dd967f201815797428b9a6b79c1eb70ab1003758e9a331fe9d2856f94b725f57",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T13:11:33.155927+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-05_dev5_slot0_53a87af0",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "dd967f201815797428b9a6b79c1eb70ab1003758e9a331fe9d2856f94b725f57",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:12:15.933016+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ]
+    },
+    {
+      "attempt": 5,
+      "status": "CASE_FAILED",
+      "started": null,
+      "ended": "2026-11-20T13:24:42.169873+00:00",
+      "elapsed_seconds": 552.6618223669939,
+      "isolation_removed": true,
+      "controller_sha256": "20e8ad1191c013e37aa3425af5b0cf301e6cf44f8f33a17f14267154ae31d9bc",
+      "result_sha256": "622f9c16fc3cb9f41eebe4628d3acd32e18cafafccc38abcc06397763736c737",
+      "source_manifest_sha256": "019f878258164a2817a1de9c7012242a47014735f734da153af3c70e7fa36f0c",
+      "build_sha256": "29c9b383d58f02e53c4a60d7f2ebbc205bcaab0714d320f8a189f166f636f462",
+      "error": "RuntimeError('npu_fused_infer_attention_score_symint:build/CMakeFiles/torch_npu.dir/compiler_depend.ts:415 NPU function error: call aclnnFusedInferAttentionScoreV3 failed, error code is 161002\\n[ERROR] 2026-11-20-13:24:22 (PID:1, Device:0, RankID:-1) ERR00100 PTA call acl api failed.\\n')",
+      "scopes": [
+        {
+          "index": 0,
+          "status": "RESEARCH_SCOPE_COMPLETE_PENDING_REVIEW",
+          "phases": [
+            "observe",
+            "observe_repeat",
+            "baseline",
+            "baseline_repeat",
+            "fault",
+            "off",
+            "health"
+          ],
+          "resources_zero": true,
+          "ownership_retained": null
+        },
+        {
+          "index": 1,
+          "status": "REFUSED_OR_FAILED",
+          "phases": [
+            "observe",
+            "observe_repeat"
+          ],
+          "resources_zero": null,
+          "ownership_retained": false
+        }
+      ],
+      "isolation": [
+        {
+          "time": "2026-11-20T13:15:29.508210+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+          "maximum_seconds": 1800,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-20T13:15:29.675876+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-06_dev2_slot0_af6a4d8a",
+          "id": "477ab74b31ad4109f4ffbeb03670cf6628fd42f524e085c23393bf50f8b135ae",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-20T13:15:31.026149+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-06_dev2_slot0_af6a4d8a",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "477ab74b31ad4109f4ffbeb03670cf6628fd42f524e085c23393bf50f8b135ae",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:17:34.063221+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-07_dev5_slot0_6c1d0e94",
+          "id": "0e0981510d644bd98c2e0030baebf53369880619fd834116c9448d8ea9681d53",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T13:17:35.357315+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-07_dev5_slot0_6c1d0e94",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "0e0981510d644bd98c2e0030baebf53369880619fd834116c9448d8ea9681d53",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:19:43.180910+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-08_dev5_slot0_9887f6f6",
+          "id": "b1e2501ab70fa1fc73a3e7b34a9552870d4f5414f5228c69a32c776e7d84d61c",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T13:19:43.873626+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-08_dev5_slot0_9887f6f6",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "b1e2501ab70fa1fc73a3e7b34a9552870d4f5414f5228c69a32c776e7d84d61c",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:21:26.760071+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-09_dev5_slot0_23e476cb",
+          "id": "7cea556e6fe29cb6f3f73b8afeb175c388534ebf746b89d3d112d21014dd5679",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T13:21:27.537095+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-09_dev5_slot0_23e476cb",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "7cea556e6fe29cb6f3f73b8afeb175c388534ebf746b89d3d112d21014dd5679",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:23:15.578168+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-10_dev5_slot0_66c6474f",
+          "id": "381e6cdaec93a25010258be90116849d1279720707954d5090420c17b66081ed",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T13:23:16.340208+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lightningindexerv2-abi1024-resume-10_dev5_slot0_66c6474f",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "381e6cdaec93a25010258be90116849d1279720707954d5090420c17b66081ed",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:24:42.169969+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ]
+    }
+  ],
+  "budget_before": 13607.024709,
+  "budget_remaining": 12507.992932098898,
+  "public_qualification": false,
+  "a5_independent_partial_review": {
+    "status": "REJECTED_OR_INCOMPLETE",
+    "issues": [
+      "ValueError('RESEARCH_HISTORY_PHASE_ORDER')"
+    ],
+    "sha256": "001405897d1462206aabc41c251370ae59d8bab20232e170925258bea05534c1",
+    "reader_sha256": "7732f00fad088350f6abe7ef4913e205999b25cc2d57a9a133ea9bc8beb1e2bf",
+    "completed_scope_count": 1,
+    "first_scope_complete_hash_recovery": true,
+    "public_qualification": false
+  }
+}
