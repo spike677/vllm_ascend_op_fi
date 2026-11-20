@@ -1,6 +1,6 @@
-# 124 存储整理只读评估（2026-11-20）
+# 124 存储整理评估与授权执行记录（2026-11-20）
 
-本轮只读检查，没有删除、移动、备份服务器文件，没有停止服务，没有运行 NPU 作业。以下容量是观测值或条件候选上限，不是删除清单；当前新增可直接执行的删除项为 **0**。
+以下第一部分为 06:56 UTC 的历史只读检查；后续授权删除见文末。该次检查未执行删除或 NPU 作业。以下容量是观测值或条件候选上限，不是删除清单；当前新增可直接执行的删除项为 **0**。
 
 ## 占用与历史回收
 
@@ -91,3 +91,64 @@
 - `storage-review-historical-output-logs.json`：历史 outputs 日志子集。
 - `storage-review-log-subset.json`：条件候选、符号链接保留项和新增顶层项统计。
 - `storage-review-log-content-samples.json`：日志首尾关键词分类，不能替代完整语义复核。
+
+## 授权执行记录
+
+时间采用 UTC（北京时间加 8 小时），以下来自实际回执，不重复删除。
+
+| 操作 | 时间 UTC | /home 前可用 B | 后可用 B | 净增 B |
+|---|---|---:|---:|---:|
+| Qwen3-32B-w8a8-nopdmix 与别名 | 11-20 09:11:06 | 58,130,685,952 | 100,904,173,568 | 42,773,487,616 |
+| CATMonitor 38 tags / 20 IDs | 11-20 09:12:18–09:12:46 | 100,904,005,632 | 102,641,094,656 | 1,737,089,024 |
+
+模型 `/home/haoran/models/Qwen3-32B-w8a8-nopdmix` 的 du 为 42,773,396,798 B；按授权先移除 `/AIdata/haoran/Qwen3-32B-w8a8-nopdmix` 别名，再核查无硬链接、打开进程、符号链接引用及独立容器挂载。未归档。
+
+所有现存容器均未引用选定镜像；逐项 `docker rmi` 均返回 0。未 prune，未删除其他项目容器或数据。原简报“37 标签”漏计一项，本次按全部 38 条 rmi 回执更正。镜像共享层的标称容量不能相加当作回收量，df 净增也可能受同时写入影响。
+
+| 实际删除 tag | Image ID |
+|---|---|
+| `ghcr.io/spike677/catmonitor-stress-npu:arm64-v0.3.6-stress-job-a3-cann91-20261015-r1` | `sha256:1dc65fe1465fd6f8475a2638d1c0d04aa07ee1a9b94e1eab6621267fbb04c869` |
+| `catmonitor-delivery/stress-npu:arm64-a3-cann91-5a3537c-20261014` | `sha256:22b81e2a449dfcb61bdb024ba6a5ce5cf0c9e40f0a0d1a18b41eb7b831ac933d` |
+| `ghcr.io/spike677/catmonitor-stress-npu:arm64-a3-cann91-candidate-5a3537c-20261014` | `sha256:22b81e2a449dfcb61bdb024ba6a5ce5cf0c9e40f0a0d1a18b41eb7b831ac933d` |
+| `catmonitor-delivery/framework:a3-cann91-models-20261014` | `sha256:27b408c0a463d5b7b36c8428e5a35209c4a627818e386ee362cce89799f1d816` |
+| `catmonitor-idle/control:20261015-r1` | `sha256:35e4dfa32f9f2ace237d8bab439562551df4013434a6a2f2df14c9d4ca0858ed` |
+| `ghcr.io/spike677/catmonitor-stress-npu:arm64-v0.3.6-a2-5a3537cfc0cd` | `sha256:441578d7c49c3773a86a0625b6a1f99fd517668ffb905d822bc462dbfd799735` |
+| `catmonitor-npu:latest` | `sha256:46c9ece05b5bb674c813aed12ca5941dbf8d9b0576c51a5d33b8bcfd5fcff1f0` |
+| `ghcr.io/computing-availability-tools/catmonitor-npu:latest` | `sha256:46c9ece05b5bb674c813aed12ca5941dbf8d9b0576c51a5d33b8bcfd5fcff1f0` |
+| `ghcr.io/computing-availability-tools/catmonitor-npu:v0.3.6` | `sha256:46c9ece05b5bb674c813aed12ca5941dbf8d9b0576c51a5d33b8bcfd5fcff1f0` |
+| `ghcr.io/computing-availability-tools/catmonitor-npu:v0.3.6-arm64` | `sha256:46c9ece05b5bb674c813aed12ca5941dbf8d9b0576c51a5d33b8bcfd5fcff1f0` |
+| `ghcr.io/ggboom12138/catmonitor-npu:latest` | `sha256:46c9ece05b5bb674c813aed12ca5941dbf8d9b0576c51a5d33b8bcfd5fcff1f0` |
+| `ghcr.io/ggboom12138/catmonitor-npu:v0.3.6` | `sha256:46c9ece05b5bb674c813aed12ca5941dbf8d9b0576c51a5d33b8bcfd5fcff1f0` |
+| `ghcr.io/ggboom12138/catmonitor-npu:v0.3.6-arm64` | `sha256:46c9ece05b5bb674c813aed12ca5941dbf8d9b0576c51a5d33b8bcfd5fcff1f0` |
+| `catmonitor-jobparam/control:20261014-r3` | `sha256:498506bf63df6e007cd73d1ebfacc1e5e65a0a66bd7418bffa3e202e2b3961f8` |
+| `catmonitor-demo/stress-cpu:model-merge-20261013` | `sha256:4ff205552b84498eacc270b42ee5169d87c2e381d21c69d85ef67197412b7691` |
+| `ghcr.io/spike677/catmonitor-stress-npu:arm64-v0.3.6-stress-defaults-a2-cann851-20261015-r2` | `sha256:5b97aee15006b1f46ae1d9fca45dfa4dfcb70f9bb5e4563ce7f0cfd8b9576bd2` |
+| `ghcr.io/spike677/catmonitor-stress-npu:arm64-v0.3.6-stress-job-a2-cann851-20261015-r1` | `sha256:5b97aee15006b1f46ae1d9fca45dfa4dfcb70f9bb5e4563ce7f0cfd8b9576bd2` |
+| `catmonitor-generic:latest` | `sha256:625039c983619c1bd90e1fb68dc8a91a728e05d77999c71efa86dc0f36b0dfe6` |
+| `ghcr.io/computing-availability-tools/catmonitor-generic:latest` | `sha256:625039c983619c1bd90e1fb68dc8a91a728e05d77999c71efa86dc0f36b0dfe6` |
+| `ghcr.io/computing-availability-tools/catmonitor-generic:v0.3.6` | `sha256:625039c983619c1bd90e1fb68dc8a91a728e05d77999c71efa86dc0f36b0dfe6` |
+| `ghcr.io/computing-availability-tools/catmonitor-generic:v0.3.6-arm64` | `sha256:625039c983619c1bd90e1fb68dc8a91a728e05d77999c71efa86dc0f36b0dfe6` |
+| `ghcr.io/ggboom12138/catmonitor-generic:latest` | `sha256:625039c983619c1bd90e1fb68dc8a91a728e05d77999c71efa86dc0f36b0dfe6` |
+| `ghcr.io/ggboom12138/catmonitor-generic:v0.3.6` | `sha256:625039c983619c1bd90e1fb68dc8a91a728e05d77999c71efa86dc0f36b0dfe6` |
+| `ghcr.io/ggboom12138/catmonitor-generic:v0.3.6-arm64` | `sha256:625039c983619c1bd90e1fb68dc8a91a728e05d77999c71efa86dc0f36b0dfe6` |
+| `catmonitor-delivery/control:arm64-5a3537c-20261014` | `sha256:65ea0e1a39b191300f5c1af7c3ebafbc36c33b6a74fc8f393c7c764f0679bb33` |
+| `ghcr.io/spike677/catmonitor-npu:arm64-candidate-5a3537c-20261014` | `sha256:65ea0e1a39b191300f5c1af7c3ebafbc36c33b6a74fc8f393c7c764f0679bb33` |
+| `ghcr.io/spike677/catmonitor-npu:arm64-v0.3.6-a2-5a3537cfc0cd` | `sha256:65ea0e1a39b191300f5c1af7c3ebafbc36c33b6a74fc8f393c7c764f0679bb33` |
+| `catmonitor-jobparam/stress-cpu:20261014-r3` | `sha256:7011860d574e8765556362003be8ffaec7bbeaf177cc2639b369cd42c0be83bf` |
+| `ghcr.io/spike677/catmonitor-stress-cpu:arm64-v0.3.6-stress-defaults-20261015-r2` | `sha256:758577a1677ff407d126635ee113ab35b5d99302aab10b3aefcc08c37033259a` |
+| `ghcr.io/spike677/catmonitor-stress-cpu:arm64-v0.3.6-stress-job-20261015-r1` | `sha256:758577a1677ff407d126635ee113ab35b5d99302aab10b3aefcc08c37033259a` |
+| `catmonitor-ci/stress-npu:arm64-f67fb4a-lint-20261016` | `sha256:77dfd6a8e477de5964303a6b1da225e6d4939799139720b25fbb04faa7a731c1` |
+| `catmonitor-ci/stress-cpu:arm64-f67fb4a-lint-20261016` | `sha256:8392907782fc76b48528eaf9751addca6413f8089fe4a6d965f5ce9288f573e1` |
+| `catmonitor-demo/control:npu-20261012-r5` | `sha256:8b179d3f9a3b785c9762982696498b3901560c67a319790bf93b33fd241b2318` |
+| `catmonitor-ci/control:arm64-f67fb4a-lint-20261016` | `sha256:97d07eaa052c2084bf22c1878613df45e8a7a2004e4d8f3939b75b3352bee5e7` |
+| `ghcr.io/spike677/catmonitor-npu:arm64-v0.3.6-stress-defaults-20261015-r2` | `sha256:9858f14b8b562a21e0429e222064998e260085dc9d58c07519879b462b806acc` |
+| `ghcr.io/spike677/catmonitor-npu:arm64-v0.3.6-stress-job-20261015-r1` | `sha256:9858f14b8b562a21e0429e222064998e260085dc9d58c07519879b462b806acc` |
+| `ghcr.io/spike677/catmonitor-stress-cpu:arm64-v0.3.5-stress` | `sha256:ed2a91fefd06033ebd75cd47786624d8e0edc1b3234d70310bbe60b47660d586` |
+| `catmonitor-idle/stress-npu:20261015-r1` | `sha256:f965bfeac14463838290391f099f3acf62453c3f3136c78b7322a39a8e1a00a9` |
+
+完整 df、du、mtime、引用核查及 stdout 原件：`D:/DemonCATPFI/server-backups/124-storage-20261120`。
+
+- `model-preflight.json`: SHA256 `678b413c00189602eeec3ff6c1f464989622f77535f868eaf91069f609210fe3`
+- `model-delete.json`: SHA256 `f90ec273f3193494fe0a2cd3c5925bf08be035cc01fe97fcf395dfed96b6b2ee`
+- `images-preflight.json`: SHA256 `ac3655cc2d68f7d8a5c9c0cfffa683ed7a70064f2d36038ac4a0964084d0c4ff`
+- `images-delete.jsonl`: SHA256 `45d501c3595af1725760a6f0506187307d26ddaba2213b48ab457121ef2fe7c4`

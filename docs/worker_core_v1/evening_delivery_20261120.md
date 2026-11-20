@@ -23,7 +23,7 @@
 
 [独立审查报告](../../experiments/worker_core_v11_20261118/m1_kv41_tp2_20261120_summary.json)重新比较原始阶段、Native effect、完整哈希和finish回执，不读验收驱动checks断言。guard改值、OFF哈希变化、第二组Worker、残留lease、漏命中五个内存负向案例均拒绝，原件不改。仅合法KV地址代理，不声称实际越界，不唯一归因某个collective；BLUE组合不授A3/现役资格，不进入RC2.x。
 
-Batch TP2未通过：A2/CANN8.5.1/0.18/Qwen3-0.6B W8A8/TP2/B8。a1租约身份问题已修复；a2/a3两次normal均拒绝BOUNDED_COMPLETE_NATIVE_CALL_REQUIRED，两rank Native before_sequence=after_sequence=0、prepares/executes=0。无F及OFF通过声明。按同因两次停止，不计为设备冲突。a1/a2整窗197.382900/173.605057秒，a3 Batch占卡166.553805秒。TP1旧通过不扩展TP2。18/22/39 TP2沿用既有同Worker两作用域和显式recover通过，未重跑。20/26两变体/33维持止损。
+此前 Batch TP2 失败检查点（已由下述 a4 验收更新）：A2/CANN8.5.1/0.18/Qwen3-0.6B W8A8/TP2/B8。a1租约身份问题已修复；a2/a3两次normal均拒绝BOUNDED_COMPLETE_NATIVE_CALL_REQUIRED，两rank Native before_sequence=after_sequence=0、prepares/executes=0。无F及OFF通过声明。按同因两次停止，不计为设备冲突。a1/a2整窗197.382900/173.605057秒，a3 Batch占卡166.553805秒。TP1旧通过不扩展TP2。18/22/39 TP2沿用既有同Worker两作用域和显式recover通过，未重跑。20/26两变体/33维持止损。
 
 ## 28限时进度
 
@@ -39,7 +39,7 @@ B2依负责人决定接受stock/private完整哈希桥接，保留stock census F
 
 ## 存储整理
 
-旧模型及获批别名重新核查无其他引用后删除，无归档。09:11:06 UTC，du42773396798字节；/home可用58130685952→100904173568，增加42773487616字节。指定CATMonitor37标签/20镜像ID无任何容器引用后逐项rmi，09:12:18–09:12:46，/home100904005632→102641094656，实际增加1737089024字节。无prune -a、无其他项目删除。
+旧模型及获批别名重新核查无其他引用后删除，无归档。09:11:06 UTC，du42773396798字节；/home可用58130685952→100904173568，增加42773487616字节。指定CATMonitor38标签（按逐条 rmi 回执更正）/20镜像ID无任何容器引用后逐项rmi，09:12:18–09:12:46，/home100904005632→102641094656，实际增加1737089024字节。无prune -a、无其他项目删除。
 
 完整前后df/du、路径/字节/mtime、引用检查、删除记录：仓库外D:/DemonCATPFI/server-backups/124-storage-20261120。模型删除回执SHA f90ec273f3193494fe0a2cd3c5925bf08be035cc01fe97fcf395dfed96b6b2ee；镜像删除日志SHA45d501c3595af1725760a6f0506187307d26ddaba2213b48ab457121ef2fe7c4。c2c3增量备份/分类尚未执行，依赖保留；/home/haoran/experiments未删除。
 
@@ -58,3 +58,9 @@ B2依负责人决定接受stock/private完整哈希桥接，保留stock census F
 恢复复核：10:16:19.733851142 UTC，外部调度器已在卡5重新启动同类resume实例（绝对时刻来自Docker状态）。本项目只读确认，没有再停止它；说明窗口清理器解除后实际派发恢复。
 
 提交前共享TP1/TP2 CPU回归63项通过；测试集合有重叠，不与先前41/18累计。
+
+## 17:35任务调整后的追加进展
+
+Batch TP2 的 private-first spawn 修复（8c476f60）已完成同Worker组双作用域并独立复核通过；rank0 Q改变5686元素、scale改变7元素，rank1本地边界不变，两rank hidden/logits传播，OFF/health精确恢复及资源清零。生成token在该输入不变。窗口UTC10:44:25–10:55:47，682.863秒；卡2/5有界清理器已退出，10:58:06外部卡5任务重派得到只读确认。详细抢占记录与原件SHA见[npu_progress](npu_progress_20261120.md)。
+
+新栈适配和制品差异见[v026_adaptation](v026_adaptation_20261120.md)，80项针对性CPU测试通过，新栈NPU组合仍未验收。28新增可取消的PrepareParent/CommitParent边界通过实际SDK和生成单元编译，但B3实际prepared输入绑定仍未完成。RC2.1/RC2.2保持冻结。镜像流式测量继续，未完成前不拉取。

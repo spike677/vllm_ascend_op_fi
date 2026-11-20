@@ -1,0 +1,116 @@
+{
+  "status": "BLUE_TP2_BATCH_TWO_SCOPE_ACCEPTED",
+  "combination": "A2/CANN8.5.1/vLLM-Ascend0.18/Qwen3-0.6B W8A8/TP2/B8",
+  "source_manifest_sha256": "20eb8b351342c41579eeeed6fe06ab738465ea8f0d13186ebdffce9873c02879",
+  "scopes": [
+    {
+      "scope": 0,
+      "batches": 6,
+      "requests_per_batch": 8,
+      "explicit_recover": true,
+      "ranks": [
+        {
+          "rank": 0,
+          "native_hits": 1,
+          "changed_quant_elements": 5686,
+          "changed_scale_elements": 7,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true,
+          "selected_site": "model.layers.0.self_attn.qkv_proj"
+        },
+        {
+          "rank": 1,
+          "native_hits": 0,
+          "changed_quant_elements": 0,
+          "changed_scale_elements": 0,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true,
+          "selected_site": "model.layers.0.self_attn.qkv_proj"
+        }
+      ],
+      "generated_sequences_changed": 0
+    },
+    {
+      "scope": 1,
+      "batches": 6,
+      "requests_per_batch": 8,
+      "explicit_recover": true,
+      "ranks": [
+        {
+          "rank": 0,
+          "native_hits": 1,
+          "changed_quant_elements": 5686,
+          "changed_scale_elements": 7,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true,
+          "selected_site": "model.layers.0.self_attn.qkv_proj"
+        },
+        {
+          "rank": 1,
+          "native_hits": 0,
+          "changed_quant_elements": 0,
+          "changed_scale_elements": 0,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true,
+          "selected_site": "model.layers.0.self_attn.qkv_proj"
+        }
+      ],
+      "generated_sequences_changed": 0
+    }
+  ],
+  "qualification_granted": false,
+  "limits": [
+    "A2/CANN8.5.1/0.18/Qwen3-0.6B W8A8 TP2 only",
+    "first decode B8, one automatically selected projection/rank",
+    "cross-rank hidden/logits observed; no unique all-reduce boundary attribution",
+    "no A3, Qwen3.8 or new-stack qualification"
+  ],
+  "receipt": {
+    "file": "result.json",
+    "bytes": 49118502,
+    "sha256": "6a24e30ed75a6657930811ea76e277a14c2b45c5d26b6f8b71cfbd47969a1f84"
+  },
+  "negative_review_cases": [
+    {
+      "case": "guard_q_changed",
+      "status": "REFUSED",
+      "reason": "GUARD_LOCAL_MODIFICATION"
+    },
+    {
+      "case": "wrong_request_map",
+      "status": "REFUSED",
+      "reason": "HOST_MAPPING"
+    },
+    {
+      "case": "off_logits_changed",
+      "status": "REFUSED",
+      "reason": "OFF_FULL_RETURN_NOT_EXACT"
+    },
+    {
+      "case": "native_helper_not_released",
+      "status": "REFUSED",
+      "reason": "NATIVE_EFFECT_OR_RELEASE_UNPROVEN"
+    },
+    {
+      "case": "remaining_hook",
+      "status": "REFUSED",
+      "reason": "OWNED_RESOURCES_REMAIN"
+    }
+  ],
+  "window": {
+    "start_utc": "2026-11-20T10:44:25.053016+00:00",
+    "end_utc": "2026-11-20T10:55:47.915877+00:00",
+    "elapsed_seconds": 682.8628994069295,
+    "isolation_removed": true
+  },
+  "probe_elapsed_seconds": 616.4340054179775,
+  "source_commit": "8c476f60f853e8a8373d7a46432f35b8e07b67a3"
+}

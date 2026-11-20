@@ -8,7 +8,7 @@ from contextlib import nullcontext
 import sys
 import uuid
 
-from fault_injection.rmsnorm_return import RMSNormReturnSession
+from fault_injection.rmsnorm_return import RMSNormReturnSession, native_rms_schema
 from fault_injection.tensor_observer import tensors
 from .serving import ServingReplaySession, complete_tensor
 from .serving_context import require
@@ -34,8 +34,7 @@ class _OneRMSReturn(RMSNormReturnSession):
         # Other RMS calls execute directly after/before the single selected
         # return. Do not build pending events or copy their values.
         name = getattr(getattr(func, '_schema', None), 'name', '')
-        native = name.split('::', 1)[0] in ('npu', '_C_ascend') and name.rsplit('::', 1)[-1] in (
-            'npu_rms_norm', 'npu_add_rms_norm', 'npu_add_rms_norm_bias')
+        native = native_rms_schema(getattr(func, '_schema', None))
         if native and self.done:
             return self._read_call(func, args, kwargs)
         if native and self.task.target_module is not None:

@@ -118,3 +118,17 @@ BLUE组合：A2、CANN8.5.1、vLLM-Ascend0.18、Qwen3-0.6B W8A8、TP1、B8，卡
 ## 晚间交付更新
 
 RC2.1、RC2.2已冻结发布；41 TP2同Worker两作用域通过独立复核，Batch TP2因原生调用链未观测连续两次拒绝而止损；28 B3–B5仍未完成，M2镜像测量因EOF停止。具体组合、源码、资源恢复、存储删除与隔离记录见[晚间交付](evening_delivery_20261120.md)。本节取代上文“RC2.2尚未冻结/RC2.1待登记”的当前状态，保留历史记录。
+
+## M1 Batch TP2：新 attempt 双作用域通过
+
+源码 8c476f60f853e8a8373d7a46432f35b8e07b67a3，清单 SHA 20eb8b351342c41579eeeed6fe06ab738465ea8f0d13186ebdffce9873c02879，Native bundle 不变。A2/CANN8.5.1/vLLM-Ascend0.18/Qwen3-0.6B W8A8/TP2/B8。
+
+无设备 dladdr 证实 stock libcust 的 DynamicQuantV2 来自其 libopapi 依赖。父进程完成原厂 platform 初始化后，在标准 spawn 创建 Worker 的窗口恢复 private-first vendor 顺序，创建完成即恢复父进程环境；未改 Worker 类或算子。新实测的 Native prepare/execute 记录证明两 rank 均命中原调用，非仅靠环境日志判通过。
+
+同组 Worker、不同 owner 的两作用域均跑 normal/reference/lossless/calibration_off/fault/off 六批，前后各一批 health；共16批、128请求。两作用域均自动选择 model.layers.0.self_attn.qkv_proj 的实际 first-decode，rank0 Q 改变5686/8192元素、scale改变7/8；rank1原 Q/scale 不变，两 rank 完整 hidden/logits 均变化。两 token 生成序列在本输入均未改变。所有 rank 的 OFF Q/scale、hidden/logits及前后 health 精确恢复，资源清零。显式统一 recover 在F后调用并进入OFF。
+
+独立脚本不导入 provider，不读 driver 的 independent_checks 或通过状态；核对实际请求映射、Native子调用/输入归约几何、Q/scale效果、守卫、完整返回哈希和清理字段。5种篡改回执均被拒绝。见[总结与原件SHA](../../experiments/worker_core_v11_20261118/m1_batch_tp2_20261120_summary.json)。原始回执保留在 D 盘，不提交。
+
+### 抢占与隔离
+
+UTC 10:44:25.053016–10:55:47.915877（北京时间18:44:25–18:55:47），窗口682.862899秒，probe内616.434005秒；这是整个测试窗口/进程墙钟，不是 kernel profiler 时间。只对卡2/5启用有界 docker-stop 清理器，未改调度器配置、Docker入口、驱动或CANN。停止卡5容器 `ptq_dcde1a8de6b13b34_list61-index-s0-01_dev5_slot0_eb2cd437`，镜像 `cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8`，10:44:25.220761开始、10:44:26.832965返回0。未删除外部容器/镜像/数据。结束清理器已join；10:58:06观察到新的外部卡5实例，确认派发继续。完整操作记录保留在私有 isolation.jsonl。

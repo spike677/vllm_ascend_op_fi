@@ -47,6 +47,20 @@ static void NoRetry(ExecuteBorrow& b){auto before=drains+detaches+resets;b.Leave
     assert(!b.CancelBeforeParent());assert(drains+detaches+resets==before);assert(b.Snapshot().left);}
 int main(){
     Reset();{ExecuteBorrow b(&parent,workspace,1024,stream);Copy(b);
+        assert(b.PrepareParent(&parent,workspace,768,stream));
+        assert(drains==1&&!b.Snapshot().parent_started);
+        // The live input checker rejects: cancel safely after copy, before FIA.
+        assert(b.CancelBeforeParent());assert(resets==1&&detaches==1);
+        assert(!b.CommitParent(&parent,workspace,768,stream));NoRetry(b);}
+    Reset();{ExecuteBorrow b(&parent,workspace,1024,stream);Copy(b);
+        assert(!b.CommitParent(&parent,workspace,768,stream));
+        assert(!b.Snapshot().parent_started);assert(b.CancelBeforeParent());NoRetry(b);}
+    Reset();{ExecuteBorrow b(&parent,workspace,1024,stream);Copy(b);
+        assert(b.PrepareParent(&parent,workspace,768,stream));
+        assert(!b.CommitParent(&parent,workspace+1,768,stream));
+        assert(!b.Snapshot().parent_started);assert(b.CancelBeforeParent());NoRetry(b);}
+
+    Reset();{ExecuteBorrow b(&parent,workspace,1024,stream);Copy(b);
         assert(b.BeforeParent(&parent,workspace,768,stream));
         registered=nullptr;registered_bytes=0; // CPU original NNOPBASE return seam.
         assert(b.AfterParent(0));b.Leave();auto r=b.Snapshot();

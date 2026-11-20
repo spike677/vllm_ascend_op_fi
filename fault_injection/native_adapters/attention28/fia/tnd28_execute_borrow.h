@@ -75,14 +75,29 @@ public:
         if (status) Fail(CHILD_CALL_FAILED);
         return status==0;
     }
-    bool BeforeParent(aclOpExecutor* parent, void* workspace, uint64_t bytes, aclrtStream stream) {
-        if (!Owner() || !result_.child_consumed || result_.parent_started || result_.reset_attempted || result_.first_error)
+    // Drain prepared child data before the second-stage input check. This is
+    // still cancellable: no permission to enqueue the parent is granted here.
+    bool PrepareParent(aclOpExecutor* parent, void* workspace, uint64_t bytes, aclrtStream stream) {
+        if (!Owner() || !result_.child_consumed || parent_prepared_ || result_.parent_started
+            || result_.reset_attempted || result_.first_error || result_.complete)
             return Fail(ORDER);
         if (parent!=parent_ || workspace!=workspace_ || bytes!=bytes_-child_bytes_ || stream!=stream_)
             return Fail(SPAN);
         if (!Drain()) return false;
-        result_.parent_started=true;result_.drained=false; // Parent may now enqueue work.
+        parent_prepared_=true;
         return true;
+    }
+    bool CommitParent(aclOpExecutor* parent, void* workspace, uint64_t bytes, aclrtStream stream) {
+        if (!Owner() || !parent_prepared_ || !result_.drained || result_.parent_started
+            || result_.reset_attempted || result_.first_error || result_.complete)
+            return Fail(ORDER);
+        if (parent!=parent_ || workspace!=workspace_ || bytes!=bytes_-child_bytes_ || stream!=stream_)
+            return Fail(SPAN);
+        result_.parent_started=true;result_.drained=false;
+        return true;
+    }
+    bool BeforeParent(aclOpExecutor* parent, void* workspace, uint64_t bytes, aclrtStream stream) {
+        return PrepareParent(parent,workspace,bytes,stream) && CommitParent(parent,workspace,bytes,stream);
     }
     bool AfterParent(aclnnStatus status) {
         if (!Owner() || !result_.parent_started || result_.parent_returned) return Fail(ORDER);
@@ -156,7 +171,7 @@ private:
     uint64_t bytes_=0;
     size_t child_bytes_=0;
     aclrtStream stream_=nullptr;
-    bool valid_=false;
+    bool valid_=false, parent_prepared_=false;
     Receipt result_{};
 };
 } // namespace tnd28_execute_borrow

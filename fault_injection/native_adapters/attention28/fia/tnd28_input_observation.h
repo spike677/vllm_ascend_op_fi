@@ -310,9 +310,14 @@ struct Execute:Log{
         aclnnStatus status;
 #ifndef DCAT_TND28_INPUT_CPU_FIXTURE
         if(borrow_requested&&!borrow){Fail("execute borrow not constructed");return ACLNN_ERR_PARAM_INVALID;}
-        if(borrow&&(!first_error.empty()||!CheckPublic(scope,2,Plan().typed))){
+        if(borrow&&(!first_error.empty()||!borrow->PrepareParent(static_cast<aclOpExecutor*>(executor),workspace,bytes,stream))){
+          borrow->CancelBeforeParent();Fail("execute borrow parent preparation refused");return ACLNN_ERR_PARAM_INVALID;}
+        // Still only the existing normal metadata guard. Draining first enables
+        // a future fresh prepared-input check, but does not make saved typed
+        // JSON a numerical proof or authorize denominator replay.
+        if(borrow&&!CheckPublic(scope,2,Plan().typed)){
           borrow->CancelBeforeParent();Fail("live public input changed before parent execute");return ACLNN_ERR_PARAM_INVALID;}
-        if(borrow&&!borrow->BeforeParent(static_cast<aclOpExecutor*>(executor),workspace,bytes,stream)){
+        if(borrow&&!borrow->CommitParent(static_cast<aclOpExecutor*>(executor),workspace,bytes,stream)){
           borrow->CancelBeforeParent();Fail("execute borrow parent admission refused");return ACLNN_ERR_PARAM_INVALID;}
         try{status=f(executor,stream,workspace,bytes);ran=true;}
         catch(...){if(borrow)borrow->OriginalThrew();throw;}

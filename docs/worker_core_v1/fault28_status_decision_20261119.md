@@ -81,3 +81,11 @@ CANN9.x需要重新识别实际ABI、构建、stock/private桥接和F/OFF；版�
 ## 2026-11-20执行更新
 
 本页第5节“未开始”是19日只读历史快照。新B1构建、正常借用与stock/private完整公开哈希桥接已完成，M128控制接线两次拒绝后止损；B3–B5尚未通过、公共入口关闭。实际用时及原始身份见[npu_progress_20261120.md](npu_progress_20261120.md)追加复核，不将B1或值相同提升为完整验收。
+
+## 11-20 晚：两阶段预启动边界准备
+
+负责人最新明确截止到11-23结束，不自动延长NPU预算。新增 PrepareParent / CommitParent 分开“子copy完成并同步”和“允许父FIA启动”；第二阶段检查拒绝时可在父kernel启动前安全detach/reset，不再因提前标记parent_started失去取消机会。原 BeforeParent 仍组合两步，保留旧调用契约。
+
+新增 CPU 用例覆盖同步后检查失败、未准备直接提交、提交时workspace变化；真实8.5.1 SDK对象和实际生成FIA单元编译均通过，NPU用时0，未构建/替换生产DSO。见[tnd28_stage2_prelaunch_20261120_summary.json](../../experiments/worker_core_v11_20261118/tnd28_stage2_prelaunch_20261120_summary.json)。
+
+**尚未消除 B3 的拒绝**：现有第二阶段仍检查旧typed元数据，不足以证明当前prepared输入；本改动未把它升级为故障许可。还需把当前public/typed/实际prepared输入的同调用关系接入Native门禁，区分host准备许可和Execute最终许可，再构建独立vendor验证B3/B4/B5。研究与公共入口边界不变，不用CPU成功或运行日志冒充实机通过。

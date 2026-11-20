@@ -84,6 +84,13 @@ M2仍依赖0.26流式空间与官方驱动门禁、社区W8A8权重及磁盘预�
 
 显式全rank recover补测发现：恢复health结束后，旧index仍指向off，导致本地complete与next_phase矛盾。开发线修正恢复完成时的计划索引；CPU新增终态回归，实机以新attempt重验，并保留旧失败原件。显式recover测试不代替真实Worker崩溃/通信故障验收。
 
-Batch和41的TP2仍未接通：Batch当前身份和候选明确绑定TP1，B8请求行与rank本地Q/scale合同尚未扩展；41的writer/slot/consumer及health仍走TP1合同，缺少单rank注入与peer守卫接线。这些属于开发缺口，不是待重跑即可通过。20/26/33仍按普通入口适配预判与止损规则执行。28真实TND研究结果和失败限时另见专门记录，未授公共执行资格。
+早期检查点（已由下述实测更新）：Batch和41的TP2当时未接通：Batch当前身份和候选明确绑定TP1，B8请求行与rank本地Q/scale合同尚未扩展；41的writer/slot/consumer及health仍走TP1合同，缺少单rank注入与peer守卫接线。这些属于开发缺口，不是待重跑即可通过。20/26/33仍按普通入口适配预判与止损规则执行。28真实TND研究结果和失败限时另见专门记录，未授公共执行资格。
 
-三项显式recover的实机终态已独立复核通过；源码核对见[TP2运行文件身份](../../experiments/worker_core_v11_20261118/m1_tp2_runtime_sources_20261120.json)，11份待提交运行/probe文件与实测快照逐项SHA一致。Batch的TP1完整health缺口随后补齐，未改变TP2待适配状态。
+三项显式recover的实机终态已独立复核通过；源码核对见[TP2运行文件身份](../../experiments/worker_core_v11_20261118/m1_tp2_runtime_sources_20261120.json)，11份待提交运行/probe文件与实测快照逐项SHA一致。Batch的TP1完整health缺口随后补齐，该 TP1 检查本身不授予 TP2 资格。
+
+## 11-20 晚更新：M1 Batch / 41 已闭环
+
+- Batch：8c476f60 的 standard MP spawn 私有 vendor 顺序修复后，A2/CANN8.5.1/0.18/Qwen3-0.6B W8A8/TP2/B8 同 Worker 组两作用域通过；默认 rank0 实际 Q/scale 写入，rank1 守卫边界不变，两 rank hidden/logits 均变化。OFF、前后完整 health 和资源清零独立复核通过。[独立报告](../../experiments/worker_core_v11_20261118/m1_batch_tp2_20261120_summary.json)。
+- 41：A2/CANN8.5.1/0.18/Qwen3-0.6B BF16/TP2，同 Worker 组两作用域及显式统一 recover 已通过。[独立报告](../../experiments/worker_core_v11_20261118/m1_kv41_tp2_20261120_summary.json)。
+
+均属于开发线 BLUE 组合证据，未修改冻结发行或默认部署准入；不推导新软件栈/A3/现役通过。跨 rank 传播不唯一证明某次 all-reduce 的归因。

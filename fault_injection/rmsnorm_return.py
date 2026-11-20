@@ -64,6 +64,20 @@ def eager_rms_contract(module):
                 source_sha256=hashlib.sha256(source.encode()).hexdigest())
 
 
+GEMMA_SCHEMA = ('_C_ascend::npu_gemma_rms_norm(Tensor x, Tensor gamma, '
+                'float epsilon=9.9999999999999995e-07) -> (Tensor y, Tensor rstd)')
+
+
+def native_rms_schema(schema):
+    name = getattr(schema, 'name', '')
+    if name == '_C_ascend::npu_gemma_rms_norm':
+        # Reviewed 0.26 operator takes the actual Gemma weight; its native
+        # implementation handles 1+weight. Never rewrite that math as RMSNorm.
+        return str(schema) == GEMMA_SCHEMA
+    return (name.split('::', 1)[0] in ('npu', '_C_ascend') and
+            name.rsplit('::', 1)[-1] in ('npu_rms_norm', 'npu_add_rms_norm', 'npu_add_rms_norm_bias'))
+
+
 def _same_view(left, right):
     return (left.untyped_storage()._cdata == right.untyped_storage()._cdata
         and left.storage_offset() == right.storage_offset() and left.shape == right.shape
@@ -97,8 +111,7 @@ class RMSNormReturnSession(ScopedDispatch):
         import torch
         schema = getattr(func, '_schema', None)
         name = getattr(schema, 'name', '')
-        native_rms = (name.split('::', 1)[0] in ('npu', '_C_ascend') and
-            name.rsplit('::', 1)[-1] in ('npu_rms_norm', 'npu_add_rms_norm', 'npu_add_rms_norm_bias'))
+        native_rms = native_rms_schema(schema)
         if not native_rms:
             return self._read_call(func, args, kwargs)
         actual_tensors = tuple(tensors((args, kwargs)))
