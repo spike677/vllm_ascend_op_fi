@@ -48,14 +48,14 @@ def verify_history(host):
         and all(state['native_state'].get(k)==0 for k in ('environment_owned','pending_drains','pending_references')),'NATIVE_RESOURCES_REMAIN')
     return rows,selected
 
-def review(a):
+def review(a, reviewed_scopes=None):
     result=P.json_file(a.run/'result.json',128*1024**2)
     need(result['entry_protocol']=='EXPLICIT_TWO_STAGE_RESEARCH_NOT_PUBLIC_RUNTIME' and len(result['scopes'])==2,'TWO_RESEARCH_SCOPES_REQUIRED')
     build,files,metadata,abi=P.bundle(a.build,a.build_sha256,a.vendor,a.source,a.source_manifest_sha256)
     need(E.sha(a.libraries)==a.libraries_sha256,'EXACT_LIBRARY_MANIFEST_REQUIRED')
     libraries=P.json_file(a.libraries);entries={r['recorded_path']:r for r in libraries['files']}
     need(len(entries)==len(libraries['files'])<=32,'LIBRARY_MANIFEST_DUPLICATE_OR_BOUND')
-    runtime=P.lines(a.run/'runtime/runtime.jsonl',128*1024**2);summaries=[];owners=[];references=[]
+    runtime=P.lines(a.run/'runtime/runtime.jsonl',128*1024**2);summaries=[] if reviewed_scopes is None else reviewed_scopes;owners=[];references=[]
     for index,scope in enumerate(result['scopes']):
         hostpath=a.run/f'scope{index}/host_receipt.json';host=P.json_file(hostpath,1024**3)
         original_bytes=0;original_hashes=[]
@@ -108,9 +108,10 @@ def main():
     for name in ('run','build','vendor','source','libraries','out'):p.add_argument('--'+name,type=Path,required=True)
     for name in ('build-sha256','source-manifest-sha256','libraries-sha256'):p.add_argument('--'+name,required=True)
     a=p.parse_args();r=dict(status='REJECTED_OR_INCOMPLETE',issues=[],public_qualification_granted=False,reader_sha256=E.sha(__file__),
-        scope='EXPLICIT_RESEARCH_B3_B4_B5_NOT_PUBLIC_WORKER_QUALIFICATION',limitations=['Slice POD not decoded','production nnopbase full source equivalence not proved','no C2/C3 or all-target coverage claim'])
+        scopes=[],scope='EXPLICIT_RESEARCH_B3_B4_B5_NOT_PUBLIC_WORKER_QUALIFICATION',limitations=['Slice POD not decoded','production nnopbase full source equivalence not proved','no C2/C3 or all-target coverage claim'])
     sys.addaudithook(E.prohibit_runtime)
-    try:r.update(scopes=review(a),status='TWO_RESEARCH_SCOPES_NATIVE_EFFECT_AND_FULL_RECOVERY_REVIEWED')
+    try:
+        review(a,r['scopes']);r['status']='TWO_RESEARCH_SCOPES_NATIVE_EFFECT_AND_FULL_RECOVERY_REVIEWED'
     except Exception as error:r['issues'].append(repr(error))
     with a.out.open('x',encoding='utf-8') as f:json.dump(r,f,indent=2);f.write('\n')
     print(json.dumps(dict(status=r['status'],issues=r['issues'])));return 2 if r['issues'] else 0
