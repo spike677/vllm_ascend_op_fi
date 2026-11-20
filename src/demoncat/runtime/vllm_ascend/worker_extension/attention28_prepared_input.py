@@ -113,11 +113,21 @@ class PreparedInputCapture:
         except BaseException as error:
             self.first_error=self.first_error or repr(error);raise
 
+    def _capture_phase(self):return 'observe'
+
+    def _make_typed_plan(self,token):
+        from .attention28_typed_plan import LiveTypedPlan
+        if self.check_live_values:
+            from .attention28_value_plan import LivePreparedValuePlan
+            return LivePreparedValuePlan(self.borrow_query,self.replay_binding,self.live_plan,token,
+                                         check_live_copy_launch=self.check_live_copy_launch)
+        return LiveTypedPlan(self.borrow_query,self.replay_binding,self.live_plan,token)
+
     def enter(self,token,row,actual,api):
         self._check();require(not self.used and self.active is None,'TND_INPUT_SINGLE_CURRENT_CALL_ONLY')
         scope=row['native_census_scope']
         require(scope['worker_object_id']==id(self.worker) and scope['runner_object_id']==id(self.runner)
-            and scope['model_object_id']==id(self.model) and scope['phase']=='observe',
+            and scope['model_object_id']==id(self.model) and scope['phase']==self._capture_phase(),
             'TND_INPUT_ACTUAL_WORKER_NORMAL_REQUEST_REQUIRED')
         require(not any(k.startswith(PREFIX) for k in os.environ),'TND_INPUT_FOREIGN_OBSERVER_ENVIRONMENT')
         from fault_injection.fia_input_journal import public_tensor_metadata
@@ -157,12 +167,7 @@ class PreparedInputCapture:
                 finally:
                     if os.environ.get(key)==value:self.active[key]=value
             if self.borrow_query is not None:
-                from .attention28_typed_plan import LiveTypedPlan
-                if self.check_live_values:
-                    from .attention28_value_plan import LivePreparedValuePlan
-                    factory=lambda *a: LivePreparedValuePlan(*a,check_live_copy_launch=self.check_live_copy_launch)
-                else:factory=LiveTypedPlan
-                self.typed_plan=factory(self.borrow_query,self.replay_binding,self.live_plan,token)
+                self.typed_plan=self._make_typed_plan(token)
                 self.typed_plan.install()
                 self.receipt['live_typed_plan']=self.typed_plan.snapshot()
         except BaseException as error:

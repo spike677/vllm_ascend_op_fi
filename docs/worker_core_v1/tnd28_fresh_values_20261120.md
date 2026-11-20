@@ -41,3 +41,8 @@ CANN8.5.1 无设备编译与局部状态机自测通过（失配token、未发�
 host 使用版本化 `dcat_tnd28_replay_prepare_gate_v2`，只在原 GWS 内重新读取实际 parent/child 关系，允许准备 tiling，不表示 prepared 值已经存在。host 通过精确库路径以 RTLD_NOLOAD 借用已加载的局部 opapi，不加载或提升全局可见性。Execute 在原 child 返回并同步后进行第二阶段校验，且 parent 必须为准备阶段的同一个对象，最后一次性 CommitParent。任何校验失败仍走既有安全取消路径；不删除拒绝检查来伪造通过。
 
 本增量仍未接到可公开调用的故障入口，F/B3/B4/B5 尚未验收。正常值、copy、host prepare、最终执行是分开的证据；CPU 夹具不构成实际 kernel 资格。
+
+
+研究驱动现已独立接入 `TwoStageResearchProvider`，没有放宽公共 registry，也没有把 F 塞进 observe 阶段。宿主按同源研究 request_plan / next_phase 执行 observe、observe_repeat、baseline、baseline_repeat、fault、off、health；同一标准 Worker 重复两个不同 owner。基线重复、实际单目标 F、当前输入相同/Attention输出变化、OFF完整hidden/logits恢复均逐项检查。只有实际OFF通过才解除 needs_off；health先卸除故障API/Attention拦截，再安装三个只读root/logits观察hook。未完成/不确定恢复保留owner，不自动重跑F。
+
+新研究状态与反例CPU测试7项通过，连同既有输入契约回归共24项通过；上述协议尚未在NPU运行，不登记B3/B4/B5通过。

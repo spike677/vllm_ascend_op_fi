@@ -1,0 +1,73 @@
+"""Research-only CPU contracts. No CANN, executor or kernel is simulated as qualified."""
+from copy import deepcopy
+from types import SimpleNamespace as NS
+import ctypes as C
+import json
+import unittest
+from unittest.mock import patch
+from experiments.worker_core_v11_20261118 import tnd28_two_stage_research as R
+from demoncat.runtime.vllm_ascend.worker_extension.attention28_typed_plan import SYMBOLS
+from demoncat.runtime.vllm_ascend.worker_extension.providers.attention_serving import FiaDenominatorReplayServingProvider
+
+class ResearchContracts(unittest.TestCase):
+    def native_state(self,value):
+        p=R.ResearchTypedPlan.__new__(R.ResearchTypedPlan);p.binding=NS(_owner=lambda:None);p.token='a'*32
+        def query(token,out,capacity):
+            raw=json.dumps(value).encode()+b'\0';C.memmove(out,raw,len(raw));return 0
+        p.functions={SYMBOLS[2]:query};return p.state()
+    def test_final_state_requires_each_native_gate(self):
+        good=dict(schema='demoncat.tnd28.live_typed_plan.v2',fault_authorized=True,replay_parent_committed=1,
+            replay_requested=1,host_completed=1,copy_launch_read=1,host_gate_checks=4,value_read_mask=31,first_error=0)
+        self.assertTrue(self.native_state(good)['fault_authorized'])
+        for name,value in [('replay_parent_committed',0),('replay_requested',0),('host_completed',0),
+                           ('copy_launch_read',0),('host_gate_checks',0),('value_read_mask',15),('first_error',1)]:
+            with self.subTest(name=name):
+                row=dict(good,**{name:value})
+                with self.assertRaises(RuntimeError):self.native_state(row)
+    def provider(self,rows):
+        p=R.TwoStageResearchProvider.__new__(R.TwoStageResearchProvider);p.records=rows
+        p.binding=NS(native=R.TwoStageNativeResearch.__new__(R.TwoStageNativeResearch));p.selection={'target_key':'actual'}
+        p.session=NS(needs_off=True);return p
+    def row(self,phase,hidden='normal',native=None,output='normal'):
+        calls=[] if phase=='health' else [dict(target_key='actual',input='same-input',output=output,native=native)]
+        return dict(phase=phase,forwards=[dict(input='same-request',hidden=hidden,logits=hidden,calls=calls)])
+    def collect(self,p):
+        with patch.object(FiaDenominatorReplayServingProvider,'_collect',return_value=None):p._collect()
+    def test_fault_requires_repeat_baseline_and_exact_driver(self):
+        p=self.provider([])
+        with self.assertRaises(RuntimeError):p._prepare_phase('fault')
+        p.records=[dict(phase=x) for x in ('observe','observe_repeat','baseline','baseline_repeat')]
+        p._prepare_phase('fault');p.binding.native=NS()
+        with self.assertRaises(RuntimeError):p._prepare_phase('fault')
+    def test_fault_output_must_change_with_same_inputs(self):
+        baseline=self.row('baseline_repeat')
+        fault=self.row('fault',hidden='changed',native=dict(selection_applied=True,fault_authorized=True),output='changed')
+        p=self.provider([baseline,fault]);self.collect(p)
+        for key,value in [('input','different'),('output','normal')]:
+            altered=deepcopy(fault);altered['forwards'][0]['calls'][0][key]=value
+            with self.assertRaises(RuntimeError):self.collect(self.provider([baseline,altered]))
+    def test_off_latch_clears_only_after_complete_values_and_actual_native_off(self):
+        baseline=self.row('baseline')
+        off=self.row('off',native=dict(selection_applied=False,fault_authorized=False))
+        p=self.provider([baseline,off]);self.collect(p);self.assertFalse(p.session.needs_off)
+        for key,value in [('hidden','wrong'),('logits','wrong')]:
+            altered=deepcopy(off);altered['forwards'][0][key]=value;p=self.provider([baseline,altered])
+            with self.assertRaises(RuntimeError):self.collect(p)
+            self.assertTrue(p.session.needs_off)
+        altered=deepcopy(off);altered['forwards'][0]['calls'][0]['native']['fault_authorized']=True
+        p=self.provider([baseline,altered])
+        with self.assertRaises(RuntimeError):self.collect(p)
+        self.assertTrue(p.session.needs_off)
+    def test_health_rejects_attention_interception(self):
+        p=self.provider([self.row('baseline'),self.row('health')])
+        p.session=R.HealthOnlyAdapter.__new__(R.HealthOnlyAdapter);p.session.patches=[];p.session.handles=[1,2,3]
+        self.collect(p)
+        p.session.patches=['fault-wrapper']
+        with self.assertRaises(RuntimeError):self.collect(p)
+    def test_normal_capture_still_observe_only(self):
+        p=R.PreparedInputCapture.__new__(R.PreparedInputCapture)
+        self.assertEqual(p._capture_phase(),'observe')
+        self.assertFalse(R.TwoStageNativeResearch.observer_only)
+        self.assertEqual(R.TwoStageResearchProvider.phases,('observe','observe_repeat','baseline','baseline_repeat','fault','off','health'))
+
+if __name__=='__main__':unittest.main()
