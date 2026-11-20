@@ -153,7 +153,8 @@ class Fault41ServingProvider(Scope):
                 from ..postwrite41 import Postwrite41WorkerProvider
                 from fault_injection.deployments.postwrite_evidence import digest
                 factory = self.binding.provider_factory if self.binding.simulation else Postwrite41WorkerProvider
-                self.p = factory(self.worker, self.binding.transport, tail_elements=2)
+                extra={'group_context':self.binding.group_context} if self.binding.group_context is not None else {}
+                self.p = factory(self.worker, self.binding.transport, tail_elements=2, **extra)
                 require(type(self.p) is Postwrite41WorkerProvider and not self.p.installed,
                         'KV41_EXISTING_UNINSTALLED_PROVIDER_REQUIRED')
                 self.native_owner = self.p.owner

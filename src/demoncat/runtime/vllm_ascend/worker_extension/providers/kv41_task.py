@@ -116,7 +116,13 @@ class KV41TaskProvider(Fault41ServingProvider):
         record=self.p.finish_request()
         interventions=[row for row in record['rows'] if row.get('intervention')]
         effect=None
-        if phase in ('lossless','fault'):
+        guard_fault=phase=='fault' and self.binding.group_context is not None and not self.p.fault_injector()
+        if guard_fault:
+            guarded=[r['guard_boundary'] for r in record['rows'] if r.get('guard_boundary')]
+            require(not interventions and len(guarded)==1 and guarded[0]['unchanged']
+                and guarded[0]['native_writes']==0,'TP2_KV41_GUARD_BOUNDARY_REQUIRED')
+            effect=deepcopy(guarded[0])
+        if phase=='lossless' or phase=='fault' and not guard_fault:
             require(len(interventions)==1,'KV41_TASK_ONE_ACTUAL_TARGET_REQUIRED')
             selected=interventions[0]; effect=deepcopy(selected['intervention'])
             require(effect['original_calls']==1 and effect['consumer_returned']

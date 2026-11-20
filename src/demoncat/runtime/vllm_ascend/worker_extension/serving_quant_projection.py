@@ -444,7 +444,10 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
         q, scale = output
         after = self.state()['raw']
         require(not after['census']['overflow'] and not after['census']['errors']
-                and 0 < after['last_sequence'] - before['last_sequence'] <= 9, 'BOUNDED_COMPLETE_NATIVE_CALL_REQUIRED')
+                and 0 < after['last_sequence'] - before['last_sequence'] <= 9,
+                'BOUNDED_COMPLETE_NATIVE_CALL_REQUIRED:' + str(dict(
+                    phase=phase, rank=self.expected_rank, before_sequence=before['last_sequence'],
+                    after_sequence=after['last_sequence'], census=after['census'])))
         events = self.native.raw_range(before['last_sequence'] + 1, after['last_sequence'])
         if done is None:
             execution = verify_public_group_call(events, x, q, scale, threading.get_native_id(),

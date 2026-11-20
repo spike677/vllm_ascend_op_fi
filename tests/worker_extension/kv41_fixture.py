@@ -114,9 +114,10 @@ class CpuWorkerModel(torch.nn.Module):
         return query.reshape(1, 16) + self.output_shift
 
 
-def provider_factory(worker, transport, *, tail_elements):
+def provider_factory(worker, transport, *, tail_elements, group_context=None):
     """Only construction/source/device acceptance is mocked, not the protocol."""
     p = postwrite41.Postwrite41WorkerProvider.__new__(postwrite41.Postwrite41WorkerProvider)
+    p.group_context=group_context
     p.worker, p.runner, p.model, p.transport = worker, worker.model_runner, worker.model_runner.model, transport
     p.candidates = [(path, module) for path, module in p.model.named_modules() if isinstance(module, CpuAttention)]
     p.structural_candidates = list(p.candidates)

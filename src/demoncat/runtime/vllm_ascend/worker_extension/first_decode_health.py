@@ -46,8 +46,9 @@ class FirstDecodeHealth:
             from .batch_context import snapshot_first_decode_rows
             require(self.current is None and self.result is None, 'DECODE_HEALTH_ONLY_FIRST_DECODE')
             expected={self.request_id:dict(logical_id=0,prompt=self.reference['prefixes'][0]['prompt'])}
-            self.current=snapshot_first_decode_rows(self.p.runner,self.p.model,
-                self.p.binding.bind(module,args,kwargs),get_forward_context(),expected,expected_max_seqs=1)
+            actual=self.p.binding.bind(module,args,kwargs);context=get_forward_context()
+            self.current=(self.p.snapshot_decode(actual,context,expected) if hasattr(self.p,'snapshot_decode') else
+                snapshot_first_decode_rows(self.p.runner,self.p.model,actual,context,expected,expected_max_seqs=1))
             require(self.current['prefixes']==self.reference['prefixes'], 'DECODE_HEALTH_LOGICAL_INPUT_CHANGED')
         except BaseException as error:
             self.error=repr(error);raise

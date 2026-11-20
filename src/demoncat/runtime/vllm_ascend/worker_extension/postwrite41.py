@@ -40,7 +40,8 @@ def _target_key(path, module, context):
 
 
 class Postwrite41WorkerProvider:
-    def __init__(self, worker, transport, *, tail_elements=2):
+    group_context = None
+    def __init__(self, worker, transport, *, tail_elements=2, group_context=None):
         import torch_npu
         from vllm.model_executor.layers.attention.attention import Attention
         from vllm_ascend.attention import attention_v1
@@ -48,7 +49,8 @@ class Postwrite41WorkerProvider:
         require(isinstance(transport, NativePostwriteLibrary), 'TAIL_COLUMN_VERIFIED_NATIVE_TRANSPORT_REQUIRED')
         self.worker, self.runner = worker, worker.model_runner
         self.model, self.transport = self.runner.model, transport
-        require_serial_eager(self.runner, expected_max_seqs=1)
+        self.group_context=group_context
+        self._require_runner()
         self.source = {}
         for label, cls, expected in (('backend', attention_v1.AscendAttentionBackendImpl, ATTENTION_SOURCE_SHA256),
                                      ('layer', Attention, LAYER_SOURCE_SHA256)):
@@ -81,6 +83,26 @@ class Postwrite41WorkerProvider:
         self.coverage = None
         self.process_start = Path('/proc/self/stat').read_text().rsplit(')', 1)[1].split()[19]
         self.model_identity = self._identity()
+
+    def _require_runner(self):
+        if self.group_context is None:return require_serial_eager(self.runner,expected_max_seqs=1)
+        from .multi_rank_prerequisites import tp2_eager_assessment
+        c=self.group_context
+        report=tp2_eager_assessment(self.runner,c.tp_group,c.identity['rank'])
+        require(not report['unmet'],'TP2_KV41_PREREQUISITES:'+str(report['unmet']))
+
+    def snapshot_decode(self,actual,context,expected):
+        if self.group_context is None:
+            from .batch_context import snapshot_first_decode_rows
+            return snapshot_first_decode_rows(self.runner,self.model,actual,context,expected,expected_max_seqs=1)
+        self._require_runner()
+        from .batch_context import _snapshot_first_decode_rows
+        return _snapshot_first_decode_rows(self.runner,self.model,actual,context,expected,expected_max_seqs=1)
+
+    def fault_injector(self):
+        if self.group_context is None:return True
+        require(self.group_context.decision is not None,'TP2_KV41_ROLE_REQUIRED')
+        return self.group_context.decision['selected_rank']==self.group_context.identity['rank']
 
     def _identity(self):
         return (id(self.model), tuple((id(module), type(module).__module__, type(module).__qualname__)
@@ -177,8 +199,7 @@ class Postwrite41WorkerProvider:
         from vllm.forward_context import get_forward_context
         from .batch_context import snapshot_first_decode_rows
         context = get_forward_context()
-        self.current = snapshot_first_decode_rows(self.runner, self.model,
-            self.binding.bind(module, args, kwargs), context, self.expected, expected_max_seqs=1)
+        self.current = self.snapshot_decode(self.binding.bind(module, args, kwargs),context,self.expected)
         require(self.pending_run is None, 'TAIL_COLUMN_ONLY_FIRST_DECODE_PER_REQUEST')
         self.forward_serial += 1
         self.writers = {}
@@ -274,6 +295,15 @@ class Postwrite41WorkerProvider:
         self.independent_calls.append(call)
         row['call_id'] = call['call_id']
         selected = row['target_key'] == self.target
+        if selected and self.phase=='fault' and not self.fault_injector():
+            from fault_injection.deployments.postwrite_kv import valid_kv_snapshot
+            before=valid_kv_snapshot(self.transport,plan,actual)
+            result=original(*args,**kwargs)
+            after=valid_kv_snapshot(self.transport,plan,actual)
+            require(before==after,'TP2_KV41_GUARD_CACHE_CHANGED')
+            row['guard_boundary']=dict(before=before,after=after,unchanged=True,native_writes=0)
+            row['consumer_returned']=True
+            return result
         if selected and self.phase in ('lossless', 'baseline', 'fault'):
             require(self.lease is None, 'TAIL_COLUMN_PRIOR_LEASE_NOT_DRAINED')
             self.lease = LiveKVSlotLease(self.transport, plan, self.owner, self.generation)
@@ -316,7 +346,7 @@ class Postwrite41WorkerProvider:
             if self.phase in ('lossless', 'baseline', 'off'):
                 require(_equal(self.outputs[0], self.outputs[-1]), 'TAIL_COLUMN_LOSSLESS_OR_OFF_OUTPUT_MISMATCH')
                 if self.phase in ('lossless', 'baseline'):self.lossless = True
-            if self.phase == 'fault':require(run['new_fault_hits'] == 1, 'TAIL_COLUMN_C1_HIT_COUNT_MISMATCH')
+            if self.phase == 'fault':require(run['new_fault_hits'] == int(self.fault_injector()), 'TAIL_COLUMN_C1_HIT_COUNT_MISMATCH')
         run.update(recovery_confirmed=True, exact_healthy_output=_equal(self.outputs[0], self.outputs[-1]),
                    public_worker_qualified=False, all_eligible_qualified=False, every_match_qualified=False)
         self.history.append(run)

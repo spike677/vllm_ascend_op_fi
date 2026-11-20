@@ -249,7 +249,7 @@ class MultiRankTests(unittest.TestCase):
     def test_no_public_rank_and_no_batch_or_tp1_implicit_admission(self):
         with self.assertRaises(TypeError): FaultConfig.from_dict(dict(fault_id=18,variant='api_half',rank=0))
         with self.assertRaises(ValueError):
-            MultiRankTaskClient(self.executor,FaultConfig(41,'tail_column'),prepare_binding=lambda *a:{})
+            MultiRankTaskClient(self.executor,FaultConfig(25,'reduce_scatter'),prepare_binding=lambda *a:{})
         self.assertFalse(self.client.contract()['qualification_granted'])
 
 

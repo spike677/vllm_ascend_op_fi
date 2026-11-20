@@ -191,7 +191,10 @@ def create_worker_provider(mechanism, version, worker, model, identity):
     admission=require_ordinary_route(mechanism,worker,model)
     if mechanism=='41.tail_column':
         from .providers.kv41_task import KV41TaskProvider
-        provider=KV41TaskProvider(worker,model,identity)
+        if getattr(getattr(worker,'_demoncat_kv41_serving_binding',None),'group_context',None) is not None:
+            from .kv41_tp2 import TP2KV41TaskProvider
+            provider=TP2KV41TaskProvider(worker,model,identity)
+        else:provider=KV41TaskProvider(worker,model,identity)
     elif mechanism=='18.api_half' and getattr(getattr(worker,'_demoncat_natural_tensor_serving_bindings',{}).get(mechanism),'group_context',None) is not None:
         from .rms18_tp2 import TP2Rms18Provider
         provider=TP2Rms18Provider(worker,model,identity)

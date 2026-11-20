@@ -13,7 +13,7 @@ from .host import HostAdapter, WorkerFaultClient, HostContractError, _GroupIdent
 from fault_injection.request_plan import request_plan
 
 RESTORE = {'recover', 'abort', 'disable', 'unregister', 'detach', 'clean'}
-SUPPORTED = {'18.api_half', '39.output_proxy', '22.wrong_row', 'quant.batch_shared_scale'}
+SUPPORTED = {'18.api_half', '39.output_proxy', '22.wrong_row', 'quant.batch_shared_scale', '41.tail_column'}
 
 
 class MultiRankTaskClient:

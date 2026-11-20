@@ -29,6 +29,7 @@ class KV41ServingBinding:
     provider_factory: object = None
     native_readback: object = None
     runtime_only: bool = False
+    group_context: object = None
     leases: set = field(default_factory=set, compare=False, repr=False)
 
 
@@ -59,7 +60,7 @@ def read_native_binding(binding):
 
 def install_fault41_serving_binding(worker, *, transport, prompt_token_ids, scope,
         max_seconds=600, first_live_validation=False, _simulation=False,
-        _provider_factory=None, _native_readback=None, runtime_only=False):
+        _provider_factory=None, _native_readback=None, runtime_only=False, group_contract=None):
     """Trusted existing-serving host only; acquire no hooks, leases or workers."""
     from fault_injection.coverage_session import CoverageScope
     from fault_injection.deployments.postwrite import NativePostwriteLibrary
@@ -82,11 +83,16 @@ def install_fault41_serving_binding(worker, *, transport, prompt_token_ids, scop
     require(isinstance(sha, str) and len(sha) == 64 and all(c in '0123456789abcdef' for c in sha),
             'KV41_REVIEWED_NATIVE_HASH_REQUIRED')
     runner, model = worker.model_runner, worker.model_runner.model
-    require_serial_eager(runner, expected_max_seqs=1)
+    context=None
+    if group_contract is None:require_serial_eager(runner, expected_max_seqs=1)
+    else:
+        from .rms18_tp2 import validate_tp2_group
+        require(runtime_only and not _simulation,'TP2_KV41_ORDINARY_REAL_BINDING_REQUIRED')
+        context=validate_tp2_group(worker,'41.tail_column',group_contract)
     require(model.training is False, 'INFERENCE_MODEL_REQUIRED')
     binding = KV41ServingBinding(worker, runner, model, transport, tuple(prompt_token_ids), scope,
         max_seconds, os.getpid(), threading.get_ident(), sha, id(getattr(transport, 'lib', None)),
-        _simulation, _provider_factory, _native_readback, runtime_only)
+        _simulation, _provider_factory, _native_readback, runtime_only, context)
     evidence = read_native_binding(binding)
     setattr(worker, _ATTRIBUTE, binding)
     return dict(status='SERVING_DEPLOYMENT_BOUND_NOT_QUALIFIED', mechanism='41.tail_column',
