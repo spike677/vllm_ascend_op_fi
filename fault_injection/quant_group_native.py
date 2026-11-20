@@ -189,7 +189,7 @@ def key(sha256):
     return Key.from_buffer_copy(bytes.fromhex(sha256))
 
 
-def inspect_bundle(bundle,approved_build_sha256):
+def inspect_bundle(bundle,approved_build_sha256,*,approved_cann="8.5.1"):
     """Aggregate inert file/source/SDK/process prerequisites before any CDLL."""
     root=Path(bundle).resolve()
     def digest(path):
@@ -205,7 +205,8 @@ def inspect_bundle(bundle,approved_build_sha256):
     try:manifest=json.loads(manifest_path.read_bytes())
     except (OSError,ValueError):manifest={}
     if type(manifest) is not dict:manifest={}
-    for field,expected in dict(schema='demoncat.quant.group_deployment.v1',cann='8.5.1',actual_npu_calls=0,
+    check('explicit_sdk_profile_reviewed',True,approved_cann in ('8.5.1','9.1.0'),'QUANT_GROUP_UNREVIEWED_SDK_PROFILE')
+    for field,expected in dict(schema='demoncat.quant.group_deployment.v1',cann=approved_cann,actual_npu_calls=0,
             legacy_c1_library_present=False,library='runtime/vendor/op_api/lib/libcust_opapi.so').items():
         check(field,expected,manifest.get(field),'QUANT_GROUP_DEPLOYMENT_IDENTITY_INCOMPLETE')
     files=manifest.get('files',{})
@@ -233,6 +234,17 @@ def inspect_bundle(bundle,approved_build_sha256):
         'QUANT_GROUP_REAL_OPAPI_OR_PROCESS_MODE_CHANGED')
     check('real_opapi_sha256',sdk.get('real_opapi_sha256'),digest(real) if real.is_absolute() else None,
         'QUANT_GROUP_REAL_OPAPI_OR_PROCESS_MODE_CHANGED')
+    if approved_cann=='9.1.0':
+        sdk_root=Path('/usr/local/Ascend/cann-9.1.0/aarch64-linux')
+        headers=sdk.get('sdk_headers',{})
+        if type(headers) is not dict:headers={}
+        for name in ('include/acl/acl.h','include/aclnnop/aclnn_dynamic_quant_v2.h'):
+            actual=digest(sdk_root/name);expected=headers.get(name)
+            check('cann91_header.'+name,expected,actual,'QUANT_GROUP_CANN91_SDK_HEADERS_CHANGED')
+            check('cann91_header_recorded.'+name,True,isinstance(expected,str) and len(expected)==64,
+                'QUANT_GROUP_CANN91_SDK_HEADERS_MISSING')
+        check('cann91_opapi_location',str(sdk_root.parent/'opp/built-in/op_impl/ai_core/tbe/op_api/lib/linux/aarch64/libopapi.so'),str(real),
+            'QUANT_GROUP_CANN91_REAL_SDK_REQUIRED')
     for field,pattern in [('actual_image_id',r'sha256:[0-9a-f]{64}'),('source_commit',r'[0-9a-f]{40}')]:
         value=manifest.get(field)
         check(field+'_valid',True,isinstance(value,str) and re.fullmatch(pattern,value) is not None,
@@ -266,8 +278,8 @@ class QuantGroupNative:
 
     @classmethod
     @isolation.managed_loader('group')
-    def load(cls, bundle, *, approved_build_sha256):
-        root,manifest,report = inspect_bundle(bundle,approved_build_sha256)
+    def load(cls, bundle, *, approved_build_sha256, approved_cann="8.5.1"):
+        root,manifest,report = inspect_bundle(bundle,approved_build_sha256,approved_cann=approved_cann)
         sdk=manifest['sdk_identity']
         path = (root / manifest['library']).resolve(strict=True)
         try:library = C.CDLL(str(path), mode=C.RTLD_LOCAL)
@@ -275,7 +287,7 @@ class QuantGroupNative:
             require_identity(False,'quant_bundle','load','load approved DSO',str(error),
                 'QUANT_GROUP_NATIVE_LOAD_FAILED',UnsupportedCall)
         identity = dict(path=str(path), library_sha256=_sha(path), build_sha256=approved_build_sha256,
-                        actual_image_id=manifest['actual_image_id'], source_commit=manifest['source_commit'],
+                        actual_image_id=manifest['actual_image_id'], source_commit=manifest['source_commit'],cann=approved_cann,
                         sdk_abi_sizes=sdk['abi_sizes'], sdk_metadata_abi_sizes=sdk['metadata_abi_sizes'], actual_npu_acceptance=False)
         result = cls(library, identity, _token=_VERIFIED_LOAD)
         result._verify_mapped()

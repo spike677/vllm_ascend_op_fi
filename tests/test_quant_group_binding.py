@@ -189,6 +189,17 @@ class QuantGroupProfileTests(unittest.TestCase):
         (root / 'build.json').write_text(json.dumps(manifest))
         return group._sha(root / 'build.json'), real
 
+    def test_cann91_requires_explicit_profile_and_runtime_sdk_bytes(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);_,real=self.bundle(root)
+            manifest=json.loads((root/'build.json').read_bytes());manifest['cann']='9.1.0'
+            (root/'build.json').write_text(json.dumps(manifest))
+            approved=group._sha(root/'build.json')
+            with patch.dict(os.environ,{'DCAT_REAL_OPAPI':str(real),'DCAT_DQ_GROUP_V1_ALLOWED':'1','VLLM_SERVER_DEV_MODE':'1','DCAT_DQ_V2_ENABLE':'0'}):
+                with self.assertRaisesRegex(UnsupportedCall,'DEPLOYMENT_IDENTITY'):group.inspect_bundle(root,approved)
+                with self.assertRaisesRegex(UnsupportedCall,'CANN91'):group.inspect_bundle(root,approved,approved_cann='9.1.0')
+                with self.assertRaisesRegex(UnsupportedCall,'UNREVIEWED_SDK'):group.inspect_bundle(root,approved,approved_cann='9.2.0')
+
     def test_old_source_profile_refuses_before_cdll_even_with_same_abi_and_valid_manifest_hash(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
