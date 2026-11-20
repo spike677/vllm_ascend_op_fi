@@ -175,6 +175,7 @@ class PreparedInputCapture:
             require(self.typed_plan.first_error is None and len(self.typed_plan.events)==2,
                     'TND_BORROW_TWO_ACTUAL_TYPED_CHECKS_REQUIRED')
             native_plan=self.typed_plan.state()
+            self.receipt['native_typed_plan_return']=native_plan
             require(all(native_plan[name]==value for name,value in dict(bound=1,prepare_entered=1,
                 prepare_accepted=1,prepare_admitted=1,execute_entered=1,safe_release=1,
                 terminal_uncertain=0,first_error=0).items()),'TND_BORROW_NATIVE_TYPED_GUARD_NOT_COMPLETE')

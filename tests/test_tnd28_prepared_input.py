@@ -561,6 +561,13 @@ class OneWindowEntrypoints(unittest.TestCase):
         self.assertEqual(case['review']['resource_budget']['ordinary_health_requests'],1)
         self.assertEqual(case['review']['resource_budget']['cpus'],8)
         self.assertNotIn('DCAT28_TND_MODE',case['command']);self.assertFalse(case['review']['fault_authorized'])
+        args.check_live_values=True
+        with self.assertRaisesRegex(ValueError,'LIVE_VALUES_REQUIRE'):P.make_case(args,source,observer,build,[],{})
+        args.execute_borrow=True
+        observed=P.make_case(args,source,observer,build,[],{})[0]
+        self.assertIn('--check-live-values',observed['command'])
+        self.assertTrue(observed['review']['current_values_requested'])
+        self.assertFalse(observed['review']['fault_authorized'])
         args.timeout=1801
         with self.assertRaises(ValueError):P.make_case(args,source,observer,build,[],{})
 

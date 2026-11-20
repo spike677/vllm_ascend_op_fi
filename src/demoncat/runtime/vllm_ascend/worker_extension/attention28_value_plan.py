@@ -58,6 +58,7 @@ class LivePreparedValuePlan(LiveTypedPlan):
             self.value_checks=verify_live_values(self.plan,self._read)
             self.binding.check_current(self.plan,read_values=False)
             self.events[-1]['fresh_value_checks']=self.value_checks
+            self.events[-1]['read_input_values']=True
             return 1
         except BaseException as error:
             self.first_error=self.first_error or repr(error)[:1024];return 0
