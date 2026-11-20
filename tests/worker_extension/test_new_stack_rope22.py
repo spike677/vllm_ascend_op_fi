@@ -38,6 +38,19 @@ class WindowTests(unittest.TestCase):
         self.assertTrue(e['effect']['non_target_qk_unchanged']);self.assertFalse(torch.equal(b,f))
         self.assertTrue(torch.equal(b,m.attention(pos,x)));self.assertEqual(w.owned_hook_count,0)
         self.assertNotIn('forward',vars(m.attention));self.assertNotIn('forward',vars(m.attention.attn))
+    def test_stock_class_with_ascend_forward_is_the_reviewed_actual_layout(self):
+        m,pos,x,p=self.fixture()
+        old=(Attention.__name__,Attention.__module__)
+        try:
+            Attention.__name__='Qwen3NextAttention';Attention.__module__='vllm.model_executor.models.qwen3_next'
+            b,r=self.baseline(p,m,pos,x)
+            self.assertTrue(r['events'][0]['original_execution_verified'])
+        finally:Attention.__name__,Attention.__module__=old
+    def test_structural_name_does_not_bypass_actual_source_verification(self):
+        m,pos,x,p=self.fixture()
+        with patch('demoncat.runtime.vllm_ascend.worker_extension.fused_mrope22_scope._verify_function',side_effect=RuntimeError('UNREVIEWED_ACTUAL_FORWARD')):
+            with self.assertRaisesRegex(RuntimeError,'UNREVIEWED_ACTUAL_FORWARD'):_OneFusedMrope(p).__enter__()
+        self.assertNotIn('forward',vars(m.attention))
     def test_guard_rank_remains_read_only(self):
         m,pos,x,p=self.fixture();b,_=self.baseline(p,m,pos,x)
         p.phase='fault';p.injection_arm='baseline';p.fault_started=True

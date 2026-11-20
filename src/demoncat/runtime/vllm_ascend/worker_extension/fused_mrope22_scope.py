@@ -8,6 +8,15 @@ from .v026_text_observer import PROFILES,_verify_function
 from fault_injection.fused_mrope22_boundary import FusedMrope22Boundary
 
 
+def reviewed_attention_structure(module):
+    # The reviewed Ascend patch assigns Qwen3NextAttention.forward; it does
+    # not replace existing instances' class. The actual forward is separately
+    # SHA-verified during install, so this structural filter grants no authority.
+    return (type(module).__name__,type(module).__module__) in (
+        ('Qwen3NextAttention','vllm.model_executor.models.qwen3_next'),
+        ('AscendQwen3NextAttention','vllm_ascend.patch.worker.patch_qwen3_5'))
+
+
 def _native():
     import torch
     from vllm_ascend.ops.triton.linearnorm.split_qkv_rmsnorm_mrope import triton_split_qkv_rmsnorm_mrope
@@ -28,8 +37,7 @@ class FusedMrope22CallScope:
         from torch.utils._python_dispatch import TorchDispatchMode
         self.guard();require(not self.patches and not self.used,'FUSED22_SCOPE_ALREADY_INSTALLED')
         m=self.module
-        require(type(m).__name__=='AscendQwen3NextAttention'
-            and type(m).__module__=='vllm_ascend.patch.worker.patch_qwen3_5','FUSED22_REVIEWED_MODULE_REQUIRED')
+        require(reviewed_attention_structure(m),'FUSED22_REVIEWED_MODULE_REQUIRED')
         op,implementation=_native();self.op=op;self.implementation=implementation
         rows=json.loads(PROFILES[self.profile].read_bytes())['files']
         self.sources=[_verify_function(m.forward,rows),_verify_function(implementation,rows)]

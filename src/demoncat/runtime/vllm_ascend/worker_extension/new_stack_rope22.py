@@ -1,7 +1,7 @@
 """Source-bound fused three-axis mRoPE, ordinary task's existing four phases."""
 from contextlib import nullcontext
 from .serving_context import require
-from .fused_mrope22_scope import FusedMrope22CallScope
+from .fused_mrope22_scope import FusedMrope22CallScope,reviewed_attention_structure
 from .new_stack_request import NewStackTaskRequest
 from .providers.rms18_task import Rms18TaskProvider
 from .rms18_tp2 import TP2Rms18Provider
@@ -17,8 +17,7 @@ class _OneFusedMrope:
     def __enter__(self):
         task=self.task
         candidates=[(path,module) for path,module in task.model.named_modules()
-            if type(module).__name__=='AscendQwen3NextAttention'
-            and type(module).__module__=='vllm_ascend.patch.worker.patch_qwen3_5'
+            if reviewed_attention_structure(module)
             and 'qwen3_5' in module.config.model_type]
         require(bool(candidates),'FUSED22_NO_REVIEWED_ACTUAL_STRUCTURE')
         self.path,self.module=(candidates[0] if task.target is None else next(
