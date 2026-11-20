@@ -14,10 +14,14 @@ class QuantProvider(Scope):
             from ..serving_quant import QuantServingBinding,QuantServingSession,MECHANISM
             from ..serving_quant_group_c1 import QuantGroupC1ServingBinding,QuantGroupC1ServingSession
             from ..serving_quant_projection import QuantProjectionServingBinding,QuantProjectionServingSession
+            from ..quant_tp2 import TP2QuantBinding,TP2QuantSession
             binding=resolve_runtime(MECHANISM,self.model)
-            if getattr(self,'ordinary_only',False) and type(binding) is not QuantProjectionServingBinding:
+            if getattr(self,'ordinary_only',False) and type(binding) not in (QuantProjectionServingBinding,TP2QuantBinding):
                 raise ProviderError('QUANT_ORDINARY_PROJECTION_BINDING_REQUIRED')
-            if type(binding) is QuantProjectionServingBinding:
+            if type(binding) is TP2QuantBinding:
+                self.session=binding.make_session(self.worker,self.model,owner=owner,generation=generation,worker_identity=self.identity)
+                expected=TP2QuantSession
+            elif type(binding) is QuantProjectionServingBinding:
                 self.session=binding.make_session(self.worker,self.model,owner=owner,generation=generation,worker_identity=self.identity)
                 expected=QuantProjectionServingSession
             elif type(binding) is QuantGroupC1ServingBinding:
@@ -53,7 +57,8 @@ class QuantProvider(Scope):
             self.session.close()
         elif action in ('disable','abort','recover','clean','unregister'):
             from ..serving_quant_projection import QuantProjectionServingSession
-            if action=='recover' and type(self.session) is QuantProjectionServingSession:
+            from ..quant_tp2 import TP2QuantSession
+            if action=='recover' and type(self.session) in (QuantProjectionServingSession,TP2QuantSession):
                 self.session.prepare_recovery()
             else:self.session.close(abort=not self.session.recovered)
             if action in ('clean','unregister'):self._registered=False
@@ -67,8 +72,11 @@ class QuantProvider(Scope):
         raw=s.state()
         from ..serving_quant_group_c1 import QuantGroupC1ServingSession
         from ..serving_quant_projection import QuantProjectionServingSession
-        leases=s.provider_call_leases(raw) if type(s) in (QuantGroupC1ServingSession,QuantProjectionServingSession) else raw['owned']+raw['pending']
-        return dict(native_loaded=True,registered=self._registered,native_registered=bool(raw['owned']),enabled=bool(raw['armed']),
+        from ..quant_tp2 import TP2QuantSession
+        leases=s.provider_call_leases(raw) if type(s) in (QuantGroupC1ServingSession,QuantProjectionServingSession,TP2QuantSession) else raw['owned']+raw['pending']
+        result=dict(native_loaded=True,registered=self._registered,native_registered=bool(raw['owned']),enabled=bool(raw['armed']),
             inflight=raw['executing'],leases=leases,native=raw,
             replay_pending=s.installed,replay_failed=bool(s.error and not s.aborted and not getattr(s,'recovery_only',False)),
             recovery_validation_pending=s.installed and not s.recovered,serving=s.report())
+        if type(s) is TP2QuantSession:result['multi_rank']=s.group_proof()
+        return result

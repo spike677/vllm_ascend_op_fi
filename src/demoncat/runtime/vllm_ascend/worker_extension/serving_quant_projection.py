@@ -76,7 +76,7 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
         require(isinstance(owner, str) and owner and type(generation) is int and generation > 0,
                 'ACTUAL_WORKER_OWNER_REQUIRED')
         self.worker, self.runner, self.model = worker, worker.model_runner, model
-        serving.require_serial_eager(self.runner, expected_max_seqs=8)
+        self._require_runner()
         require(self.runner.model is model and not model.training, 'ACTUAL_EVAL_MODEL_REQUIRED')
         # Model names are not admission. _discover checks the actual dynamic
         # W8A8 wrapper, INT8 weights and TP1. At runtime the unchanged checks
@@ -84,7 +84,7 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
         # Unseen structures remain unqualified until that real call completes.
         self.thread, self.owner, self.generation = threading.get_ident(), owner, generation
         self.rpc_identity = snapshot(worker_identity)
-        self.candidates, self.rejected = _discover(model, (1,))
+        self.candidates, self.rejected = _discover(model, self.parallel_sizes)
         require(self.candidates, 'NO_ORDINARY_TP1_W8A8_CANDIDATE')
         self.native = QuantGroupNative.load(root, approved_build_sha256=build_sha256)
         boundary = serving.discover_logits_boundary(model, actual_logits_processor_type=LogitsProcessor,
@@ -114,12 +114,30 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
         self._normal_values = None
         self._identity()
 
+    parallel_sizes = (1,)
+    expected_rank = 0
+
+    def _require_runner(self):
+        serving.require_serial_eager(self.runner, expected_max_seqs=8)
+
+    def _snapshot_decode(self,actual,context):
+        return serving.snapshot_first_decode(self.runner,self.model,actual,context,self.expected)
+
+    def _native_mode(self,phase):
+        return MODES.get(phase)
+
+    def _fault_injector(self):
+        return True
+
+    def _requires_off(self):
+        return 'fault' in self.phase_attempts
+
     def _identity(self):
         from fault_injection.runtime_discovery import _process_start_identity
         import torch_npu
         actual, configured = self.rpc_identity, self.worker.device
         require(actual['pid'] == os.getpid() and actual['process_start_identity'] == _process_start_identity()
-                and self.worker.rank == actual['rank'] == 0 and self.worker.model_runner is self.runner
+                and self.worker.rank == actual['rank'] == self.expected_rank and self.worker.model_runner is self.runner
                 and self.runner.model is self.model and threading.get_ident() == self.thread
                 and not self.model.training and configured.type == 'npu'
                 and configured.index == actual['configured_logical_device'] == actual['logical_device']
@@ -259,7 +277,7 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
             self.forward_count += 1
             if self.runner.with_prefill is False:
                 require(self.capture_started, 'DECODE_WITHOUT_ACTUAL_CAPTURE')
-                rows = serving.snapshot_first_decode(self.runner, self.model, actual, context, self.expected)
+                rows = self._snapshot_decode(actual,context)
                 ids, _, _ = self._read(actual['input_ids'])
                 positions, _, _ = self._read(actual['positions'])
                 indices, _, _ = self._read(self.runner.logits_indices)
@@ -298,7 +316,7 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
                 owner_lo=int.from_bytes(value[8:16], 'little'), generation=self.generation,
                 thread=threading.get_native_id(), device=self.worker.device.index, max_targets=1, max_calls=4,
                 max_device_bytes=64 * 1024 * 1024, max_host_bytes=128 * 1024 * 1024), self._observed, self._completed)
-        if phase == 'fault':
+        if phase == 'fault' and self._fault_injector():
             require([row['phase'] for row in self.receipts] == ['reference', 'lossless', 'calibration_off']
                     and 'fault' not in self.phase_attempts, 'SINGLE_SITE_NATIVE_CALIBRATION_REQUIRED')
             self.native.seal([self.target['sha256']], digest(dict(scope=SCOPE, owner=self.owner,
@@ -405,7 +423,7 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
         before = self.state()['raw']
         require(not before['census']['overflow'] and not before['census']['errors'], 'COMPLETE_NATIVE_JOURNAL_REQUIRED')
         done = None
-        if phase in MODES:
+        if self._native_mode(phase) is not None:
             import torch
             try:
                 operator = torch.ops.npu.npu_dynamic_quant.default
@@ -452,7 +470,7 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
             self._normal_values = (values['quant'][0], values['scale'][0])
             self.healthy = {name: value[1] for name, value in values.items()}
         effect = None
-        if phase == 'fault':
+        if phase == 'fault' and self._fault_injector():
             effect = dict(comparison='MATCHED_CURRENT_INPUT_NORMAL_VS_FAULT_WITH_NATIVE_CURRENT_REFERENCE',
                 request_ids=list(self.active['decode']['request_ids']), forward=self.row_observer.forward_id,
                 phase='decode', semantic_position=self.target['identity']['path'], input_sha256=values['input'][1],
@@ -508,7 +526,7 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
             return self.native.pass_call(call)
         self._identity()
         context, phase = self.current_call, self.phase_name()
-        require(phase in MODES and phase not in self.phase_attempts and call.thread == threading.get_native_id()
+        require(self._native_mode(phase) is not None and phase not in self.phase_attempts and call.thread == threading.get_native_id()
                 and call.device == self.worker.device.index and call.lifetime_token and not call.reserved,
                 'ACTUAL_UNSPENT_NATIVE_LIFETIME_REQUIRED')
         fresh = self.row_observer.query_native_input(context['input'], public_proof=context['proof'],
@@ -520,7 +538,7 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
                 and all(geometry(native_snapshot(getattr(call, name))) == self.target['identity']['native_geometry'][name]
                         for name in ('input', 'quant', 'scale')), 'ACTUAL_NATIVE_INPUT_FORMALS_CHANGED')
         config = self.native.config
-        lease = Lease(mode=MODES[phase], owner_hi=config.owner_hi, owner_lo=config.owner_lo, generation=self.generation,
+        lease = Lease(mode=self._native_mode(phase), owner_hi=config.owner_hi, owner_lo=config.owner_lo, generation=self.generation,
             thread=call.thread, target=key(self.target['sha256']), actual_row_proof=key(digest(dict(proof=fresh,
                 native_call=native_snapshot(call), owner=self.owner, generation=self.generation))), expected=call)
         self.phase_attempts.add(phase)  # Admission, including a failed one, consumes the attempt.
@@ -648,7 +666,7 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
         if self.row_observer.active:
             self.prefix = self.row_observer.end()
         self._recover_native()  # Any refusal retains hooks, input and provider owner.
-        require('fault' not in self.phase_attempts or self.recovered,
+        require(not self._requires_off() or self.recovered,
                 'REAL_SAME_WORKER_OFF_REQUIRED_AFTER_FAULT_ATTEMPT')
         require(not any(self.state()[name] for name in ('owned', 'armed', 'pending', 'executing')),
                 'QUANT_RECOVERY_RESOURCES_STILL_LIVE')
@@ -686,7 +704,7 @@ provider/task creates a fresh session; neither attempted nor Native flags reset.
         if self.row_observer.active:
             self.prefix = self.row_observer.end()
         self._recover_native()
-        if 'fault' not in self.phase_attempts or self.recovered:
+        if not self._requires_off() or self.recovered:
             self.close(abort=not self.recovered)
             return
         self._restore_apis()

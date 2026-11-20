@@ -22,6 +22,11 @@ def snapshot_first_decode_rows(runner,model,actual,context,expected,*,expected_m
     refuse until a separate scheduler adapter can prove their row mapping.
     """
     require_serial_eager(runner,expected_max_seqs=expected_max_seqs)
+    return _snapshot_first_decode_rows(runner,model,actual,context,expected,expected_max_seqs=expected_max_seqs)
+
+
+def _snapshot_first_decode_rows(runner,model,actual,context,expected,*,expected_max_seqs):
+    # Caller must supply the separately reviewed deployment gate.
     require(model is runner.model and context.model_instance is model,'FOREIGN_MODEL_CONTEXT')
     for name in ('in_profile_run','capturing','is_draft_model','flash_comm_v1_enabled','flashcomm_v2_enabled'):
         require(field(context,name) is False,'UNADAPTED_CONTEXT:'+name)

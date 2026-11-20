@@ -13,7 +13,7 @@ from .host import HostAdapter, WorkerFaultClient, HostContractError, _GroupIdent
 from fault_injection.request_plan import request_plan
 
 RESTORE = {'recover', 'abort', 'disable', 'unregister', 'detach', 'clean'}
-SUPPORTED = {'18.api_half', '39.output_proxy', '22.wrong_row'}
+SUPPORTED = {'18.api_half', '39.output_proxy', '22.wrong_row', 'quant.batch_shared_scale'}
 
 
 class MultiRankTaskClient:
@@ -29,7 +29,7 @@ class MultiRankTaskClient:
         self.identity=_GroupIdentity('worker-group-'+uuid.uuid4().hex,
                                      'worker-group-client-'+uuid.uuid4().hex, 1)
         self.members=[];self.clients={};self.failed=None;self.history=[]
-        self.started=False;self._recovering=False;self._last_request_id=None;self._lock=threading.RLock()
+        self.started=False;self._recovering=False;self._last_request_id=None;self._normal_request_id=None;self._lock=threading.RLock()
         self.plan=request_plan(config.mechanism)
 
     def _census(self, *, allow_quarantined=False):
@@ -71,10 +71,10 @@ class MultiRankTaskClient:
             if (all(p==self.plan for p in plans) and len(set(phases))==1
                     and phases[0] in [p['phase'] for p in self.plan['phases']]+['complete']):
                 phase=phases[0];complete=phase=='complete' and all(s.get('complete') is True for s in observed)
-            elif action in ('query','advance') and status in ('QUERY_OK','ACTION_COMPLETED'):
+            elif action in ('query','advance','advance_batch') and status in ('QUERY_OK','ACTION_COMPLETED'):
                 self.failed=self.failed or 'GROUP_PHASE_OR_REQUEST_PLAN_MISMATCH'
                 status='GROUP_ACTION_FAILED'
-        if len(observed)!=2 and action in ('query','advance') and status in ('QUERY_OK','ACTION_COMPLETED'):
+        if len(observed)!=2 and action in ('query','advance','advance_batch') and status in ('QUERY_OK','ACTION_COMPLETED'):
             self.failed=self.failed or 'ALL_RANK_PROVIDER_STATE_REQUIRED'
             status='GROUP_ACTION_FAILED'
         result=dict(status=status,group=self.contract(),action=action,
@@ -85,7 +85,7 @@ class MultiRankTaskClient:
 
     def _step(self,action,*args):
         with self._lock:
-            if self.failed and action not in RESTORE|{'query'} and not (action=='advance' and self._recovering):
+            if self.failed and action not in RESTORE|{'query'} and not (action in ('advance','advance_batch') and self._recovering):
                 return self._result(action,{},'GROUP_RECOVERY_REQUIRED')
             rows={}
             try:
@@ -125,7 +125,7 @@ class MultiRankTaskClient:
             proof=row.get('multi_rank') or {}
             if (proof.get('owner')!=self.identity.owner or proof.get('group_generation')!=1
                     or proof.get('actual_normal_request_observed') is not True
-                    or proof.get('normal_request_id')!=self._last_request_id
+                    or proof.get('normal_request_id')!=self._normal_request_id
                     or proof.get('members_sha256')!=self.contract()['members_sha256']
                     or proof.get('worker')!=self.members[rank]):
                 raise HostContractError('GROUP_NATIVE_ROLE_ADAPTER_NOT_READY')
@@ -139,7 +139,7 @@ class MultiRankTaskClient:
             raise HostContractError('RANK_REQUEST_INPUTS_NOT_ALIGNED')
         selected=0 if self.config.mechanism=='18.api_half' else min(candidates,default=None)
         if selected not in candidates:raise HostContractError('NO_ACTUAL_AUTOMATIC_TARGET_RANK')
-        decision=dict(group=self.contract(),selected_rank=selected,normal_request_id=self._last_request_id,
+        decision=dict(group=self.contract(),selected_rank=selected,normal_request_id=self._normal_request_id,
                       request_fingerprint=fingerprints[0],roles={rank:('injector' if rank==selected else 'guard') for rank in ranks})
         if require_committed:
             for rank,row in ranks.items():
@@ -149,8 +149,18 @@ class MultiRankTaskClient:
         return decision
 
     def advance(self,request_id):
+        if self.plan['unit']!='request':raise ValueError('BATCH_REQUIRES_ADVANCE_BATCH')
+        return self._advance(request_id,'advance')
+
+    def advance_batch(self,request_ids):
+        if (self.plan['unit']!='batch' or not isinstance(request_ids,list) or len(request_ids)!=8
+                or any(not isinstance(x,str) or not x.strip() for x in request_ids)
+                or len(set(request_ids))!=8):raise ValueError('EIGHT_ACTUAL_INTERNAL_IDS_REQUIRED')
+        return self._advance(list(request_ids),'advance_batch')
+
+    def _advance(self,request_id,action):
         with self._lock:
-            if not isinstance(request_id,str) or not request_id.strip():
+            if action=='advance' and (not isinstance(request_id,str) or not request_id.strip()):
                 raise ValueError('ACTUAL_INTERNAL_REQUEST_ID_REQUIRED')
             observed=self.query()
             if observed['status']!='QUERY_OK':return observed
@@ -178,8 +188,10 @@ class MultiRankTaskClient:
                 except Exception as error:
                     self.failed=self.failed or str(error)
                     return self._result('advance',{},'GROUP_ACTION_FAILED')
-            result=self._step('advance',request_id)
-            if result['status']=='ACTION_COMPLETED':self._last_request_id=request_id
+            result=self._step(action,request_id)
+            if result['status']=='ACTION_COMPLETED':
+                self._last_request_id=deepcopy(request_id)
+                if phase=='normal':self._normal_request_id=deepcopy(request_id)
             return result
 
     def snapshot(self):

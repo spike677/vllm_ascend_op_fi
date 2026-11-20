@@ -311,4 +311,40 @@ class Tp2MappingTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):find_logits_processor(NS(modules=lambda:[actual,LogitsProcessor()]),LogitsProcessor)
 
 
+class BatchScheduledProvider(ScheduledProvider):
+    def dispatch(self,action,settings,*,owner,generation):
+        if action!='advance':return super().dispatch(action,settings,owner=owner,generation=generation)
+        result=ReadbackProvider.dispatch(self,action,settings,owner=owner,generation=generation)
+        ids=settings['request_ids']
+        if self.pending is not None or any(x in sum(self.ids,[]) for x in ids):raise RuntimeError('DUPLICATE_BATCH')
+        self.pending=list(ids);return result
+    def complete_actual(self):
+        assert self.pending is not None
+        self.ids.append(self.pending);self.pending=None;self.index+=1
+        phases=[p['phase'] for p in request_plan(self.contract['mechanism'])['phases']]+['complete']
+        self.state.update(next_phase=phases[self.index],complete=self.index==6)
+        self.state['multi_rank']=dict(owner=self.contract['owner'],group_generation=1,
+            actual_normal_request_observed=True,eligible_target=True,normal_request_id=self.ids[0],
+            members_sha256=self.contract['members_sha256'],worker=self.contract['members'][self.rank],
+            request_fingerprint='a'*64,selected_rank=0,role='injector' if self.rank==0 else 'guard')
+
+class BatchGroupTests(unittest.TestCase):
+    def test_six_real_batches_hold_original_normal_ids_and_one_plan(self):
+        f=MultiRankTests();f.setUp();self.addCleanup(f.doCleanups)
+        def resolve(mechanism,version,worker,model,actual):
+            p=BatchScheduledProvider(worker.rank,f.contracts[worker.rank]);f.providers[worker.rank]=p;return p
+        self.enterContext(patch.object(runtime,'_resolve_provider',side_effect=resolve))
+        f.client=f.make_client(FaultConfig('quant','batch_shared_scale'));f.start()
+        with self.assertRaisesRegex(ValueError,'ADVANCE_BATCH'):f.client.advance('single')
+        with self.assertRaisesRegex(ValueError,'EIGHT'):f.client.advance_batch(['duplicate']*8)
+        for phase in ['normal','reference','lossless','calibration_off','fault','off']:
+            ids=[phase+'-'+str(i) for i in range(8)]
+            r=f.client.advance_batch(ids);self.assertEqual(r['status'],'ACTION_COMPLETED',r)
+            for p in f.providers.values():p.complete_actual()
+            r=f.client.query();self.assertEqual(r['status'],'QUERY_OK',r)
+        self.assertTrue(r['response']['provider_state']['complete'])
+        self.assertEqual(f.client.snapshot()['role_decision']['normal_request_id'],['normal-'+str(i) for i in range(8)])
+        self.assertEqual(f.providers[0].ids,f.providers[1].ids)
+        f.ok('finish');f.cleanup()
+
 if __name__=='__main__': unittest.main()

@@ -26,12 +26,12 @@ class TP2GroupContext:
     decision: object = None
 
 
-def validate_tp2_group(worker, mechanism, group_contract):
+def validate_tp2_group(worker, mechanism, group_contract, *, expected_max_seqs=1):
     from vllm.distributed import get_tp_group
     actual=worker.demoncat_worker_identity()
     require(actual['status']=='WORKER_IDENTIFIED','TP2_CURRENT_WORKER_REQUIRED')
     identity=actual['worker'];rank=identity['rank'];group=get_tp_group();runner=worker.model_runner
-    report=tp2_eager_assessment(runner,group,rank)
+    report=tp2_eager_assessment(runner,group,rank,expected_max_seqs=expected_max_seqs)
     require(not report['unmet'],'TP2_PREREQUISITES:'+json.dumps(report,sort_keys=True))
     c=deepcopy(group_contract)
     require(c.get('mechanism')==mechanism and c.get('tp')==2
