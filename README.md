@@ -1,5 +1,7 @@
 [2026-11-20最新实机进展](docs/worker_core_v1/npu_progress_20261120.md)：A2/0.18/Qwen3-0.6B的18、22、39、Batch、41 TP2已完成限定的同Worker双作用域闭环。新栈A2/0.26/CANN9.1/社区Qwen3.8 W8A8 TP2的18及22，已通过预热后双作用域的实际命中、全rank OFF/health精确恢复与资源清零；冷启动首请求有无注入差异，仍不在验收范围。22覆盖实际融合mRoPE目标Q/K行；39的社区量化out_proj不等价于黄区BF16目标。详见[新栈适配](docs/worker_core_v1/v026_adaptation_20261120.md)。
 
+新栈B8无注入基线两次出现非有限值，当前Batch模型验收阻塞；已完成CANN9.1 group后端构建/无设备ABI加载，不计为模型通过。[基线失败与后续限制](docs/worker_core_v1/v026_adaptation_20261120.md)。
+
 28已完成[真实TND两阶段Native研究闭环](docs/worker_core_v1/tnd28_fresh_values_20261120.md)：两个research owner、FIA与hidden/logits变化、完整OFF/health恢复。它不是普通Runtime B5验收，公共入口继续关闭；M128止损与其他限制保留。
 
 [RC2.1](https://github.com/spike677/vllm_ascend_op_fi/tree/demoncatpfi-yellow-rc2.1-20261120)和[RC2.2](https://github.com/spike677/vllm_ascend_op_fi/tree/demoncatpfi-yellow-rc2.2-20261120)均已冻结发行，标签与包保持不变。RC2.1仅登记黄区测试部署的文本证明；RC2.2不包含多卡和新软件栈代码。A2结果不代表A3或黄区现役，尚未发行RC3。

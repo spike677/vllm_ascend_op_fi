@@ -160,3 +160,16 @@ a1在加载阶段被外部Docker stop/kill中断；a2正常阶段结构识别拒
 随后CANN9.1新V2库实际通过B/F/OFF：Q变化112/128元素、scale变化7/8，输入不变，OFF精确一致，Native pending/execute/owned资源清零。每轮实际V2 prepare/execute各1，只有F的fault_executions=1。[算子总结](../../experiments/worker_core_v11_20261118/quant_v2_cann91_smoke_20261120.json)。该用例只有一个torch进程、logical0；调度review模板错误沿用TP2 worker/ranks字段，已在总结注明更正，原件不改。它不是QuantGroupNative六批校准后端的完整新栈验收，更不是B8模型TP2验收。
 
 剩余：Batch的group Native构建及0.26真实B8 first-decode映射；17的视觉请求路径（不能用image/video=0文本门禁验收视觉注入）；41的真实KV布局/ScatterPaKvCache到消费者映射；39指定BF16 out_proj在社区权重不适用，需要匹配黄区制品。RC3未冻结，新组合不自动放行，冻结RC2.x不修改。
+
+
+## 新栈B8无注入基线阻塞与Group后端构建（16:00 UTC）
+
+新只读`v026_generation_observer.py`连接实际prefill→首decode，核对scheduler、内部ID、首个生成token、三轴位置、完整设备输入字节以及真实ExecuteModelState；它不授予故障资格。25项观察器CPU测试通过。A2/0.26/CANN9.1/社区Qwen3.8 W8A8/TP2/B8的两次独立启动都在无故障阶段遇到非有限输出，未执行任何Batch注入，也未完成首次decode验收。
+
+第二次实读：prefill真实模型返回hidden_states，shape=[88,5120]，BF16，NaN=56320/450560，Inf=0。没有用预期shape或命中日志推定该结果。两次都是冷启动后的首个被观察B8请求；预热后的B8稳定性尚未验证，不能唯一归因到模型、kernel、制品、分配器或观察器。也没有完成固定同prompt的B1/B8因果对照。保留失败，不用已通过的B1预热后18/22结果代替B8。见[失败总结及日志SHA](../../experiments/worker_core_v11_20261118/newstack_b8_baseline_20261120.json)。
+
+第一次窗口15:48:56.116639Z–15:53:27.393600Z，271.276989秒；第二次15:54:57.427257Z–15:59:43.759628Z，286.332399秒。EngineCore因观察到非有限基线失败后，由本项目主动docker stop自己的测试容器，不是外部抢占；这不构成同进程OFF恢复。两个窗口的有界清理器均退出、恢复派发，未遗留测试容器。本轮未修改Docker入口、驱动或CANN。完整隔离事件保留在总结。
+
+普通Batch的group DSO另按CANN9.1重构建，清单05b1c1be096d5d80fd8972d38f23afbecb5138d58361ba1ef1c96c5f8b85e513。原8.5.1配方保持默认；新增9.1显式SDK选择、实际头文件/真实libopapi身份、ELF loader mock契约和真实无设备加载/ABI检查。未知版本、错SDK、默认8.5.1配置加载9.1包均拒绝。36项group构建/加载CPU回归通过；实际无设备容器load/query通过，未arm、未运行模型，NPU用时0。[构建与加载总结](../../experiments/worker_core_v11_20261118/quant_group_cann91_build_load_20261120.json)。首次准备缺少两个mock SDK头文件，补齐新源目录后重试通过，旧失败日志保留。
+
+新group库尚未完成NPU六批校准和完整模型B/F/OFF；V2独立算子通过不替代此项。普通Batch入口仍默认旧配置，不自动迁移或放行。A3的[候选验收契约](rc3_a3_acceptance_candidate_20261120.md)已经准备，明确TP1/TP2、binding、许可、request_plan、双作用域、负向检查及效果字段；它不是已冻结候选包，也未向黄区发送。正式可信RPC、TP1候选宿主与发行安装清单仍未交付。

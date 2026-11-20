@@ -1,0 +1,144 @@
+{
+  "status": "NEWSTACK_B8_BASELINE_BLOCKED_NO_FAULT_ACCEPTANCE",
+  "combination": "A2/Ascend910B4/0.26.0+empty/Ascend0.26.0rc1/CANN9.1/community Qwen3.8 W8A8/TP2/B8",
+  "fault_calls": 0,
+  "qualification_granted": false,
+  "attempts": [
+    {
+      "attempt": 1,
+      "status": "BASELINE_NONFINITE_BEFORE_ANY_FAULT",
+      "source_commit": "a082d975da14f875d0581a4f54aff25dc92efed9",
+      "source_manifest_sha256": "907db4447406995d9bdcac9aede6cd72b24ce1417580992782349d0f2b3031ca",
+      "window": {
+        "start": "2026-11-20T15:48:56.116639+00:00",
+        "ended": "2026-11-20T15:53:27.393600+00:00",
+        "elapsed_seconds": 271.27698910294566,
+        "isolation_removed": true,
+        "status": "CASE_FAILED"
+      },
+      "facts": [],
+      "process_log": {
+        "bytes": 52055,
+        "sha256": "fc4c07d15b15d483470f7293c5271c392d0bcc6229e04d946ff7f735e6e2eafc"
+      },
+      "operator_stop": {
+        "time": "2026-11-20T15:53:10.537435+00:00",
+        "container": "c23-m2-v026-qwen38-b8-decode-801382",
+        "image": "sha256:c9c9432b69767cf1855efad44f20eaa8ab02520ae05b75c936e67ea4e7eb2702",
+        "action": "STOP_OWN_FAILED_PROBE",
+        "reason": "Engine fatal after read-only B8 nonfinite baseline; no fault armed",
+        "returncode": 0
+      },
+      "isolation_events": [
+        {
+          "time": "2026-11-20T15:48:56.116776+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+          "maximum_seconds": 1200,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-20T15:48:56.285087+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lpnormv2-s0-01_dev5_slot0_69fdfeb2",
+          "id": "5662c0b7af844b42380537cc582a8cac011e50ee4ddf96295fff501e1e2f5fda",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T15:48:56.968457+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-lpnormv2-s0-01_dev5_slot0_69fdfeb2",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "5662c0b7af844b42380537cc582a8cac011e50ee4ddf96295fff501e1e2f5fda",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T15:53:27.393690+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ],
+      "container_exit": 137,
+      "original_result_present": false
+    },
+    {
+      "attempt": 2,
+      "status": "BASELINE_NONFINITE_BEFORE_ANY_FAULT",
+      "source_commit": "d80be142183ea11019e9f2302b28fb37314f164d",
+      "source_manifest_sha256": "9dcc3b7a016e6f6c2cd1a9f0699328c0f5a033f1dc29bef44617c8f205b6ae49",
+      "window": {
+        "start": "2026-11-20T15:54:57.427257+00:00",
+        "ended": "2026-11-20T15:59:43.759628+00:00",
+        "elapsed_seconds": 286.3323994210223,
+        "isolation_removed": true,
+        "status": "CASE_FAILED"
+      },
+      "facts": [
+        {
+          "dtype": "torch.bfloat16",
+          "fault_calls": 0,
+          "field": "hidden_states",
+          "inf_elements": 0,
+          "nan_elements": 56320,
+          "phase": "prefill",
+          "shape": [
+            88,
+            5120
+          ],
+          "total_elements": 450560
+        }
+      ],
+      "process_log": {
+        "bytes": 52381,
+        "sha256": "065107b1b2a1406d478df07f737ac183a165b6ec7b37e87c5c6f880c2770d667"
+      },
+      "operator_stop": {
+        "time": "2026-11-20T15:59:26.797051+00:00",
+        "container": "c23-m2-v026-qwen38-b8-decode-842979",
+        "image": "sha256:c9c9432b69767cf1855efad44f20eaa8ab02520ae05b75c936e67ea4e7eb2702",
+        "action": "STOP_OWN_FAILED_PROBE",
+        "reason": "Read-only B8 baseline prefill hidden has NaN; no injection attempted",
+        "returncode": 0
+      },
+      "isolation_events": [
+        {
+          "time": "2026-11-20T15:54:57.427385+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+          "maximum_seconds": 1200,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-20T15:59:43.759718+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ],
+      "container_exit": 137,
+      "original_result_present": false
+    }
+  ],
+  "limitations": [
+    "This is cold first observed B8 generation; warmed B8 stability not established",
+    "Root cause not uniquely attributed to model, kernel, artifact, allocator or observation",
+    "No ordinary Batch injection, OFF or health accepted",
+    "Stopping own failed container does not prove same-process OFF recovery",
+    "No impact on separately accepted warmed B1 18/22 scope"
+  ]
+}
