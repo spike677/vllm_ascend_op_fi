@@ -89,3 +89,18 @@ CANN9.x需要重新识别实际ABI、构建、stock/private桥接和F/OFF；版�
 新增 CPU 用例覆盖同步后检查失败、未准备直接提交、提交时workspace变化；真实8.5.1 SDK对象和实际生成FIA单元编译均通过，NPU用时0，未构建/替换生产DSO。见[tnd28_stage2_prelaunch_20261120_summary.json](../../experiments/worker_core_v11_20261118/tnd28_stage2_prelaunch_20261120_summary.json)。
 
 **尚未消除 B3 的拒绝**：现有第二阶段仍检查旧typed元数据，不足以证明当前prepared输入；本改动未把它升级为故障许可。还需把当前public/typed/实际prepared输入的同调用关系接入Native门禁，区分host准备许可和Execute最终许可，再构建独立vendor验证B3/B4/B5。研究与公共入口边界不变，不用CPU成功或运行日志冒充实机通过。
+
+
+## 2026-11-20 14:17 UTC：两阶段Native研究闭环完成
+
+组合：124 Ascend910B4/A2，CANN8.5.1、vLLM-Ascend0.18，Qwen3-0.6B FP16，TP1，真实2048-token TND prefill。源码fde3ecea，清单a6f44ecc…；独立新构建aec14aa5…；审查器7732f00f…。同一标准Worker/model保持不变，两名不同research owner分别完成observe→observe_repeat→baseline→baseline_repeat→fault→off→health，随后finish/unregister/detach。
+
+- B3研究链：两阶段Native校验实际同次copy、当前Q/K/V和prepared V完整值、实际parent、stream、ELF以及launch；两个F均只命中自动选择的同一个实际FIA对象。正常key5000000000000200103，分母replay key119000000030400003。FIA输出和hidden/logits完整哈希变化，两个作用域的F结果重复一致；输入未改。
+- B4：每个作用域的OFF、health均与正常完整root/hidden/logits哈希精确相同。health移除故障API和Attention拦截，仅有只读root/logits观察；最终所有hook、wrapper、租约、在途、Native借用/引用归零。
+- B5范围：同一Worker中的两个独立TwoStageResearchProvider/owner闭环通过。它是明确的私有研究协议，不是普通Runtime编排验收，不登记公共入口可执行。两个作用域的生成token都没有改变。
+
+独立审查重新连接原始RPC、当前输入五份完整哈希、注册ELF与实际launch，返回TWO_RESEARCH_SCOPES_NATIVE_EFFECT_AND_FULL_RECOVERY_REVIEWED，issues=[]。没有用命中日志替代数值或恢复判定。Slice POD未解码、生产nnopbase完整源码等价性未证明，不声称C2/C3或全目标覆盖。
+
+此前a6在第二作用域health后写finish回执时被外部Docker stop中断，SIGTERM后10秒SIGKILL，exit137且OOMKilled=false；保留不完整回执，不计同因机制止损。a7只改回执编码/原子替换，字节一致测试通过，没有删减证据或放宽判定。a6保守计入756.137462秒，a7计入461.814821秒，28剩余11290.040650秒。a7窗口2026-11-20T14:09:47.656934+00:00—2026-11-20T14:17:29.471723+00:00，清理器已停止并join，派发能力恢复。未改Docker入口、驱动或CANN。
+
+[独立研究总结及每次隔离记录](../../experiments/worker_core_v11_20261118/tnd28_two_scope_research_20261120.json)。完整审查及原始回执保存在124与D盘；只提交总结，不上传私有完整张量或新统计原件。公共入口继续拒绝，冻结版本不变。

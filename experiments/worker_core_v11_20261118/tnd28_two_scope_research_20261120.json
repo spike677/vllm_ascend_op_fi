@@ -1,0 +1,412 @@
+{
+  "schema": "demoncat.tnd28.two_scope_review_summary.v1",
+  "status": "TWO_RESEARCH_SCOPES_NATIVE_EFFECT_AND_FULL_RECOVERY_REVIEWED",
+  "scope": "EXPLICIT_RESEARCH_B3_B4_B5_NOT_PUBLIC_WORKER_QUALIFICATION",
+  "combination": {
+    "hardware": "Ascend910B4/A2",
+    "cann": "8.5.1",
+    "vllm": "0.18",
+    "model": "Qwen3-0.6B FP16",
+    "tp": 1,
+    "physical_card": 2
+  },
+  "source_commit": "fde3eceaa1b97eb61137babbf977ec455db663ac",
+  "source_manifest_sha256": "a6f44ecc82a1a104bf9814ff47613d7f40b9459014b49761d737bab678703125",
+  "build_sha256": "aec14aa5399840c1d21e91aa80a2d6eb011351d77d076fe5c19883b4f415d686",
+  "reader_sha256": "7732f00fad088350f6abe7ef4913e205999b25cc2d57a9a133ea9bc8beb1e2bf",
+  "review_sha256": "6fa42caed907249ac798c12a064689b329d6dd74996ddcd9e40f17c1f20b23af",
+  "scopes": [
+    {
+      "owner": "3fd6c15ec58140259022d9bceb8497d7",
+      "host_sha256": "6b5590bbe0157597677c4ca3c0d08a3486adac5fd49d55e3a8f61aa3917607f9",
+      "requests": [
+        "0-95fe8e87",
+        "1-b8cd65b0",
+        "2-b7149ad3",
+        "3-90c4a958",
+        "4-b203dc35",
+        "5-9a122b9e",
+        "6-abc4c58a"
+      ],
+      "root_hidden_logits_fault_changed": true,
+      "normal_off_health_full_hash_equal": true,
+      "resources_zero": true,
+      "selected_module": "model.layers.13.self_attn.attn",
+      "tokens_changed": false,
+      "native_phases": [
+        {
+          "phase": "baseline",
+          "actual_launch_keys": [
+            "524000000",
+            "5000000000000200103"
+          ],
+          "current_values_observed": true,
+          "fault_authorized": false,
+          "copy_launch_read": 1,
+          "replay_parent_committed": 0,
+          "first_error": 0,
+          "public_sha256": "3c0f2a91bcce0707e06f141b3205b578550a9f1e79021d1b7a4bfdca52523338",
+          "native_sha256": "44d66769bfd89cfeeb24e9c6c44f59fff2b0055d93bfde155fb8ad7b462af75e"
+        },
+        {
+          "phase": "baseline_repeat",
+          "actual_launch_keys": [
+            "524000000",
+            "5000000000000200103"
+          ],
+          "current_values_observed": true,
+          "fault_authorized": false,
+          "copy_launch_read": 1,
+          "replay_parent_committed": 0,
+          "first_error": 0,
+          "public_sha256": "eca2058aa7af9456459c3b94f3400507a2c0938de528853d544a4a746d7082e7",
+          "native_sha256": "b1a909354286fd346b3eb8c3bd90e51a97bc9756ce2997418ee3dda57033c244"
+        },
+        {
+          "phase": "fault",
+          "actual_launch_keys": [
+            "524000000",
+            "119000000030400003"
+          ],
+          "current_values_observed": true,
+          "fault_authorized": true,
+          "copy_launch_read": 1,
+          "replay_parent_committed": 1,
+          "first_error": 0,
+          "public_sha256": "396a056fab2ea0dc34d9f940e0a57e57e8596b2ab3e1ef92ad1f39264eebe7b3",
+          "native_sha256": "8426bc1dee6316fd62479f9b263aeb69212a0d87eb77af3c9b62a8a6c49ac27e"
+        },
+        {
+          "phase": "off",
+          "actual_launch_keys": [
+            "524000000",
+            "5000000000000200103"
+          ],
+          "current_values_observed": true,
+          "fault_authorized": false,
+          "copy_launch_read": 1,
+          "replay_parent_committed": 0,
+          "first_error": 0,
+          "public_sha256": "8563512799be68193f89f0957d32d36f073753a31db6293d1699ea39d6df57a0",
+          "native_sha256": "d8284f5b0f4f3040fc58b397e9253b1d70160f20c767e34a4899c1429520925c"
+        }
+      ]
+    },
+    {
+      "owner": "f052d5a818124762ab0a16b687ea994f",
+      "host_sha256": "334a67a46e464d93976639b1dbf60eb838d456e5facd46c9f73ba39244da964e",
+      "requests": [
+        "7-a2c11f18",
+        "8-871f115b",
+        "9-9e91107e",
+        "10-8cedd699",
+        "11-b0aaad52",
+        "12-ac0a41eb",
+        "13-9867526c"
+      ],
+      "root_hidden_logits_fault_changed": true,
+      "normal_off_health_full_hash_equal": true,
+      "resources_zero": true,
+      "selected_module": "model.layers.13.self_attn.attn",
+      "tokens_changed": false,
+      "native_phases": [
+        {
+          "phase": "baseline",
+          "actual_launch_keys": [
+            "524000000",
+            "5000000000000200103"
+          ],
+          "current_values_observed": true,
+          "fault_authorized": false,
+          "copy_launch_read": 1,
+          "replay_parent_committed": 0,
+          "first_error": 0,
+          "public_sha256": "d1ac8d5fb7216c2a7a2767c90fe6f7627dd8a3304265fbcd49cca148ac3f0a14",
+          "native_sha256": "c200429ade817a2212b47a4caec9c3e75879f557d8bb1b1f1d2f1ff92c7d24fb"
+        },
+        {
+          "phase": "baseline_repeat",
+          "actual_launch_keys": [
+            "524000000",
+            "5000000000000200103"
+          ],
+          "current_values_observed": true,
+          "fault_authorized": false,
+          "copy_launch_read": 1,
+          "replay_parent_committed": 0,
+          "first_error": 0,
+          "public_sha256": "4d291bccc7cdf216b9467790a3ba3b3621cc1b2b45d89dc654bdabccbb685cfe",
+          "native_sha256": "b04d8acb030bfadc37aca65fe237f8aa7262e4a46a3736dee64bfb459d0e6279"
+        },
+        {
+          "phase": "fault",
+          "actual_launch_keys": [
+            "524000000",
+            "119000000030400003"
+          ],
+          "current_values_observed": true,
+          "fault_authorized": true,
+          "copy_launch_read": 1,
+          "replay_parent_committed": 1,
+          "first_error": 0,
+          "public_sha256": "1f66022640f84cfdb4e2911afe3ccc4ff5a695c8e3c941970406f815dcd9df14",
+          "native_sha256": "ef2954b3d9c41738484e1ffeaf8773c08f1c3904a65d72a69008fca867eb9b0f"
+        },
+        {
+          "phase": "off",
+          "actual_launch_keys": [
+            "524000000",
+            "5000000000000200103"
+          ],
+          "current_values_observed": true,
+          "fault_authorized": false,
+          "copy_launch_read": 1,
+          "replay_parent_committed": 0,
+          "first_error": 0,
+          "public_sha256": "e82b98a0051d6af6f9a294e2b30accd2af5eae2c756c2baa63f57e15f5be376f",
+          "native_sha256": "9d4e58f4bcbd8be1b019ef2eeb6e3dd8e8d04e317d3ab94da0cbe70aeefe242d"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Slice POD not decoded",
+    "production nnopbase full source equivalence not proved",
+    "no C2/C3 or all-target coverage claim"
+  ],
+  "public_qualification_granted": false,
+  "npu_window": {
+    "start": "2026-11-20T14:09:47.656934+00:00",
+    "end": "2026-11-20T14:17:29.471723+00:00",
+    "seconds": 461.8148207110353,
+    "isolation_removed": true
+  },
+  "isolation_events": [
+    {
+      "time": "2026-11-20T14:09:47.657062+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "maximum_seconds": 1800,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-20T14:09:47.826726+00:00",
+      "event": "STOP_BEGIN",
+      "container": "/ptq_dcde1a8de6b13b34_list61-logicaland-s0-01_dev2_slot0_c6bd7b3a",
+      "id": "4b2213e4867b1f36f8d5293de1e8cd544e309ab7857e771c5f9f9c16fb0aaadf",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "cards": [
+        2
+      ]
+    },
+    {
+      "time": "2026-11-20T14:09:48.600840+00:00",
+      "event": "STOP_END",
+      "container": "/ptq_dcde1a8de6b13b34_list61-logicaland-s0-01_dev2_slot0_c6bd7b3a",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "returncode": 0,
+      "stdout": "4b2213e4867b1f36f8d5293de1e8cd544e309ab7857e771c5f9f9c16fb0aaadf",
+      "stderr": ""
+    },
+    {
+      "time": "2026-11-20T14:11:35.987433+00:00",
+      "event": "STOP_BEGIN",
+      "container": "/ptq_dcde1a8de6b13b34_list61-logicaland-s0-02_dev5_slot0_6e9daf6e",
+      "id": "2596b7d93cdbbf4ee90f3ac4a2b1867b085483a7aacdb9bcf1aaf6db6141d7ab",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "cards": [
+        5
+      ]
+    },
+    {
+      "time": "2026-11-20T14:11:36.545705+00:00",
+      "event": "STOP_END",
+      "container": "/ptq_dcde1a8de6b13b34_list61-logicaland-s0-02_dev5_slot0_6e9daf6e",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "returncode": 0,
+      "stdout": "2596b7d93cdbbf4ee90f3ac4a2b1867b085483a7aacdb9bcf1aaf6db6141d7ab",
+      "stderr": ""
+    },
+    {
+      "time": "2026-11-20T14:13:13.637475+00:00",
+      "event": "STOP_BEGIN",
+      "container": "/ptq_dcde1a8de6b13b34_list61-logicaland-s0-03_dev5_slot0_e732b41d",
+      "id": "ebe4782a1f6dea82a9321e2ff5529d919e511cf117720faf8911400960a0cc01",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "cards": [
+        5
+      ]
+    },
+    {
+      "time": "2026-11-20T14:13:14.516440+00:00",
+      "event": "STOP_END",
+      "container": "/ptq_dcde1a8de6b13b34_list61-logicaland-s0-03_dev5_slot0_e732b41d",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "returncode": 0,
+      "stdout": "ebe4782a1f6dea82a9321e2ff5529d919e511cf117720faf8911400960a0cc01",
+      "stderr": ""
+    },
+    {
+      "time": "2026-11-20T14:15:58.917507+00:00",
+      "event": "STOP_BEGIN",
+      "container": "/ptq_dcde1a8de6b13b34_list61-logicaland-s0-04_dev5_slot0_ef8d35e0",
+      "id": "cd135792cb57ddb52b66b0660928c14950346cb2e7a875d5a758f9f680b4c39f",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "cards": [
+        5
+      ]
+    },
+    {
+      "time": "2026-11-20T14:15:59.614533+00:00",
+      "event": "STOP_END",
+      "container": "/ptq_dcde1a8de6b13b34_list61-logicaland-s0-04_dev5_slot0_ef8d35e0",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "returncode": 0,
+      "stdout": "cd135792cb57ddb52b66b0660928c14950346cb2e7a875d5a758f9f680b4c39f",
+      "stderr": ""
+    },
+    {
+      "time": "2026-11-20T14:17:29.471821+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ],
+  "previous_external_interruption": {
+    "attempt": "a6",
+    "seconds": 756.1374616749818,
+    "container_state": {
+      "Status": "exited",
+      "Running": false,
+      "Paused": false,
+      "Restarting": false,
+      "OOMKilled": false,
+      "Dead": false,
+      "Pid": 0,
+      "ExitCode": 137,
+      "Error": "",
+      "StartedAt": "2026-11-20T13:50:16.011783331Z",
+      "FinishedAt": "2026-11-20T14:02:46.545077494Z"
+    },
+    "isolation_removed": true,
+    "events": [
+      {
+        "status": "kill",
+        "id": "076d34b7467919d3e901ced1b0295c7818f0b1c7622e273d1249135036fd330e",
+        "from": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+        "Type": "container",
+        "Action": "kill",
+        "Actor": {
+          "ID": "076d34b7467919d3e901ced1b0295c7818f0b1c7622e273d1249135036fd330e",
+          "Attributes": {
+            "dcat.task": "17-fault-c2c3-20261117",
+            "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+            "name": "c23-tnd28-two-stage-two-scopes-20544",
+            "org.opencontainers.image.ref.name": "ubuntu",
+            "org.opencontainers.image.version": "22.04",
+            "signal": "15"
+          }
+        },
+        "scope": "local",
+        "time": 1795183356,
+        "timeNano": 1795183356324394980
+      },
+      {
+        "status": "kill",
+        "id": "076d34b7467919d3e901ced1b0295c7818f0b1c7622e273d1249135036fd330e",
+        "from": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+        "Type": "container",
+        "Action": "kill",
+        "Actor": {
+          "ID": "076d34b7467919d3e901ced1b0295c7818f0b1c7622e273d1249135036fd330e",
+          "Attributes": {
+            "dcat.task": "17-fault-c2c3-20261117",
+            "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+            "name": "c23-tnd28-two-stage-two-scopes-20544",
+            "org.opencontainers.image.ref.name": "ubuntu",
+            "org.opencontainers.image.version": "22.04",
+            "signal": "9"
+          }
+        },
+        "scope": "local",
+        "time": 1795183366,
+        "timeNano": 1795183366333408549
+      },
+      {
+        "status": "die",
+        "id": "076d34b7467919d3e901ced1b0295c7818f0b1c7622e273d1249135036fd330e",
+        "from": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+        "Type": "container",
+        "Action": "die",
+        "Actor": {
+          "ID": "076d34b7467919d3e901ced1b0295c7818f0b1c7622e273d1249135036fd330e",
+          "Attributes": {
+            "dcat.task": "17-fault-c2c3-20261117",
+            "exitCode": "137",
+            "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+            "name": "c23-tnd28-two-stage-two-scopes-20544",
+            "org.opencontainers.image.ref.name": "ubuntu",
+            "org.opencontainers.image.version": "22.04"
+          }
+        },
+        "scope": "local",
+        "time": 1795183366,
+        "timeNano": 1795183366585595772
+      },
+      {
+        "status": "stop",
+        "id": "076d34b7467919d3e901ced1b0295c7818f0b1c7622e273d1249135036fd330e",
+        "from": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+        "Type": "container",
+        "Action": "stop",
+        "Actor": {
+          "ID": "076d34b7467919d3e901ced1b0295c7818f0b1c7622e273d1249135036fd330e",
+          "Attributes": {
+            "dcat.task": "17-fault-c2c3-20261117",
+            "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+            "name": "c23-tnd28-two-stage-two-scopes-20544",
+            "org.opencontainers.image.ref.name": "ubuntu",
+            "org.opencontainers.image.version": "22.04"
+          }
+        },
+        "scope": "local",
+        "time": 1795183366,
+        "timeNano": 1795183366905962294
+      },
+      {
+        "status": "destroy",
+        "id": "076d34b7467919d3e901ced1b0295c7818f0b1c7622e273d1249135036fd330e",
+        "from": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+        "Type": "container",
+        "Action": "destroy",
+        "Actor": {
+          "ID": "076d34b7467919d3e901ced1b0295c7818f0b1c7622e273d1249135036fd330e",
+          "Attributes": {
+            "dcat.task": "17-fault-c2c3-20261117",
+            "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+            "name": "c23-tnd28-two-stage-two-scopes-20544",
+            "org.opencontainers.image.ref.name": "ubuntu",
+            "org.opencontainers.image.version": "22.04"
+          }
+        },
+        "scope": "local",
+        "time": 1795183367,
+        "timeNano": 1795183367216141260
+      }
+    ],
+    "second_scope_finish_receipt_truncated": true,
+    "not_mechanism_stop_loss": true
+  },
+  "budget": {
+    "previous_remaining_seconds": 12507.992932098898,
+    "a6_conservatively_charged_seconds": 756.1374616749818,
+    "a7_seconds": 461.8148207110353,
+    "remaining_seconds": 11290.04064971288
+  },
+  "limits_for_B5": "TwoStageResearchProvider and two independent research owners; not ordinary Runtime/public registry qualification"
+}
