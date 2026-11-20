@@ -170,8 +170,9 @@ class SourceBoundTextObserver:
         self.source_profile=source_profile;self.parallel=None
         self.runner=runner;self.trace=TextPrefillTrace(runner,expected_prompts)
         self.patches=[];self.hooks=[];self.active=False;self.inside=0;self.sources=[]
-    def install(self):
+    def validate(self):
         require(not self.active and not self.patches,'V026_OBSERVER_SINGLE_INSTALL')
+        self.sources=[]
         runner=self.runner;model=runner.model
         require(type(runner).__module__=='vllm_ascend.worker.model_runner_v1'
                 and type(runner).__name__=='NPUModelRunner'
@@ -196,6 +197,9 @@ class SourceBoundTextObserver:
                          model.forward,model.embed_input_ids):
             self.sources.append(_verify_function(function,rows))
         self.parallel=_parallel_report(runner,rows,self.source_profile)
+        return self
+    def install(self):
+        self.validate();runner=self.runner;model=runner.model
         def patch(obj,name,handler):
             require(name not in vars(obj),'V026_EXISTING_INSTANCE_METHOD_OVERRIDE:'+name)
             original=getattr(obj,name)

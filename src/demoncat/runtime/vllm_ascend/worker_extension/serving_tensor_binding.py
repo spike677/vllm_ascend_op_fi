@@ -29,6 +29,7 @@ class TensorServingBinding:
     leases: set = field(default_factory=set, compare=False, repr=False)
     runtime_only: bool = False
     group_context: object = None
+    execution_profile: str | None = None
 
 
 def install_tensor_serving_binding(worker, mechanism, *, prompt_token_ids, weight_manifest,

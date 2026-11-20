@@ -1,0 +1,1932 @@
+{
+  "schema": "demoncat.m2.v026_model_request_summary.v1",
+  "qualification_granted": false,
+  "cases": [
+    {
+      "case": "m2-v026-qwen06-tp1-smoke",
+      "receipt": "m2-v026-qwen06-tp1-smoke-20261120-a1/m2-v026-qwen06-tp1-smoke/model-smoke.json",
+      "sha256": "03e60ea695009433962632afdffc63da3b67bbb49452e0446bcb52487de185fb",
+      "bytes": 5298,
+      "status": "STANDARD_MODEL_REPEAT_SMOKE_PASSED_NOT_FAULT_QUALIFIED",
+      "window": {
+        "start": "2026-11-20T14:44:46.607193+00:00",
+        "ended": "2026-11-20T14:47:21.451454+00:00",
+        "elapsed_seconds": 154.84428800502792,
+        "isolation_removed": true
+      },
+      "isolation_events": [
+        {
+          "time": "2026-11-20T14:44:46.607321+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+          "maximum_seconds": 1200,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-20T14:44:51.891377+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/aq2-npu5-9.1.0-dev2",
+          "id": "0ffe9260905869dc8fa93f74f645d9c469ca6d0752c58886d6cd38ab33f4988b",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-20T14:44:52.750607+00:00",
+          "event": "STOP_END",
+          "container": "/aq2-npu5-9.1.0-dev2",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "0ffe9260905869dc8fa93f74f645d9c469ca6d0752c58886d6cd38ab33f4988b",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T14:45:28.616928+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-logicalnot-resume-02_dev5_slot0_402b7177",
+          "id": "fcb4aaf608558fef3cb091fbabc6d5b270e6af67bf92d3255ab5f901255aaa05",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T14:45:29.290738+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-logicalnot-resume-02_dev5_slot0_402b7177",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "fcb4aaf608558fef3cb091fbabc6d5b270e6af67bf92d3255ab5f901255aaa05",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T14:46:51.080510+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/aq2-npu5-9.1.0-dev2",
+          "id": "dea22e88687974dbceb3b81b2828aa547e1efcb544ac64392d1cebd64a5125f5",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-20T14:46:51.779244+00:00",
+          "event": "STOP_END",
+          "container": "/aq2-npu5-9.1.0-dev2",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "dea22e88687974dbceb3b81b2828aa547e1efcb544ac64392d1cebd64a5125f5",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T14:47:07.159361+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-logicalnot-resume-03_dev5_slot0_800de629",
+          "id": "7aad8d504428bb5c9df39f0799e5bf62305ad8d5baf22605776d68e58c205814",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T14:47:07.837887+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-logicalnot-resume-03_dev5_slot0_800de629",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "7aad8d504428bb5c9df39f0799e5bf62305ad8d5baf22605776d68e58c205814",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T14:47:21.451546+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ],
+      "smoke": {
+        "status": "STANDARD_MODEL_REPEAT_SMOKE_PASSED_NOT_FAULT_QUALIFIED",
+        "tp": 1,
+        "fault_calls": 0,
+        "qualification_granted": false,
+        "model": "/model",
+        "requests": [
+          {
+            "index": 0,
+            "request_id": "0",
+            "prompt_tokens": [
+              840,
+              20772,
+              304,
+              825,
+              11652,
+              3170,
+              279,
+              12884,
+              7952,
+              6303,
+              13
+            ],
+            "generated_tokens": [
+              576,
+              4226,
+              374,
+              304,
+              825,
+              11652,
+              624,
+              16141
+            ],
+            "text": " The answer is in one sentence.\nAnswer",
+            "returned_logprobs_finite": true
+          },
+          {
+            "index": 1,
+            "request_id": "1",
+            "prompt_tokens": [
+              840,
+              20772,
+              304,
+              825,
+              11652,
+              3170,
+              279,
+              12884,
+              7952,
+              6303,
+              13
+            ],
+            "generated_tokens": [
+              576,
+              4226,
+              374,
+              304,
+              825,
+              11652,
+              624,
+              16141
+            ],
+            "text": " The answer is in one sentence.\nAnswer",
+            "returned_logprobs_finite": true
+          }
+        ],
+        "workers_before": [
+          {
+            "identity": {
+              "status": "WORKER_IDENTIFIED",
+              "worker": {
+                "pid": 149,
+                "rank": 0,
+                "logical_device": 0,
+                "configured_logical_device": 0,
+                "observed_logical_device": 0,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:149:83693891",
+                "worker_start_identity": "cdbd9d2452641075940361e13e3e985a",
+                "model_instance_id": "3ab49d7d818d748dd4a0e04558cdd2a2",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "vllm_version": "0.26.0+empty",
+                "vllm_ascend_version": "0.26.0rc1",
+                "extension_version": "1"
+              },
+              "quarantined": false
+            },
+            "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+            "fields": {
+              "pcp_size": {
+                "present": false,
+                "value": null
+              },
+              "dcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "use_async_scheduling": {
+                "present": true,
+                "value": false
+              }
+            },
+            "functions": {
+              "execute_model": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "sample_tokens": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "_preprocess": {
+                "path": "/vllm-workspace/vllm/vllm/v1/worker/gpu_model_runner.py",
+                "sha256": "81b7627fbe81f7aaa2f77b4bf085faa353c69d03662ebfe369536a9773bb70d0"
+              },
+              "_model_forward": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+              }
+            }
+          }
+        ],
+        "workers_after": [
+          {
+            "identity": {
+              "status": "WORKER_IDENTIFIED",
+              "worker": {
+                "pid": 149,
+                "rank": 0,
+                "logical_device": 0,
+                "configured_logical_device": 0,
+                "observed_logical_device": 0,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:149:83693891",
+                "worker_start_identity": "cdbd9d2452641075940361e13e3e985a",
+                "model_instance_id": "3ab49d7d818d748dd4a0e04558cdd2a2",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "vllm_version": "0.26.0+empty",
+                "vllm_ascend_version": "0.26.0rc1",
+                "extension_version": "1"
+              },
+              "quarantined": false
+            },
+            "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+            "fields": {
+              "pcp_size": {
+                "present": false,
+                "value": null
+              },
+              "dcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "use_async_scheduling": {
+                "present": true,
+                "value": false
+              }
+            },
+            "functions": {
+              "execute_model": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "sample_tokens": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "_preprocess": {
+                "path": "/vllm-workspace/vllm/vllm/v1/worker/gpu_model_runner.py",
+                "sha256": "81b7627fbe81f7aaa2f77b4bf085faa353c69d03662ebfe369536a9773bb70d0"
+              },
+              "_model_forward": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "m2-v026-qwen06-tp2-smoke",
+      "receipt": "m2-v026-qwen06-tp2-smoke-20261120-a1/m2-v026-qwen06-tp2-smoke/model-smoke.json",
+      "sha256": "5056846ff61f2c3cc8a69eb4a56f52e657bfbea8c69db7d6454fbcc3c3abdd80",
+      "bytes": 9404,
+      "status": "STANDARD_MODEL_REPEAT_SMOKE_PASSED_NOT_FAULT_QUALIFIED",
+      "window": {
+        "start": "2026-11-20T14:48:32.409328+00:00",
+        "ended": "2026-11-20T14:51:06.946020+00:00",
+        "elapsed_seconds": 154.53671975398902,
+        "isolation_removed": true
+      },
+      "isolation_events": [
+        {
+          "time": "2026-11-20T14:48:32.409456+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+          "maximum_seconds": 1200,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-20T14:51:06.946113+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ],
+      "smoke": {
+        "status": "STANDARD_MODEL_REPEAT_SMOKE_PASSED_NOT_FAULT_QUALIFIED",
+        "tp": 2,
+        "fault_calls": 0,
+        "qualification_granted": false,
+        "model": "/model",
+        "requests": [
+          {
+            "index": 0,
+            "request_id": "0",
+            "prompt_tokens": [
+              840,
+              20772,
+              304,
+              825,
+              11652,
+              3170,
+              279,
+              12884,
+              7952,
+              6303,
+              13
+            ],
+            "generated_tokens": [
+              576,
+              4226,
+              374,
+              304,
+              825,
+              11652,
+              624,
+              16141
+            ],
+            "text": " The answer is in one sentence.\nAnswer",
+            "returned_logprobs_finite": true
+          },
+          {
+            "index": 1,
+            "request_id": "1",
+            "prompt_tokens": [
+              840,
+              20772,
+              304,
+              825,
+              11652,
+              3170,
+              279,
+              12884,
+              7952,
+              6303,
+              13
+            ],
+            "generated_tokens": [
+              576,
+              4226,
+              374,
+              304,
+              825,
+              11652,
+              624,
+              16141
+            ],
+            "text": " The answer is in one sentence.\nAnswer",
+            "returned_logprobs_finite": true
+          }
+        ],
+        "workers_before": [
+          {
+            "identity": {
+              "status": "WORKER_IDENTIFIED",
+              "worker": {
+                "pid": 146,
+                "rank": 0,
+                "logical_device": 0,
+                "configured_logical_device": 0,
+                "observed_logical_device": 0,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:146:83716598",
+                "worker_start_identity": "a59f2ef4a62a8939dccd7ab83d4ce8e3",
+                "model_instance_id": "4c100a1d4f854dddc66adf876b0decfd",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "vllm_version": "0.26.0+empty",
+                "vllm_ascend_version": "0.26.0rc1",
+                "extension_version": "1"
+              },
+              "quarantined": false
+            },
+            "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+            "fields": {
+              "pcp_size": {
+                "present": false,
+                "value": null
+              },
+              "dcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "use_async_scheduling": {
+                "present": true,
+                "value": false
+              }
+            },
+            "functions": {
+              "execute_model": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "sample_tokens": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "_preprocess": {
+                "path": "/vllm-workspace/vllm/vllm/v1/worker/gpu_model_runner.py",
+                "sha256": "81b7627fbe81f7aaa2f77b4bf085faa353c69d03662ebfe369536a9773bb70d0"
+              },
+              "_model_forward": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+              }
+            }
+          },
+          {
+            "identity": {
+              "status": "WORKER_IDENTIFIED",
+              "worker": {
+                "pid": 147,
+                "rank": 1,
+                "logical_device": 1,
+                "configured_logical_device": 1,
+                "observed_logical_device": 1,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:147:83716598",
+                "worker_start_identity": "2afdbbd9d4b71df598188ea761186d78",
+                "model_instance_id": "c27b8318533c76b6a56a34471a7b74d2",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "vllm_version": "0.26.0+empty",
+                "vllm_ascend_version": "0.26.0rc1",
+                "extension_version": "1"
+              },
+              "quarantined": false
+            },
+            "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+            "fields": {
+              "pcp_size": {
+                "present": false,
+                "value": null
+              },
+              "dcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "use_async_scheduling": {
+                "present": true,
+                "value": false
+              }
+            },
+            "functions": {
+              "execute_model": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "sample_tokens": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "_preprocess": {
+                "path": "/vllm-workspace/vllm/vllm/v1/worker/gpu_model_runner.py",
+                "sha256": "81b7627fbe81f7aaa2f77b4bf085faa353c69d03662ebfe369536a9773bb70d0"
+              },
+              "_model_forward": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+              }
+            }
+          }
+        ],
+        "workers_after": [
+          {
+            "identity": {
+              "status": "WORKER_IDENTIFIED",
+              "worker": {
+                "pid": 146,
+                "rank": 0,
+                "logical_device": 0,
+                "configured_logical_device": 0,
+                "observed_logical_device": 0,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:146:83716598",
+                "worker_start_identity": "a59f2ef4a62a8939dccd7ab83d4ce8e3",
+                "model_instance_id": "4c100a1d4f854dddc66adf876b0decfd",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "vllm_version": "0.26.0+empty",
+                "vllm_ascend_version": "0.26.0rc1",
+                "extension_version": "1"
+              },
+              "quarantined": false
+            },
+            "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+            "fields": {
+              "pcp_size": {
+                "present": false,
+                "value": null
+              },
+              "dcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "use_async_scheduling": {
+                "present": true,
+                "value": false
+              }
+            },
+            "functions": {
+              "execute_model": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "sample_tokens": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "_preprocess": {
+                "path": "/vllm-workspace/vllm/vllm/v1/worker/gpu_model_runner.py",
+                "sha256": "81b7627fbe81f7aaa2f77b4bf085faa353c69d03662ebfe369536a9773bb70d0"
+              },
+              "_model_forward": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+              }
+            }
+          },
+          {
+            "identity": {
+              "status": "WORKER_IDENTIFIED",
+              "worker": {
+                "pid": 147,
+                "rank": 1,
+                "logical_device": 1,
+                "configured_logical_device": 1,
+                "observed_logical_device": 1,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:147:83716598",
+                "worker_start_identity": "2afdbbd9d4b71df598188ea761186d78",
+                "model_instance_id": "c27b8318533c76b6a56a34471a7b74d2",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "vllm_version": "0.26.0+empty",
+                "vllm_ascend_version": "0.26.0rc1",
+                "extension_version": "1"
+              },
+              "quarantined": false
+            },
+            "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+            "fields": {
+              "pcp_size": {
+                "present": false,
+                "value": null
+              },
+              "dcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "use_async_scheduling": {
+                "present": true,
+                "value": false
+              }
+            },
+            "functions": {
+              "execute_model": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "sample_tokens": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "_preprocess": {
+                "path": "/vllm-workspace/vllm/vllm/v1/worker/gpu_model_runner.py",
+                "sha256": "81b7627fbe81f7aaa2f77b4bf085faa353c69d03662ebfe369536a9773bb70d0"
+              },
+              "_model_forward": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "case": "m2-v026-qwen38-text-prefill",
+      "receipt": "m2-v026-qwen38-text-prefill-20261120-a1/m2-v026-qwen38-text-prefill/text-prefill.json",
+      "sha256": "04ac62b7bd15290c27393ec0646b3ada100969e41138c2f1e09359b941277f81",
+      "bytes": 130253,
+      "status": "TWO_SAME_WORKER_TEXT_PREFILLS_OBSERVED_NOT_FAULT_QUALIFIED",
+      "window": {
+        "start": "2026-11-20T14:51:20.476981+00:00",
+        "ended": "2026-11-20T14:55:10.581909+00:00",
+        "elapsed_seconds": 230.10496220807545,
+        "isolation_removed": true
+      },
+      "isolation_events": [
+        {
+          "time": "2026-11-20T14:51:20.477118+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+          "maximum_seconds": 1500,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-20T14:55:10.582001+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ],
+      "scopes": [
+        {
+          "owner": "325f343ca0ec45eba114162c8d4e6fc1",
+          "internal_request_id": "0-aed01c2c",
+          "generated_tokens": [
+            271
+          ],
+          "rank_observations": [
+            {
+              "schema": "demoncat.v026.text_prefill_trace.v1",
+              "events": [
+                "execute_enter",
+                "preprocess_enter",
+                "preprocess_return",
+                "model_enter",
+                "model_return",
+                "execute_return_state_pending",
+                "sample_enter",
+                "sample_return"
+              ],
+              "cleanup_calls": 1,
+              "request_ids": [
+                "0-aed01c2c"
+              ],
+              "input_branch": "token_ids",
+              "mapping": {
+                "schema": "demoncat.prerequisites.v1",
+                "checks": [
+                  {
+                    "layer": "actual_call",
+                    "field": "input_batch.request_set",
+                    "expected": [
+                      "0-aed01c2c"
+                    ],
+                    "actual": [
+                      "0-aed01c2c"
+                    ],
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "input_batch.unique_ids",
+                    "expected": 1,
+                    "actual": 1,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.num_scheduled_tokens",
+                    "expected": {
+                      "0-aed01c2c": 11
+                    },
+                    "actual": {
+                      "0-aed01c2c": 11
+                    },
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.total_num_scheduled_tokens",
+                    "expected": 11,
+                    "actual": 11,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.scheduled_encoder_inputs",
+                    "expected": {},
+                    "actual": {},
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.scheduled_spec_decode_tokens",
+                    "expected": {},
+                    "actual": {},
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "chunked_prefill.enabled",
+                    "expected": true,
+                    "actual": true,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "chunked_prefill.sufficient_budget",
+                    "expected": true,
+                    "actual": true,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "0-aed01c2c.prompt_token_ids",
+                    "expected": [
+                      814,
+                      20139,
+                      303,
+                      799,
+                      11316,
+                      3069,
+                      279,
+                      12515,
+                      7701,
+                      6105,
+                      13
+                    ],
+                    "actual": [
+                      814,
+                      20139,
+                      303,
+                      799,
+                      11316,
+                      3069,
+                      279,
+                      12515,
+                      7701,
+                      6105,
+                      13
+                    ],
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "0-aed01c2c.mm_features",
+                    "expected": [],
+                    "actual": [],
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "0-aed01c2c.row_mapping",
+                    "expected": true,
+                    "actual": true,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "0-aed01c2c.num_computed_tokens",
+                    "expected": 0,
+                    "actual": 0,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  }
+                ],
+                "unmet": [],
+                "status": "matched",
+                "primary": null,
+                "execution_authorized": false,
+                "visual_execution_excluded": false,
+                "model_input_association_verified": false,
+                "source_binding_required": true,
+                "qualification_granted": false,
+                "public_admission_changed": false
+              },
+              "visual_calls": 0,
+              "embedding_calls": 0,
+              "model_calls": 1,
+              "status": "OBSERVED",
+              "visual_execution_excluded": true,
+              "model_input_association_verified": true,
+              "association_basis": "SOURCE_PINNED_EMBEDDING_COPY_AND_SAME_LIVE_MODEL_ARGUMENT_OBJECTS",
+              "device_input_values_compared": false,
+              "first_error": null,
+              "execution_authorized": false,
+              "qualification_granted": false,
+              "source_profile": "v026_installed_c9c9432b",
+              "parallel": {
+                "assessment": {
+                  "schema": "demoncat.prerequisites.v1",
+                  "checks": [
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.prefill_context_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.decode_context_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.tensor_parallel_size",
+                      "expected": 2,
+                      "actual": 2,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.pipeline_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.data_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "pcp_group.world_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "dcp_group.world_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "tp_group.world_size",
+                      "expected": 2,
+                      "actual": 2,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "dcp_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "use_dcp",
+                      "expected": false,
+                      "actual": false,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    }
+                  ],
+                  "unmet": [],
+                  "status": "matched",
+                  "primary": null,
+                  "execution_authorized": false
+                },
+                "sources": [
+                  {
+                    "path": "/vllm-workspace/vllm/vllm/distributed/parallel_state.py",
+                    "sha256": "ecfa5eeda697e9982591c93eca835fcc53463267c1c22110700819efcecee74f"
+                  },
+                  {
+                    "path": "/vllm-workspace/vllm/vllm/distributed/parallel_state.py",
+                    "sha256": "ecfa5eeda697e9982591c93eca835fcc53463267c1c22110700819efcecee74f"
+                  },
+                  {
+                    "path": "/vllm-workspace/vllm/vllm/distributed/parallel_state.py",
+                    "sha256": "ecfa5eeda697e9982591c93eca835fcc53463267c1c22110700819efcecee74f"
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "path": "/vllm-workspace/vllm/vllm/config/multimodal.py",
+                  "sha256": "4df62382d49521afe0196cf18078f9d807939ea088c5442279235585ea3ce612"
+                },
+                {
+                  "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                  "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+                },
+                {
+                  "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                  "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+                },
+                {
+                  "path": "/vllm-workspace/vllm/vllm/v1/worker/gpu_model_runner.py",
+                  "sha256": "81b7627fbe81f7aaa2f77b4bf085faa353c69d03662ebfe369536a9773bb70d0"
+                },
+                {
+                  "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                  "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+                },
+                {
+                  "path": "/vllm-workspace/vllm/vllm/model_executor/models/qwen3_5.py",
+                  "sha256": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496"
+                },
+                {
+                  "path": "/vllm-workspace/vllm/vllm/model_executor/models/qwen3_5.py",
+                  "sha256": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496"
+                }
+              ],
+              "owned_hooks": 0,
+              "owned_wrappers": 0,
+              "inflight": 0
+            },
+            {
+              "schema": "demoncat.v026.text_prefill_trace.v1",
+              "events": [
+                "execute_enter",
+                "preprocess_enter",
+                "preprocess_return",
+                "model_enter",
+                "model_return",
+                "execute_return_state_pending",
+                "sample_enter",
+                "sample_return"
+              ],
+              "cleanup_calls": 1,
+              "request_ids": [
+                "0-aed01c2c"
+              ],
+              "input_branch": "token_ids",
+              "mapping": {
+                "schema": "demoncat.prerequisites.v1",
+                "checks": [
+                  {
+                    "layer": "actual_call",
+                    "field": "input_batch.request_set",
+                    "expected": [
+                      "0-aed01c2c"
+                    ],
+                    "actual": [
+                      "0-aed01c2c"
+                    ],
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "input_batch.unique_ids",
+                    "expected": 1,
+                    "actual": 1,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.num_scheduled_tokens",
+                    "expected": {
+                      "0-aed01c2c": 11
+                    },
+                    "actual": {
+                      "0-aed01c2c": 11
+                    },
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.total_num_scheduled_tokens",
+                    "expected": 11,
+                    "actual": 11,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.scheduled_encoder_inputs",
+                    "expected": {},
+                    "actual": {},
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.scheduled_spec_decode_tokens",
+                    "expected": {},
+                    "actual": {},
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "chunked_prefill.enabled",
+                    "expected": true,
+                    "actual": true,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "chunked_prefill.sufficient_budget",
+                    "expected": true,
+                    "actual": true,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "0-aed01c2c.prompt_token_ids",
+                    "expected": [
+                      814,
+                      20139,
+                      303,
+                      799,
+                      11316,
+                      3069,
+                      279,
+                      12515,
+                      7701,
+                      6105,
+                      13
+                    ],
+                    "actual": [
+                      814,
+                      20139,
+                      303,
+                      799,
+                      11316,
+                      3069,
+                      279,
+                      12515,
+                      7701,
+                      6105,
+                      13
+                    ],
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "0-aed01c2c.mm_features",
+                    "expected": [],
+                    "actual": [],
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "0-aed01c2c.row_mapping",
+                    "expected": true,
+                    "actual": true,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "0-aed01c2c.num_computed_tokens",
+                    "expected": 0,
+                    "actual": 0,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  }
+                ],
+                "unmet": [],
+                "status": "matched",
+                "primary": null,
+                "execution_authorized": false,
+                "visual_execution_excluded": false,
+                "model_input_association_verified": false,
+                "source_binding_required": true,
+                "qualification_granted": false,
+                "public_admission_changed": false
+              },
+              "visual_calls": 0,
+              "embedding_calls": 0,
+              "model_calls": 1,
+              "status": "OBSERVED",
+              "visual_execution_excluded": true,
+              "model_input_association_verified": true,
+              "association_basis": "SOURCE_PINNED_EMBEDDING_COPY_AND_SAME_LIVE_MODEL_ARGUMENT_OBJECTS",
+              "device_input_values_compared": false,
+              "first_error": null,
+              "execution_authorized": false,
+              "qualification_granted": false,
+              "source_profile": "v026_installed_c9c9432b",
+              "parallel": {
+                "assessment": {
+                  "schema": "demoncat.prerequisites.v1",
+                  "checks": [
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.prefill_context_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.decode_context_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.tensor_parallel_size",
+                      "expected": 2,
+                      "actual": 2,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.pipeline_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.data_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "pcp_group.world_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "dcp_group.world_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "tp_group.world_size",
+                      "expected": 2,
+                      "actual": 2,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "dcp_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "use_dcp",
+                      "expected": false,
+                      "actual": false,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    }
+                  ],
+                  "unmet": [],
+                  "status": "matched",
+                  "primary": null,
+                  "execution_authorized": false
+                },
+                "sources": [
+                  {
+                    "path": "/vllm-workspace/vllm/vllm/distributed/parallel_state.py",
+                    "sha256": "ecfa5eeda697e9982591c93eca835fcc53463267c1c22110700819efcecee74f"
+                  },
+                  {
+                    "path": "/vllm-workspace/vllm/vllm/distributed/parallel_state.py",
+                    "sha256": "ecfa5eeda697e9982591c93eca835fcc53463267c1c22110700819efcecee74f"
+                  },
+                  {
+                    "path": "/vllm-workspace/vllm/vllm/distributed/parallel_state.py",
+                    "sha256": "ecfa5eeda697e9982591c93eca835fcc53463267c1c22110700819efcecee74f"
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "path": "/vllm-workspace/vllm/vllm/config/multimodal.py",
+                  "sha256": "4df62382d49521afe0196cf18078f9d807939ea088c5442279235585ea3ce612"
+                },
+                {
+                  "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                  "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+                },
+                {
+                  "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                  "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+                },
+                {
+                  "path": "/vllm-workspace/vllm/vllm/v1/worker/gpu_model_runner.py",
+                  "sha256": "81b7627fbe81f7aaa2f77b4bf085faa353c69d03662ebfe369536a9773bb70d0"
+                },
+                {
+                  "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                  "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+                },
+                {
+                  "path": "/vllm-workspace/vllm/vllm/model_executor/models/qwen3_5.py",
+                  "sha256": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496"
+                },
+                {
+                  "path": "/vllm-workspace/vllm/vllm/model_executor/models/qwen3_5.py",
+                  "sha256": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496"
+                }
+              ],
+              "owned_hooks": 0,
+              "owned_wrappers": 0,
+              "inflight": 0
+            }
+          ]
+        },
+        {
+          "owner": "f2e93a6a3546440796dd820d5e586bdc",
+          "internal_request_id": "1-90c9c623",
+          "generated_tokens": [
+            271
+          ],
+          "rank_observations": [
+            {
+              "schema": "demoncat.v026.text_prefill_trace.v1",
+              "events": [
+                "execute_enter",
+                "preprocess_enter",
+                "preprocess_return",
+                "model_enter",
+                "model_return",
+                "execute_return_state_pending",
+                "sample_enter",
+                "sample_return"
+              ],
+              "cleanup_calls": 1,
+              "request_ids": [
+                "1-90c9c623"
+              ],
+              "input_branch": "token_ids",
+              "mapping": {
+                "schema": "demoncat.prerequisites.v1",
+                "checks": [
+                  {
+                    "layer": "actual_call",
+                    "field": "input_batch.request_set",
+                    "expected": [
+                      "1-90c9c623"
+                    ],
+                    "actual": [
+                      "1-90c9c623"
+                    ],
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "input_batch.unique_ids",
+                    "expected": 1,
+                    "actual": 1,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.num_scheduled_tokens",
+                    "expected": {
+                      "1-90c9c623": 11
+                    },
+                    "actual": {
+                      "1-90c9c623": 11
+                    },
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.total_num_scheduled_tokens",
+                    "expected": 11,
+                    "actual": 11,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.scheduled_encoder_inputs",
+                    "expected": {},
+                    "actual": {},
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.scheduled_spec_decode_tokens",
+                    "expected": {},
+                    "actual": {},
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "chunked_prefill.enabled",
+                    "expected": true,
+                    "actual": true,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "chunked_prefill.sufficient_budget",
+                    "expected": true,
+                    "actual": true,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "1-90c9c623.prompt_token_ids",
+                    "expected": [
+                      814,
+                      20139,
+                      303,
+                      799,
+                      11316,
+                      3069,
+                      279,
+                      12515,
+                      7701,
+                      6105,
+                      13
+                    ],
+                    "actual": [
+                      814,
+                      20139,
+                      303,
+                      799,
+                      11316,
+                      3069,
+                      279,
+                      12515,
+                      7701,
+                      6105,
+                      13
+                    ],
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "1-90c9c623.mm_features",
+                    "expected": [],
+                    "actual": [],
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "1-90c9c623.row_mapping",
+                    "expected": true,
+                    "actual": true,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "1-90c9c623.num_computed_tokens",
+                    "expected": 0,
+                    "actual": 0,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  }
+                ],
+                "unmet": [],
+                "status": "matched",
+                "primary": null,
+                "execution_authorized": false,
+                "visual_execution_excluded": false,
+                "model_input_association_verified": false,
+                "source_binding_required": true,
+                "qualification_granted": false,
+                "public_admission_changed": false
+              },
+              "visual_calls": 0,
+              "embedding_calls": 0,
+              "model_calls": 1,
+              "status": "OBSERVED",
+              "visual_execution_excluded": true,
+              "model_input_association_verified": true,
+              "association_basis": "SOURCE_PINNED_EMBEDDING_COPY_AND_SAME_LIVE_MODEL_ARGUMENT_OBJECTS",
+              "device_input_values_compared": false,
+              "first_error": null,
+              "execution_authorized": false,
+              "qualification_granted": false,
+              "source_profile": "v026_installed_c9c9432b",
+              "parallel": {
+                "assessment": {
+                  "schema": "demoncat.prerequisites.v1",
+                  "checks": [
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.prefill_context_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.decode_context_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.tensor_parallel_size",
+                      "expected": 2,
+                      "actual": 2,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.pipeline_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.data_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "pcp_group.world_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "dcp_group.world_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "tp_group.world_size",
+                      "expected": 2,
+                      "actual": 2,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "dcp_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "use_dcp",
+                      "expected": false,
+                      "actual": false,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    }
+                  ],
+                  "unmet": [],
+                  "status": "matched",
+                  "primary": null,
+                  "execution_authorized": false
+                },
+                "sources": [
+                  {
+                    "path": "/vllm-workspace/vllm/vllm/distributed/parallel_state.py",
+                    "sha256": "ecfa5eeda697e9982591c93eca835fcc53463267c1c22110700819efcecee74f"
+                  },
+                  {
+                    "path": "/vllm-workspace/vllm/vllm/distributed/parallel_state.py",
+                    "sha256": "ecfa5eeda697e9982591c93eca835fcc53463267c1c22110700819efcecee74f"
+                  },
+                  {
+                    "path": "/vllm-workspace/vllm/vllm/distributed/parallel_state.py",
+                    "sha256": "ecfa5eeda697e9982591c93eca835fcc53463267c1c22110700819efcecee74f"
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "path": "/vllm-workspace/vllm/vllm/config/multimodal.py",
+                  "sha256": "4df62382d49521afe0196cf18078f9d807939ea088c5442279235585ea3ce612"
+                },
+                {
+                  "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                  "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+                },
+                {
+                  "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                  "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+                },
+                {
+                  "path": "/vllm-workspace/vllm/vllm/v1/worker/gpu_model_runner.py",
+                  "sha256": "81b7627fbe81f7aaa2f77b4bf085faa353c69d03662ebfe369536a9773bb70d0"
+                },
+                {
+                  "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                  "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+                },
+                {
+                  "path": "/vllm-workspace/vllm/vllm/model_executor/models/qwen3_5.py",
+                  "sha256": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496"
+                },
+                {
+                  "path": "/vllm-workspace/vllm/vllm/model_executor/models/qwen3_5.py",
+                  "sha256": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496"
+                }
+              ],
+              "owned_hooks": 0,
+              "owned_wrappers": 0,
+              "inflight": 0
+            },
+            {
+              "schema": "demoncat.v026.text_prefill_trace.v1",
+              "events": [
+                "execute_enter",
+                "preprocess_enter",
+                "preprocess_return",
+                "model_enter",
+                "model_return",
+                "execute_return_state_pending",
+                "sample_enter",
+                "sample_return"
+              ],
+              "cleanup_calls": 1,
+              "request_ids": [
+                "1-90c9c623"
+              ],
+              "input_branch": "token_ids",
+              "mapping": {
+                "schema": "demoncat.prerequisites.v1",
+                "checks": [
+                  {
+                    "layer": "actual_call",
+                    "field": "input_batch.request_set",
+                    "expected": [
+                      "1-90c9c623"
+                    ],
+                    "actual": [
+                      "1-90c9c623"
+                    ],
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "input_batch.unique_ids",
+                    "expected": 1,
+                    "actual": 1,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.num_scheduled_tokens",
+                    "expected": {
+                      "1-90c9c623": 11
+                    },
+                    "actual": {
+                      "1-90c9c623": 11
+                    },
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.total_num_scheduled_tokens",
+                    "expected": 11,
+                    "actual": 11,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.scheduled_encoder_inputs",
+                    "expected": {},
+                    "actual": {},
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "scheduler.scheduled_spec_decode_tokens",
+                    "expected": {},
+                    "actual": {},
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "chunked_prefill.enabled",
+                    "expected": true,
+                    "actual": true,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "chunked_prefill.sufficient_budget",
+                    "expected": true,
+                    "actual": true,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "1-90c9c623.prompt_token_ids",
+                    "expected": [
+                      814,
+                      20139,
+                      303,
+                      799,
+                      11316,
+                      3069,
+                      279,
+                      12515,
+                      7701,
+                      6105,
+                      13
+                    ],
+                    "actual": [
+                      814,
+                      20139,
+                      303,
+                      799,
+                      11316,
+                      3069,
+                      279,
+                      12515,
+                      7701,
+                      6105,
+                      13
+                    ],
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "1-90c9c623.mm_features",
+                    "expected": [],
+                    "actual": [],
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "1-90c9c623.row_mapping",
+                    "expected": true,
+                    "actual": true,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  },
+                  {
+                    "layer": "actual_call",
+                    "field": "1-90c9c623.num_computed_tokens",
+                    "expected": 0,
+                    "actual": 0,
+                    "status": "matched",
+                    "code": "V026_FRESH_TEXT_SINGLE_CHUNK_UNPROVEN"
+                  }
+                ],
+                "unmet": [],
+                "status": "matched",
+                "primary": null,
+                "execution_authorized": false,
+                "visual_execution_excluded": false,
+                "model_input_association_verified": false,
+                "source_binding_required": true,
+                "qualification_granted": false,
+                "public_admission_changed": false
+              },
+              "visual_calls": 0,
+              "embedding_calls": 0,
+              "model_calls": 1,
+              "status": "OBSERVED",
+              "visual_execution_excluded": true,
+              "model_input_association_verified": true,
+              "association_basis": "SOURCE_PINNED_EMBEDDING_COPY_AND_SAME_LIVE_MODEL_ARGUMENT_OBJECTS",
+              "device_input_values_compared": false,
+              "first_error": null,
+              "execution_authorized": false,
+              "qualification_granted": false,
+              "source_profile": "v026_installed_c9c9432b",
+              "parallel": {
+                "assessment": {
+                  "schema": "demoncat.prerequisites.v1",
+                  "checks": [
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.prefill_context_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.decode_context_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.tensor_parallel_size",
+                      "expected": 2,
+                      "actual": 2,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.pipeline_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "vllm_config.parallel_config.data_parallel_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "pcp_group.world_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "dcp_group.world_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "tp_group.world_size",
+                      "expected": 2,
+                      "actual": 2,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "dcp_size",
+                      "expected": 1,
+                      "actual": 1,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    },
+                    {
+                      "layer": "mechanism_compatibility",
+                      "field": "use_dcp",
+                      "expected": false,
+                      "actual": false,
+                      "status": "matched",
+                      "code": "V026_PARALLEL_FACT_MISSING_OR_DIFFERENT"
+                    }
+                  ],
+                  "unmet": [],
+                  "status": "matched",
+                  "primary": null,
+                  "execution_authorized": false
+                },
+                "sources": [
+                  {
+                    "path": "/vllm-workspace/vllm/vllm/distributed/parallel_state.py",
+                    "sha256": "ecfa5eeda697e9982591c93eca835fcc53463267c1c22110700819efcecee74f"
+                  },
+                  {
+                    "path": "/vllm-workspace/vllm/vllm/distributed/parallel_state.py",
+                    "sha256": "ecfa5eeda697e9982591c93eca835fcc53463267c1c22110700819efcecee74f"
+                  },
+                  {
+                    "path": "/vllm-workspace/vllm/vllm/distributed/parallel_state.py",
+                    "sha256": "ecfa5eeda697e9982591c93eca835fcc53463267c1c22110700819efcecee74f"
+                  }
+                ]
+              },
+              "sources": [
+                {
+                  "path": "/vllm-workspace/vllm/vllm/config/multimodal.py",
+                  "sha256": "4df62382d49521afe0196cf18078f9d807939ea088c5442279235585ea3ce612"
+                },
+                {
+                  "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                  "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+                },
+                {
+                  "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                  "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+                },
+                {
+                  "path": "/vllm-workspace/vllm/vllm/v1/worker/gpu_model_runner.py",
+                  "sha256": "81b7627fbe81f7aaa2f77b4bf085faa353c69d03662ebfe369536a9773bb70d0"
+                },
+                {
+                  "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                  "sha256": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+                },
+                {
+                  "path": "/vllm-workspace/vllm/vllm/model_executor/models/qwen3_5.py",
+                  "sha256": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496"
+                },
+                {
+                  "path": "/vllm-workspace/vllm/vllm/model_executor/models/qwen3_5.py",
+                  "sha256": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496"
+                }
+              ],
+              "owned_hooks": 0,
+              "owned_wrappers": 0,
+              "inflight": 0
+            }
+          ]
+        }
+      ],
+      "workers_stable": true,
+      "host_scheduler_sources": [
+        {
+          "path": "vllm/entrypoints/llm.py",
+          "sha256": "a0b80b83771e36c4e8cbe3451952fc38bd93db60a1186e6ff4da4b4035618b7d"
+        },
+        {
+          "path": "vllm/v1/engine/llm_engine.py",
+          "sha256": "17e5edfc625c77e9663368c7d69136e5e5935ee81608a65be3996411d502225e"
+        },
+        {
+          "path": "vllm/v1/engine/core_client.py",
+          "sha256": "2d83952580e23abca33c3bb5f93edc349ea0e10da358bcb41b385f8d066e2a0b"
+        },
+        {
+          "path": "vllm/v1/engine/core.py",
+          "sha256": "3ae1381a6af841e21058c825702382dc66faae45c950ac5acb8495d2d3d05aad"
+        }
+      ]
+    }
+  ]
+}
