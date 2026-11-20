@@ -33,4 +33,12 @@ class FirstDecodeTests(unittest.TestCase):
         result=(r.input_ids.gpu,None,r.mrope_positions.gpu,None,{},None);t.after_preprocess(result)
         kwargs=dict(zip(('input_ids','inputs_embeds','positions','intermediate_tensors'),result[:4]))
         with self.assertRaisesRegex(RuntimeError,'DEVICE_INPUT'):t.model_enter(r.model,(),kwargs)
+    def test_nonfinite_diagnostic_names_actual_stage_and_field(self):
+        from unittest.mock import patch
+        r,s,t=self.prepared()
+        root=torch.tensor([[float('nan')]])
+        t.root_output=root;t.state=NS(hidden_states=root)
+        with patch('demoncat.runtime.vllm_ascend.worker_extension.v026_generation_observer.TextPrefillTrace.execute_return'):
+            with self.assertRaisesRegex(RuntimeError,'first_decode.*nan_elements'):
+                t.execute_return(None)
 if __name__=='__main__':unittest.main()

@@ -1,5 +1,6 @@
 """Read-only, source-bound B8 prefill + first-decode mapping. No fault authority."""
 from copy import deepcopy
+import json
 from .v026_text_observer import TextPrefillTrace,SourceBoundTextObserver,_prefix
 from .serving_context import require,cpu_list
 from .serving import complete_tensor
@@ -58,13 +59,22 @@ class FirstDecodeTrace(TextPrefillTrace):
         require(finite and pfinite and actual.tolist()==tokens and pos.tolist()==[positions]*3,'B8_DEVICE_INPUT_BYTES_CHANGED')
         self.input_values=dict(request_ids=list(ids),input_ids=tokens,positions=positions,input_sha256=ih,positions_sha256=ph)
 
+    def model_return(self,module,args,kwargs,output):
+        super().model_return(module,args,kwargs,output)
+        self.root_output=output
+
     def execute_return(self,result):
         super().execute_return(result)
+        require(self.state.hidden_states is self.root_output,'B8_STATE_NOT_ACTUAL_MODEL_RETURN')
         hashes={}
         for name in ('hidden_states','sample_hidden_states','logits'):
-            _,sha,finite=complete_tensor(getattr(self.state,name));require(finite,'B8_NONFINITE_OUTPUT')
+            cpu,sha,finite=complete_tensor(getattr(self.state,name))
+            facts=dict(phase='first_decode' if self.rows else 'prefill',field=name,shape=list(cpu.shape),
+                dtype=str(cpu.dtype),nan_elements=int(cpu.isnan().sum()),inf_elements=int(cpu.isinf().sum()),
+                total_elements=cpu.numel(),fault_calls=0)
+            require(finite,'B8_NONFINITE_OUTPUT:'+json.dumps(facts,sort_keys=True))
             hashes[name]=sha
-        self.output_hashes=hashes
+        self.output_hashes=hashes;self.root_output=None
 
     def after_sample(self,result):
         super().after_sample(result)
