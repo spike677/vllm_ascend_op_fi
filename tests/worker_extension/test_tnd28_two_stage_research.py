@@ -30,6 +30,26 @@ class ResearchContracts(unittest.TestCase):
                 R.install_research_binding(worker,prompt_token_ids=[1],provenance={},native=native)
             self.assertFalse(getattr(worker,S.ATTRIBUTE))
 
+    def test_real_tnd_boundary_uses_existing_strict_contract(self):
+        import torch
+        import test_attention28_stock_census as CENSUS
+        from demoncat.runtime.vllm_ascend.worker_extension import attention28_stock_census as C
+        from demoncat.runtime.vllm_ascend.worker_extension.attention_execution import AttentionExecutionAdapter
+        a=AttentionExecutionAdapter.__new__(AttentionExecutionAdapter)
+        a.model=object();module=NS(layer_name='actual');row=CENSUS.call_row();row['module_object_id']=id(module)
+        a.deployment=NS(mechanism='28.fia.denominator_replay',simulation=True)
+        a.current=dict(decode=False,scheduler=row['scheduler'],calls=[row]);a.live_api_calls=[(row,object(),(),{})]
+        a._context=lambda:NS(model_instance=a.model,no_compile_layers={'actual':module},attn_metadata={'actual':object()})
+        actual=dict(input_layout='TND',atten_mask=torch.ones(2,2,dtype=torch.int8).triu(1))
+        with patch.object(C,'capture_inputs',return_value=CENSUS.captured()):
+            result=a._boundary('npu_fused_infer_attention_score',actual,row['module_path'],module)
+            self.assertTrue(result['input_contract_matches']);self.assertFalse(result['public_worker_qualified'])
+            actual['atten_mask'][0,0]=1
+            with self.assertRaisesRegex(RuntimeError,'CAUSAL_MASK'):a._boundary('npu_fused_infer_attention_score',actual,row['module_path'],module)
+        bad=CENSUS.captured();bad['inputs']['block_table']['value']=[1]
+        with patch.object(C,'capture_inputs',return_value=bad):
+            with self.assertRaisesRegex(RuntimeError,'SEMANTICS_DIFFER'):a._boundary('npu_fused_infer_attention_score',actual,row['module_path'],module)
+
     def native_state(self,value):
         p=R.ResearchTypedPlan.__new__(R.ResearchTypedPlan);p.binding=NS(_owner=lambda:None);p.token='a'*32
         def query(token,out,capacity):

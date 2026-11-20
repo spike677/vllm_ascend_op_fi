@@ -292,6 +292,19 @@ class AttentionExecutionAdapter:
             row.update(module_path=path, module_object_id=id(module), virtual_engine=context.virtual_engine)
             validate_tnd_call(actual, row, allow_cpu_test=self.deployment.simulation)
             row['input_contract_matches'] = True
+        elif self.deployment.mechanism == '28.fia.denominator_replay' and actual.get('input_layout') == 'TND':
+            # Metadata/value qualification of a natural call only. This does not
+            # enable public F: the serving provider still refuses that phase.
+            from .attention28_stock_census import capture_inputs, validate_tnd_prefill
+            require(not self.current['decode'] and len(self.live_api_calls)==1,
+                    'TND28_CURRENT_PREFILL_FRAME_REQUIRED')
+            current, original, args, kwargs = self.live_api_calls[-1]
+            require(current is self.current['calls'][-1] and current['module_path']==path
+                and current['module_object_id']==id(module), 'TND28_CURRENT_BOUNDARY_FRAME_CHANGED')
+            captured = capture_inputs(original,args,actual,metadata)
+            row = validate_tnd_prefill(captured,current,simulation=self.deployment.simulation)
+            row.update(input_contract_matches=True, public_worker_qualified=False,
+                       native_launch_verified=False, module_path=path, module_object_id=id(module))
         elif self.deployment.mechanism == '28.fa.legal_tiling':
             row = inspect_fa_call(name, actual, metadata, scheduler, simulation=self.deployment.simulation)
         else:
