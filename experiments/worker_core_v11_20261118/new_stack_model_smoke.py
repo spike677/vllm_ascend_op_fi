@@ -10,7 +10,7 @@ def current_worker(wrapper):
         value=getattr(runner,name,None)
         if value is None:functions[name]={'missing':True};continue
         value=inspect.unwrap(getattr(value,'__func__',value));path=pathlib.Path(inspect.getsourcefile(value));functions[name]=dict(path=str(path),sha256=hashlib.sha256(path.read_bytes()).hexdigest())
-    fields={name:dict(present=hasattr(runner,name),value=getattr(runner,name,None)) for name in ('pcp_size','dcp_size','use_async_scheduling')}
+    fields={name:dict(present=hasattr(runner,name),value=getattr(runner,name,None)) for name in ('pcp_size','dcp_size','use_async_scheduling','supports_mm_inputs','uses_mrope','enable_prompt_embeds')}
     return dict(identity=worker.demoncat_worker_identity(),runner_class=type(runner).__module__+'.'+type(runner).__name__,fields=fields,functions=functions)
 
 def main():

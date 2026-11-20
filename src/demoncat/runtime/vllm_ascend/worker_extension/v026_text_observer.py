@@ -31,6 +31,8 @@ class TextPrefillTrace:
         self.pid=os.getpid();self.thread=threading.get_ident()
         self.scheduler=None;self.events=[];self.mapping=None;self.preprocessed=None
         self.visual_calls=0;self.embedding_calls=0;self.model_calls=0
+        self.embedding_branch=runner.supports_mm_inputs
+        require(type(self.embedding_branch) is bool,"NEWSTACK_ACTUAL_TEXT_BRANCH_MISSING")
         self.state=None;self.first_error=None;self.finished=False
     def guard(self):
         require((os.getpid(),threading.get_ident())==(self.pid,self.thread)
@@ -51,7 +53,7 @@ class TextPrefillTrace:
                     and req.output_token_ids==[],'V026_NON_TEXT_OR_PREVIOUS_GENERATION')
         self.mapping=report;self.events.append('preprocess_enter')
     def embedding(self,input_ids,kwargs):
-        self.guard();require(self.events==['execute_enter','preprocess_enter']
+        self.guard();require(self.embedding_branch and self.events==['execute_enter','preprocess_enter']
                             and self.embedding_calls==0,'V026_EMBEDDING_ORDER')
         require(kwargs.get('multimodal_embeddings') is not None
                 and len(kwargs['multimodal_embeddings'])==0,'V026_MULTIMODAL_EMBEDDINGS_PRESENT')
@@ -61,13 +63,18 @@ class TextPrefillTrace:
         require(cpu_list(self.runner.input_ids.cpu)[:n]==ordered,'V026_EMBED_INPUT_CPU_MIRROR_DIFFERS')
         self.embedding_calls+=1
     def after_preprocess(self,result):
-        self.guard();require(self.embedding_calls==1 and len(result)==6,'V026_EMBEDDING_NOT_OBSERVED')
+        self.guard();require(self.embedding_calls==int(self.embedding_branch) and len(result)==6,'V026_EMBEDDING_NOT_OBSERVED')
         ids,embeds,positions,intermediate,kwargs,ec=result;n=sum(map(len,self.expected.values()))
         require(intermediate is None and kwargs=={} and ec is None,'V026_PREPROCESS_EXTRA_INPUTS')
         # _prepare_mm_inputs may retain input_ids; if present it must be the
         # same source-pinned runner prefix, not arbitrary replacement IDs.
         if ids is not None:_prefix(ids,self.runner.input_ids.gpu,[n])
-        _prefix(embeds,self.runner.inputs_embeds.gpu,[n,self.runner.inputs_embeds.gpu.shape[1]])
+        if self.embedding_branch:
+            _prefix(embeds,self.runner.inputs_embeds.gpu,[n,self.runner.inputs_embeds.gpu.shape[1]])
+        else:
+            require(ids is not None and embeds is None,'NEWSTACK_TOKEN_IDS_BRANCH_CHANGED')
+            ordered=[token for rid in self.runner.input_batch.req_ids for token in self.expected[rid]]
+            require(cpu_list(self.runner.input_ids.cpu)[:n]==ordered,'NEWSTACK_TOKEN_IDS_CPU_MIRROR_DIFFERS')
         _prefix(positions,self.runner.mrope_positions.gpu,[3,n])
         expected_positions=[p for request_id in self.runner.input_batch.req_ids for p in range(len(self.expected[request_id]))]
         require([row[:n] for row in cpu_list(self.runner.mrope_positions.cpu)]==[expected_positions]*3,
@@ -107,7 +114,7 @@ class TextPrefillTrace:
         self.events.append('sample_return');self.finished=True
     def snapshot(self):
         return dict(schema='demoncat.v026.text_prefill_trace.v1',events=list(self.events),
-            request_ids=list(self.expected),mapping=deepcopy(self.mapping),visual_calls=self.visual_calls,
+            request_ids=list(self.expected),input_branch='embedding' if self.embedding_branch else 'token_ids',mapping=deepcopy(self.mapping),visual_calls=self.visual_calls,
             embedding_calls=self.embedding_calls,model_calls=self.model_calls,
             status='OBSERVED' if self.finished and self.first_error is None else 'INCOMPLETE_OR_FAILED',
             visual_execution_excluded=self.finished and self.visual_calls==0 and self.first_error is None,
@@ -156,7 +163,7 @@ class SourceBoundTextObserver:
         mm=runner.vllm_config.model_config.multimodal_config
         require(mm is not None and mm.get_limit_per_prompt('image')==0 and mm.get_limit_per_prompt('video')==0,
                 'V026_TEXT_ONLY_MODALITY_LIMITS_REQUIRED')
-        require(runner.supports_mm_inputs is True and runner.enable_prompt_embeds is False
+        require(type(runner.supports_mm_inputs) is bool and runner.enable_prompt_embeds is False
                 and runner.uses_mrope is True, 'V026_REVIEWED_MM_TEXT_BRANCH_REQUIRED')
         rows=json.loads(PROFILES[self.source_profile].read_bytes())['files']
         self.parallel=_parallel_report(runner,rows)

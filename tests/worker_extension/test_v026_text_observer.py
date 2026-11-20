@@ -10,7 +10,7 @@ class TextTraceTests(unittest.TestCase):
         tokens=torch.tensor([3,4,5,1,2],dtype=torch.int32)
         positions=torch.tensor([[0,1,2,0,1]]*3)
         expected={'a':[1,2],'b':[3,4,5]}
-        runner=NS(model=object(),execute_model_state=None,
+        runner=NS(model=object(),execute_model_state=None,supports_mm_inputs=True,
             vllm_config=NS(scheduler_config=NS(enable_chunked_prefill=True,max_num_batched_tokens=5)),
             input_batch=NS(req_ids=['b','a'],req_id_to_index={'b':0,'a':1},num_computed_tokens_cpu=[0,0]),
             requests={k:NS(req_id=k,prompt_token_ids=v,mm_features=[],prompt_embeds=None,lora_request=None,output_token_ids=[]) for k,v in expected.items()},
@@ -36,6 +36,21 @@ class TextTraceTests(unittest.TestCase):
         report=t.snapshot();self.assertEqual(report['status'],'OBSERVED')
         self.assertTrue(report['visual_execution_excluded']);self.assertTrue(report['model_input_association_verified'])
         self.assertFalse(report['execution_authorized']);self.assertFalse(report['device_input_values_compared'])
+    def test_token_id_branch_is_verified_without_embedding(self):
+        r,s,_=self.fixture();r.supports_mm_inputs=False;t=TextPrefillTrace(r,{'a':[1,2],'b':[3,4,5]})
+        t.enter(s);t.before_preprocess(s,5,None)
+        result=(r.input_ids.gpu,None,r.mrope_positions.gpu,None,{},None)
+        t.after_preprocess(result)
+        self.assertEqual(t.snapshot()['input_branch'],'token_ids');self.assertEqual(t.embedding_calls,0)
+    def test_token_branch_rejects_unexpected_embedding_and_token_change(self):
+        r,s,_=self.fixture();r.supports_mm_inputs=False;t=TextPrefillTrace(r,{'a':[1,2],'b':[3,4,5]})
+        t.enter(s);t.before_preprocess(s,5,None)
+        with self.assertRaisesRegex(RuntimeError,'EMBEDDING_ORDER'):t.embedding(r.input_ids.gpu,{})
+        with self.assertRaisesRegex(RuntimeError,'TOKEN_IDS_BRANCH'):
+            t.after_preprocess((None,r.inputs_embeds.gpu,r.mrope_positions.gpu,None,{},None))
+        r.input_ids.cpu[0]=19
+        with self.assertRaisesRegex(RuntimeError,'TOKEN_IDS_CPU_MIRROR'):
+            t.after_preprocess((r.input_ids.gpu,None,r.mrope_positions.gpu,None,{},None))
     def test_short_chunk_refused_even_sufficient_budget(self):
         r,s,t=self.fixture();s.num_scheduled_tokens['a']=1;t.enter(s)
         with self.assertRaisesRegex(RuntimeError,'SINGLE_CHUNK'):t.before_preprocess(s,5,None)
