@@ -41,3 +41,18 @@ class CopyLaunchTests(unittest.TestCase):
                     verify_copy_launch(raw,'a'*32,pid=51,tid=61,file_digest=lambda _:COPY_ELF_SHA256)
 
 if __name__=='__main__':unittest.main()
+
+
+class CopyBinaryPathTests(unittest.TestCase):
+    def test_current_runtime_basename_not_working_directory(self):
+        import tempfile,os,hashlib
+        from pathlib import Path
+        from unittest.mock import patch
+        from demoncat.runtime.vllm_ascend.worker_extension.attention28_value_plan import _current_binary_digest
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)/'runtime';root.mkdir();name='registered-1-28.bin'
+            (root/name).write_bytes(b'actual-current-registration')
+            with patch.dict(os.environ,DCAT_ATTN_OBSERVER_DIR=str(root)):
+                self.assertEqual(_current_binary_digest(name),hashlib.sha256(b'actual-current-registration').hexdigest())
+                for bad in ('../'+name,str(root/name),'other.bin','registered-1-28.bin/../x'):
+                    with self.assertRaisesRegex(RuntimeError,'BASENAME'): _current_binary_digest(bad)

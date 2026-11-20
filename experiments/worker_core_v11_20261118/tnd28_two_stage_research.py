@@ -138,6 +138,15 @@ class TwoStageNativeResearch(StockTndPrefillCensus):
             return output,record
         except BaseException as error:
             self._error('two_stage_research',error)
+            # Preserve the Python callback reason before the public ACL error
+            # obscures it. This snapshot performs no new device/native call.
+            record.update(status='RESEARCH_NATIVE_CALL_FAILED',error=repr(error))
+            try:
+                record['input_capture']=deepcopy(capture.receipt)
+                if capture.typed_plan is not None:record['current_input_check']=capture.typed_plan.snapshot()
+                (self.folder/(token+'.failed.json')).write_text(json.dumps(record,indent=2,allow_nan=False)+'\n')
+            except BaseException as diagnostic:
+                self._error('failure_snapshot',diagnostic)
             raise
 
 

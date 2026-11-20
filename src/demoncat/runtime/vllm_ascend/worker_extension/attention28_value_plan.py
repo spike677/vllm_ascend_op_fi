@@ -7,6 +7,7 @@ import ctypes as C
 import hashlib
 import json
 import os
+import re
 import threading
 from pathlib import Path
 from .attention28_typed_plan import LiveTypedPlan
@@ -72,7 +73,17 @@ def verify_copy_launch(packet,token,*,pid,tid,file_digest):
 
 
 def _current_binary_digest(name):
-    path=Path(name).resolve(strict=True);before=path.stat()
+    # The observer emits a basename relative to its owned runtime directory,
+    # not to the Python working directory. Never accept an arbitrary path.
+    require(type(name) is str and re.fullmatch(r'registered-[0-9]+-[0-9]+\.bin',name) is not None,
+            'TND_COPY_BINARY_BASENAME_REQUIRED')
+    root=Path(os.environ['DCAT_ATTN_OBSERVER_DIR']).resolve(strict=True)
+    require(root.is_dir() and root.name=='runtime','TND_COPY_OBSERVER_DIRECTORY_REQUIRED')
+    candidate=root/name
+    require(not candidate.is_symlink(),'TND_COPY_BINARY_LINK_REFUSED')
+    path=candidate.resolve(strict=True)
+    require(path.parent==root,'TND_COPY_BINARY_OUTSIDE_OBSERVER_DIRECTORY')
+    before=path.stat()
     require(path.is_file() and 0<before.st_size<=128*1024**2,'TND_COPY_BINARY_BOUND')
     digest=hashlib.sha256(path.read_bytes()).hexdigest();after=path.stat()
     require((before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns)==
