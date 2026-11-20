@@ -50,6 +50,23 @@ class TP2QuantTests(unittest.TestCase):
         decision=self.decision(f,c,0);decision['request_fingerprint']='f'*64
         with self.assertRaisesRegex(RuntimeError,'CURRENT_NORMAL'):f.session.commit_role(decision)
         self.assertIsNone(c.decision)
+    def test_installer_binds_public_owner_to_distinct_runtime_native_owner(self):
+        model=object();identity={'rank':0};lease=NS(owner='worker-group-a',native_owner='private-native-a',generation=7)
+        worker=NS(model_runner=NS(model=model),_demoncat_worker_fault_runtime=NS(_leases={'quant.batch_shared_scale':lease}))
+        context=NS(identity=identity,contract={'owner':'worker-group-a'})
+        with patch.object(tp,'validate_tp2_group',return_value=context), patch.dict(tp.os.environ,{'VLLM_ENABLE_V1_MULTIPROCESSING':'0','TASK_QUEUE_ENABLE':'0'}), patch('fault_injection.providers.register_runtime'), patch.object(tp,'TP2QuantSession') as ctor:
+            tp.install_quant_tp2_binding(worker,root='CPU',build_sha256='b'*64,group_contract={})
+            factory=worker._dcat_quant_binding(model).make_session
+            factory(worker,model,owner='private-native-a',generation=7,worker_identity=identity)
+            self.assertEqual(ctor.call_count,1)
+            for owner,generation in [('worker-group-a',7),('private-native-a',8)]:
+                with self.assertRaisesRegex(RuntimeError,'GROUP_OWNER_REQUIRED'):
+                    factory(worker,model,owner=owner,generation=generation,worker_identity=identity)
+            lease.owner='foreign-public-owner'
+            with self.assertRaisesRegex(RuntimeError,'GROUP_OWNER_REQUIRED'):
+                factory(worker,model,owner='private-native-a',generation=7,worker_identity=identity)
+            self.assertEqual(ctor.call_count,1)
+
     def test_guard_must_finish_real_off_after_group_recover(self):
         f,c=self.make()
         for _ in range(4):f.phase()

@@ -91,8 +91,12 @@ def install_quant_tp2_binding(worker,*,root,build_sha256,group_contract):
         require(not any(x in vars(item) for x in ('execute_model','_prepare_inputs')),'CORE_OVERRIDE_REFUSED')
     model=worker.model_runner.model
     def make_session(actual_worker,actual_model,*,owner,generation,worker_identity):
+        runtime=getattr(worker,'_demoncat_worker_fault_runtime',None)
+        lease=getattr(runtime,'_leases',{}).get(MECHANISM)
         require(actual_worker is worker and actual_model is model and worker.model_runner.model is model
-            and owner==c.contract['owner'] and worker_identity==c.identity,'TP2_QUANT_GROUP_OWNER_REQUIRED')
+            and worker_identity==c.identity and lease is not None
+            and lease.owner==c.contract['owner'] and lease.native_owner==owner
+            and lease.generation==generation,'TP2_QUANT_GROUP_OWNER_REQUIRED')
         return TP2QuantSession(worker,model,root=root,build_sha256=build_sha256,owner=owner,
             generation=generation,worker_identity=worker_identity,group_context=c)
     def factory(actual_model):
