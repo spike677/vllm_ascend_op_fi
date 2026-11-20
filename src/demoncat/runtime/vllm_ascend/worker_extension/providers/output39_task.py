@@ -1,5 +1,6 @@
 """Ordinary Runtime-owned output39 task; historical C1/C2/C3 are separate."""
 from copy import deepcopy
+from fault_injection.request_plan import FOUR
 import hashlib
 from fault_injection.effect_summary import current_completed_row
 
@@ -17,8 +18,8 @@ class Output39TaskProvider(Fault39OutputServingProvider):
 
     @property
     def phase(self):
-        return self.recovering or (('normal', 'fault', 'off', 'health')[self.index]
-                                  if self.index < 4 else 'complete')
+        return self.recovering or (FOUR[self.index]
+                                  if self.index < len(FOUR) else 'complete')
 
     @property
     def native_phase(self):
@@ -105,10 +106,12 @@ class Output39TaskProvider(Fault39OutputServingProvider):
             model_output_sha256=request['model_output_sha256'], report=deepcopy(result)))
         if self.recovering:
             self.recovering = 'health' if phase == 'off' else False
-            if phase == 'health': self.complete, self.stopped = True, True
+            if phase == 'health':
+                self.index = len(FOUR)
+                self.complete, self.stopped = True, True
         else:
             self.index += 1
-            self.complete = self.index == 4
+            self.complete = self.index == len(FOUR)
 
     def fail(self, error):
         if self.failure is None: self.failure = type(error).__name__ + ': ' + str(error)

@@ -25,7 +25,7 @@ from .serving_context import require
 from .serving20_qmm import bind_qmm_arguments, same_storage
 
 
-PHASES = ('normal', 'reference', 'lossless', 'calibration_off', 'fault', 'off')
+from fault_injection.request_plan import BATCH as PHASES
 MODES = dict(reference=1, lossless=2, calibration_off=4, fault=3)
 SCOPE = 'ONE_ORDINARY_W8A8_PROJECTION_TP1_B8_FIRST_DECODE'
 MAX_READBACK_BYTES = 16 * 1024 * 1024

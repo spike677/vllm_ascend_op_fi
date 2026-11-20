@@ -1,0 +1,51 @@
+{
+  "status": "TWO_SAME_WORKER_BATCH_SCOPES_REVIEWED",
+  "combination": "A2/CANN8.5.1/vLLM-Ascend0.18/Qwen3-0.6B W8A8/TP1/B8",
+  "scope_count": 2,
+  "actual_requests": 128,
+  "actual_plan_batches": 12,
+  "external_health_batches": 4,
+  "scopes": [
+    {
+      "selected_site": "model.layers.0.self_attn.qkv_proj",
+      "phase": "decode",
+      "quant_changed": 5565,
+      "scale_changed": 7,
+      "scale_max_abs_diff": 0.009165847674012184,
+      "hidden_changed": true,
+      "logits_changed": true,
+      "top1_changed": true,
+      "exact_off_quant_hidden_logits": true,
+      "external_health_tokens_exact": true,
+      "external_health_full_hidden_logits_observed": true,
+      "resources_zero": true,
+      "result_sha256": "bfe9bd84d02687831dd03787d52350ea0ed91055e9cce1490b6e1b76c0667fea",
+      "host_sha256": "63944a4503769e24cbed2a348d6430fb23a86b32ffb26511db740aee0ef5159e"
+    },
+    {
+      "selected_site": "model.layers.0.self_attn.qkv_proj",
+      "phase": "decode",
+      "quant_changed": 5565,
+      "scale_changed": 7,
+      "scale_max_abs_diff": 0.009165847674012184,
+      "hidden_changed": true,
+      "logits_changed": true,
+      "top1_changed": true,
+      "exact_off_quant_hidden_logits": true,
+      "external_health_tokens_exact": true,
+      "external_health_full_hidden_logits_observed": true,
+      "resources_zero": true,
+      "result_sha256": "be6c2890c514876bf5a1fb47246592060036b73a59a7ee5a09cfb13f30995e54",
+      "host_sha256": "c7e3ff6d14656d0e454a91c99447bd49f5acd93f69968f59678bbde89ed8afcb"
+    }
+  ],
+  "qualification_granted": false,
+  "limitations": [
+    "Complete hashes verify equality; not a statistics or all-target qualification."
+  ],
+  "reader_sha256": "42788af1ef6253ba0f69acdff57bd883ed4026600b834b911d7acb144da8187b",
+  "wrapper_sha256": "b2e248614fd1fac5d1d5187303697a25cdeb279522a8bd7106280022a2c7cec6",
+  "source_manifest_sha256": "401e54fa7876c90c9b640ed5c37792d8bfcef4a3e7ed89cf3ff976f28a005a17",
+  "source_base_commit": "7ee7a75259947b9b0fca84215e7484fa0b88b402",
+  "native_build_sha256": "b4ac9a2b68ff58c3a5f6b54c1f052170ce5d1f6d1f8c53a6a571d175ed9328ac"
+}

@@ -22,7 +22,13 @@ _EFFECT=('phase','request_id','request_ids','actual_internal_request_id','input_
     'decode','prefill','logical_ids','row_request_indices','row_token_positions','request_count',
     'hidden_sha256','logits_sha256','hidden_finite','logits_finite','logits_returned','returned',
     'top1','projection','functional_effect_observed','fault_attempted','actual_fault_hits',
-    'batch','batch_phase','selected_site','original_calls','target','elements','dtype','shape')
+    'batch','batch_phase','selected_site','original_calls','target','elements','dtype','shape',
+    'correct_source_row','replacement_source_row','target_token','actual_qk_before','actual_qk_after',
+    'same_complete_inputs_as_healthy','changed_from_healthy','independent_final_reader',
+    'complete_qk_changed','actual_final_reader','complete_output','query_before','key_before',
+    'non_target_qk_before','non_target_output','cache_sha256','positions_unchanged','cache_unchanged',
+    'non_target_output_unchanged','root_positions_unchanged','complete_cache_unchanged',
+    'independent_position_transform','sha256','non_target_unchanged','native_calls','integer_overflow_reproduced')
 
 def _bytes(x):
     return json.dumps(x,sort_keys=True,allow_nan=False,separators=(',',':')).encode()

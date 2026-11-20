@@ -63,6 +63,11 @@ _ROPE_CONTRACTS = {'tests/worker_extension/rope22_fixture.py',
                    'docs/worker_core_v1/rope22_host_contract.md'}
 _KV41_PROVIDER = 'src/demoncat/runtime/vllm_ascend/worker_extension/providers/fault41.py'
 _KV41_CONTRACTS = {'tests/worker_extension/kv41_fixture.py',
+    'tests/worker_extension/test_kv41_task.py',
+    'docs/worker_core_v1/kv41_ordinary_task.md',
+    'experiments/worker_core_v11_20261118/review_kv41_ordinary.py',
+    'experiments/worker_core_v11_20261118/ordinary41_a3_20261119_summary.json',
+    'experiments/worker_core_v11_20261118/probe_kv41_ordinary.py',
                    'tests/test_postwrite_natural_kv.py', 'tests/test_postwrite_providers.py',
                    'tests/test_postwrite_native_recovery.py',
                    'docs/worker_core_v1/kv41_host_contract.md'}
@@ -98,9 +103,23 @@ _WRITER26_CONTRACTS = {'tests/worker_extension/'+name+'.py' for name in (
     'experiments/c2c3_closure_20261117/providers26_build_group.py'}
 _V11_ENDPOINTS = 'src/demoncat/runtime/vllm_ascend/worker_extension/endpoints.py'
 _V11_CONTRACTS = {
+    'experiments/worker_core_v11_20261118/ordinary18_two_scopes_20261120_summary.json',
+    'experiments/worker_core_v11_20261118/ordinary39_two_scopes_20261120_summary.json',
+    'experiments/worker_core_v11_20261118/ordinary_batch_full_health_20261120_summary.json',
+    'experiments/worker_core_v11_20261118/ordinary_batch_two_scopes_20261120_summary.json',
+    'experiments/worker_core_v11_20261118/quant_health_observer.py',
+    'experiments/worker_core_v11_20261118/review_batch_two_scopes.py',
+    'experiments/worker_core_v11_20261118/review_two_scope_requests.py',
+    'tests/test_quant_health_observer.py',
+    'experiments/worker_core_v11_20261118/probe_quant_two_scopes.py',
+    'fault_injection/request_plan.py', 'fault_injection/research_entries.py',
+    'tests/test_request_plan.py', 'tests/test_fault28_research_entry.py',
+    'docs/worker_core_v1/yellow_rc22.md',
+    'docs/worker_core_v1/fault28_status_decision_20261119.md',
     'docs/worker_core_v1/rc3_inspect_migration_resources_20261119.md',
     'experiments/worker_core_v11_20261118/ordinarybatch_a3_20261119_summary.json',
     'tools/check_rc2_install.py','tests/test_rc2_handoff.py',
+    'fault_injection/rc22_profile.py','tests/test_rc22_summary_profile.py',
     'docs/worker_core_v1/yellow_rc2.md',
     'docs/worker_core_v1/openchamber_rc2_preparation.md',
     'docs/worker_core_v1/deployment_acceptance_rc2.md',

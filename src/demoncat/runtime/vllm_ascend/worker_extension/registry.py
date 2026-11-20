@@ -74,6 +74,9 @@ def rpc_provider_capabilities():
     from fault_injection.delivery_scope import describe_delivery
     for row in rows:
         row['current_delivery'] = describe_delivery(row['mechanism'])
+        from fault_injection.request_plan import request_plan
+        row['request_plan'] = request_plan(row['mechanism'])
+        row['research_entry'] = row['current_delivery'].get('research_entry')
         from .ordinary_admission import ordinary_route_report
         row['ordinary_task_prerequisites'] = ordinary_route_report(row['mechanism'])
         # A deployed single-site driver exists; this does not grant a fresh
@@ -91,6 +94,7 @@ def rpc_provider_capabilities():
                             if row['mechanism'] in ORDINARY else 'public_route_closed')
         row['fault_execution_ready'] = False  # Static declaration cannot attest this Worker.
         row['public_protocol'] = ('six_actual_batches' if row['mechanism']=='quant.batch_shared_scale'
+                                  else 'six_actual_requests_with_calibration' if row['mechanism']=='41.tail_column'
                                   else 'four_actual_requests' if row['mechanism'] in ORDINARY else None)
     return deepcopy(rows)
 
@@ -185,7 +189,10 @@ def create_worker_provider(mechanism, version, worker, model, identity):
     if version != '1':
         raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')
     admission=require_ordinary_route(mechanism,worker,model)
-    if mechanism=='22.wrong_row':
+    if mechanism=='41.tail_column':
+        from .providers.kv41_task import KV41TaskProvider
+        provider=KV41TaskProvider(worker,model,identity)
+    elif mechanism=='22.wrong_row':
         from .rope22_task import Rope22TaskProvider
         provider=Rope22TaskProvider(worker,model,identity)
     elif mechanism=='17.spatial_padding':

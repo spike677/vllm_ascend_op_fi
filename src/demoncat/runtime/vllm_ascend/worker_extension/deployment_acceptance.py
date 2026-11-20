@@ -24,6 +24,8 @@ _COMMON = dict(torch='2.9.0+cpu', torch_npu='2.9.0.post1+gitee7ba04',
 # These are accepted *combinations*, not structural support rules. Exact model
 # config identity prevents a model-name alias granting a new model acceptance.
 _CONFIGS = {
+    '41.tail_column': ('660db3b73d788119c04535e48cf9be5f55bc3100841a718637ae695b442f27dd',
+        'vllm.model_executor.models.qwen3.Qwen3ForCausalLM', '105fb2c1/ordinary41-a3'),
     '8.restore_offset': ('229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75',
         'vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM', '16f40f1f/ordinary8-a5'),
     '17.spatial_padding': ('bec4b3d446efa05807365c9e1cec03ac590836879d02f3a6da879971154bdd3b',

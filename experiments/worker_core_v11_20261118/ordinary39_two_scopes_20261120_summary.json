@@ -1,0 +1,43 @@
+{
+  "status": "TWO_SAME_WORKER_SCOPES_INDEPENDENTLY_REVIEWED",
+  "mechanism": "39.output_proxy",
+  "source_manifest_sha256": "ea84055519103b91f970433c248fd47a1a639a36fae8f34e64a2c5ec88ff8da2",
+  "combination_source": "reviewed case deployment, plus actual worker runtime identity; not inferred from effect",
+  "combination": {
+    "hardware": "Ascend910B4/A2",
+    "cann": "8.5.1",
+    "vllm": "0.18",
+    "model": "Qwen3-0.6B BF16",
+    "tp": 1
+  },
+  "same_worker": true,
+  "independent_owners": true,
+  "scope_count": 2,
+  "actual_requests": 8,
+  "scopes": [
+    {
+      "changed_elements": 1,
+      "finite_to_positive_inf": 1,
+      "hidden_logits_changed": true,
+      "exact_off": true,
+      "exact_health": true,
+      "resources_zero": true,
+      "token_changed": true,
+      "text_changed": true
+    },
+    {
+      "changed_elements": 1,
+      "finite_to_positive_inf": 1,
+      "hidden_logits_changed": true,
+      "exact_off": true,
+      "exact_health": true,
+      "resources_zero": true,
+      "token_changed": true,
+      "text_changed": true
+    }
+  ],
+  "review_scope": "raw request records, complete output hashes, effect and native lifecycle receipts; not all targets or main project",
+  "qualification_granted": false,
+  "input_sha256": "8ce3d25ef0488d508438a6e96d99eeb60af9b1c37100b7a658df093042f7bd7d",
+  "reader_sha256": "56e271ccf6528a4803feec2b7f8c1b08a080f1ae0db9b6d77abd18764f7f8974"
+}

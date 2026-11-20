@@ -6,7 +6,7 @@ available for direct research use, outside this public route.
 """
 from .prerequisites import assessment, expectation, _MISSING
 
-ORDINARY = {'22.wrong_row','17.spatial_padding','8.restore_offset','18.api_half','39.output_proxy','quant.batch_shared_scale'}
+ORDINARY = {'41.tail_column','22.wrong_row','17.spatial_padding','8.restore_offset','18.api_half','39.output_proxy','quant.batch_shared_scale'}
 NON_EXECUTABLE = {
     '15.alias_detach': 'FAULT15_CURRENT_DEPLOYMENT_NO_PRIVATE_VIEW_WRITE_CHAIN',
     '25.reduce_scatter': 'FAULT25_UNSUPPORTED_NO_SUBSTITUTE',
@@ -32,6 +32,12 @@ def ordinary_route_report(mechanism, worker=None, model=None):
                 if binding is not None:
                     actual=(type(binding) is TensorServingBinding and binding.runtime_only is True
                             and binding.worker is worker and binding.model is model)
+            elif mechanism=='41.tail_column':
+                from .serving41 import KV41ServingBinding, _ATTRIBUTE
+                binding=getattr(worker,_ATTRIBUTE,None)
+                if binding is not None:
+                    actual=(type(binding) is KV41ServingBinding and binding.runtime_only is True
+                            and binding.worker is worker and binding.model is model)
             elif mechanism=='17.spatial_padding':
                 from .providers.vision17_task import Vision17TaskBinding, ATTRIBUTE
                 binding=getattr(worker,ATTRIBUTE,None)
@@ -53,7 +59,8 @@ def ordinary_route_report(mechanism, worker=None, model=None):
                 if hasattr(worker,'_dcat_quant_binding'):
                     actual=(marker is model and model is not None)
         checks.append(expectation('deployment_identity','typed_ordinary_binding',True,actual,
-                      {'22.wrong_row':'ROPE22_ORDINARY_BINDING_REQUIRED',
+                      {'41.tail_column':'KV41_ORDINARY_TASK_BINDING_REQUIRED',
+                       '22.wrong_row':'ROPE22_ORDINARY_BINDING_REQUIRED',
                        '17.spatial_padding':'VISION17_ORDINARY_BINDING_REQUIRED',
                        '8.restore_offset':'MOE8_ORDINARY_BINDING_REQUIRED',
                        '18.api_half':'RMS18_ORDINARY_BINDING_REQUIRED',

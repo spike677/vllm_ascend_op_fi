@@ -269,6 +269,17 @@ class ActualPublicRuntimeHarness(unittest.TestCase):
         self.enterContext(patch.object(probe, 'installed_source_pins', return_value=[]))
         self.enterContext(patch.object(probe, 'model_identity', return_value=self.model_identity))
         self.enterContext(patch.object(serving_context, 'require_host_driven_core', return_value=True))
+        # Health now observes real CPU fixture forwards, rather than token-only
+        # generate doubles. Device admission is still covered by NPU acceptance.
+        from experiments.worker_core_v11_20261118 import quant_health_observer as health
+        def install_health(worker):
+            self.assertIs(worker, fixture.worker)
+            self.assertFalse(hasattr(worker, '_dcat_quant_health_probe'))
+            observer = health.HealthHashes(fixture.model, fixture.model.processor)
+            observer.install();worker._dcat_quant_health_probe = observer
+            return dict(installed=True)
+        self.enterContext(patch.object(health, 'install', install_health))
+        self.enterContext(patch.object(probe, 'actual', side_effect=lambda worker: worker))
         self.removals, self.generations, self.scheduled = [], [], []
         self.fail_after_fault = self.fail_drain = False
         owner = self
@@ -301,6 +312,11 @@ class ActualPublicRuntimeHarness(unittest.TestCase):
                 return NS(encode=lambda text, **kwargs: [1, 2])
             def generate(self, prompts, params, **kwargs):
                 owner.generations.append(len(prompts))
+                with torch.inference_mode():
+                    hidden = fixture.model(input_ids=torch.tensor([1, 2]*8), positions=torch.arange(16))
+                    fixture.model.processor(fixture.model.head, hidden[-8:])
+                    hidden = fixture.model(input_ids=torch.tensor([3]*8), positions=torch.tensor([2]*8))
+                    fixture.model.processor(fixture.model.head, hidden)
                 return [NS(outputs=[NS(token_ids=[3, 4])]) for _ in prompts]
             def reset_prefix_cache(self, **kwargs):
                 return not self.llm_engine.pending
@@ -352,11 +368,25 @@ class ActualPublicRuntimeHarness(unittest.TestCase):
             '--source-manifest-sha256', probe.sha_file(self.source / 'source_manifest.json'), '--model-sha256', 'm'*64])
         return code, json.loads((self.evidence / 'result.json').read_bytes()), json.loads((self.evidence / 'host-core-receipts.json').read_bytes())
 
+    def test_existing_worker_driver_does_not_construct_another_llm(self):
+        with patch.object(sys.modules['vllm'], 'LLM', side_effect=AssertionError('must reuse Worker')):
+            seen = []
+            code = probe.main(['--build-sha256', 'b'*64, '--source-commit', 'a'*40,
+                '--source-manifest-sha256', probe.sha_file(self.source / 'source_manifest.json'),
+                '--model-sha256', 'm'*64], existing_llm=self.llm, llm_observer=seen.append)
+        self.assertEqual(code, 0)
+        self.assertEqual(seen, [self.llm])
+        self.assertEqual(self.scheduled.count('decode'), 6)
+        self.assertEqual(self.removals, [True])
+
     def test_six_batches_public_host_runtime_and_two_health_calls_cleanly_release(self):
         code, result, host = self.run_probe()
         self.assertEqual(code, 0, result)
         self.assertEqual([row['phase'] for row in result['phases']], list(probe.PHASES))
         self.assertEqual(self.generations, [8, 8])
+        self.assertEqual(result['health_hashes_before'], result['health_hashes_after'])
+        self.assertEqual(len(result['health_hashes_after']['rows']), 4)
+        self.assertFalse(hasattr(self.fixture.worker, '_dcat_quant_health_probe'))
         self.assertEqual(self.scheduled.count('prefill'), 6)
         self.assertEqual(self.scheduled.count('decode'), 6)
         self.assertEqual(self.fixture.binding.selected_modes, [1, 2, 4, 3])

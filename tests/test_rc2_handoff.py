@@ -6,7 +6,10 @@ from demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission import ORD
 
 class Rc2HandoffTests(unittest.TestCase):
     def test_exact_implemented_subset_and_no_declaration_authority(self):
-        self.assertEqual(TEST_CANDIDATES,ORDINARY)
+        self.assertEqual(TEST_CANDIDATES,{'18.api_half','39.output_proxy','8.restore_offset',
+            '17.spatial_padding','22.wrong_row','quant.batch_shared_scale'})
+        self.assertTrue(TEST_CANDIDATES <= ORDINARY)
+        self.assertNotIn('41.tail_column',TEST_CANDIDATES)
         for name in TEST_CANDIDATES:
             r=describe_delivery(name);self.assertEqual(r['rc_id'],RC_ID)
             self.assertTrue(r['rc2_test_candidate']);self.assertFalse(r['rc2_candidate_grants_live_admission'])

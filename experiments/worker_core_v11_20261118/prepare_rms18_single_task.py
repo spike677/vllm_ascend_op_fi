@@ -65,6 +65,14 @@ def prepare(args):
             installed[target] = digest
     rows = make_case(source=args.source, installed=args.installed, source_manifest_sha256=args.source_manifest_sha256,
         model=str(args.model), card=args.card, timeout=args.timeout)
+    if args.scopes == 2:
+        probe.require(args.timeout >= 900, 'TWO_SCOPE_TIMEOUT_BUDGET_REQUIRED')
+        rows[0]['id'] += '-two-scopes'
+        rows[0]['command'] += ' --scopes 2'
+        rows[0]['review']['experiment_id'] = rows[0]['id']
+        rows[0]['review']['resource_budget'].update(nominal_actual_requests=8,
+            max_actual_requests_with_recovery=12, fault_request_limit=2,
+            same_worker_scopes=2, independent_owners=True)
     rows[0]['review'].update(source_commit=source['commit'], required_sources=source['pins'],
         installed_module_count=len(installed), installed_module_manifest_sha256=hashlib.sha256(
             json.dumps(installed, sort_keys=True, separators=(',', ':')).encode()).hexdigest())
@@ -78,6 +86,7 @@ def main(argv=None):
     parser.add_argument('--model', type=Path, default=Path(MODEL))
     parser.add_argument('--card', type=int, choices=(2, 5), default=5)
     parser.add_argument('--timeout', type=int, default=600)
+    parser.add_argument('--scopes', type=int, choices=(1, 2), default=1)
     args = parser.parse_args(argv)
     probe.require(not args.out.exists(), 'FRESH_CASE_MANIFEST_REQUIRED')
     rows = prepare(args)

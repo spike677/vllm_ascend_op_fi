@@ -8,8 +8,8 @@ import platform
 import sys
 
 
-DISTRIBUTIONS = {'demoncatpfi': '0.3.0', 'demoncat-worker-extension': '0.2.0',
-                 'demoncat-fault39-core': '0.2.0'}
+DISTRIBUTIONS = {'demoncatpfi': '0.3.2', 'demoncat-worker-extension': '0.2.2',
+                 'demoncat-fault39-core': '0.2.2'}
 MODULES = ('fault_injection.rc2_profile','demoncat.runtime.vllm_ascend.worker_extension.deployment_authorization',
            'demoncat.runtime.vllm_ascend.worker_extension.deployment_summary','fault_injection', 'demoncat_fault39',
            'demoncat.runtime.vllm_ascend.controller',

@@ -28,6 +28,7 @@ class KV41ServingBinding:
     simulation: bool = False
     provider_factory: object = None
     native_readback: object = None
+    runtime_only: bool = False
     leases: set = field(default_factory=set, compare=False, repr=False)
 
 
@@ -58,11 +59,12 @@ def read_native_binding(binding):
 
 def install_fault41_serving_binding(worker, *, transport, prompt_token_ids, scope,
         max_seconds=600, first_live_validation=False, _simulation=False,
-        _provider_factory=None, _native_readback=None):
+        _provider_factory=None, _native_readback=None, runtime_only=False):
     """Trusted existing-serving host only; acquire no hooks, leases or workers."""
     from fault_injection.coverage_session import CoverageScope
     from fault_injection.deployments.postwrite import NativePostwriteLibrary
     require(not hasattr(worker, _ATTRIBUTE), 'SERVING_DEPLOYMENT_ALREADY_BOUND')
+    require(type(runtime_only) is bool, 'KV41_BOOLEAN_RUNTIME_ONLY_REQUIRED')
     require(first_live_validation is True and type(_simulation) is bool, 'EXPLICIT_FIRST_LIVE_VALIDATION_REQUIRED')
     require((_provider_factory is None and _native_readback is None) or _simulation,
             'KV41_DEPLOYMENT_OVERRIDES_CPU_ONLY')
@@ -84,7 +86,7 @@ def install_fault41_serving_binding(worker, *, transport, prompt_token_ids, scop
     require(model.training is False, 'INFERENCE_MODEL_REQUIRED')
     binding = KV41ServingBinding(worker, runner, model, transport, tuple(prompt_token_ids), scope,
         max_seconds, os.getpid(), threading.get_ident(), sha, id(getattr(transport, 'lib', None)),
-        _simulation, _provider_factory, _native_readback)
+        _simulation, _provider_factory, _native_readback, runtime_only)
     evidence = read_native_binding(binding)
     setattr(worker, _ATTRIBUTE, binding)
     return dict(status='SERVING_DEPLOYMENT_BOUND_NOT_QUALIFIED', mechanism='41.tail_column',
@@ -102,3 +104,9 @@ def remove_fault41_serving_binding(worker):
             'WORKER_RPC_OWNER_STILL_RETAINED')
     delattr(worker, _ATTRIBUTE)
     return dict(status='SERVING_DEPLOYMENT_REMOVED')
+
+
+def install_fault41_task_binding(worker, **deployment):
+    """Trusted ordinary deployment; no RPC factory or research fallback."""
+    require('runtime_only' not in deployment, 'KV41_TASK_MODE_IS_FIXED')
+    return install_fault41_serving_binding(worker, runtime_only=True, **deployment)

@@ -1,0 +1,49 @@
+{
+  "status": "TWO_SAME_WORKER_BATCH_SCOPES_REVIEWED",
+  "combination": "A2/CANN8.5.1/vLLM-Ascend0.18/Qwen3-0.6B W8A8/TP1/B8",
+  "scope_count": 2,
+  "actual_requests": 128,
+  "actual_plan_batches": 12,
+  "external_health_batches": 4,
+  "scopes": [
+    {
+      "selected_site": "model.layers.0.self_attn.qkv_proj",
+      "phase": "decode",
+      "quant_changed": 5565,
+      "scale_changed": 7,
+      "scale_max_abs_diff": 0.009165847674012184,
+      "hidden_changed": true,
+      "logits_changed": true,
+      "top1_changed": true,
+      "exact_off_quant_hidden_logits": true,
+      "external_health_tokens_exact": true,
+      "external_health_full_hidden_logits_observed": false,
+      "resources_zero": true,
+      "result_sha256": "f7a61c79b66e7e400f19191d51e87f47628b37469d1a884e6aa1c4c168c9d999",
+      "host_sha256": "953ccd885bba42abb5dcdbb96d3a7f0236827858ba7de3bd50c927804ca87ae6"
+    },
+    {
+      "selected_site": "model.layers.0.self_attn.qkv_proj",
+      "phase": "decode",
+      "quant_changed": 5565,
+      "scale_changed": 7,
+      "scale_max_abs_diff": 0.009165847674012184,
+      "hidden_changed": true,
+      "logits_changed": true,
+      "top1_changed": true,
+      "exact_off_quant_hidden_logits": true,
+      "external_health_tokens_exact": true,
+      "external_health_full_hidden_logits_observed": false,
+      "resources_zero": true,
+      "result_sha256": "f2e060bd8b978d7093561edc6f06575a4cd3fa1ada2df52b6d7b63b7ca1dd891",
+      "host_sha256": "d1b540d8e9a07aa7fbb13a7602dbc3cc36d5f9540c4d90d2af3ac391fce1e887"
+    }
+  ],
+  "qualification_granted": false,
+  "limitations": [
+    "External health compares generated tokens and model/worker identity; no full hidden/logits capture in those health batches.",
+    "OFF complete quant/scale/hidden/logits hashes compared; not a statistics or all-target qualification."
+  ],
+  "reader_sha256": "3e1181080cc7294453e46b9164835af698e001e76c5c9e7200212a48315cec46",
+  "wrapper_sha256": "532ede4dfa807bccc0270dbc2da53c02fc47c4b2c36dc732c6dc9909cda7b3bd"
+}

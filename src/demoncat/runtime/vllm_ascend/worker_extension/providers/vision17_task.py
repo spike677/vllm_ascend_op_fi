@@ -5,6 +5,7 @@ Only a single actual projection is supported; unchanged arguments and its first
 real consumer are independently observed above and below the parameter change.
 """
 from copy import deepcopy
+from fault_injection.request_plan import FOUR
 from dataclasses import dataclass, field
 import os
 import threading
@@ -16,7 +17,7 @@ from fault_injection.vision17_observation import call_signature, output_identity
 from fault_injection.tensor_callable import TensorCallableGuard
 
 ATTRIBUTE = '_demoncat_vision17_task_binding'
-PHASES = ('normal', 'fault', 'off', 'health')
+PHASES = FOUR
 
 @dataclass(frozen=True)
 class Vision17TaskBinding:
@@ -192,7 +193,7 @@ class Vision17TaskProvider(Scope):
 
     @property
     def phase(self):
-        return self.recovering or (PHASES[self.index] if self.index<4 else 'complete')
+        return self.recovering or (PHASES[self.index] if self.index<len(FOUR) else 'complete')
 
     def _context(self):
         b=self.binding;value=self.identity;device=getattr(self.worker,'device',None)
