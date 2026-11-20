@@ -192,6 +192,9 @@ def create_worker_provider(mechanism, version, worker, model, identity):
     if mechanism=='41.tail_column':
         from .providers.kv41_task import KV41TaskProvider
         provider=KV41TaskProvider(worker,model,identity)
+    elif mechanism=='18.api_half' and getattr(getattr(worker,'_demoncat_natural_tensor_serving_bindings',{}).get(mechanism),'group_context',None) is not None:
+        from .rms18_tp2 import TP2Rms18Provider
+        provider=TP2Rms18Provider(worker,model,identity)
     elif mechanism=='22.wrong_row':
         from .rope22_task import Rope22TaskProvider
         provider=Rope22TaskProvider(worker,model,identity)

@@ -20,7 +20,7 @@ class _OneRMSReturn(RMSNormReturnSession):
         self.task = task
         self.chosen = self.actual = None
         self.done = False
-        super().__init__(task.model, arm='fault' if task.phase == 'fault' else 'baseline',
+        super().__init__(task.model, arm=task.injection_arm,
             simulation=task.binding.simulation, passthrough_unselected=True,
             observe_post_root_consumers=True, admission=self._admit)
 

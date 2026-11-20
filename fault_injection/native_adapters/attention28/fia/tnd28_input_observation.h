@@ -22,6 +22,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <utility>
 #include <sys/stat.h>
 #include <sys/syscall.h>
 #include <sys/sysmacros.h>
@@ -105,6 +106,47 @@ inline bool Current(Scope& s){
 }
 inline bool Same(const Scope& a,const Scope& b){return a.token==b.token&&a.owner==b.owner&&a.generation==b.generation
     &&a.module==b.module&&a.request==b.request&&a.input==b.input&&a.path==b.path&&a.start==b.start&&a.pid==b.pid&&a.tid==b.tid;}
+// A trusted live Python call object checks these actual generated-unit values.
+// This is a normal guard, not the host tiling/F authority (including v1).
+using PublicCheck = int (*)(const char*, uint32_t, const char*, size_t);
+struct PublicPlan {
+    Scope scope; PublicCheck callback=nullptr; std::string typed;
+    bool checking=false,prepare_entered=false,prepare_accepted=false,prepare_admitted=false,execute_entered=false;
+    bool safe_release=false,terminal_uncertain=false; uint32_t first_error=0;
+};
+inline PublicPlan& Plan(){static thread_local PublicPlan value;return value;}
+inline bool PlanOwner(const PublicPlan& plan,const char* token){
+    return token&&std::strlen(token)==32&&plan.scope.token==token
+      &&plan.scope.pid==static_cast<uint64_t>(getpid())&&plan.scope.tid==static_cast<uint64_t>(syscall(SYS_gettid))
+      &&plan.scope.start==ProcessStart();
+}
+inline std::string PlanRecord(){const auto& p=Plan();
+    return "{\"schema\":\"demoncat.tnd28.live_typed_plan.v2\",\"bound\":"+std::to_string(p.callback!=nullptr)
+      +",\"prepare_entered\":"+std::to_string(p.prepare_entered)+",\"prepare_accepted\":"+std::to_string(p.prepare_accepted)
+      +",\"prepare_admitted\":"+std::to_string(p.prepare_admitted)
+      +",\"execute_entered\":"+std::to_string(p.execute_entered)+",\"safe_release\":"+std::to_string(p.safe_release)
+      +",\"terminal_uncertain\":"+std::to_string(p.terminal_uncertain)+",\"first_error\":"+std::to_string(p.first_error)
+      +",\"fault_authorized\":false}";
+}
+inline bool CheckPublic(const Scope& scope,uint32_t stage,const std::string& body){
+    auto& p=Plan();Scope current;
+    if(!p.callback||p.checking||!Same(p.scope,scope)||!Current(current)||!Same(current,scope)
+       ||p.first_error||body.empty()||body.size()>32768){if(!p.first_error)p.first_error=1;return false;}
+    if(stage==1){
+        if(p.prepare_entered){p.first_error=2;return false;}
+        p.prepare_entered=true;p.typed=body;
+    }else if(stage==2){
+        if(!p.prepare_accepted||!p.prepare_admitted||p.execute_entered){p.first_error=2;return false;}
+        p.execute_entered=true;
+    }else{p.first_error=2;return false;}
+    p.checking=true;int status=0;
+    try{status=p.callback(scope.token.c_str(),stage,body.c_str(),body.size());}
+    catch(...){p.checking=false;if(!p.first_error)p.first_error=3;return false;}
+    p.checking=false;
+    if(status!=1){if(!p.first_error)p.first_error=3;if(stage==1)p.safe_release=true;return false;}
+    if(stage==1)p.prepare_accepted=true;
+    return true;
+}
 struct Pending{Scope scope;uint64_t executor=0,child=0,child_bytes=0;std::vector<uint64_t> offsets;bool valid=false;};
 inline Pending& Live(){static thread_local Pending value;return value;}
 #ifndef DCAT_TND28_INPUT_CPU_FIXTURE
@@ -140,11 +182,13 @@ struct Log{
 };
 struct Prepare:Log{
     const aclTensor* value=nullptr;bool ran=false;bool child_ok=false;bool returned=false;
+    bool guarded=false,admitted=false;
     Pending pending;
     template<class F> Prepare(F function,const aclTensor* q,const aclTensorList* k,const aclTensorList* v,
       const aclTensor* mask,const aclIntArray* sq,const aclIntArray* sk,const aclTensor* out,
       const aclTensor* lse,std::initializer_list<const void*> optional,std::initializer_list<int64_t> scalars,
       double scale,const char* layout,bool softmax){
+        guarded=Env("DCAT28_INPUT_EXECUTE_BORROW")=="normal_guard";
         try{active=Current(scope);if(!active)return;
             Need(!Live().executor&&Seen().size()<4&&Seen().insert(scope.token).second,"pending or repeated input scope");
             pending.scope=scope;
@@ -152,12 +196,24 @@ struct Prepare:Log{
                 Need(v&&v->Size()==1,"single actual V member required");value=(*v)[0];std::vector<uint64_t> pointers;
                 for(auto p:optional)pointers.push_back(Ptr(p));
                 Need(layout&&std::strlen(layout)<=8,"layout bound");
-                return "{\"function\":"+Function(function)+",\"query\":"+Tensor(q)+",\"key\":"+Tensors(k)+",\"value\":"+Tensors(v)
+                const auto body="{\"function\":"+Function(function)+",\"query\":"+Tensor(q)+",\"key\":"+Tensors(k)+",\"value\":"+Tensors(v)
                   +",\"mask\":"+Tensor(mask)+",\"seq_q\":"+Integers(sq)+",\"seq_kv\":"+Integers(sk)
                   +",\"output\":"+Tensor(out)+",\"lse\":"+Tensor(lse)+",\"optionals\":"+Array(pointers)
                   +",\"scalars\":"+Array(scalars)+",\"scale\":"+([&]{std::ostringstream o;o<<std::setprecision(17)<<scale;return o.str();})()
-                  +",\"layout\":"+Quote(layout)+",\"softmax_lse\":"+(softmax?"true":"false")+'}';});
+                  +",\"layout\":"+Quote(layout)+",\"softmax_lse\":"+(softmax?"true":"false")+'}';
+                if(guarded)admitted=CheckPublic(scope,1,body);
+                return body;});
         }catch(const std::exception& e){Fail(e.what());}catch(...){Fail("prepare entry exception");}
+    }
+    bool Admit(){
+        // The generated wrapper calls this before allocating a parent. A
+        // failed typed check therefore has no executor/workspace to destroy.
+        if(!guarded)return true;
+        const bool ok=admitted&&first_error.empty();
+        auto& p=Plan();
+        if(ok)p.prepare_admitted=true;
+        else if(Same(p.scope,scope)){p.safe_release=true;if(!p.first_error)p.first_error=4;}
+        return ok;
     }
     template<class F> aclnnStatus Contiguous(F f,const aclTensorList* list,uint64_t* bytes,aclOpExecutor** executor){
         Record("contiguous_prepare_enter",[&]{Need(list&&list->Size()==1&&(*list)[0]==value,"actual noncontiguous list is not original V");
@@ -254,7 +310,9 @@ struct Execute:Log{
         aclnnStatus status;
 #ifndef DCAT_TND28_INPUT_CPU_FIXTURE
         if(borrow_requested&&!borrow){Fail("execute borrow not constructed");return ACLNN_ERR_PARAM_INVALID;}
-        if(borrow&&(!first_error.empty()||!borrow->BeforeParent(static_cast<aclOpExecutor*>(executor),workspace,bytes,stream))){
+        if(borrow&&(!first_error.empty()||!CheckPublic(scope,2,Plan().typed))){
+          borrow->CancelBeforeParent();Fail("live public input changed before parent execute");return ACLNN_ERR_PARAM_INVALID;}
+        if(borrow&&!borrow->BeforeParent(static_cast<aclOpExecutor*>(executor),workspace,bytes,stream)){
           borrow->CancelBeforeParent();Fail("execute borrow parent admission refused");return ACLNN_ERR_PARAM_INVALID;}
         try{status=f(executor,stream,workspace,bytes);ran=true;}
         catch(...){if(borrow)borrow->OriginalThrew();throw;}
@@ -274,7 +332,9 @@ struct Execute:Log{
     }
     ~Execute(){
 #ifndef DCAT_TND28_INPUT_CPU_FIXTURE
-      if(borrow){borrow->Leave();try{LastBorrowReturn()={scope,BorrowRecord()};}catch(...){Fail("borrow receipt publication failed");}}
+      if(borrow){borrow->Leave();const auto r=borrow->Snapshot();auto& p=Plan();
+        if(p.callback&&Same(p.scope,scope)){p.safe_release=r.complete&&r.drained&&!r.terminal_uncertain;p.terminal_uncertain=r.terminal_uncertain;}
+        try{LastBorrowReturn()={scope,BorrowRecord()};}catch(...){Fail("borrow receipt publication failed");}}
       if(borrow_requested&&Live().executor==parent&&Same(Live().scope,scope))Live()=Pending{};
 #endif
       Record("execute_exit",[&]{return std::string("{\"fia_called\":")+(ran?"true":"false")
@@ -282,6 +342,31 @@ struct Execute:Log{
 };
 } // namespace tnd28_input
 #ifndef DCAT_TND28_INPUT_CPU_FIXTURE
+extern "C" __attribute__((visibility("default"))) int dcat_tnd28_public_plan_bind_v2(
+    const char* token,tnd28_input::PublicCheck callback) noexcept {
+    try{tnd28_input::Scope scope;
+      if(!token||!callback||!tnd28_input::Current(scope)||scope.token!=token
+        ||tnd28_input::Env("DCAT28_INPUT_EXECUTE_BORROW")!="normal_guard"
+        ||tnd28_input::Plan().callback||tnd28_input::Live().executor)return -1;
+      tnd28_input::PublicPlan value;value.scope=scope;value.callback=callback;tnd28_input::Plan()=std::move(value);return 0;
+    }catch(...){return -2;}
+}
+extern "C" __attribute__((visibility("default"))) int dcat_tnd28_public_plan_clear_v2(
+    const char* token,tnd28_input::PublicCheck callback) noexcept {
+    try{auto& p=tnd28_input::Plan();
+      if(!tnd28_input::PlanOwner(p,token)||p.callback!=callback||!callback||p.checking
+        ||p.terminal_uncertain||(p.prepare_entered&&!p.safe_release))return -1;
+      p.callback=nullptr;p.typed.clear();return 0;
+    }catch(...){return -2;}
+}
+extern "C" __attribute__((visibility("default"))) int dcat_tnd28_public_plan_query_v2(
+    const char* token,char* output,size_t capacity) noexcept {
+    try{const auto& p=tnd28_input::Plan();
+      if(!output||capacity<2||capacity>4096||!tnd28_input::PlanOwner(p,token))return -1;
+      const auto text=tnd28_input::PlanRecord();if(text.size()+1>capacity)return -2;
+      std::memcpy(output,text.c_str(),text.size()+1);return 0;
+    }catch(...){return -3;}
+}
 extern "C" __attribute__((visibility("default"))) int dcat_tnd28_execute_borrow_query_v1(
     const char* token,char* output,size_t capacity) noexcept {
     try{
@@ -292,7 +377,8 @@ extern "C" __attribute__((visibility("default"))) int dcat_tnd28_execute_borrow_
         const auto text="{\"token\":"+tnd28_input::Quote(row.scope.token)+",\"owner\":"+tnd28_input::Quote(row.scope.owner)
           +",\"generation\":"+row.scope.generation+",\"module_object_id\":"+row.scope.module
           +",\"request_sha256\":"+tnd28_input::Quote(row.scope.request)+",\"input_sha256\":"+tnd28_input::Quote(row.scope.input)
-          +",\"borrow\":"+row.receipt+",\"function\":"+tnd28_input::Function(&dcat_tnd28_execute_borrow_query_v1)+'}';
+          +",\"borrow\":"+row.receipt+",\"public_plan\":"+tnd28_input::PlanRecord()
+          +",\"function\":"+tnd28_input::Function(&dcat_tnd28_execute_borrow_query_v1)+'}';
         if(text.size()+1>capacity)return -2;
         std::memcpy(output,text.c_str(),text.size()+1);return 0;
     }catch(...){return -3;}

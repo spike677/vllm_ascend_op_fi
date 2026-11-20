@@ -53,7 +53,8 @@ def patch_source(raw):
     entry='    tnd28_input::Prepare dcat_input(&aclnnInnerFusedInferAttentionScoreGetWorkspaceSize,\n'+\
       '        query,key,value,attenMaskOptional,actualSeqLengthsOptional,actualSeqLengthsKvOptional,attentionOutOut,softmaxLseOut,\n'+\
       '        {'+','.join(OPTIONALS)+'},\n        {'+','.join(SCALARS)+'},scale,inputLayoutOptional,softmaxLseFlag);\n'
-    prepare=once(prepare,'{\n    uint64_t timeStamp =','{\n'+entry+'    uint64_t timeStamp =')
+    prepare=once(prepare,'{\n    uint64_t timeStamp =','{\n'+entry+
+        '    if (!dcat_input.Admit()) return ACLNN_ERR_PARAM_INVALID;\n    uint64_t timeStamp =')
     prepare=once(prepare,'aclnnContiguousGetWorkspaceSize(inUnContTensors, &inContWorkspaceSize, &aclInExecutor)',
         'dcat_input.Contiguous(aclnnContiguousGetWorkspaceSize, inUnContTensors, &inContWorkspaceSize, &aclInExecutor)')
     prepare=once(prepare,'NnopbaseRunForWorkspace(*executor, workspaceSize)',
@@ -191,6 +192,8 @@ def prepare_unit(source,evidence,argv,*,variant,sdk):
         sdk=str(Path(sdk).resolve()),sdk_headers=pins,
         source_hooks=['typed_prepare','actual_contiguous_prepare','actual_workspace',
             'actual_prepare_return','typed_execute','actual_contiguous_execute','actual_fia_execute','actual_execute_return'],
+        optional_normal_guard=dict(abi=2,live_callback=True,prepare_before_parent_allocation=True,
+            post_copy_before_fia=True,reads_current_device_values=False,permits_fault=False),
         operator_arguments_changed=False,extra_operator_calls=0,observer_only=True,
         runtime_observed=False,current_input_authority=False,fault_authorized=False)
     with target.open('xb') as stream:stream.write(header)

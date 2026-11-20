@@ -147,6 +147,16 @@ _V11_CONTRACTS = {
     'docs/worker_core_v1/tnd28_prepared_input.md',
     'docs/worker_core_v1/tnd28_source123_normal_review.md',
     'tests/worker_extension/test_attention28_replay_binding.py',
+    'tests/worker_extension/test_attention28_typed_plan.py',
+    'tests/worker_extension/test_attention28_execute_borrow.py',
+    'experiments/worker_core_v11_20261118/check_tnd28_borrow_sdk.py',
+    'experiments/worker_core_v11_20261118/tnd28_research_observation.py',
+    'experiments/c2c3_closure_20261117/queue_contract.py',
+    'experiments/worker_core_v11_20261118/review_two_scope_requests.py',
+    'experiments/worker_core_v11_20261118/review_batch_two_scopes.py',
+    'experiments/worker_core_v11_20261118/review_m1_rms18.py',
+    'tests/test_tnd28_research_observation.py',
+    'tests/test_two_scope_review.py',
     'experiments/worker_core_v11_20261118/natural_tnd28_prepared_input_probe.py',
     'experiments/worker_core_v11_20261118/prepare_tnd28_prepared_input.py',
     'experiments/c2c3_closure_20261117/review_tnd28_prepared_input.py',
@@ -516,6 +526,9 @@ _REQUIRED = (_EXACT - _CORE_DOCS - _ROPE_CONTRACTS - _KV41_CONTRACTS - _OUTPUT39
 
 _MULTI_RANK = 'src/demoncat/runtime/vllm_ascend/worker_extension/multi_rank.py'
 _MULTI_RANK_CONTRACTS = {'tests/worker_extension/test_multi_rank.py',
+    'tests/worker_extension/test_rms18_tp2.py',
+    'experiments/worker_core_v11_20261118/m1_tp2_executor_probe.py',
+    'experiments/worker_core_v11_20261118/m1_rms18_tp2_probe.py',
     'docs/worker_core_v1/multi_rank_design.md',
     'tests/worker_extension/test_serving_context.py',
     'src/demoncat/runtime/vllm_ascend/worker_extension/multi_rank_prerequisites.py'}

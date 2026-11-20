@@ -280,4 +280,35 @@ class Tp2PrerequisiteTests(unittest.TestCase):
         self.assertFalse(report['execution_authorized'])
 
 
+class Tp2MappingTests(unittest.TestCase):
+    def test_exact_tp2_mapping_reuses_checks_without_loosening_tp1(self):
+        from types import SimpleNamespace as NS
+        from test_serving_context import fixture
+        from demoncat.runtime.vllm_ascend.worker_extension.multi_rank_prerequisites import snapshot_tp2_fresh_prefill
+        from demoncat.runtime.vllm_ascend.worker_extension.serving_context import snapshot_fresh_prefill,ContextRefused
+        runner,model,kwargs,context,prompt,request=fixture()
+        runner.vllm_config.parallel_config.tensor_parallel_size=2
+        group=NS(world_size=2,ranks=[0,1],rank_in_group=1)
+        params=dict(expected_prompt_token_ids=prompt,expected_internal_request_id=request)
+        row=snapshot_tp2_fresh_prefill(runner,model,kwargs,context,actual_tp_group=group,rank=1,**params)
+        self.assertEqual(row['internal_request_id'],request)
+        self.assertEqual(row['tensor_parallel']['rank_in_group'],1)
+        self.assertFalse(row['qualification_granted'])
+        with self.assertRaises(ContextRefused):snapshot_fresh_prefill(runner,model,kwargs,context,**params)
+        with self.assertRaises(ContextRefused):snapshot_tp2_fresh_prefill(runner,model,kwargs,context,
+            actual_tp_group=group,rank=1,seen_internal_request_ids=[request],**params)
+        runner.input_batch.req_ids=['foreign']
+        with self.assertRaises(ContextRefused):snapshot_tp2_fresh_prefill(runner,model,kwargs,context,
+            actual_tp_group=group,rank=1,**params)
+
+    def test_real_ascend_subclass_is_included_by_probe(self):
+        from types import SimpleNamespace as NS
+        from test_serving_context import LogitsProcessor,AscendLogitsProcessor
+        from experiments.worker_core_v11_20261118.m1_tp2_executor_probe import find_logits_processor
+        actual=AscendLogitsProcessor()
+        self.assertIs(find_logits_processor(NS(modules=lambda:[object(),actual]),LogitsProcessor),actual)
+        with self.assertRaises(RuntimeError):find_logits_processor(NS(modules=lambda:[]),LogitsProcessor)
+        with self.assertRaises(RuntimeError):find_logits_processor(NS(modules=lambda:[actual,LogitsProcessor()]),LogitsProcessor)
+
+
 if __name__=='__main__': unittest.main()

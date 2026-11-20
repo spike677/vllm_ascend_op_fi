@@ -193,6 +193,18 @@ def snapshot_fresh_prefill(runner, model, hook_kwargs, context, *, expected_prom
     That separate check belongs to a real NPU validation outside this reader.
     """
     require_serial_eager(runner)
+    return _snapshot_serial_text_prefill(runner, model, hook_kwargs, context,
+        expected_prompt_token_ids=expected_prompt_token_ids,
+        expected_internal_request_id=expected_internal_request_id,
+        seen_internal_request_ids=seen_internal_request_ids)
+
+
+def _snapshot_serial_text_prefill(runner, model, hook_kwargs, context, *, expected_prompt_token_ids,
+                                  expected_internal_request_id, seen_internal_request_ids=()):
+    """Common read-only mapping after the caller's exact parallel preflight.
+
+    Not an admission API. TP1 and TP2 wrappers keep separate prerequisites.
+    """
     require(model is field(runner, "model"), "HOOK_MODEL_NOT_RUNNER_MODEL")
     require(context is not None and field(context, "model_instance") is model, "FOREIGN_FORWARD_CONTEXT")
     require(field(context, "in_profile_run") is False, "PROFILE_RUN_REFUSED")

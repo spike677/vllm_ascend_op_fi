@@ -43,6 +43,7 @@ static aclnnStatus OriginalRun(void* executor,aclrtStream stream,void* workspace
     ++runs;return 0;
 }
 static void Reset(){tnd28_test_lines.clear();tnd28_input::Live()={};tnd28_input::Seen().clear();child.offsets={4096};
+    tnd28_input::Plan()={};assert(unsetenv("DCAT28_INPUT_EXECUTE_BORROW")==0);
     prepares=copies=workspaces=runs=0;copy_status=0;
     for(const auto& pair:std::vector<std::pair<std::string,std::string>>{
         {"MODE","observe"},{"TOKEN",token},{"OWNER",std::string(32,'b')},{"GENERATION","1"},{"MODULE","9"},
@@ -69,6 +70,17 @@ static void Invoke(bool clone=false,bool changed_offset=false){
         assert(e.Return(0)==0);
     }
 }
+static int callback_status=1;static unsigned callback_count=0;
+static int PublicCallback(const char* actual,uint32_t stage,const char* bytes,size_t length){
+    assert(token==actual&&(stage==1||stage==2)&&bytes&&length>0&&length<=32768);
+    ++callback_count;return callback_status;
+}
+static bool GuardPrepare(){
+    aclTensor q,k,v,mask,out,lse;aclTensorList keys{{&k}},values{{&v}};aclIntArray lengths;
+    tnd28_input::Prepare p(&OriginalPrepare,&q,&keys,&values,&mask,&lengths,&lengths,&out,&lse,
+        {nullptr},{16,2147483647,2147483647,8,3,0,128},0.125,"TND",false);
+    return p.Admit(); // The source patch places this before original parent allocation.
+}
 int main(){
     Reset();Invoke();assert(prepares==1&&workspaces==1&&copies==1&&runs==1&&tnd28_test_lines.size()==14);
     for(const auto& line:tnd28_test_lines){assert(line.find("\"first_error\":\"\"")!=std::string::npos);
@@ -80,5 +92,19 @@ int main(){
     Reset();copy_status=37;Invoke();assert(copies==1&&runs==0&&tnd28_input::Live().executor);
     Reset();assert(setenv("DCAT28_INPUT_TID","999999999",1)==0);Invoke();assert(tnd28_test_lines.empty());
     assert(prepares==1&&workspaces==1&&copies==1&&runs==1);
+    Reset();assert(setenv("DCAT28_INPUT_EXECUTE_BORROW","normal_guard",1)==0);
+    assert(!GuardPrepare());assert(prepares==0&&workspaces==0&&copies==0&&runs==0); // no live callback
+    Reset();assert(setenv("DCAT28_INPUT_EXECUTE_BORROW","normal_guard",1)==0);
+    assert(tnd28_input::Current(tnd28_input::Plan().scope));tnd28_input::Plan().callback=&PublicCallback;
+    callback_status=0;callback_count=0;assert(!GuardPrepare());
+    assert(callback_count==1&&tnd28_input::Plan().safe_release&&!tnd28_input::Plan().prepare_admitted);
+    assert(prepares==0&&workspaces==0&&copies==0&&runs==0);
+    Reset();assert(setenv("DCAT28_INPUT_EXECUTE_BORROW","normal_guard",1)==0);
+    assert(tnd28_input::Current(tnd28_input::Plan().scope));tnd28_input::Plan().callback=&PublicCallback;
+    callback_status=1;callback_count=0;assert(GuardPrepare());assert(tnd28_input::Plan().prepare_admitted);
+    assert(tnd28_input::CheckPublic(tnd28_input::Plan().scope,2,tnd28_input::Plan().typed));
+    assert(callback_count==2);
+    assert(!tnd28_input::CheckPublic(tnd28_input::Plan().scope,2,tnd28_input::Plan().typed));
+    assert(callback_count==2); // A repeated stage is rejected before invoking the callback again.
     std::cout<<"PASS_CPU_TND28_TYPED_INPUT_OBSERVATION_NO_DEVICE_NO_F\n";
 }

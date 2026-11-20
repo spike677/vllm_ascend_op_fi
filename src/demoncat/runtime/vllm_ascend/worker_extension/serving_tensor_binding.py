@@ -28,6 +28,7 @@ class TensorServingBinding:
     trace_factory: object = None
     leases: set = field(default_factory=set, compare=False, repr=False)
     runtime_only: bool = False
+    group_context: object = None
 
 
 def install_tensor_serving_binding(worker, mechanism, *, prompt_token_ids, weight_manifest,

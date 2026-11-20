@@ -1,0 +1,47 @@
+{
+  "status": "TWO_SAME_WORKER_SCOPES_INDEPENDENTLY_REVIEWED",
+  "mechanism": "18.api_half",
+  "source_manifest_sha256": "ea84055519103b91f970433c248fd47a1a639a36fae8f34e64a2c5ec88ff8da2",
+  "combination_source": "reviewed case deployment, plus actual worker runtime identity; not inferred from effect",
+  "combination": {
+    "hardware": "Ascend910B4/A2",
+    "cann": "8.5.1",
+    "vllm": "0.18",
+    "model": "Qwen3-0.6B BF16",
+    "tp": 1
+  },
+  "same_worker": true,
+  "independent_owners": true,
+  "scope_count": 2,
+  "actual_requests": 8,
+  "scopes": [
+    {
+      "selected_path": "model.layers.0.input_layernorm",
+      "changed_elements": 14336,
+      "max_abs_diff": 1.4296875,
+      "hidden_changed": true,
+      "logits_changed": true,
+      "exact_off": true,
+      "exact_health": true,
+      "resources_zero": true,
+      "token_changed": false,
+      "text_changed": false
+    },
+    {
+      "selected_path": "model.layers.0.input_layernorm",
+      "changed_elements": 14336,
+      "max_abs_diff": 1.4296875,
+      "hidden_changed": true,
+      "logits_changed": true,
+      "exact_off": true,
+      "exact_health": true,
+      "resources_zero": true,
+      "token_changed": false,
+      "text_changed": false
+    }
+  ],
+  "review_scope": "raw request records, complete output hashes, effect and native lifecycle receipts; not all targets or main project",
+  "qualification_granted": false,
+  "input_sha256": "23c78dc224a36b159db97249aaebd987f419531089343e024988f46dd0a8f0e8",
+  "reader_sha256": "56e271ccf6528a4803feec2b7f8c1b08a080f1ae0db9b6d77abd18764f7f8974"
+}

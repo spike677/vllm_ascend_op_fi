@@ -210,6 +210,10 @@ class RuntimePathTests(unittest.TestCase):
         self.assertEqual(gate.dedicated_atk_reservations(item, [2, 5]), [])
         dedicated = copy.deepcopy(item); dedicated['Name'] = '/ptq_running_job'
         self.assertEqual(gate.dedicated_atk_reservations(dedicated, [2, 5])[0]['card'], 2)
+        dedicated['Name'] = '/atk_q_ops-math-v900-aclnnAtan2_dev2_slot0'
+        self.assertEqual(gate.dedicated_atk_reservations(dedicated, [2, 5])[0]['card'], 2)
+        dedicated['State']['Running'] = False
+        self.assertEqual(gate.dedicated_atk_reservations(dedicated, [2, 5]), [])
 
 
 if __name__ == '__main__':

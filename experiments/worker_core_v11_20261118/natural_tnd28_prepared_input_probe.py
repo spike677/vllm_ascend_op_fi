@@ -1,6 +1,6 @@
 """One actual TND request, one compiled-input window, then unregistered health.
 
-Trusted root deployment only. Uses the original public observe action and
+Trusted root deployment only. Uses an explicitly constructed research observe provider and
 original typed API. No replay/control environment, extra operator or F stage.
 Unselected natural calls remain in the public inventory; no second census.
 """
@@ -64,7 +64,7 @@ def rpc(llm,callback,*args):
 
 def drive(llm,client,prompt,params,args,report,settings):
     from demoncat.runtime.vllm_ascend.worker_extension.serving_context import read_enqueued_identity
-    folder=args.out/'worker_core_rpc';folder.mkdir();recorded=0;pending=[];seen=[]
+    folder=args.out/'research_provider_calls';folder.mkdir();recorded=0;pending=[];seen=[]
     report['rpc']=[]
     def action(name,*values,expected='ACTION_COMPLETED'):
         nonlocal recorded
@@ -73,7 +73,7 @@ def drive(llm,client,prompt,params,args,report,settings):
             path=folder/('%03d-%s.json'%(recorded,item['action']));common.save(path,item)
             report['rpc'].append(dict(path=str(path.relative_to(args.out)),sha256=common.sha(path),action=item['action']));recorded+=1
         common.save(args.out/'result.json',report)
-        need(expected is None or reply['status']==expected,'PUBLIC_ACTION_FAILED:'+name+':'+reply['status'])
+        need(expected is None or reply['status']==expected,'RESEARCH_ACTION_FAILED:'+name+':'+reply['status'])
         return reply.get('response',{}).get('provider_state')
     def enqueue():
         need(not llm.llm_engine.has_unfinished_requests(),'UNRELATED_PENDING_REQUEST')
@@ -186,7 +186,9 @@ def run(args,bundle):
         def deploy(expected,config):
             need(config.mechanism==MECHANISM,'NORMAL_MECHANISM_CHANGED')
             report['setup']=rpc(llm,setup,expected,tokens,provenance,settings);return {}
-        client=common.WorkerFaultClient(common.HostAdapter(llm,prepare_binding=deploy,timeout=300),common.FaultConfig(28,'fia.denominator_replay'))
+        from experiments.worker_core_v11_20261118.tnd28_research_observation import ResearchObservationClient
+        report['entry_protocol']='EXPLICIT_RESEARCH_PROVIDER_NOT_PUBLIC_RUNTIME'
+        client=ResearchObservationClient(llm,deploy)
         drive(llm,client,dict(prompt_token_ids=tokens),SamplingParams(temperature=0,max_tokens=1,ignore_eos=True),args,report,settings)
     except BaseException as error:
         report['status']='REFUSED_OR_FAILED'

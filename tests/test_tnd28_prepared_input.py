@@ -459,7 +459,7 @@ class CompilerHookContracts(unittest.TestCase):
     def test_only_exact_generated_unit_patches_and_reentry_rechecks_bytes(self):
         result=C.prepare_unit(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk)
         self.assertEqual(C.prepare_unit(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk),result)
-        data=self.unit.read_text();self.assertIn('CPU_TENSOR_BODY_UNCHANGED',data);self.assertEqual(data.count('dcat_input.'),6)
+        data=self.unit.read_text();self.assertIn('CPU_TENSOR_BODY_UNCHANGED',data);self.assertEqual(data.count('dcat_input.'),7);self.assertIn('dcat_input.Admit(',data)
         self.assertFalse(result['fault_authorized'] or result['current_input_authority'])
         self.unit.write_text(data+'\n')
         with self.assertRaisesRegex(ValueError,'REENTRY_BYTES_CHANGED'):C.prepare_unit(self.source,self.ev,self.argv,variant=C.VARIANT,sdk=self.sdk)
@@ -608,7 +608,7 @@ class OneWindowEntrypoints(unittest.TestCase):
                         'vllm.platforms':NS(current_platform=object())}),\
                     patch.object(serving_context,'require_host_driven_core'),\
                     patch.object(P.common,'HostAdapter',return_value=object()),\
-                    patch.object(P.common,'WorkerFaultClient',return_value=client),\
+                    patch('experiments.worker_core_v11_20261118.tnd28_research_observation.ResearchObservationClient',return_value=client),\
                     patch.object(P.common,'save',side_effect=fail_host):
                 self.assertEqual(P.run(args,{}),2)
             report=json.loads((out/'result.json').read_text())

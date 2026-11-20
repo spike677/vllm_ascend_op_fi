@@ -12,14 +12,21 @@ from unittest.mock import patch
 
 from demoncat.runtime.vllm_ascend.worker_extension import attention28_prepared_input as P
 from demoncat.runtime.vllm_ascend.worker_extension import attention28_replay_binding as B
+from demoncat.runtime.vllm_ascend.worker_extension import attention28_typed_plan as T
 from demoncat.runtime.vllm_ascend.worker_extension.attention_execution import bind_actual_api
 import test_attention28_replay_binding as fixtures
+import test_attention28_typed_plan as typed_fixtures
 
 
 class BorrowCaptureContracts(unittest.TestCase):
     def setUp(self):
         self.f=fixtures.ReplayInputContracts();self.f.setUp();self.addCleanup(self.f.doCleanups)
+        self.f.model.attn.q=self.f.model.attn.q.contiguous();self.f.model.attn.k=self.f.model.attn.k.contiguous()
         self.root=Path(self.enterContext(tempfile.TemporaryDirectory()))
+        self.library_path=self.root/'libcust_opapi.so';self.library_path.write_bytes(b'CPU_FAKE_NOT_ELF')
+        self.native=typed_fixtures.FakePlanLibrary()
+        self.enterContext(patch('demoncat.runtime.vllm_ascend.worker_extension.paged33_loading.symbol_owner',
+            return_value=dict(path=str(self.library_path.resolve()),sha256='b'*64,address=17)))
         self.enterContext(patch.object(P,'EVIDENCE_ROOT',self.root))
         self.enterContext(patch.object(P,'identity',side_effect=B.identity))
         self.env={};self.enterContext(patch.object(P.os,'environ',self.env))
@@ -34,10 +41,12 @@ class BorrowCaptureContracts(unittest.TestCase):
             if self.query_owner:value['owner']=self.query_owner
             value['borrow']=dict(self.state)
             return value
+        query.library,query.path,query.sha256=self.native,self.library_path.resolve(),'b'*64
         self.enterContext(patch.object(P,'_open_borrow_query',return_value=query))
         header='a'*64
         build=dict(status='CPU_BUILD_ONLY_REQUIRES_NATIVE_QUALIFICATION',variant='tnd_prefill_denominator_replay',
             tnd28_execute_borrow_query=dict(symbol='dcat_tnd28_execute_borrow_query_v1',library_sha256='b'*64,
+                live_public_plan_symbols=list(T.SYMBOLS),
                 read_only=True,fault_authorized=False),
             tnd28_execute_borrow_header_sha256=header,tnd28_compiled_input_observer=dict(
                 schema='demoncat.tnd28.compiled_input_source.v1',observer_only=True,fault_authorized=False,
@@ -46,6 +55,12 @@ class BorrowCaptureContracts(unittest.TestCase):
         self.capture=P.PreparedInputCapture(self.f.worker,build_completion=path,
             build_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),evidence_dir=self.root/'capture',
             execute_borrow_library='/explicit-cpu-fake-library',execute_borrow_sha256='b'*64)
+        def inside_original():
+            if self.capture.live_plan is None:return
+            typed=typed_fixtures.typed_packet(self.capture.live_plan,self.library_path)
+            if self.native.emit(1,typed)!=1 or self.native.emit(2,typed)!=1:
+                raise RuntimeError('EXPLICIT_CPU_TYPED_GUARD_REFUSED')
+        self.f.during_original=inside_original
         self.addCleanup(self.cleanup_capture)
 
     def cleanup_capture(self):
@@ -123,6 +138,42 @@ class BorrowCaptureContracts(unittest.TestCase):
                 output=once();self.capture.returned(output)
                 self.assertFalse(self.capture.replay_binding.snapshot()['last_check_read_input_values'])
             self.capture.stop();return output
+        self.f.run_call(callback)
+
+    def test_typed_rejection_before_parent_allocation_cleans_without_execute_query(self):
+        def callback(row,once):
+            self.enter(row)
+            def reject_inside():
+                typed=typed_fixtures.typed_packet(self.capture.live_plan,self.library_path)
+                typed['value']['members'][0]['offset']=0
+                self.assertEqual(self.native.emit(1,typed),0)
+                raise RuntimeError('CPU_NATIVE_PREALLOCATION_REFUSAL')
+            self.f.during_original=reject_inside
+            try:return once()
+            finally:
+                self.capture.stop()
+                self.assertEqual(self.query_calls,0)
+                self.assertIsNone(self.capture.refs)
+                self.assertIsNone(self.capture.live_plan)
+                self.assertIsNone(self.native.callback)
+        with self.assertRaisesRegex(RuntimeError,'PREALLOCATION_REFUSAL'):self.f.run_call(callback)
+        self.assertEqual(self.f.calls,1)
+        self.assertEqual(self.env,{})
+
+    def test_bind_reply_failure_keeps_actual_callback_until_owned_clear(self):
+        def callback(row,once):
+            original=self.native.bind
+            def bind_then_fail(*args):
+                original(*args)
+                return -1
+            self.native.__dict__[T.SYMBOLS[0]].call=bind_then_fail
+            with self.assertRaisesRegex(RuntimeError,'BIND_FAILED'):self.enter(row)
+            self.assertIsNotNone(self.native.callback)
+            self.assertIsNotNone(self.capture.live_plan)
+            self.capture.stop()
+            self.assertIsNone(self.native.callback)
+            self.assertEqual(self.query_calls,0)
+            return once()
         self.f.run_call(callback)
 
 

@@ -35,6 +35,10 @@ class Rms18TaskProvider(TensorServingProvider):
         self.fault_started = self.fault_applied = False
 
     @property
+    def injection_arm(self):
+        return 'fault' if self.phase == 'fault' else 'baseline'
+
+    @property
     def phase(self):
         return self.recovering or (FOUR[self.index]
                                   if self.index < len(FOUR) else 'complete')

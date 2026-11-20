@@ -47,6 +47,7 @@ def _open_borrow_query(path,expected):
             and owner['file_bytes']==path.stat().st_size
             and hashlib.sha256(path.read_bytes()).hexdigest()==expected,'TND_BORROW_QUERY_MAPPED_LIBRARY_CHANGED')
         return value
+    current.library,current.path,current.sha256=library,path,expected
     return current
 
 
@@ -72,7 +73,7 @@ class PreparedInputCapture:
         require(not any(k.startswith(PREFIX) for k in os.environ),'TND_INPUT_FOREIGN_OBSERVER_ENVIRONMENT')
         self.root.mkdir(parents=True);self.build_sha256=build_sha256
         self.used=False;self.active=None;self.refs=None;self.first_error=None;self.receipt=None
-        self.replay_binding=self.live_plan=None;self.borrow_query=None
+        self.replay_binding=self.live_plan=None;self.borrow_query=None;self.typed_plan=None
         require((execute_borrow_library is None)==(execute_borrow_sha256 is None),'TND_BORROW_EXACT_LIBRARY_PAIR_REQUIRED')
         if execute_borrow_library is not None:
             require(self.build.get('tnd28_execute_borrow_header_sha256')==observation.get('execute_borrow_header_sha256')
@@ -82,6 +83,9 @@ class PreparedInputCapture:
             require(proof.get('symbol')=='dcat_tnd28_execute_borrow_query_v1'
                 and proof.get('library_sha256')==execute_borrow_sha256 and proof.get('read_only') is True
                 and proof.get('fault_authorized') is False,'TND_BORROW_COMPILED_QUERY_IDENTITY_REQUIRED')
+            from .attention28_typed_plan import SYMBOLS
+            require(proof.get('live_public_plan_symbols')==list(SYMBOLS),
+                    'TND_BORROW_COMPILED_LIVE_PLAN_ABI_REQUIRED')
             self.borrow_query=_open_borrow_query(execute_borrow_library,execute_borrow_sha256)
 
     def _check(self):
@@ -139,6 +143,11 @@ class PreparedInputCapture:
                 try:os.environ[key]=value
                 finally:
                     if os.environ.get(key)==value:self.active[key]=value
+            if self.borrow_query is not None:
+                from .attention28_typed_plan import LiveTypedPlan
+                self.typed_plan=LiveTypedPlan(self.borrow_query,self.replay_binding,self.live_plan,token)
+                self.typed_plan.install()
+                self.receipt['live_typed_plan']=self.typed_plan.snapshot()
         except BaseException as error:
             self.first_error=self.first_error or repr(error);raise
         return self.receipt
@@ -151,6 +160,13 @@ class PreparedInputCapture:
             self.receipt['execute_borrow']=self._borrow_return()
             require(self.receipt['execute_borrow']['borrow']['first_error']==0,
                     'TND_BORROW_ORIGINAL_CALL_OR_CLEANUP_FAILED')
+            self.receipt['live_typed_plan']=self.typed_plan.snapshot()
+            require(self.typed_plan.first_error is None and len(self.typed_plan.events)==2,
+                    'TND_BORROW_TWO_ACTUAL_TYPED_CHECKS_REQUIRED')
+            native_plan=self.typed_plan.state()
+            require(all(native_plan[name]==value for name,value in dict(bound=1,prepare_entered=1,
+                prepare_accepted=1,prepare_admitted=1,execute_entered=1,safe_release=1,
+                terminal_uncertain=0,first_error=0).items()),'TND_BORROW_NATIVE_TYPED_GUARD_NOT_COMPLETE')
         from fault_injection.fia_input_journal import public_tensor_metadata
         self.refs+=output
         row=dict(schema='demoncat.tnd28.public_return.v1',token=self.receipt['token'],identity=self.owner,
@@ -188,7 +204,14 @@ class PreparedInputCapture:
                 # Only the real compiled return can confirm an entered Execute
                 # borrow; missing/uncertain state never triggers a pointer retry.
                 if self.live_plan.row['original_calls']:
-                    self.receipt['execute_borrow']=self._borrow_return()
+                    typed=self.typed_plan.state() if self.typed_plan is not None else None
+                    refused_before_parent=(typed is not None and typed['prepare_admitted']==0
+                        and typed['safe_release']==1
+                        and typed['terminal_uncertain']==0)
+                    if not refused_before_parent:self.receipt['execute_borrow']=self._borrow_return()
+                if self.typed_plan is not None:
+                    self.typed_plan.clear()
+                    self.receipt['live_typed_plan']=self.typed_plan.snapshot()
                 self.replay_binding.close_public(self.live_plan);self.live_plan=None
             # Retire each owned entry only after readback. Foreign values leave
             # the remaining ledger and public tensor references available.

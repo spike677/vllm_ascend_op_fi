@@ -18,3 +18,21 @@ def tp2_eager_assessment(runner, actual_tp_group, rank, *, expected_max_seqs=1):
     report.update(scope='M1_A2_EXISTING_018_TP2_PREFLIGHT_ONLY',
                   public_admission_changed=False,qualification_granted=False)
     return report
+
+
+def snapshot_tp2_fresh_prefill(runner, model, hook_kwargs, context, *, actual_tp_group, rank,
+                               expected_prompt_token_ids, expected_internal_request_id,
+                               seen_internal_request_ids=()):
+    """Read rank-local scheduling only; no group or mechanism admission."""
+    from .serving_context import ContextRefused, _snapshot_serial_text_prefill
+    report=tp2_eager_assessment(runner,actual_tp_group,rank)
+    if report['unmet']:
+        error=ContextRefused(report['primary']['code']);error.prerequisites=report
+        raise error
+    row=_snapshot_serial_text_prefill(runner,model,hook_kwargs,context,
+        expected_prompt_token_ids=expected_prompt_token_ids,
+        expected_internal_request_id=expected_internal_request_id,
+        seen_internal_request_ids=seen_internal_request_ids)
+    row['tensor_parallel']=dict(world_size=2,rank_in_group=rank,ranks=[0,1])
+    row['qualification_granted']=False
+    return row

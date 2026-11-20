@@ -93,11 +93,15 @@ def finish_check(builder,base):
     private=builder.vendor/'op_api/lib/libcust_opapi.so'
     builder.run('tnd28_execute_borrow_exports',['nm','-D','--defined-only',private],env=builder.env)
     exports=(ev/'tnd28_execute_borrow_exports.log').read_text().splitlines()
-    query=[line.split() for line in exports if line.split() and
-        line.split()[-1].split('@',1)[0]=='dcat_tnd28_execute_borrow_query_v1']
-    base.require(len(query)==1 and len(query[0])==3 and query[0][1]=='T','TND28_LIVE_BORROW_QUERY_NOT_EXPORTED')
+    symbols=('dcat_tnd28_execute_borrow_query_v1','dcat_tnd28_public_plan_bind_v2',
+        'dcat_tnd28_public_plan_clear_v2','dcat_tnd28_public_plan_query_v2')
+    for symbol in symbols:
+        query=[line.split() for line in exports if line.split() and line.split()[-1].split('@',1)[0]==symbol]
+        base.require(len(query)==1 and len(query[0])==3 and query[0][1]=='T',
+            'TND28_LIVE_BORROW_SYMBOL_NOT_EXPORTED:'+symbol)
     report['tnd28_execute_borrow_query']=dict(symbol='dcat_tnd28_execute_borrow_query_v1',
         library_sha256=base.sha(private),exports_sha256=base.sha(ev/'tnd28_execute_borrow_exports.log'),
+        live_public_plan_symbols=list(symbols[1:]),
         read_only=True,fault_authorized=False)
     base.require(report['tnd28_execute_borrow_header_sha256']==base.sha(base.HERE/'tnd28_execute_borrow.h')
         and report['tnd28_execute_borrow_cpu_log_sha256']==base.sha(ev/'tnd28_execute_borrow_contract.log'),

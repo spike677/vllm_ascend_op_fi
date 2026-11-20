@@ -75,3 +75,8 @@ Batch准备器也增加`--scopes 2`：通过单独验收驱动复用同一个标
 
 
 多卡主线改为P1后，本版仍仅收录已声明的TP1能力。后续冻结RC2.2必须从单卡维护提交集构建，不直接打包含M1的开发HEAD；`multi_rank.py`、TP2前提与group身份等M1改动仅进入RC3。当前未冻结RC2.2，18/39/Batch同Worker双作用域设备证据仍待补齐。
+
+
+## 2026-11-20 补验更新
+
+18/39已经在A2、0.18/CANN8.5.1、Qwen3-0.6B BF16/TP1完成同Worker两个作用域及独立复核。Batch W8A8/TP1同Worker两个作用域亦完成，OFF完整Q/scale/hidden/logits精确恢复；外部健康仅token及模型/Worker身份核对，不能扩大为完整hidden/logits健康证据。详见[npu_progress_20261120.md](npu_progress_20261120.md)。上文11月19日未执行为历史检查点。RC2.2未冻结，TP2实现不纳入。

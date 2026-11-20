@@ -36,7 +36,7 @@ class ServingReplaySession:
         self.runner = worker.model_runner
         require(model is self.runner.model and model.training is False, 'LOADED_EVAL_MODEL_REQUIRED')
         require(os.environ.get('VLLM_ENABLE_V1_MULTIPROCESSING') == '0', 'HOST_DRIVEN_ENGINE_REQUIRED')
-        require_serial_eager(self.runner)
+        self._require_runner()
         config = self.runner.vllm_config.model_config.hf_config
         boundary = discover_logits_boundary(model, actual_logits_processor_type=LogitsProcessor,
                                             actual_vocab_size=config.vocab_size)
@@ -65,6 +65,14 @@ class ServingReplaySession:
         self.hidden_digest = None
         self.rows = []
         self.owner_thread = threading.get_ident()
+
+    def _require_runner(self):
+        return require_serial_eager(self.runner)
+
+    def _snapshot_prefill(self, actual, context):
+        return snapshot_fresh_prefill(self.runner, self.model, actual, context,
+            expected_prompt_token_ids=self.prompt, expected_internal_request_id=self.expected,
+            seen_internal_request_ids=self.backend.requests)
 
     def _same_worker(self):
         require(self.worker.model_runner is self.runner and self.runner.model is self.model,
@@ -123,9 +131,7 @@ class ServingReplaySession:
             require(self.installed and self.current is None and self.expected is not None,
                     'NO_EXPLICIT_ADVANCE_OR_CONCURRENT_REQUEST')
             actual = self.root_binding.bind(module, args, kwargs)
-            snapshot = snapshot_fresh_prefill(self.runner, self.model, actual, get_forward_context(),
-                expected_prompt_token_ids=self.prompt, expected_internal_request_id=self.expected,
-                seen_internal_request_ids=self.backend.requests)
+            snapshot = self._snapshot_prefill(actual, get_forward_context())
             token_cpu, token_hash, _ = complete_tensor(actual['input_ids'])
             position_cpu, position_hash, _ = complete_tensor(actual['positions'])
             require(token_cpu.tolist() == self.prompt and position_cpu.tolist() == list(range(len(self.prompt))),

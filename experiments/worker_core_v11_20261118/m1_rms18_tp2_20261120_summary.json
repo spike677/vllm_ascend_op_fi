@@ -1,0 +1,63 @@
+{
+  "status": "TP2_RMS18_TWO_SCOPES_INDEPENDENTLY_REVIEWED",
+  "source_manifest_sha256": "ea84055519103b91f970433c248fd47a1a639a36fae8f34e64a2c5ec88ff8da2",
+  "combination": "BLUE_COMBINATION A2/CANN8.5.1/vLLM-Ascend0.18/Qwen3-0.6B BF16/TP2",
+  "scopes": [
+    {
+      "ranks": {
+        "0": {
+          "path": "model.layers.0.input_layernorm",
+          "applied": true,
+          "boundary_unchanged": false,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        },
+        "1": {
+          "path": "model.layers.0.input_layernorm",
+          "applied": false,
+          "boundary_unchanged": true,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        }
+      },
+      "token_changed": true,
+      "rank_request_alignment": true
+    },
+    {
+      "ranks": {
+        "0": {
+          "path": "model.layers.0.input_layernorm",
+          "applied": true,
+          "boundary_unchanged": false,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        },
+        "1": {
+          "path": "model.layers.0.input_layernorm",
+          "applied": false,
+          "boundary_unchanged": true,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        }
+      },
+      "token_changed": true,
+      "rank_request_alignment": true
+    }
+  ],
+  "scope_count": 2,
+  "request_count": 8,
+  "rank_request_observations": 16,
+  "collective_boundary_observed": false,
+  "limitation": "Guard rank hidden/logits propagation observed; unique all-reduce attribution not established. Only Ascend use_all_gather=True path validated.",
+  "qualification_granted": false,
+  "input_sha256": "edef3fe0bc8840957155de54c8357c7c93afea8a79b934cf16288bac25108fea",
+  "reader_sha256": "c1f9bb13497f8b6b7f9d61e6ec9ea46cb06fd8aab2ac6dde502ae64d21d9b514"
+}

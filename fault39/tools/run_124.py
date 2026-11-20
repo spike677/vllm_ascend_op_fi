@@ -28,18 +28,18 @@ def dedicated_atk_reservations(container, cards):
     """Conservatively reserve mapped cards for running, dedicated ATK jobs.
 
     An idle persistent container's device permissions alone are not a
-    reservation. A running ptq_ job, however, can retain driver reservation
+    reservation. A running ptq_ or atk_q_ job, however, can retain driver reservation
     before or between visible compute processes; do not compete with it.
     """
     name = container.get('Name', '')
-    if (not isinstance(name, str) or not name.lstrip('/').startswith('ptq_')
+    if (not isinstance(name, str) or not name.lstrip('/').startswith(('ptq_', 'atk_q_'))
             or container.get('State', {}).get('Running') is not True):
         return []
     selected = {f'/dev/davinci{card}': card for card in cards if card in (2, 5)}
     mapped = {dev.get('PathOnHost') for dev in container.get('HostConfig', {}).get('Devices') or []}
     return [{'card': selected[path], 'container': name, 'container_id': container.get('Id'),
              'device': path, 'reason': 'DEDICATED_ATK_CONTAINER_RESERVATION',
-             'basis': 'running_ptq_name_and_selected_device_mapping'}
+             'basis': 'running_dedicated_atk_name_and_selected_device_mapping'}
             for path in sorted(mapped.intersection(selected))]
 
 
