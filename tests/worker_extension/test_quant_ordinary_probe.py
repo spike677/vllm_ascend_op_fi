@@ -271,7 +271,10 @@ class ActualPublicRuntimeHarness(unittest.TestCase):
         self.enterContext(patch.object(serving_context, 'require_host_driven_core', return_value=True))
         # Health now observes real CPU fixture forwards, rather than token-only
         # generate doubles. Device admission is still covered by NPU acceptance.
-        from experiments.worker_core_v11_20261118 import quant_health_observer as health
+        import importlib
+        # Fixture restores sys.modules between tests; package attributes can retain
+        # an orphan module. Patch the module actual runtime imports will resolve.
+        health = importlib.import_module('experiments.worker_core_v11_20261118.quant_health_observer')
         def install_health(worker):
             self.assertIs(worker, fixture.worker)
             self.assertFalse(hasattr(worker, '_dcat_quant_health_probe'))

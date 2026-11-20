@@ -1,0 +1,91 @@
+{
+  "status": "BLUE_TP2_TWO_SCOPE_MECHANISM_ACCEPTED",
+  "combination": "A2/0.18/CANN8.5.1/Qwen3-0.6B BF16/TP2",
+  "source_manifest_sha256": "db5874e9ff5ca357626e35fccf30162148565905e372d03cc575fed87fff8459",
+  "scopes": [
+    {
+      "scope": 0,
+      "ranks": [
+        {
+          "rank": 0,
+          "injector": true,
+          "native_hits": 1,
+          "changed_kv_elements": 8,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        },
+        {
+          "rank": 1,
+          "injector": false,
+          "native_hits": 0,
+          "changed_kv_elements": 0,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        }
+      ],
+      "requests": 6,
+      "explicit_recover": true
+    },
+    {
+      "scope": 1,
+      "ranks": [
+        {
+          "rank": 0,
+          "injector": true,
+          "native_hits": 1,
+          "changed_kv_elements": 8,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        },
+        {
+          "rank": 1,
+          "injector": false,
+          "native_hits": 0,
+          "changed_kv_elements": 0,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "resources_zero": true
+        }
+      ],
+      "requests": 6,
+      "explicit_recover": true
+    }
+  ],
+  "qualification_granted": false,
+  "limits": [
+    "controlled legal KV tail address proxy; not real out-of-bounds",
+    "no direct collective boundary attribution",
+    "A2 old 0.18 combination only; no A3 or current-model qualification"
+  ],
+  "receipts": [
+    {
+      "file": "result.json",
+      "bytes": 12554908,
+      "sha256": "2e2c063fec004c1f5cc451d80c939e6926a24ea2c578d7d3e02e161f1a2f448c"
+    },
+    {
+      "file": "scope0_host.json",
+      "bytes": 91370161,
+      "sha256": "e916cde4dd8b2ca56f7dbd327a130324a60dc3c820adf03c5566e34fd8d10d9b"
+    },
+    {
+      "file": "scope1_host.json",
+      "bytes": 91375613,
+      "sha256": "b1258a411df03ab44d103b1164d4da36052c8643ebb5349627158eb7366c55fc"
+    }
+  ],
+  "negative_review_checks": [
+    "guard cache mutation",
+    "OFF complete hash changed",
+    "second scope different workers",
+    "retained rank lease",
+    "missed native injection"
+  ]
+}
