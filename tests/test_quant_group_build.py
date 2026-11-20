@@ -18,6 +18,15 @@ IMAGE_ID = 'sha256:' + 'b' * 64
 
 
 class QuantGroupBuildTests(unittest.TestCase):
+    def test_cann91_has_separate_explicit_sdk_and_keeps_old_recipe(self):
+        self.assertEqual(builder.commands_for('8.5.1'),builder.COMMANDS)
+        current=builder.commands_for('9.1.0')
+        self.assertIn('cann-9.1.0/aarch64-linux',current)
+        self.assertIn(r'^version=9\.1\.0$',current)
+        self.assertNotIn('cann-8.5.1',current)
+        self.assertIn('test_group_loader',current)
+        with self.assertRaisesRegex(ValueError,'UNREVIEWED'):builder.commands_for('9.2.0')
+
     def test_real_loader_contract_requires_every_case_and_retains_mock_boundary(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / 'loader-contract.jsonl'

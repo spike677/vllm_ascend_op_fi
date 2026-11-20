@@ -42,8 +42,8 @@ def loader_contract(path):
     return dict(sha256=sha(path), cases=rows)
 
 
-def inspect_image(expected):
-    rows = json.loads(subprocess.run(['docker', 'image', 'inspect', IMAGE], capture_output=True,
+def inspect_image(expected, image=None):
+    rows = json.loads(subprocess.run(['docker', 'image', 'inspect', image or IMAGE], capture_output=True,
                                     text=True, check=True, timeout=30).stdout)
     if (len(rows) != 1 or rows[0].get('Id') != expected
             or rows[0].get('Architecture') != 'arm64' or rows[0].get('Os') != 'linux'):
@@ -129,8 +129,15 @@ PY
 '''
 
 
+def commands_for(cann):
+    if cann == '8.5.1': return COMMANDS
+    if cann != '9.1.0': raise ValueError('UNREVIEWED_GROUP_SDK')
+    return COMMANDS.replace('cann-8.5.1', 'cann-9.1.0').replace(r'version=8\.5\.1$', r'version=9\.1\.0$')
+
+
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--cann', choices=['8.5.1','9.1.0'], default='8.5.1')
     parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--source-commit', required=True)
@@ -152,13 +159,13 @@ def main():
         device_mounts=[], command=None, build_returncode=None)
     launched = False
     try:
-        actual = inspect_image(args.image_id)
+        actual = inspect_image(args.image_id, image=args.image_id if args.cann=='9.1.0' else None)
         (out / 'image-inspect.json').write_text(json.dumps(actual, indent=2) + '\n')
-        receipt.update(actual_image_id=actual['Id'], image_inspect_sha256=sha(out / 'image-inspect.json'))
+        receipt.update(cann=args.cann, actual_image_id=actual['Id'], image_inspect_sha256=sha(out / 'image-inspect.json'))
         command = ['docker', 'run', '--rm', '--name', name, '--label', 'demoncat.quant.group-build-owner=' + nonce,
             '--network', 'none', '--runtime', 'runc', '--cpus', '4', '--memory', '4g',
             '-e', 'ASCEND_VISIBLE_DEVICES=void', '-v', str(source) + ':/source:ro', '-v', str(out) + ':/build',
-            '--entrypoint', 'bash', actual['Id'], '-lc', COMMANDS]
+            '--entrypoint', 'bash', actual['Id'], '-lc', commands_for(args.cann)]
         receipt['command'] = command
         with (out / 'build.log').open('wb') as stream:
             launched = True
@@ -196,7 +203,7 @@ def main():
     names = ('runtime/vendor/op_api/lib/libcust_opapi.so',) + tuple(Path(name).name for name in SOURCES)
     manifest = dict(schema='demoncat.quant.group_deployment.v1', actual_npu_calls=0, c2=False, c3=False,
         native_qualified_targets=0, source_commit=args.source_commit, sources=sources,
-        actual_image_id=args.image_id, cann='8.5.1', library='runtime/vendor/op_api/lib/libcust_opapi.so',
+        actual_image_id=args.image_id, cann=args.cann, library='runtime/vendor/op_api/lib/libcust_opapi.so',
         files={name: sha(out / name) for name in names}, sdk_identity=receipt['sdk_identity'],
         build_receipt_sha256=sha(out / 'build-receipt.json'), legacy_c1_library_present=False)
     (out / 'build.json').write_text(json.dumps(manifest, indent=2) + '\n')
