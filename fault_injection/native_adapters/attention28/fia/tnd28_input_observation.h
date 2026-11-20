@@ -214,6 +214,14 @@ struct BorrowReturn {Scope scope;std::string receipt;};
 inline BorrowReturn& LastBorrowReturn(){static thread_local BorrowReturn value;return value;}
 #endif
 inline std::set<std::string>& Seen(){static thread_local std::set<std::string> value;return value;}
+// Two research owners, each B/B/F/OFF. Never clear the replay ledger at detach.
+// This is a bounded research build, not an unrestricted serving admission.
+inline void ClaimInputScope(const std::string& token){
+    Need(!Live().executor,"pending input executor");
+    Need(Seen().find(token)==Seen().end(),"repeated input scope");
+    Need(Seen().size()<8,"research input scope budget exhausted");
+    Seen().insert(token);
+}
 struct Log{
     Scope scope;bool active=false;uint32_t count=0;std::string first_error;
     void Fail(const std::string& reason) noexcept {try{if(first_error.empty())first_error=reason;}catch(...) {}}
@@ -250,7 +258,7 @@ struct Prepare:Log{
       double scale,const char* layout,bool softmax){
         guarded=Env("DCAT28_INPUT_EXECUTE_BORROW")=="normal_guard";
         try{active=Current(scope);if(!active)return;
-            Need(!Live().executor&&Seen().size()<4&&Seen().insert(scope.token).second,"pending or repeated input scope");
+            ClaimInputScope(scope.token);
             pending.scope=scope;
             Record("prepare_enter",[&]{
                 Need(v&&v->Size()==1,"single actual V member required");value=(*v)[0];std::vector<uint64_t> pointers;

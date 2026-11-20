@@ -82,6 +82,17 @@ static bool GuardPrepare(){
     return p.Admit(); // The source patch places this before original parent allocation.
 }
 int main(){
+    Reset();
+    for(unsigned i=0;i<8;++i)tnd28_input::ClaimInputScope(std::string(32,char('a'+i)));
+    assert(tnd28_input::Seen().size()==8);
+    for(const auto& candidate:std::vector<std::string>{std::string(32,'a'),std::string(32,'f'),std::string(32,'9')}){
+        bool rejected=false;try{tnd28_input::ClaimInputScope(candidate);}catch(const std::runtime_error&){rejected=true;}
+        assert(rejected&&tnd28_input::Seen().size()==8);
+    }
+    Reset();tnd28_input::Live().executor=&parent;
+    bool pending_rejected=false;try{tnd28_input::ClaimInputScope(token);}catch(const std::runtime_error&){pending_rejected=true;}
+    assert(pending_rejected&&tnd28_input::Seen().empty());
+
     Reset();Invoke();assert(prepares==1&&workspaces==1&&copies==1&&runs==1&&tnd28_test_lines.size()==14);
     for(const auto& line:tnd28_test_lines){assert(line.find("\"first_error\":\"\"")!=std::string::npos);
         assert(line.find("\"fault_authorized\":false")!=std::string::npos);}
