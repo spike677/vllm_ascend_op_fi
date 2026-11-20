@@ -84,7 +84,10 @@ def main():
         source=Path('/source');m=source/'source_manifest.json';manifest=hashlib.sha256(m.read_bytes()).hexdigest()
         for r in json.loads(m.read_bytes())['files']:need(hashlib.sha256((source/r['path']).read_bytes()).hexdigest()==r['sha256'],'FROZEN_SOURCE_CHANGED')
         report['source_manifest_sha256']=manifest;report['model']=single.model_identity('/model');save()
-        llm=LLM(model='/model',load_format='safetensors',dtype='bfloat16',tensor_parallel_size=2,distributed_executor_backend='mp',enforce_eager=True,max_model_len=128,max_num_seqs=8,max_num_batched_tokens=256,num_gpu_blocks_override=64,enable_prefix_caching=False,enable_chunked_prefill=False,async_scheduling=False,gpu_memory_utilization=.55,seed=42,trust_remote_code=False,disable_log_stats=True,worker_extension_cls='demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension')
+        from experiments.worker_core_v11_20261118.quant_spawn_bootstrap import worker_spawn_vendor_order
+        with worker_spawn_vendor_order('/quant',a.build_sha256) as bootstrap:
+            llm=LLM(model='/model',load_format='safetensors',dtype='bfloat16',tensor_parallel_size=2,distributed_executor_backend='mp',enforce_eager=True,max_model_len=128,max_num_seqs=8,max_num_batched_tokens=256,num_gpu_blocks_override=64,enable_prefix_caching=False,enable_chunked_prefill=False,async_scheduling=False,gpu_memory_utilization=.55,seed=42,trust_remote_code=False,disable_log_stats=True,worker_extension_cls='demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension')
+        report['spawn_vendor_environment']=bootstrap;save()
         prompts=[dict(prompt_token_ids=llm.get_tokenizer().encode(t,add_special_tokens=True)) for t in single.PROMPTS]
         params=SamplingParams(temperature=0,max_tokens=2,ignore_eos=True);seen=set();held=None
         for index in range(2):
