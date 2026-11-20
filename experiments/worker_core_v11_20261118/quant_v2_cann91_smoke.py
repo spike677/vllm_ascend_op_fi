@@ -6,13 +6,17 @@ def main():
     result=dict(status='STARTED',qualification_granted=False,model_calls=0,scope='A2/CANN9.1/torch_npu2.10 V2-only B8x16 operator smoke',cases=[])
     control=None
     try:
-        build=json.loads(Path('/quant/runtime/build.json').read_bytes())
+        raw_build=Path('/quant/runtime/build.json').read_bytes()
+        assert hashlib.sha256(raw_build).hexdigest()=='04f1c8af72231aec3d98ec071882e28c6960ccd7852381c9ea65e5fa212a3aa9'
+        build=json.loads(raw_build)
+        for name,key in [('backend_control.py','control_sha256'),('native_backend.cpp','source_sha256'),('batch_scale_inventory.h','inventory_source_sha256')]:
+            assert hashlib.sha256(Path('/quant',name).read_bytes()).hexdigest()==build[key]
         assert hashlib.sha256(Path('/quant/runtime/vendor/op_api/lib/libcust_opapi.so').read_bytes()).hexdigest()==build['library_sha256']
         assert hashlib.sha256(Path(build['real_opapi']).read_bytes()).hexdigest()==build['real_opapi_sha256']
         result['build_manifest_sha256']=hashlib.sha256(Path('/quant/runtime/build.json').read_bytes()).hexdigest()
         import torch,torch_npu
         sys.path.insert(0,'/quant');from backend_control import BackendControl
-        torch.npu.set_device(0);control=BackendControl();result['resolver_identity']=control.resolver_identity
+        torch.npu.set_device(0);control=BackendControl();control.lib.dcat_dq_state_v1.argtypes=[ctypes.POINTER(ctypes.c_uint64),ctypes.c_size_t];result['resolver_identity']=control.resolver_identity
         raw=(torch.arange(1,129,dtype=torch.float32).reshape(8,16)/32).bfloat16();raw[-1]*=64
         x=raw.npu();baseline=None
         for phase in ('baseline','fault','off'):
