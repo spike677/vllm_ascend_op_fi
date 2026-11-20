@@ -1,0 +1,606 @@
+{
+  "status": "QWEN06_TP1_TP2_STANDARD_SMOKE_NOT_FAULT_ACCEPTANCE",
+  "image_id": "85a2bc5e4d0bf77e04f30c63aeab136b63a389b0ccb7be9c90b12e1a116d907a",
+  "cases": [
+    {
+      "attempt": "m2-qwen06-tp1-smoke-20261120-a1",
+      "receipt_sha256": "aee2b74c9ed98e6c87567b7d6272a4058dfe40de5ca4d937ddee39643eab55cc",
+      "summary": {
+        "status": "STANDARD_MODEL_REPEAT_SMOKE_PASSED_NOT_FAULT_QUALIFIED",
+        "tp": 1,
+        "fault_calls": 0,
+        "qualification_granted": false,
+        "model": "/model",
+        "requests": [
+          {
+            "index": 0,
+            "request_id": "0",
+            "prompt_tokens": [
+              840,
+              20772,
+              304,
+              825,
+              11652,
+              3170,
+              279,
+              12884,
+              7952,
+              6303,
+              13
+            ],
+            "generated_tokens": [
+              576,
+              4226,
+              374,
+              304,
+              825,
+              11652,
+              624,
+              16141
+            ],
+            "text": " The answer is in one sentence.\nAnswer",
+            "returned_logprobs_finite": true
+          },
+          {
+            "index": 1,
+            "request_id": "1",
+            "prompt_tokens": [
+              840,
+              20772,
+              304,
+              825,
+              11652,
+              3170,
+              279,
+              12884,
+              7952,
+              6303,
+              13
+            ],
+            "generated_tokens": [
+              576,
+              4226,
+              374,
+              304,
+              825,
+              11652,
+              624,
+              16141
+            ],
+            "text": " The answer is in one sentence.\nAnswer",
+            "returned_logprobs_finite": true
+          }
+        ],
+        "workers_before": [
+          {
+            "identity": {
+              "status": "WORKER_IDENTIFIED",
+              "worker": {
+                "pid": 146,
+                "rank": 0,
+                "logical_device": 0,
+                "configured_logical_device": 0,
+                "observed_logical_device": 0,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:146:83321876",
+                "worker_start_identity": "0170e1f01196a4f754dac437d407c60d",
+                "model_instance_id": "5c673a1863b3c079773a881abcd1bd91",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "vllm_version": "0.23.0+empty",
+                "vllm_ascend_version": "0.1.dev4229+g7495e9d69",
+                "extension_version": "1"
+              },
+              "quarantined": false
+            },
+            "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+            "fields": {
+              "pcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "dcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "use_async_scheduling": {
+                "present": true,
+                "value": false
+              }
+            },
+            "functions": {
+              "execute_model": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "sample_tokens": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "_preprocess": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+              },
+              "_model_forward": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+              }
+            }
+          }
+        ],
+        "workers_after": [
+          {
+            "identity": {
+              "status": "WORKER_IDENTIFIED",
+              "worker": {
+                "pid": 146,
+                "rank": 0,
+                "logical_device": 0,
+                "configured_logical_device": 0,
+                "observed_logical_device": 0,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:146:83321876",
+                "worker_start_identity": "0170e1f01196a4f754dac437d407c60d",
+                "model_instance_id": "5c673a1863b3c079773a881abcd1bd91",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "vllm_version": "0.23.0+empty",
+                "vllm_ascend_version": "0.1.dev4229+g7495e9d69",
+                "extension_version": "1"
+              },
+              "quarantined": false
+            },
+            "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+            "fields": {
+              "pcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "dcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "use_async_scheduling": {
+                "present": true,
+                "value": false
+              }
+            },
+            "functions": {
+              "execute_model": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "sample_tokens": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "_preprocess": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+              },
+              "_model_forward": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+              }
+            }
+          }
+        ]
+      },
+      "window_seconds": 156.46612116403412,
+      "isolation_removed": true,
+      "isolation": [
+        {
+          "time": "2026-11-20T13:42:42.640087+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+          "maximum_seconds": 1200,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-20T13:42:42.804653+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/aq2-npu5-9.1.0-dev5",
+          "id": "908f3dca0b90fc4e377122d775dfffd3dc31aace30d425cf058a5977532a178e",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T13:42:46.537721+00:00",
+          "event": "STOP_END",
+          "container": "/aq2-npu5-9.1.0-dev5",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "908f3dca0b90fc4e377122d775dfffd3dc31aace30d425cf058a5977532a178e",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:43:07.043501+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-log-full-01_dev5_slot0_443fcb80",
+          "id": "db307d0eee8bdb86b690de5fd808ea660c67a2a5433fd6a1e2a71259773ff859",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T13:43:08.050497+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-log-full-01_dev5_slot0_443fcb80",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "db307d0eee8bdb86b690de5fd808ea660c67a2a5433fd6a1e2a71259773ff859",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:44:45.550361+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-log-resume-01_dev5_slot0_fbd23c5e",
+          "id": "216d010666778445f2839d23c36b53ae43e535c812b4db027b3e282c6a6b1d61",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T13:44:46.414678+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-log-resume-01_dev5_slot0_fbd23c5e",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "216d010666778445f2839d23c36b53ae43e535c812b4db027b3e282c6a6b1d61",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:45:19.106151+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ]
+    },
+    {
+      "attempt": "m2-qwen06-tp2-smoke-20261120-a2",
+      "receipt_sha256": "32e62e731b66edbf20bdfd97442775f45c8b651224893068f5e4bbda0f4595eb",
+      "summary": {
+        "status": "STANDARD_MODEL_REPEAT_SMOKE_PASSED_NOT_FAULT_QUALIFIED",
+        "tp": 2,
+        "fault_calls": 0,
+        "qualification_granted": false,
+        "model": "/model",
+        "requests": [
+          {
+            "index": 0,
+            "request_id": "0",
+            "prompt_tokens": [
+              840,
+              20772,
+              304,
+              825,
+              11652,
+              3170,
+              279,
+              12884,
+              7952,
+              6303,
+              13
+            ],
+            "generated_tokens": [
+              576,
+              4226,
+              374,
+              304,
+              825,
+              11652,
+              624,
+              16141
+            ],
+            "text": " The answer is in one sentence.\nAnswer",
+            "returned_logprobs_finite": true
+          },
+          {
+            "index": 1,
+            "request_id": "1",
+            "prompt_tokens": [
+              840,
+              20772,
+              304,
+              825,
+              11652,
+              3170,
+              279,
+              12884,
+              7952,
+              6303,
+              13
+            ],
+            "generated_tokens": [
+              576,
+              4226,
+              374,
+              304,
+              825,
+              11652,
+              624,
+              16141
+            ],
+            "text": " The answer is in one sentence.\nAnswer",
+            "returned_logprobs_finite": true
+          }
+        ],
+        "workers_before": [
+          {
+            "identity": {
+              "status": "WORKER_IDENTIFIED",
+              "worker": {
+                "pid": 146,
+                "rank": 0,
+                "logical_device": 0,
+                "configured_logical_device": 0,
+                "observed_logical_device": 0,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:146:83346816",
+                "worker_start_identity": "841673a5909d875b0cd7abcbcee016d4",
+                "model_instance_id": "0e576a6afce0b4fafd357818e055dfa6",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "vllm_version": "0.23.0+empty",
+                "vllm_ascend_version": "0.1.dev4229+g7495e9d69",
+                "extension_version": "1"
+              },
+              "quarantined": false
+            },
+            "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+            "fields": {
+              "pcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "dcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "use_async_scheduling": {
+                "present": true,
+                "value": false
+              }
+            },
+            "functions": {
+              "execute_model": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "sample_tokens": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "_preprocess": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+              },
+              "_model_forward": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+              }
+            }
+          },
+          {
+            "identity": {
+              "status": "WORKER_IDENTIFIED",
+              "worker": {
+                "pid": 147,
+                "rank": 1,
+                "logical_device": 1,
+                "configured_logical_device": 1,
+                "observed_logical_device": 1,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:147:83346816",
+                "worker_start_identity": "356f9f384ebe45587774dbe0b98e45c2",
+                "model_instance_id": "83b6bcad208a32f01c5d7e402f80a6dd",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "vllm_version": "0.23.0+empty",
+                "vllm_ascend_version": "0.1.dev4229+g7495e9d69",
+                "extension_version": "1"
+              },
+              "quarantined": false
+            },
+            "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+            "fields": {
+              "pcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "dcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "use_async_scheduling": {
+                "present": true,
+                "value": false
+              }
+            },
+            "functions": {
+              "execute_model": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "sample_tokens": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "_preprocess": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+              },
+              "_model_forward": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+              }
+            }
+          }
+        ],
+        "workers_after": [
+          {
+            "identity": {
+              "status": "WORKER_IDENTIFIED",
+              "worker": {
+                "pid": 146,
+                "rank": 0,
+                "logical_device": 0,
+                "configured_logical_device": 0,
+                "observed_logical_device": 0,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:146:83346816",
+                "worker_start_identity": "841673a5909d875b0cd7abcbcee016d4",
+                "model_instance_id": "0e576a6afce0b4fafd357818e055dfa6",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "vllm_version": "0.23.0+empty",
+                "vllm_ascend_version": "0.1.dev4229+g7495e9d69",
+                "extension_version": "1"
+              },
+              "quarantined": false
+            },
+            "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+            "fields": {
+              "pcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "dcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "use_async_scheduling": {
+                "present": true,
+                "value": false
+              }
+            },
+            "functions": {
+              "execute_model": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "sample_tokens": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "_preprocess": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+              },
+              "_model_forward": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+              }
+            }
+          },
+          {
+            "identity": {
+              "status": "WORKER_IDENTIFIED",
+              "worker": {
+                "pid": 147,
+                "rank": 1,
+                "logical_device": 1,
+                "configured_logical_device": 1,
+                "observed_logical_device": 1,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:147:83346816",
+                "worker_start_identity": "356f9f384ebe45587774dbe0b98e45c2",
+                "model_instance_id": "83b6bcad208a32f01c5d7e402f80a6dd",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "vllm_version": "0.23.0+empty",
+                "vllm_ascend_version": "0.1.dev4229+g7495e9d69",
+                "extension_version": "1"
+              },
+              "quarantined": false
+            },
+            "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+            "fields": {
+              "pcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "dcp_size": {
+                "present": true,
+                "value": 1
+              },
+              "use_async_scheduling": {
+                "present": true,
+                "value": false
+              }
+            },
+            "functions": {
+              "execute_model": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "sample_tokens": {
+                "path": "/usr/local/python3.12.13/lib/python3.12/site-packages/torch/utils/_contextlib.py",
+                "sha256": "f22c21a037c4b26a431112138fa66a5108c5e9cfe4c9169e732c1d15ea7a8406"
+              },
+              "_preprocess": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+              },
+              "_model_forward": {
+                "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+                "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+              }
+            }
+          }
+        ]
+      },
+      "window_seconds": 144.64689833810553,
+      "isolation_removed": true,
+      "isolation": [
+        {
+          "time": "2026-11-20T13:46:59.198744+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+          "maximum_seconds": 1200,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-20T13:46:59.367058+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/ptq_dcde1a8de6b13b34_list61-log-resume-02_dev5_slot0_15608e4c",
+          "id": "0b747fdc8cf849a59382ab768426c800d2d801c2a4a796635e0d46edc9bbcce1",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-20T13:47:00.506223+00:00",
+          "event": "STOP_END",
+          "container": "/ptq_dcde1a8de6b13b34_list61-log-resume-02_dev5_slot0_15608e4c",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "returncode": 0,
+          "stdout": "0b747fdc8cf849a59382ab768426c800d2d801c2a4a796635e0d46edc9bbcce1",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-20T13:49:23.845581+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ]
+    }
+  ]
+}
