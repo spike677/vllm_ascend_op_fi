@@ -89,7 +89,7 @@ int main(){
         bool rejected=false;try{tnd28_input::ClaimInputScope(candidate);}catch(const std::runtime_error&){rejected=true;}
         assert(rejected&&tnd28_input::Seen().size()==8);
     }
-    Reset();tnd28_input::Live().executor=&parent;
+    Reset();tnd28_input::Live().executor=tnd28_input::Ptr(&parent);
     bool pending_rejected=false;try{tnd28_input::ClaimInputScope(token);}catch(const std::runtime_error&){pending_rejected=true;}
     assert(pending_rejected&&tnd28_input::Seen().empty());
 

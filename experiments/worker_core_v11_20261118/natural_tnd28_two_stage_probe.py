@@ -19,6 +19,15 @@ MECHANISM='28.fia.denominator_replay'
 SUCCESS='TWO_SAME_WORKER_RESEARCH_SCOPES_RECORDED_PENDING_INDEPENDENT_REVIEW'
 
 
+def save_record(path,value):
+    # Preserve every field/value, avoid quadratic pretty-print indentation cost.
+    # Each RPC still has its own original artifact and a complete host history.
+    with Path(path).open('w',encoding='utf-8') as stream:
+        json.dump(value,stream,separators=(',',':'),allow_nan=False)
+        stream.write('\n')
+
+
+
 def need(ok,reason):
     if not ok:raise RuntimeError(reason)
 
@@ -54,8 +63,8 @@ def drive_scopes(llm,tokens,params,args,report,base_settings,provenance):
         def save():
             nonlocal recorded
             for entry in client.history[recorded:]:
-                path=folder/('%03d-%s.json'%(recorded,entry['action']));common.save(path,entry);recorded+=1
-            common.save(folder/'host_receipt.json',client.snapshot());common.save(args.out/'result.json',report)
+                path=folder/('%03d-%s.json'%(recorded,entry['action']));save_record(path,entry);recorded+=1
+            save_record(folder/'host_receipt.json',client.snapshot());save_record(args.out/'result.json',report)
         try:
             for action in ('prepare','register','check','enable'):state=client.call(action);save()
             need(state['research_request_plan']['phases']==list(TwoStageResearchProvider.phases),'RESEARCH_PLAN_DIFFERS')
@@ -158,7 +167,7 @@ def run(args,bundle):
         if 'error' in report:
             report.setdefault('post_protocol_errors',[]).append(dict(error=repr(error),traceback=traceback.format_exc()))
         else:report.update(error=repr(error),traceback=traceback.format_exc())
-    common.save(args.out/'result.json',report)
+    save_record(args.out/'result.json',report)
     print(json.dumps({k:report[k] for k in ('status','error') if k in report}));return 0 if report['status']==SUCCESS else 2
 
 
