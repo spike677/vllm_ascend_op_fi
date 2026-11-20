@@ -1,0 +1,365 @@
+{
+  "schema": "demoncat.newstack.model_smoke_summary.v1",
+  "status": "STANDARD_MODEL_REPEAT_SMOKE_PASSED_NOT_FAULT_QUALIFIED",
+  "scope": "STANDARD_INFERENCE_ONLY_NOT_FAULT_ACCEPTANCE",
+  "combination": {
+    "hardware": "Ascend910B4/A2",
+    "tp": 2,
+    "model": "Qwen3.8-27B W8A8 community",
+    "vllm": "0.23.0+empty",
+    "vllm_ascend": "0.1.dev4229+g7495e9d69",
+    "cann": "9.1.0"
+  },
+  "image": "sha256:85a2bc5e4d0bf77e04f30c63aeab136b63a389b0ccb7be9c90b12e1a116d907a",
+  "elapsed_seconds": 233.72945704101585,
+  "started": "2026-11-20T14:05:15.085277+00:00",
+  "ended": "2026-11-20T14:09:08.814705+00:00",
+  "isolation_removed": true,
+  "isolation_events": [
+    {
+      "time": "2026-11-20T14:05:15.085417+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "maximum_seconds": 1500,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-20T14:05:15.257121+00:00",
+      "event": "STOP_BEGIN",
+      "container": "/ptq_dcde1a8de6b13b34_list61-log-resume-10_dev5_slot0_5349b933",
+      "id": "e81a343c3871118d33f9046f94faea1256c459aa1465a7cfb89b65211e922d93",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "cards": [
+        5
+      ]
+    },
+    {
+      "time": "2026-11-20T14:05:16.013469+00:00",
+      "event": "STOP_END",
+      "container": "/ptq_dcde1a8de6b13b34_list61-log-resume-10_dev5_slot0_5349b933",
+      "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+      "returncode": 0,
+      "stdout": "e81a343c3871118d33f9046f94faea1256c459aa1465a7cfb89b65211e922d93",
+      "stderr": ""
+    },
+    {
+      "time": "2026-11-20T14:09:08.814795+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ],
+  "raw_receipt": {
+    "path": "/home/17-fault-c2c3-20261117/m2-qwen38-community-tp2-smoke-20261120-a1/m2-qwen38-community-tp2-smoke/model-smoke.json",
+    "bytes": 9499,
+    "sha256": "c6b090ce506cc484be6b1b3575cef6ec83deba1bb0ad807118a7a1c267761f58"
+  },
+  "observation": {
+    "status": "STANDARD_MODEL_REPEAT_SMOKE_PASSED_NOT_FAULT_QUALIFIED",
+    "tp": 2,
+    "fault_calls": 0,
+    "qualification_granted": false,
+    "model": "/model",
+    "requests": [
+      {
+        "index": 0,
+        "request_id": "0",
+        "prompt_tokens": [
+          814,
+          20139,
+          303,
+          799,
+          11316,
+          3069,
+          279,
+          12515,
+          7701,
+          6105,
+          13
+        ],
+        "generated_tokens": [
+          271,
+          760,
+          12515,
+          7701,
+          6105,
+          1521,
+          279,
+          33470
+        ],
+        "text": "\n\nThe sky appears blue because the molecules",
+        "returned_logprobs_finite": true
+      },
+      {
+        "index": 1,
+        "request_id": "1",
+        "prompt_tokens": [
+          814,
+          20139,
+          303,
+          799,
+          11316,
+          3069,
+          279,
+          12515,
+          7701,
+          6105,
+          13
+        ],
+        "generated_tokens": [
+          271,
+          760,
+          12515,
+          7701,
+          6105,
+          1521,
+          279,
+          33470
+        ],
+        "text": "\n\nThe sky appears blue because the molecules",
+        "returned_logprobs_finite": true
+      }
+    ],
+    "pure_text_multimodal_limits": {
+      "image": 0,
+      "video": 0
+    },
+    "community_artifact_not_yellow_identity": true,
+    "workers_before": [
+      {
+        "identity": {
+          "status": "WORKER_IDENTIFIED",
+          "worker": {
+            "pid": 152,
+            "rank": 0,
+            "logical_device": 0,
+            "configured_logical_device": 0,
+            "observed_logical_device": 0,
+            "visible_devices": null,
+            "visible_devices_source": null,
+            "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:152:83458415",
+            "worker_start_identity": "5dda9c6b1ca4f166bcd5f281f9c655a3",
+            "model_instance_id": "14a324ffa06446cf1ffcbb1faaa77018",
+            "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+            "vllm_version": "0.23.0+empty",
+            "vllm_ascend_version": "0.1.dev4229+g7495e9d69",
+            "extension_version": "1"
+          },
+          "quarantined": false
+        },
+        "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+        "fields": {
+          "pcp_size": {
+            "present": true,
+            "value": 1
+          },
+          "dcp_size": {
+            "present": true,
+            "value": 1
+          },
+          "use_async_scheduling": {
+            "present": true,
+            "value": false
+          }
+        },
+        "functions": {
+          "execute_model": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          },
+          "sample_tokens": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          },
+          "_preprocess": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          },
+          "_model_forward": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          }
+        }
+      },
+      {
+        "identity": {
+          "status": "WORKER_IDENTIFIED",
+          "worker": {
+            "pid": 153,
+            "rank": 1,
+            "logical_device": 1,
+            "configured_logical_device": 1,
+            "observed_logical_device": 1,
+            "visible_devices": null,
+            "visible_devices_source": null,
+            "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:153:83458415",
+            "worker_start_identity": "9e5de212a848e808187aa4400561122b",
+            "model_instance_id": "81848d766515d80086ea39738dabedfc",
+            "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+            "vllm_version": "0.23.0+empty",
+            "vllm_ascend_version": "0.1.dev4229+g7495e9d69",
+            "extension_version": "1"
+          },
+          "quarantined": false
+        },
+        "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+        "fields": {
+          "pcp_size": {
+            "present": true,
+            "value": 1
+          },
+          "dcp_size": {
+            "present": true,
+            "value": 1
+          },
+          "use_async_scheduling": {
+            "present": true,
+            "value": false
+          }
+        },
+        "functions": {
+          "execute_model": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          },
+          "sample_tokens": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          },
+          "_preprocess": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          },
+          "_model_forward": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          }
+        }
+      }
+    ],
+    "workers_after": [
+      {
+        "identity": {
+          "status": "WORKER_IDENTIFIED",
+          "worker": {
+            "pid": 152,
+            "rank": 0,
+            "logical_device": 0,
+            "configured_logical_device": 0,
+            "observed_logical_device": 0,
+            "visible_devices": null,
+            "visible_devices_source": null,
+            "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:152:83458415",
+            "worker_start_identity": "5dda9c6b1ca4f166bcd5f281f9c655a3",
+            "model_instance_id": "14a324ffa06446cf1ffcbb1faaa77018",
+            "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+            "vllm_version": "0.23.0+empty",
+            "vllm_ascend_version": "0.1.dev4229+g7495e9d69",
+            "extension_version": "1"
+          },
+          "quarantined": false
+        },
+        "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+        "fields": {
+          "pcp_size": {
+            "present": true,
+            "value": 1
+          },
+          "dcp_size": {
+            "present": true,
+            "value": 1
+          },
+          "use_async_scheduling": {
+            "present": true,
+            "value": false
+          }
+        },
+        "functions": {
+          "execute_model": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          },
+          "sample_tokens": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          },
+          "_preprocess": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          },
+          "_model_forward": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          }
+        }
+      },
+      {
+        "identity": {
+          "status": "WORKER_IDENTIFIED",
+          "worker": {
+            "pid": 153,
+            "rank": 1,
+            "logical_device": 1,
+            "configured_logical_device": 1,
+            "observed_logical_device": 1,
+            "visible_devices": null,
+            "visible_devices_source": null,
+            "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:153:83458415",
+            "worker_start_identity": "9e5de212a848e808187aa4400561122b",
+            "model_instance_id": "81848d766515d80086ea39738dabedfc",
+            "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+            "vllm_version": "0.23.0+empty",
+            "vllm_ascend_version": "0.1.dev4229+g7495e9d69",
+            "extension_version": "1"
+          },
+          "quarantined": false
+        },
+        "runner_class": "vllm_ascend.worker.model_runner_v1.NPUModelRunner",
+        "fields": {
+          "pcp_size": {
+            "present": true,
+            "value": 1
+          },
+          "dcp_size": {
+            "present": true,
+            "value": 1
+          },
+          "use_async_scheduling": {
+            "present": true,
+            "value": false
+          }
+        },
+        "functions": {
+          "execute_model": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          },
+          "sample_tokens": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          },
+          "_preprocess": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          },
+          "_model_forward": {
+            "path": "/vllm-workspace/vllm-ascend/vllm_ascend/worker/model_runner_v1.py",
+            "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968"
+          }
+        }
+      }
+    ]
+  },
+  "limitations": [
+    "0.23 preferred image, not target0.26 or A3",
+    "No fault B/F/OFF qualification",
+    "Configured pure-text limits; actual single-chunk/visual exclusion not yet observed",
+    "Community quantization differs from yellow; out_proj quantized, cannot qualify BF16 MatMulV2 Fault39",
+    "8 generated tokens, not task accuracy"
+  ]
+}

@@ -77,6 +77,10 @@ class TextTraceTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError,'NOT_CONSUMED'):t.after_sample(NS(req_ids=['b','a']))
         r.execute_model_state=None
         with self.assertRaisesRegex(RuntimeError,'REQUEST_MAPPING'):t.after_sample(NS(req_ids=['a','b']))
+    def test_unknown_source_profile_cannot_install(self):
+        r,s,t=self.fixture()
+        with self.assertRaisesRegex(RuntimeError,'UNREVIEWED_SOURCE_PROFILE'):
+            SourceBoundTextObserver(r,t.expected,source_profile='/arbitrary/config')
     def test_unknown_runner_cannot_install(self):
         r,s,t=self.fixture();observer=SourceBoundTextObserver(r,t.expected)
         with self.assertRaisesRegex(RuntimeError,'EXACT_REVIEWED'):observer.install()
@@ -117,6 +121,7 @@ class ObserverHookTests(unittest.TestCase):
         return runner,s,t.expected
     def install_fixture(self,r,expected):
         seam=self.enterContext(patch('demoncat.runtime.vllm_ascend.worker_extension.v026_text_observer._verify_function',return_value={'CPU_FIXTURE_NOT_SOURCE_REVIEW':True}))
+        self.enterContext(patch('demoncat.runtime.vllm_ascend.worker_extension.v026_text_observer._parallel_report',return_value={'CPU_GROUP_FIXTURE':True}))
         return SourceBoundTextObserver(r,expected).install()
     def test_hooks_observe_actual_calls_and_restore_instance_methods(self):
         r,s,p=self.hooked();original=r.execute_model.__func__;o=self.install_fixture(r,p)

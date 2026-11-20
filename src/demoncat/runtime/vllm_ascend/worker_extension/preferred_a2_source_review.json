@@ -1,0 +1,87 @@
+{
+  "schema": "demoncat.preferred_a2.source_review.v1",
+  "status": "SOURCE_REVIEW_ONLY_NOT_BLUE_FAULT_COMBINATION",
+  "image_id": "85a2bc5e4d0bf77e04f30c63aeab136b63a389b0ccb7be9c90b12e1a116d907a",
+  "versions": {
+    "vllm": "0.23.0+empty",
+    "vllm_ascend": "0.1.dev4229+g7495e9d69",
+    "cann": "9.1.0"
+  },
+  "files": [
+    {
+      "path": "vllm/v1/worker/gpu_input_batch.py",
+      "sha256": "caeeb20f5010d74663c45f9419237191e3c0a149f4c7aa25bc1b73b1112d67ae",
+      "bytes": 47598
+    },
+    {
+      "path": "vllm/v1/core/sched/output.py",
+      "sha256": "44230b995721a011dbe2c1d012371b1d9ec844b1b09abfc24dd0c6d8a9e307fc",
+      "bytes": 10122
+    },
+    {
+      "path": "vllm/config/parallel.py",
+      "sha256": "0f507a228e67dcca2d9841f52ff5eb617342c4e1864af527b34c999f932f4d6a",
+      "bytes": 41796
+    },
+    {
+      "path": "vllm/config/multimodal.py",
+      "sha256": "2ca78ef40f8bdae73ef26af648b6384c1ece4108d1fcfda27cd00e60c013ca14",
+      "bytes": 13957
+    },
+    {
+      "path": "vllm/model_executor/models/qwen3_5.py",
+      "sha256": "04f3de5372973770d71c5c05f2e8a5e221ec52b62cca7a1e302d9201b61b8adc",
+      "bytes": 29662
+    },
+    {
+      "path": "vllm/model_executor/layers/mamba/gdn/qwen_gdn_linear_attn.py",
+      "sha256": "885c56f5e3584ab60bb4ce4b42cf8259e5e92c86ba13aa6128e6ed7a2a20d2b0",
+      "bytes": 68663
+    },
+    {
+      "path": "vllm_ascend/worker/model_runner_v1.py",
+      "sha256": "94d75dbeb5d23ab5b383cdc69114167392b967994bb21342cf748b733ba9a968",
+      "bytes": 258160
+    },
+    {
+      "path": "vllm_ascend/worker/worker.py",
+      "sha256": "c392da56095b255d47fe5ad7ffdfbedd269fe69851690e89a8d2ed44c073f6c3",
+      "bytes": 48290
+    },
+    {
+      "path": "vllm_ascend/patch/worker/patch_qwen3_5.py",
+      "sha256": "86a7afb103ea40a1ac410ffe5e79c96a8d7a371b4fd8d3b12a4b614f2f39c3d5",
+      "bytes": 8982
+    },
+    {
+      "path": "vllm_ascend/ops/layernorm.py",
+      "sha256": "f8ba0c77b8d9a48b14118ae23e19b1711492de16549e994ced73396db960f485",
+      "bytes": 7354
+    },
+    {
+      "path": "vllm_ascend/ops/triton/linearnorm/split_qkv_rmsnorm_mrope.py",
+      "sha256": "ba3c7e740c3a2a9c8850733d3be77fefac79bc3ed02a45b4be076b58d6f7632d",
+      "bytes": 13933
+    },
+    {
+      "path": "vllm_ascend/device/device_op.py",
+      "sha256": "de6a8547df3ff92bf8666e475be56840005cccb3272452c2d6cac4c3f1ddff47",
+      "bytes": 78606
+    },
+    {
+      "path": "csrc/torch_binding.cpp",
+      "sha256": "a95ec8d3c28714b083620e2f501a5f9b5e44b4c55e8c766985cb1f922afb02b0",
+      "bytes": 137594
+    },
+    {
+      "path": "vllm/v1/worker/gpu_model_runner.py",
+      "sha256": "6250ca0670c4593aa2f7c4567c9c71d6cb3d8182624a985d4d4e33d5bf054666",
+      "bytes": 334736
+    },
+    {
+      "path": "vllm/distributed/parallel_state.py",
+      "sha256": "df02e5386bc83e6ac644ff46f0297fdd19003bd55584c629840348a5fda8473f",
+      "bytes": 83775
+    }
+  ]
+}

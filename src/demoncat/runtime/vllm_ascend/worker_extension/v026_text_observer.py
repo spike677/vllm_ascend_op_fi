@@ -12,7 +12,8 @@ import os
 from pathlib import Path
 import threading
 from .serving_context import require, cpu_list, tensor_metadata
-from .v026_inspection import PROFILE, inspect_single_chunk
+from .v026_inspection import PROFILE, inspect_single_chunk, parallel_assessment
+PROFILES = {"v026": PROFILE, "preferred_a2_85a2bc5e": PROFILE.with_name("preferred_a2_source_review.json")}
 
 
 def _prefix(actual, buffer, shape):
@@ -125,9 +126,21 @@ def _verify_function(function,rows):
     return dict(path=str(path),sha256=digest)
 
 
+def _parallel_report(runner, rows):
+    from vllm.distributed.parallel_state import get_pcp_group, get_dcp_group, get_tp_group
+    sources=[_verify_function(f,rows) for f in (get_pcp_group,get_dcp_group,get_tp_group)]
+    config=runner.vllm_config.parallel_config
+    report=parallel_assessment(runner,pcp_group=get_pcp_group(),dcp_group=get_dcp_group(),
+        tp_group=get_tp_group(),expected_tp=config.tensor_parallel_size)
+    require(report['status']=='matched','NEWSTACK_PARALLEL_GROUPS_UNPROVEN:'+json.dumps(report))
+    return dict(assessment=report,sources=sources)
+
+
 class SourceBoundTextObserver:
     """Trusted deployment inspection, not a public-config entry or fault provider."""
-    def __init__(self,runner,expected_prompts):
+    def __init__(self,runner,expected_prompts,*,source_profile="v026"):
+        require(source_profile in PROFILES,"NEWSTACK_UNREVIEWED_SOURCE_PROFILE")
+        self.source_profile=source_profile;self.parallel=None
         self.runner=runner;self.trace=TextPrefillTrace(runner,expected_prompts)
         self.patches=[];self.hooks=[];self.active=False;self.inside=0;self.sources=[]
     def install(self):
@@ -145,8 +158,14 @@ class SourceBoundTextObserver:
                 'V026_TEXT_ONLY_MODALITY_LIMITS_REQUIRED')
         require(runner.supports_mm_inputs is True and runner.enable_prompt_embeds is False
                 and runner.uses_mrope is True, 'V026_REVIEWED_MM_TEXT_BRANCH_REQUIRED')
-        rows=json.loads(PROFILE.read_bytes())['files']
+        rows=json.loads(PROFILES[self.source_profile].read_bytes())['files']
+        self.parallel=_parallel_report(runner,rows)
         self.sources.append(_verify_function(mm.get_limit_per_prompt,rows))
+        if self.source_profile=='preferred_a2_85a2bc5e':
+            # The preferred runner overrides _preprocess but delegates the real
+            # embedding/position preparation to its GPUModelRunner base.
+            parent=super(type(runner),runner)
+            self.sources.append(_verify_function(parent._preprocess,rows))
         for function in (runner.execute_model,runner.sample_tokens,runner._preprocess,runner._model_forward,
                          model.forward,model.embed_input_ids):
             self.sources.append(_verify_function(function,rows))
@@ -195,5 +214,5 @@ class SourceBoundTextObserver:
         for obj,name,_ in reversed(self.patches):delattr(obj,name)
         self.patches.clear();self.active=False
     def snapshot(self):
-        return dict(self.trace.snapshot(),sources=deepcopy(self.sources),owned_hooks=len(self.hooks),
+        return dict(self.trace.snapshot(),source_profile=self.source_profile,parallel=deepcopy(self.parallel),sources=deepcopy(self.sources),owned_hooks=len(self.hooks),
                     owned_wrappers=len(self.patches),inflight=self.inside)
