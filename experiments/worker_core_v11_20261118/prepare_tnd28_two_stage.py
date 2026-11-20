@@ -19,7 +19,16 @@ def prepare(args):
     old='natural_tnd28_prepared_input_probe.py';new='natural_tnd28_two_stage_probe.py'
     base.E.need(case['command'].count(old)==1,'ONE_RESEARCH_PROBE_ENTRY')
     case['id']='tnd28-two-stage-two-scopes';case['command']=case['command'].replace(old,new)
-    review=case['review'];review.update(experiment_id=case['id'],
+    review=case['review']
+    pins={r['path']:r for r in json.loads((args.source/'source_manifest.json').read_bytes())['files']}
+    for name in ('natural_tnd28_two_stage_probe.py','prepare_tnd28_two_stage.py','tnd28_two_stage_client.py','tnd28_two_stage_research.py'):
+        relative='experiments/worker_core_v11_20261118/'+name;path=args.source/relative
+        base.E.need(not path.is_symlink() and base.E.sha(path)==pins[relative]['sha256']
+            and path.stat().st_size==pins[relative]['bytes'],'RESEARCH_SOURCE_CHANGED:'+relative)
+        review['required_sources'][relative]=pins[relative]['sha256']
+    base.E.need(base.E.sha(__file__)==review['required_sources']['experiments/worker_core_v11_20261118/prepare_tnd28_two_stage.py'],
+                'AMBIENT_RESEARCH_PREPARER_CHANGED')
+    review.update(experiment_id=case['id'],
         provider='28.fia.denominator_replay / explicit two-stage research provider, not public Runtime',
         worker='same standard Qwen3 TP1 eager Worker; two distinct owners; actual phase mapping',
         expected_hits='Exactly one selected FIA replay in each fault request; two independent scopes; all other calls original',
