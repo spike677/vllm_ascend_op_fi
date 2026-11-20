@@ -46,3 +46,14 @@ host 使用版本化 `dcat_tnd28_replay_prepare_gate_v2`，只在原 GWS 内重�
 研究驱动现已独立接入 `TwoStageResearchProvider`，没有放宽公共 registry，也没有把 F 塞进 observe 阶段。宿主按同源研究 request_plan / next_phase 执行 observe、observe_repeat、baseline、baseline_repeat、fault、off、health；同一标准 Worker 重复两个不同 owner。基线重复、实际单目标 F、当前输入相同/Attention输出变化、OFF完整hidden/logits恢复均逐项检查。只有实际OFF通过才解除 needs_off；health先卸除故障API/Attention拦截，再安装三个只读root/logits观察hook。未完成/不确定恢复保留owner，不自动重跑F。
 
 新研究状态与反例CPU测试7项通过，连同既有输入契约回归共24项通过；上述协议尚未在NPU运行，不登记B3/B4/B5通过。
+
+
+## 两阶段真实 F 与跨作用域额度（13:24 UTC）
+
+A2 / CANN8.5.1 / vLLM-Ascend0.18 / Qwen3-0.6B FP16 / TP1 / 卡2，a5 完成第一作用域全部七阶段。独立 reader 重读原始 RPC、typed 事件、当前值完整哈希、实际注册 ELF 和 launch 参数，确认同输入的 FIA 输出与 hidden/logits 改变，OFF/health 完整哈希恢复，资源清零。这仅覆盖一个作用域、一个实际自动选择目标，不是全层注入或公共入口资格。
+
+第二作用域完成两次 observe，baseline 在分配 parent 前拒绝：Native Seen 进程账本限制4个 token，已被第一作用域的 B/B/F/OFF 用满。第二作用域没有执行 F，独立总报告保持 REJECTED_OR_INCOMPLETE。研究构建改为8次上限，不清空历史token，仍拒绝重复token和存活executor。必须新建构建清单并重跑两个作用域。
+
+a1–a5 保守计入28窗口共1099.031777秒，剩余12507.992932秒。隔离均已结束，isolation_removed=true。五次原因分别为私有绑定、旧BNSD边界、copy ELF路径解析、cached bind离线解析、跨owner额度；保留失败原件。同一原因两次失败止损仍有效。后继JSON仅减少缩进，保留所有字段和数值，不修改已有原件。
+
+[尝试及抢占隔离记录](../../experiments/worker_core_v11_20261118/tnd28_two_stage_attempts_20261120.json)。原始回执、完整张量不提交；部分独立审查原件留在D盘和124。
