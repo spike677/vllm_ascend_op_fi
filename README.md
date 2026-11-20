@@ -1,4 +1,4 @@
-[2026-11-20最新实机进展](docs/worker_core_v1/npu_progress_20261120.md)：A2/0.18/Qwen3-0.6B的18、22、39、Batch、41 TP2已完成限定的同Worker双作用域闭环。新栈A2/0.26/CANN9.1/社区Qwen3.8 W8A8 TP2的18，已通过预热后双作用域的实际命中、全rank OFF/health精确恢复与资源清零；冷启动首请求有无注入差异，仍不在验收范围。22融合路径正在实测，39的社区量化out_proj不等价于黄区BF16目标。详见[新栈适配](docs/worker_core_v1/v026_adaptation_20261120.md)。
+[2026-11-20最新实机进展](docs/worker_core_v1/npu_progress_20261120.md)：A2/0.18/Qwen3-0.6B的18、22、39、Batch、41 TP2已完成限定的同Worker双作用域闭环。新栈A2/0.26/CANN9.1/社区Qwen3.8 W8A8 TP2的18及22，已通过预热后双作用域的实际命中、全rank OFF/health精确恢复与资源清零；冷启动首请求有无注入差异，仍不在验收范围。22覆盖实际融合mRoPE目标Q/K行；39的社区量化out_proj不等价于黄区BF16目标。详见[新栈适配](docs/worker_core_v1/v026_adaptation_20261120.md)。
 
 28已完成[真实TND两阶段Native研究闭环](docs/worker_core_v1/tnd28_fresh_values_20261120.md)：两个research owner、FIA与hidden/logits变化、完整OFF/health恢复。它不是普通Runtime B5验收，公共入口继续关闭；M128止损与其他限制保留。
 

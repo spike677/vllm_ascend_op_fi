@@ -1,0 +1,210 @@
+{
+  "status": "BLUE_WARMED_TP2_ROPE22_TWO_SCOPES_ACCEPTED",
+  "mechanism": "22.wrong_row",
+  "scopes": [
+    {
+      "index": 0,
+      "ranks": [
+        {
+          "rank": 0,
+          "injector": true,
+          "path": "language_model.model.layers.3.self_attn",
+          "local_effect": true,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "owned_resources_zero": true,
+          "row_effect": {
+            "changed_cache_elements": 123,
+            "non_target_qk_unchanged": true,
+            "original_positions_unchanged": true,
+            "qk_last_row_changed": true
+          },
+          "normal": {
+            "hidden": "37813b6171225c5c538ab463e9141c4b466e34c8ced9f1b1a4053d67bfee2fd6",
+            "logits": "d98736f95692b82af9a7c4ff53e21a5cd4e0e82f9d0c67d1ff460a4264fb2836"
+          },
+          "fault": {
+            "hidden": "72644167685fdad3efe5d550e8b888ca31c488e88c5f773c77c6b6059f935da3",
+            "logits": "b014e4a12b4e6ca5e475d1f0e0d9ab8ad61a29246802d941b165126ddd9e2493"
+          }
+        },
+        {
+          "rank": 1,
+          "injector": false,
+          "path": "language_model.model.layers.3.self_attn",
+          "local_effect": false,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "owned_resources_zero": true,
+          "row_effect": {
+            "changed_cache_elements": 0,
+            "non_target_qk_unchanged": true,
+            "original_positions_unchanged": true,
+            "qk_last_row_changed": false
+          },
+          "normal": {
+            "hidden": "37813b6171225c5c538ab463e9141c4b466e34c8ced9f1b1a4053d67bfee2fd6",
+            "logits": "d98736f95692b82af9a7c4ff53e21a5cd4e0e82f9d0c67d1ff460a4264fb2836"
+          },
+          "fault": {
+            "hidden": "72644167685fdad3efe5d550e8b888ca31c488e88c5f773c77c6b6059f935da3",
+            "logits": "b014e4a12b4e6ca5e475d1f0e0d9ab8ad61a29246802d941b165126ddd9e2493"
+          }
+        }
+      ],
+      "generated_tokens_changed": 0
+    },
+    {
+      "index": 1,
+      "ranks": [
+        {
+          "rank": 0,
+          "injector": true,
+          "path": "language_model.model.layers.3.self_attn",
+          "local_effect": true,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "owned_resources_zero": true,
+          "row_effect": {
+            "changed_cache_elements": 123,
+            "non_target_qk_unchanged": true,
+            "original_positions_unchanged": true,
+            "qk_last_row_changed": true
+          },
+          "normal": {
+            "hidden": "37813b6171225c5c538ab463e9141c4b466e34c8ced9f1b1a4053d67bfee2fd6",
+            "logits": "d98736f95692b82af9a7c4ff53e21a5cd4e0e82f9d0c67d1ff460a4264fb2836"
+          },
+          "fault": {
+            "hidden": "72644167685fdad3efe5d550e8b888ca31c488e88c5f773c77c6b6059f935da3",
+            "logits": "b014e4a12b4e6ca5e475d1f0e0d9ab8ad61a29246802d941b165126ddd9e2493"
+          }
+        },
+        {
+          "rank": 1,
+          "injector": false,
+          "path": "language_model.model.layers.3.self_attn",
+          "local_effect": false,
+          "hidden_changed": true,
+          "logits_changed": true,
+          "off_health_exact": true,
+          "owned_resources_zero": true,
+          "row_effect": {
+            "changed_cache_elements": 0,
+            "non_target_qk_unchanged": true,
+            "original_positions_unchanged": true,
+            "qk_last_row_changed": false
+          },
+          "normal": {
+            "hidden": "37813b6171225c5c538ab463e9141c4b466e34c8ced9f1b1a4053d67bfee2fd6",
+            "logits": "d98736f95692b82af9a7c4ff53e21a5cd4e0e82f9d0c67d1ff460a4264fb2836"
+          },
+          "fault": {
+            "hidden": "72644167685fdad3efe5d550e8b888ca31c488e88c5f773c77c6b6059f935da3",
+            "logits": "b014e4a12b4e6ca5e475d1f0e0d9ab8ad61a29246802d941b165126ddd9e2493"
+          }
+        }
+      ],
+      "generated_tokens_changed": 0
+    }
+  ],
+  "qualification_granted": false,
+  "scope": "A2 / 0.26 installed c9c9432b / CANN9.1 / Qwen3.8 community W8A8 / TP2; warmed workers only",
+  "limits": [
+    "Cold first request differs in no-fault controls; root cause not uniquely established",
+    "No A3 or yellow artifact qualification",
+    "Cross-rank hidden/logits propagation, no unique collective attribution"
+  ],
+  "receipts": [
+    {
+      "file": "result.json",
+      "bytes": 15932058,
+      "sha256": "f4fb268526d559d57150698fe2acd29fdb0069774fbbaacf37829326614c6c8a"
+    },
+    {
+      "file": "scope0_host.json",
+      "bytes": 81213023,
+      "sha256": "bdd954f24016c19d27e876f656c9b541342dbbb2e4038406fffcdd495de39794"
+    },
+    {
+      "file": "scope1_host.json",
+      "bytes": 81211217,
+      "sha256": "56ad02d397b31122b4de7d811054be06e859efcd8f5bb656174ad68e62d87fca"
+    }
+  ],
+  "source_commit": "c411986066059f9804ed2e17e8f7704e6b63c0c5",
+  "source_manifest_sha256": "740645f768f2f7896baa7f4acae03d2db6e68b576d6980de18de519efb66a5b0",
+  "negative_reviews": [
+    {
+      "case": "off_hidden",
+      "rejected": true,
+      "reason": "OFF_HEALTH_NOT_EXACT"
+    },
+    {
+      "case": "guard_write",
+      "rejected": true,
+      "reason": "TARGET_OR_CONSUMER_UNPROVEN"
+    },
+    {
+      "case": "non_target_qk_changed",
+      "rejected": true,
+      "reason": "OTHER_QK_ROWS_CHANGED"
+    },
+    {
+      "case": "unchanged_qk",
+      "rejected": true,
+      "reason": "QK_ROW_EFFECT_UNPROVEN"
+    },
+    {
+      "case": "live_wrapper",
+      "rejected": true,
+      "reason": "OWNED_RESOURCES_REMAIN"
+    }
+  ],
+  "execution_window": {
+    "status": "FINISHED",
+    "cards": [
+      2,
+      5
+    ],
+    "start": "2026-11-20T15:35:28.711144+00:00",
+    "ended": "2026-11-20T15:40:50.395503+00:00",
+    "isolation": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+    "maximum_window_seconds": 2100,
+    "isolation_removed": true,
+    "elapsed_seconds": 321.6843971210765
+  },
+  "case_timing": {
+    "started_utc": "2026-11-20T15:35:31.553886+00:00",
+    "ended_utc": "2026-11-20T15:40:34.096511+00:00",
+    "exit_code": 0
+  },
+  "isolation_events": [
+    {
+      "time": "2026-11-20T15:35:28.711280+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "maximum_seconds": 2100,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-20T15:40:50.395601+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ],
+  "gate_review": {
+    "original_gate_retained_remotely": true,
+    "stale_allocation_overridden_under_explicit_card_authorization": true,
+    "not_a_claim_of_kubernetes_release": true
+  }
+}

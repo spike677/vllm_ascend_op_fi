@@ -145,3 +145,18 @@ A2/910B4、vLLM0.26.0+empty、Ascend0.26.0rc1、CANN9.1.0、社区Qwen3.8-27B W8
 18容器窗口2026-11-20T15:19:34.878778Z—15:24:34.199955Z，299.321177秒。随后22加载模型被外部Docker signal15/9中断，exit137、OOMKilled=false；不计机制止损。共享窗口15:19:32—15:27:24，共472.584257秒，结束有界清理器已join。期间只停止一项明确映射卡2的外部容器，原名/镜像/绝对时刻保留isolation.jsonl；没有改Docker入口或其他卡。22使用同一源码新attempt继续。
 
 新CANN9.1独立V2量化后端无设备编译通过，库SHA e7df992a1aec907b7f54ebc7cc8b2bdff0e2266aec289bc2e48767431e1766e5，清单04f1c8af72231aec3d98ec071882e28c6960ccd7852381c9ea65e5fa212a3aa9。实际V2调用和新Worker B8 decode仍未验收，不继承0.18/M1资格。[构建总结](../../experiments/worker_core_v11_20261118/quant_v2_cann91_build_20261120.json)。
+
+
+## 22 新栈TP2独立复核与Batch原生算子验证（15:40 UTC）
+
+A2/Ascend910B4、vLLM0.26.0+empty、vllm-ascend0.26.0rc1、torch_npu2.10.0.post4、CANN9.1.0、社区Qwen3.8-27B W8A8、TP2。源码c4119860，清单740645f768f2f7896baa7f4acae03d2db6e68b576d6980de18de519efb66a5b0。同组Worker两个owner各完成normal/fault/off/health，自动选中language_model.model.layers.3.self_attn的真实融合mRoPE。rank0末token的Q/K行变化，indexed cache变化123元素；非目标Q/K、原positions/cache和V/gate保持不变。rank1本地边界不变，但两卡完整hidden/logits均变化；OFF/health完整哈希恢复、所有拥有资源归零，生成token仍为11751（Paris）。
+
+独立复核直接读取原始result/scope回执，核对映射、输入、实际融合消费者、效果和恢复；不信任probe通过状态或checks。原件修改的5个负例（OFF差异、guard写入、非目标Q/K变化、目标Q/K未变、残留wrapper）全部拒绝。正式验收先3次无注入请求、后两次全量精确一致，仍只覆盖预热后Worker；冷启动首请求差异根因未唯一定位，不宣称任意请求或A3通过。[独立总结](../../experiments/worker_core_v11_20261118/newstack_rope22_warmed_tp2_20261120.json)。原始回执仅留本地/124，不上传新统计原件。
+
+a1在加载阶段被外部Docker stop/kill中断；a2正常阶段结构识别拒绝，未注入F。根因为0.26保留Qwen3NextAttention实例类，仅把forward替换成Ascend实现。c4119860同时审查原始类身份和已固定forward源码，未放松为按类名盲选；a3通过。历史失败原件不改。
+
+本窗口2026-11-20T15:35:28.711144Z至15:40:50.395503Z，共321.684397秒；22容器15:35:31.553886Z至15:40:34.096511Z，302.542625秒。只有卡2/5有界清理器，无外部容器被本窗口停止，未改派发器/Docker入口；结束cleaner已join，isolation_removed=true。时间是墙钟窗口，不是kernel profiler时间。
+
+随后CANN9.1新V2库实际通过B/F/OFF：Q变化112/128元素、scale变化7/8，输入不变，OFF精确一致，Native pending/execute/owned资源清零。每轮实际V2 prepare/execute各1，只有F的fault_executions=1。[算子总结](../../experiments/worker_core_v11_20261118/quant_v2_cann91_smoke_20261120.json)。该用例只有一个torch进程、logical0；调度review模板错误沿用TP2 worker/ranks字段，已在总结注明更正，原件不改。它不是QuantGroupNative六批校准后端的完整新栈验收，更不是B8模型TP2验收。
+
+剩余：Batch的group Native构建及0.26真实B8 first-decode映射；17的视觉请求路径（不能用image/video=0文本门禁验收视觉注入）；41的真实KV布局/ScatterPaKvCache到消费者映射；39指定BF16 out_proj在社区权重不适用，需要匹配黄区制品。RC3未冻结，新组合不自动放行，冻结RC2.x不修改。

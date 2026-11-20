@@ -36,4 +36,27 @@ class ReviewTests(unittest.TestCase):
             with self.subTest(name=name):
                 r,h=fixture();change(r,h)
                 with self.assertRaisesRegex(ValueError,why):review(r,h)
+    def test_fused22_effects_and_negative_rows(self):
+        r,h=fixture();r['mechanism']='22.wrong_row'
+        for scope in r['scopes']:
+            for rank in ('0','1'):
+                for row in scope['final_states'][rank]['serving']['actual_requests']:
+                    injected=rank=='0' and row['phase']=='fault'
+                    row['mechanism']['events'][0]['fused_reader']=dict(qkv_sha256='input',
+                        fused_q_non_target_sha256='q-other',fused_k_non_target_sha256='k-other',
+                        fused_q_last_sha256='q-fault' if injected else 'q',
+                        fused_k_last_sha256='k-fault' if injected else 'k',
+                        changed_cache_elements=123 if injected else 0,
+                        original_positions_unchanged=True,original_cache_unchanged=True,value_and_gate_preserved=True)
+        self.assertEqual(review(r,h)['mechanism'],'22.wrong_row')
+        fields=[('qkv_sha256','bad','FUSED_INPUT_CHANGED'),
+                ('fused_q_non_target_sha256','bad','OTHER_QK_ROWS_CHANGED'),
+                ('changed_cache_elements',0,'CACHE_EFFECT_UNPROVEN'),
+                ('original_cache_unchanged',False,'SOURCE_OR_V_GATE_CHANGED'),
+                ('value_and_gate_preserved',False,'SOURCE_OR_V_GATE_CHANGED')]
+        for key,value,reason in fields:
+            with self.subTest(key=key):
+                changed=copy.deepcopy(r)
+                changed['scopes'][0]['final_states']['0']['serving']['actual_requests'][1]['mechanism']['events'][0]['fused_reader'][key]=value
+                with self.assertRaisesRegex(ValueError,reason):review(changed,h)
 if __name__=='__main__':unittest.main()

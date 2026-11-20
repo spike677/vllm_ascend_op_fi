@@ -1,0 +1,125 @@
+{
+  "status": "V2_OPERATOR_B_F_OFF_PROVEN_NOT_MODEL_QUALIFIED",
+  "qualification_granted": false,
+  "model_calls": 0,
+  "scope": "A2/CANN9.1/torch_npu2.10 V2-only B8x16 operator smoke",
+  "cases": [
+    {
+      "phase": "baseline",
+      "native": {
+        "prepare_hits": 1,
+        "execute_hits": 1,
+        "fault_executions": 0,
+        "api_version": 2,
+        "prepare_errors": 0,
+        "execution_errors": 0
+      },
+      "q_changed_elements": 0,
+      "scale_changed_elements": 0,
+      "resources": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "phase": "fault",
+      "native": {
+        "prepare_hits": 1,
+        "execute_hits": 1,
+        "fault_executions": 1,
+        "api_version": 2,
+        "prepare_errors": 0,
+        "execution_errors": 0
+      },
+      "q_changed_elements": 112,
+      "scale_changed_elements": 7,
+      "resources": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "phase": "off",
+      "native": {
+        "prepare_hits": 1,
+        "execute_hits": 1,
+        "fault_executions": 0,
+        "api_version": 2,
+        "prepare_errors": 0,
+        "execution_errors": 0
+      },
+      "q_changed_elements": 0,
+      "scale_changed_elements": 0,
+      "resources": [
+        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "build_manifest_sha256": "04f1c8af72231aec3d98ec071882e28c6960ccd7852381c9ea65e5fa212a3aa9",
+  "resolver_identity": {
+    "torch_npu_version": "2.10.0.post4",
+    "library_sha256": "83fb9a0eb249aef6bca7f8463047fcb4d3062cc4849f17ddf31a5e050c838842",
+    "exported_global_resolver": true
+  },
+  "source_commit": "c411986066059f9804ed2e17e8f7704e6b63c0c5",
+  "case_timing": {
+    "started_utc": "2026-11-20T15:40:35.565804+00:00",
+    "ended_utc": "2026-11-20T15:40:49.369372+00:00",
+    "exit_code": 0
+  },
+  "review_correction": "reviewed_cases worker/ranks metadata inherited TP2 template; actual smoke was one torch process, logical device0, model_calls=0; cards2/5 both reserved, no TP2 coverage",
+  "execution_window": {
+    "status": "FINISHED",
+    "cards": [
+      2,
+      5
+    ],
+    "start": "2026-11-20T15:35:28.711144+00:00",
+    "ended": "2026-11-20T15:40:50.395503+00:00",
+    "isolation": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+    "maximum_window_seconds": 2100,
+    "isolation_removed": true,
+    "elapsed_seconds": 321.6843971210765
+  },
+  "isolation_events": [
+    {
+      "time": "2026-11-20T15:35:28.711280+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "maximum_seconds": 2100,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-20T15:40:50.395601+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ],
+  "gate_review": {
+    "original_gate_retained_remotely": true,
+    "stale_allocation_overridden_under_explicit_card_authorization": true,
+    "not_a_claim_of_kubernetes_release": true
+  }
+}
