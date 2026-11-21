@@ -45,8 +45,10 @@ def build(repo,output):
             for row in files:tf.add(stage/row['path'],arcname=row['path'],recursive=False)
         env=dict(os.environ,PIP_NO_INDEX='1',PYTHONDONTWRITEBYTECODE='1')
         for package in (stage,stage/'src',stage/'fault39'):
-            subprocess.run([sys.executable,'-m','pip','wheel','--no-cache-dir','--no-deps','--no-build-isolation',
-                '--no-index','--wheel-dir',str(wheels),str(package)],env=env,check=True)
+            # Direct PEP517 backend avoids pip's deeply nested Windows cache.
+            subprocess.run([sys.executable,'-c',
+                'from setuptools.build_meta import build_wheel; import sys; build_wheel(sys.argv[1])',
+                str(wheels)],cwd=package,env=env,check=True)
     if len(list(wheels.glob('*.whl')))!=3:raise RuntimeError('THREE_WHEELS_REQUIRED')
     manifest=dict(schema='demoncat.rc3_preview.release.v1',source_commit=commit,versions=VERSIONS,
         source_manifest_file='source-review.json',source_manifest_sha256=sha((output/'source-review.json').read_bytes()),
