@@ -18,9 +18,6 @@ class KernelAudit:
                 for k in ('cu_seqlens','chunk_indices'):
                     if isinstance(kwargs.get(k),torch.Tensor):kwargs[k]=kwargs[k].clone()
             if self.control=='compile_first':self.base.run(*args,grid=grid,warmup=True,**kwargs)
-            if self.control=='inline_atomic':
-                from gdn_inline_atomic import HELPER
-                kwargs=dict(kwargs,bitcodes=[HELPER])
             if self.control=='no_multibuffer':kwargs=dict(kwargs,multibuffer=False)
             if self.control=='reset_atomic':
                 import ctypes
