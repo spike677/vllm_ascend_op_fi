@@ -13,6 +13,11 @@ SUFFIXES={'.py','.json','.toml','.md','.cpp','.h','.inc','.sh','.yaml','.yml'}
 def sha(data):return hashlib.sha256(data).hexdigest()
 
 
+def write_json_bytes(path,value):
+    # Explicit bytes: Windows text-mode CRLF conversion invalidates Git hashes.
+    Path(path).write_bytes((json.dumps(value,indent=2)+'\n').encode('utf-8'))
+
+
 def build(repo,output):
     repo=Path(repo).resolve();output=Path(output).resolve()
     if output.exists():raise RuntimeError('RELEASE_OUTPUT_ALREADY_EXISTS')
@@ -40,7 +45,7 @@ def build(repo,output):
             files.append(dict(path=name,bytes=len(raw),sha256=sha(raw)))
         review=dict(schema='demoncat.source_review.v1',source_commit=commit,files=files,
             delivery_scope=['28.fia.denominator_replay','quant.batch_shared_scale'])
-        (output/'source-review.json').write_text(json.dumps(review,indent=2)+'\n',encoding='utf-8')
+        write_json_bytes(output/'source-review.json',review)
         archive=output/(output.name+'.tar.gz')
         with tarfile.open(archive,'w:gz') as tf:
             for row in files:tf.add(stage/row['path'],arcname=row['path'],recursive=False)
@@ -57,9 +62,9 @@ def build(repo,output):
         blue_results_are_not_a3_acceptance=True,files=[])
     for p in sorted(output.rglob('*')):
         if p.is_file():manifest['files'].append(dict(path=p.relative_to(output).as_posix(),bytes=p.stat().st_size,sha256=sha(p.read_bytes())))
-    (output/'release-manifest.json').write_text(json.dumps(manifest,indent=2)+'\n',encoding='utf-8')
+    write_json_bytes(output/'release-manifest.json',manifest)
     sums=''.join(sha(p.read_bytes())+'  '+p.relative_to(output).as_posix()+'\n' for p in sorted(output.rglob('*')) if p.is_file())
-    (output/'SHA256SUMS').write_text(sums,encoding='utf-8')
+    (output/'SHA256SUMS').write_bytes(sums.encode('utf-8'))
     print(json.dumps(dict(source_commit=commit,source_files=len(paths),output=str(output),source_manifest_sha256=manifest['source_manifest_sha256'])))
 
 
