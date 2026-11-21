@@ -57,7 +57,8 @@ def review(report, *, require_negative_creation=False):
                 need(hostrow['result']['status']=='QUERY_OK','REQUEST_QUERY_FAILED')
                 actual_ids=[m['internal_request_id'] for m in hostrow['mapping']]
                 need(set(row['request_ids'])==set(actual_ids) and len(row['output'])==4,'INTERNAL_ID_OR_FOUR_TOKEN_MAPPING')
-                need(row['all_finite'] is True and all(x['finite'] is True for x in row['output']),'NONFINITE_OUTPUT')
+                if not (report['mechanism']=='39.output_proxy' and row['phase']=='fault'):
+                    need(row['all_finite'] is True and all(x['finite'] is True for x in row['output']),'NONFINITE_OUTPUT')
                 need(row['resources']==dict(leases=0,hooks=0,inflight=0),'REQUEST_RESOURCES_REMAIN')
                 ids.extend(row['request_ids'])
             need(len(ids)==len(set(ids)),'REQUEST_IDS_REUSED')
@@ -65,14 +66,23 @@ def review(report, *, require_negative_creation=False):
             clean=s['unregister']['response']['provider_state']['rank_states'][str(rank)]
             need(all(clean[k] in (False,0) for k in ('leases','inflight','owned_hooks','registered','native_registered','enabled')),
                 'FINAL_OWNED_RESOURCES_REMAIN')
-            need(f['coverage']['observed']==4*f['site_count'],'SITE_FORWARD_COVERAGE_MISMATCH')
+            if report['mechanism']=='39.output_proxy':
+                calls=f.get('actual_forward_calls',[])
+                need(len(calls)==4 and all(calls) and all(isinstance(n,int) and n>0 for c in calls for n in c.values())
+                    and sum(sum(c.values()) for c in calls)==f['coverage']['observed']
+                    and len(set().union(*(set(c) for c in calls)))==f['site_count'],'SITE_ACTUAL_CALL_COVERAGE_MISMATCH')
+            else:need(f['coverage']['observed']==4*f['site_count'],'SITE_FORWARD_COVERAGE_MISMATCH')
             ranks[rank]=dict(counts=f['coverage'],observation_complete=f.get('observation_complete',False),
                 same_stream_verified=f['same_stream_verified'],bytes_restored=f['bytes_restored'],
-                off_exact=True,health_exact=True,uncovered_sites=f.get('uncovered_sites'),resources=f['resources'])
+                off_exact=True,health_exact=True,uncovered_sites=f.get('uncovered_sites'),resources=f['resources'],
+                inapplicable_reasons=f.get('inapplicable_reasons',[]))
             effects[rank]=dict(coverage=f['coverage'],site_count=f['site_count'],quant_reference=f['quant_reference'],
                 hidden_changed=any(a['hidden']!=b['hidden'] for a,b in zip(n['output'],f['output'])),
                 logits_changed=any(a['logits']!=b['logits'] for a,b in zip(n['output'],f['output'])),
                 recovered=True,events_sha256=f['events_sha256'])
+            effects[rank]['projection_effect']=f.get('projection_effect')
+            effects[rank]['structural_candidates_without_call']=f.get('structural_candidates_without_call',[])
+            effects[rank]['fault_all_finite']=f['all_finite']
             quant=f['quant_reference'];sample_count=quant.get('sampled_elements',0)
             effects[rank]['sampled_q_difference_fraction']=(quant.get('q_sample_differences',0)/sample_count if sample_count else None)
         coverage=review_rank_coverage(range(len(members)),ranks)
@@ -94,6 +104,7 @@ if __name__=='__main__':
     p.add_argument('--require-negative-creation',action='store_true');a=p.parse_args()
     raw=Path(a.receipt).read_bytes();result=review(json.loads(raw),require_negative_creation=a.require_negative_creation)
     result['source_receipt_sha256']=hashlib.sha256(raw).hexdigest()
+    result['reviewer_sha256']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     text=json.dumps(result,indent=2)+'\n'
     if len(text.encode('utf-8'))>60000:raise ValueError('TEXT_RETURN_LIMIT_EXCEEDED')
     if a.output:Path(a.output).write_text(text)

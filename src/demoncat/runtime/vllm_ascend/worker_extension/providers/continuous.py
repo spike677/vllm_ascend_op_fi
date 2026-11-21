@@ -28,7 +28,8 @@ class ContinuousProvider(Scope):
     def collect(self):
         if self.session is not None and self.session.samples==4:
             r=self.session.collect();self.session=None
-            require(r['all_finite'],'CONTINUOUS_NONFINITE_MODEL_OUTPUT')
+            require(r['all_finite'] or (self.mechanism=='39.output_proxy' and r['phase']=='fault'),
+                    'CONTINUOUS_NONFINITE_MODEL_OUTPUT')
             if self.rows and r['phase'] in ('off','health'):
                 require(r['output']==self.rows[0]['output'],'CONTINUOUS_OFF_HEALTH_NOT_EXACT')
             if r['phase']=='fault':

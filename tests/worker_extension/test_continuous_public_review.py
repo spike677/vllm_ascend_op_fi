@@ -34,6 +34,20 @@ def fixture():
 
 
 class ReviewTests(unittest.TestCase):
+    def test_projection_nonfinite_fault_allowed_but_actual_calls_and_healthy_outputs_required(self):
+        r=fixture();r['mechanism']='39.output_proxy'
+        for scope in r['scopes']:
+            for host in scope['requests']:
+                for state in host['result']['response']['provider_state']['rank_states'].values():
+                    for row in state['evidence']['actual_requests']:
+                        if row['phase']=='fault':
+                            row['actual_forward_calls']=[{'projection':1} for _ in range(4)]
+                            row['all_finite']=False
+                            for out in row['output']:out['finite']=False
+        self.assertTrue(review(r)['passed'])
+        row=r['scopes'][1]['requests'][-1]['result']['response']['provider_state']['rank_states']['0']['evidence']['actual_requests'][1]
+        row['actual_forward_calls'][-1]={}
+        with self.assertRaisesRegex(ValueError,'ACTUAL_CALL_COVERAGE'):review(r)
     def test_release_review_requires_actual_creation_refusal_and_cleanup(self):
         r=fixture()
         with self.assertRaisesRegex(ValueError,'NEGATIVE_CREATION'):

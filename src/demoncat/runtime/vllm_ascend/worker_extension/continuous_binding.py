@@ -9,7 +9,7 @@ import hashlib,json,os,threading
 from .serving_context import require
 
 ATTRIBUTE='_demoncat_continuous_bindings'
-SUPPORTED=('28.fia.denominator_replay','quant.batch_shared_scale')
+SUPPORTED=('28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy')
 
 
 def digest(value):
@@ -188,7 +188,15 @@ class ContinuousRequest:
             self.hooks.append(self.model.register_forward_hook(model_output))
             visual_module=getattr(self.model,'visual',None)
             if visual_module is not None:self.hooks.append(visual_module.register_forward_pre_hook(visual))
-            if self.binding.mechanism.startswith('quant.'):
+            if self.binding.mechanism=='39.output_proxy':
+                from fault_injection.sites.projection39 import Projection39Site
+                from fault_injection.engines.region_lease import RegionLeases
+                def complete(stream):
+                    event=torch.npu.Event();event.record(stream);event.synchronize()
+                leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
+                    stream=torch.npu.current_stream,complete=complete)
+                self.site=Projection39Site(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
+            elif self.binding.mechanism.startswith('quant.'):
                 from fault_injection.sites.batch_quant import BatchQuantSite
                 from fault_injection.engines.region_lease import RegionLeases
                 def complete(stream):
@@ -212,29 +220,45 @@ class ContinuousRequest:
     def collect(self):
         require(self.inside==0 and self.samples==4 and self.error is None,'CONTINUOUS_REQUEST_NOT_COMPLETE')
         events=self.site.events
-        require(len(events)==4*len(self.site.sites),'CONTINUOUS_CALL_COVERAGE_INCOMPLETE')
+        actual_sites={e['site'] for e in events}
+        if self.binding.mechanism=='39.output_proxy':
+            calls=self.site.forward_calls
+            require(len(calls)==4 and all(calls) and sum(sum(c.values()) for c in calls)==len(events),
+                    'CONTINUOUS_ACTUAL_FORWARD_COVERAGE_INCOMPLETE')
+        else:
+            require(len(events)==4*len(self.site.sites),'CONTINUOUS_CALL_COVERAGE_INCOMPLETE')
         for e in events:
             actual=e.get('request_ids',[e.get('request_id')])
             require(set(actual)==set(self.ids),'CONTINUOUS_SITE_REQUEST_MAPPING')
         counts={k:0 for k in ('observed','eligible','attempted','applied','changed','consumed','restored','failed')}
         counts['observed']=len(events)
         if self.phase=='fault':
-            counts.update(eligible=len(events),attempted=len(events))
-            for e in events:
+            eligible=[e for e in events if e.get('eligible',True)]
+            counts.update(eligible=len(eligible),attempted=len(eligible))
+            for e in eligible:
                 for k in ('applied','consumed','restored','failed'):counts[k]+=int(bool(e.get(k,False)))
                 counts['changed']+=int(e.get('changed',0)>0)
                 require(e.get('before_sha256')==e.get('restored_sha256'),'CONTINUOUS_RESTORE_HASH_MISMATCH')
                 if self.binding.mechanism.startswith('quant.'):
                     require(e.get('reference_passed') is True,'CONTINUOUS_QUANT_REFERENCE_FAILED')
-                else:require(e.get('non_target_exact') is True,'CONTINUOUS_NON_TARGET_CHANGED')
+                elif self.binding.mechanism=='28.fia.denominator_replay':
+                    require(e.get('non_target_exact') is True,'CONTINUOUS_NON_TARGET_CHANGED')
             require(counts['eligible']==counts['applied']==counts['consumed']==counts['restored']
                     and counts['changed']>0 and counts['failed']==0,'CONTINUOUS_ELIGIBLE_CALL_FAILED')
         require(not getattr(self.site,'uncovered',[]),'CONTINUOUS_UNCOVERED_SITE')
         output=[{k:r[k] for k in ('hidden','logits','finite')} for r in self.rows]
         result=dict(phase=self.phase,request_ids=self.ids,output=output,coverage=counts,
-            all_finite=all(r['finite'] for r in self.rows),site_count=len(self.site.sites),
+            all_finite=all(r['finite'] for r in self.rows),site_count=len(actual_sites),
+            structural_candidate_count=len(self.site.sites),
+            structural_candidates_without_call=sorted(set(self.site.sites)-actual_sites),
+            actual_forward_calls=getattr(self.site,'forward_calls',None),
             events_sha256=digest(events),same_stream_verified=True,bytes_restored=True,
             observation_complete=True,uncovered_sites=list(getattr(self.site,'uncovered',[])),
+            excluded_structural_sites=list(getattr(self.site,'excluded',[])),
+            inapplicable_reasons=[dict(site=e['site'],reason=e['reason']) for e in events if e.get('eligible') is False and e.get('reason')],
+            projection_effect=dict(already_positive_inf_calls=sum(bool(e.get('already_positive_inf')) for e in events),
+                upstream_nonfinite_calls=sum(bool(e.get('upstream_nonfinite')) for e in events),
+                consumer_operators=sorted({e['consumer_operator'] for e in events if e.get('consumer_operator')})),
             quant_reference=dict(sampled_elements=sum(e.get('sampled_elements',0) for e in events),
                 q_sample_differences=sum(e.get('q_sample_differences',0) for e in events),
                 backend=self.binding.arithmetic_device))

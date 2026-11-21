@@ -64,6 +64,38 @@
       "scopes": 2,
       "request_count": 8,
       "generated_tokens": 4
+    },
+    {
+      "mechanism": "39.output_proxy",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_39_review_20261121.json",
+      "review_sha256": "da05c900d62e6ea1d84cde6d840a1272529d742ce980ad090d547dcdec9f1e22",
+      "source_manifest_sha256": "ac15e212cb619355248a8cd1e61b0f512a080ddcff2feb203830b03c62dc31e7",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "torch_bf16_nd_projection_output",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4
     }
   ]
 }

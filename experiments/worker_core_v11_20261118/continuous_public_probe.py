@@ -39,13 +39,13 @@ def bootstrap(wrapper,action,mechanism,options=None):
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch'),required=True)
+    p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','39'),required=True)
     p.add_argument('--arithmetic-device',choices=('input','cpu'),default='input')
     p.add_argument('--model',default='/model');p.add_argument('--evidence',default='/evidence')
     p.add_argument('--source-manifest',default='/source/source_manifest.json')
     p.add_argument('--deployment-source',choices=('BLUE_COMBINATION','YELLOW_DEDICATED_INSTANCE'),default='BLUE_COMBINATION')
     a=p.parse_args()
-    mechanism='quant.batch_shared_scale' if a.mechanism=='batch' else '28.fia.denominator_replay'
+    mechanism={'batch':'quant.batch_shared_scale','28':'28.fia.denominator_replay','39':'39.output_proxy'}[a.mechanism]
     batch=8 if a.mechanism=='batch' else 1
     report=dict(status='STARTED',mechanism=mechanism,scopes=[],warmup=[],qualification_granted=False,
         acceptance_scope='PUBLIC_WORKER_RUNTIME',arithmetic_device=a.arithmetic_device)
@@ -97,7 +97,7 @@ def main():
             assert elapsed<=120,'CONTINUOUS_REQUEST_EXPERIMENT_TIME_BUDGET_EXCEEDED'
             return dict(seconds=elapsed,tokens=[list(o.outputs[0].token_ids) for o in outputs])
         for scope_index in range(2):
-            config=FaultConfig('quant','batch_shared_scale') if batch>1 else FaultConfig(28,'fia.denominator_replay')
+            number,variant=mechanism.split('.',1);config=FaultConfig(number if number=='quant' else int(number),variant)
             client=MultiRankTaskClient(llm,config,prepare_binding=lambda *_:{},continuous=True,world_size=2,
                 batch_size=batch,timeout=120)
             contract=client.contract()
