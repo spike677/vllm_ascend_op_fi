@@ -18,6 +18,7 @@ class KernelAudit:
                 for k in ('cu_seqlens','chunk_indices'):
                     if isinstance(kwargs.get(k),torch.Tensor):kwargs[k]=kwargs[k].clone()
             if self.control=='compile_first':self.base.run(*args,grid=grid,warmup=True,**kwargs)
+            if self.control=='no_multibuffer':kwargs=dict(kwargs,multibuffer=False)
             debug=None
             if self.control=='program_meta':
                 kwargs=dict(kwargs)

@@ -117,9 +117,9 @@ class Monitor:
         self.patches.clear()
 
 def allocation_source(source,allocation):
-    assert allocation in ('zero','nan')
-    changes={'u = torch.empty_like(v)':('u = torch.zeros_like(v)' if allocation=='zero' else "u = torch.full_like(v,float('nan'))"),
-             'w = k.new_empty(B, T, H, K)':('w = k.new_zeros(B, T, H, K)' if allocation=='zero' else "w = k.new_full((B, T, H, K),float('nan'))")}
+    assert allocation in ('zero','nan','marker')
+    changes={'u = torch.empty_like(v)':('u = torch.zeros_like(v)' if allocation=='zero' else ("u = torch.full_like(v,1.25)" if allocation=="marker" else "u = torch.full_like(v,float('nan'))")),
+             'w = k.new_empty(B, T, H, K)':('w = k.new_zeros(B, T, H, K)' if allocation=='zero' else ("w = k.new_full((B, T, H, K),1.25)" if allocation=="marker" else "w = k.new_full((B, T, H, K),float('nan'))"))}
     for before,after in changes.items():
         assert source.count(before)==1,'UNREVIEWED_WY_ALLOCATION_SOURCE'
         source=source.replace(before,after)
@@ -141,7 +141,7 @@ def rpc(wrapper,action,mode=None,label=None,allocation='empty',kernel_control='o
     return dict(rank=w.rank,hooks=len(m.hooks),patches=len(m.patches),fault_calls=0)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--mode',choices=['root','trace'],required=True);p.add_argument('--atomic-batch',action='store_true');p.add_argument('--wy-allocation',choices=['empty','zero','nan'],default='empty');p.add_argument('--kernel-control',choices=['off','audit','clone_meta','compile_first','program_meta'],default='off');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--mode',choices=['root','trace'],required=True);p.add_argument('--atomic-batch',action='store_true');p.add_argument('--wy-allocation',choices=['empty','zero','nan','marker'],default='empty');p.add_argument('--kernel-control',choices=['off','audit','clone_meta','compile_first','program_meta','no_multibuffer'],default='off');a=p.parse_args()
     report=dict(status='STARTED',mode=a.mode,atomic_batch=a.atomic_batch,allocation=a.wy_allocation,kernel_control=a.kernel_control,fault_calls=0,rounds=[])
     def save():pathlib.Path('/evidence/diagnostic.json').write_text(json.dumps(report,indent=2)+'\n')
     try:
