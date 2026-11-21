@@ -40,21 +40,32 @@ class GQA28Site(MLA28Site):
                 if gate is not None:expected=expected*torch.sigmoid(gate[lease['row']])
                 require(torch.equal(args[0][lease['row']],expected),'REAL_GATED_OPROJ_INPUT_MISMATCH')
                 require(torch.npu.current_stream()==lease['stream'],'CONSUMER_STREAM_CHANGED')
+                if self.region_leases is not None:
+                    actual=lease['actual_output'][lease['row']]
+                    if torch.equal(actual,lease['backup']):copied=lease['backup']
+                    else:
+                        require(torch.equal(actual,lease['replacement'][lease['row']]),'GQA_ACTUAL_BUFFER_UNEXPECTED_WRITE')
+                        copied=lease['replacement'][lease['row']]
+                    self.region_leases.observe_output_copy(lease['actual_token'],copied)
                 lease['event']['consumed']=True
             def post(mod,args,out,_name=name):
-                lease=self.pending.pop(_name,None)
+                lease=self.pending.get(_name)
                 self.gates.pop(_name,None)
                 if lease is None:return
                 require(lease['event']['consumed'],'GQA_CONSUMER_NOT_OBSERVED')
                 completion=torch.npu.Event();completion.record(lease['stream']);completion.synchronize()
-                for t in (lease['replacement'],lease['actual_output']):
-                    t[lease['row']].copy_(lease['backup'])
+                if self.region_leases is None:
+                    for t in (lease['replacement'],lease['actual_output']):t[lease['row']].copy_(lease['backup'])
+                else:
+                    for token in (lease['replacement_token'],lease['actual_token']):
+                        self.region_leases.consumed(token);self.region_leases.restore(token)
                 completion=torch.npu.Event();completion.record(lease['stream']);completion.synchronize()
                 require(all(torch.equal(t[lease['row']],lease['backup']) for t in (lease['replacement'],lease['actual_output'])),'GQA_BYTES_NOT_RESTORED')
                 lease['event']['restored_sha256']=fingerprint(lease['replacement'][lease['row']])
                 lease['event']['actual_output_restored_sha256']=fingerprint(lease['actual_output'][lease['row']])
                 require(lease['event']['restored_sha256']==lease['event']['actual_output_restored_sha256']==lease['event']['before_sha256'],'GQA_BYTE_HASH_MISMATCH')
                 lease['event']['restored']=True
+                del self.pending[_name]
             self.hooks.extend([parent.o_proj.register_forward_pre_hook(pre),parent.o_proj.register_forward_hook(post)])
         require(self.sites,'NO_REAL_FULL_ATTENTION_SITE')
         return self.sites
@@ -82,10 +93,16 @@ class GQA28Site(MLA28Site):
             k=kcache.index_select(0,table).reshape(-1,impl.num_kv_heads,impl.head_size)[:length]
             v=vcache.index_select(0,table).reshape(-1,impl.num_kv_heads,impl.head_size)[:length]
         replacement=result.clone();row=count-1;backup=result[row].clone()
-        replacement[row].copy_(recompute_attention_row(q,k,v,scale=impl.scale,block_size=self.block_size,replay_blocks=(0,)).reshape_as(backup))
+        calculated=recompute_attention_row(q,k,v,scale=impl.scale,block_size=self.block_size,replay_blocks=(0,)).reshape_as(backup)
+        tokens={}
+        if self.region_leases is None:replacement[row].copy_(calculated)
+        else:
+            tokens['replacement_token']=self.region_leases.acquire(replacement[row])
+            tokens['actual_token']=self.region_leases.acquire(result[row])
+            self.region_leases.write(tokens['replacement_token'],calculated)
         require(torch.isfinite(replacement).all().item(),'GQA_NONFINITE_RECOMPUTE')
         require(torch.equal(result[:row],replacement[:row]) and torch.equal(result[row+1:],replacement[row+1:]),'GQA_NON_TARGET_CHANGED')
         event.update(applied=True,changed=int((replacement[row]!=backup).sum().item()),non_target_exact=True,
                      key_count=length,before_sha256=fingerprint(backup),after_sha256=fingerprint(replacement[row]))
-        self.pending[name]=dict(replacement=replacement,actual_output=result,backup=backup,row=row,event=event,stream=torch.npu.current_stream())
+        self.pending[name]=dict(replacement=replacement,actual_output=result,backup=backup,row=row,event=event,stream=torch.npu.current_stream(),**tokens)
         return replacement

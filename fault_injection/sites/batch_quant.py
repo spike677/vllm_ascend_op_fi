@@ -24,7 +24,10 @@ def cpu_reference(rows):
 
 
 class BatchQuantSite:
-    def __init__(self,model,runner,*,fault):
+    def __init__(self,model,runner,*,fault,arithmetic_device='cpu',region_leases=None):
+        require(arithmetic_device in ('cpu','input'),'UNKNOWN_QUANT_ARITHMETIC_BACKEND')
+        self.arithmetic_device=arithmetic_device
+        self.region_leases=region_leases
         self.model=model;self.runner=runner;self.fault=fault
         self.events=[];self.methods=[];self.sites=[];self.uncovered=[]
         self.local=threading.local();self.forward_index=-1;self.hooks=[];self.pending=0
@@ -61,17 +64,25 @@ class BatchQuantSite:
             require(len(event['request_ids'])>=2,'MULTIPLE_ACTUAL_REQUESTS_REQUIRED')
             require(self.actual_rows()==x.shape[0],'PADDED_OR_UNMAPPED_QUANT_ROWS')
             backups=(q.clone(),s.clone());ctx['backups']=backups;self.pending+=1
+            if self.region_leases is not None:
+                ctx['region_tokens']=[]
+                for tensor in (q,s):ctx['region_tokens'].append(self.region_leases.acquire(tensor))
             event['before_sha256']=[fingerprint(t) for t in backups]
-            newq,news=shared_dynamic_quant(x,arithmetic_device='cpu')
-            refq,refs=cpu_reference(x)
-            aq,as_=newq.cpu().numpy(),news.cpu().numpy()
-            require(np.array_equal(aq,refq) and np.array_equal(as_,refs),
-                    'CPU_REFERENCE_QUANT_MISMATCH:'+str(dict(q_changed=int(np.count_nonzero(aq!=refq)),
-                        scale_changed=int(np.count_nonzero(as_!=refs)),actual_scale=float(as_[0]),reference_scale=float(refs[0]),
-                        scale_max_abs=float(np.max(np.abs(as_-refs))),q_max_abs=int(np.max(np.abs(aq.astype(np.int16)-refq.astype(np.int16)))))))
-            event.update(reference_exact=True,arithmetic_backend='torch_cpu_fp32',changed=int((q!=newq).sum().item())+int((s!=news).sum().item()),
+            newq,news=shared_dynamic_quant(x,arithmetic_device=self.arithmetic_device)
+            if self.arithmetic_device=='cpu':
+                refq,refs=cpu_reference(x)
+                require(np.array_equal(newq.cpu().numpy(),refq) and np.array_equal(news.cpu().numpy(),refs),
+                        'CPU_REFERENCE_QUANT_MISMATCH')
+                event.update(reference_passed=True,reference_exact=True,reference_scope='FULL_CPU_REFERENCE',
+                             arithmetic_backend='torch_cpu_fp32')
+            else:
+                from fault_injection.engines.quant_reference import sampled_reference
+                event.update(sampled_reference(x,newq,news),arithmetic_backend='torch_input_fp32')
+            event.update(changed=int((q!=newq).sum().item())+int((s!=news).sum().item()),
                          shared_scale=float(news[0].item()),all_real_rows=True)
-            q.copy_(newq);s.copy_(news)
+            if self.region_leases is None:q.copy_(newq);s.copy_(news)
+            else:
+                for token,tensor in zip(ctx['region_tokens'],(newq,news)):self.region_leases.write(token,tensor)
             event.update(applied=True,after_sha256=[fingerprint(t) for t in (q,s)])
             return result
         def qmm(x,*args,**kwargs):
@@ -119,7 +130,11 @@ class BatchQuantSite:
             if 'backups' in ctx:
                 # A same-stream event orders restoration after any enqueued QMM.
                 done=torch.npu.Event();done.record(ctx['stream']);done.synchronize()
-                for t,b in zip(ctx['buffers'],ctx['backups']):t.copy_(b)
+                if self.region_leases is None:
+                    for t,b in zip(ctx['buffers'],ctx['backups']):t.copy_(b)
+                else:
+                    for token in ctx.get('region_tokens',[]):
+                        self.region_leases.consumed(token);self.region_leases.restore(token)
                 done=torch.npu.Event();done.record(ctx['stream']);done.synchronize()
                 event['restored_sha256']=[fingerprint(t) for t in ctx['buffers']]
                 require(event['restored_sha256']==event['before_sha256'],'QUANT_BYTES_NOT_RESTORED')
@@ -127,6 +142,7 @@ class BatchQuantSite:
             self.local.context=None
 
     def close(self):
+        require(self.region_leases is None or self.region_leases.count()==0,'QUANT_OBJECT_LEASES_PENDING')
         require(self.pending==0 and getattr(self.local,'context',None) is None,'QUANT_LEASES_PENDING')
         require(self.api.npu_dynamic_quant is self.quant_wrapper and self.api.npu_quant_matmul is self.qmm_wrapper,'QUANT_WRAPPER_OWNERSHIP_CHANGED')
         self.api.npu_dynamic_quant=self.original_quant;self.api.npu_quant_matmul=self.original_qmm

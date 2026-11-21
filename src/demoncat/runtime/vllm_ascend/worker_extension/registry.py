@@ -190,6 +190,12 @@ def create_worker_provider(mechanism, version, worker, model, identity):
     if version != '1':
         raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')
     admission=require_ordinary_route(mechanism,worker,model)
+    from .continuous_binding import current_binding
+    if current_binding(worker,model,mechanism) is not None:
+        from .providers.continuous import ContinuousProvider
+        provider=ContinuousProvider(worker,model,identity,mechanism)
+        provider._deployment_admission=(worker,model,admission['deployment_acceptance'])
+        return provider
     tensor_binding=getattr(worker,'_demoncat_natural_tensor_serving_bindings',{}).get(mechanism)
     if mechanism in ('18.api_half','22.wrong_row') and getattr(tensor_binding,'execution_profile',None) is not None:
         from .new_stack_rms18 import PROFILE,NewStackRms18Provider,NewStackTP2Rms18Provider

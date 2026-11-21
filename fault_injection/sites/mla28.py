@@ -24,8 +24,9 @@ def fingerprint(t):
 
 
 class MLA28Site:
-    def __init__(self, model, runner, *, fault, block_size=128):
+    def __init__(self, model, runner, *, fault, block_size=128,region_leases=None):
         self.model=model; self.runner=runner; self.fault=fault; self.block_size=block_size
+        self.region_leases=region_leases
         self.events=[]; self.methods=[]; self.hooks=[]; self.pending={}; self.sites=[]
 
     def install(self):
@@ -118,6 +119,7 @@ class MLA28Site:
 
     def close(self):
         require(not self.pending,'DEVICE_CONSUMER_LEASE_STILL_PENDING')
+        require(self.region_leases is None or self.region_leases.count()==0,'ATTENTION_REGION_LEASES_STILL_PENDING')
         for impl,name,wrapper in self.methods:
             require(vars(impl).get(name) is wrapper,'WRAPPER_OWNERSHIP_CHANGED')
             delattr(impl,name)

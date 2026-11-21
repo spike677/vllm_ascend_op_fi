@@ -127,6 +127,15 @@ class WorkerFaultRuntime:
                     from .ordinary_admission import ordinary_route_report
                     for row in core_manifest['mechanisms']:
                         row['ordinary_task_prerequisites'] = ordinary_route_report(row['mechanism'],worker,context.model)
+                    from .continuous_binding import current_binding
+                    from fault_injection.continuous_contract import continuous_request_plan
+                    for row in providers+core_manifest['mechanisms']:
+                        binding=current_binding(worker,context.model,row['mechanism'])
+                        if binding is not None:
+                            row['request_plan']=continuous_request_plan(row['mechanism'],batch_size=len(binding.prompts))
+                            row['execution']='typed_continuous_torch_binding_and_current_permit_required'
+                            row['fault_execution_ready']=False
+                            row['continuous_variant']='denominator_replay_torch' if row['mechanism'].startswith('28.') else 'batch_shared_scale_torch'
                     resolver_status = 'AVAILABLE'
                 except ModuleNotFoundError as error:
                     if (error.name or '').split('.')[0] not in ('fault_injection', 'demoncat_fault39'):
@@ -266,7 +275,8 @@ class WorkerFaultRuntime:
                 if use is not None:state=dict(state,deployment_acceptance_use=use)
                 from .ordinary_evidence import bound_state
                 state=bound_state(state,ordinary=getattr(lease.provider,'ordinary_only',False))
-                if getattr(lease.provider,'_deployment_admission',None) is not None:
+                if (getattr(lease.provider,'_deployment_admission',None) is not None
+                        and not getattr(lease.provider,'continuous_protocol',False)):
                     from fault_injection.request_plan import task_state
                     state=task_state(lease.mechanism,state)
                 if state.get('evidence_limit_error'):lease.recovery_required=True

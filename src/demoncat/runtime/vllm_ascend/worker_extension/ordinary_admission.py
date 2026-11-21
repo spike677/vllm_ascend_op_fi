@@ -18,14 +18,18 @@ NON_EXECUTABLE = {
 
 
 def ordinary_route_report(mechanism, worker=None, model=None):
+    from .continuous_binding import current_binding,SUPPORTED
+    continuous=current_binding(worker,model,mechanism) if worker is not None and mechanism in SUPPORTED else None
     code=NON_EXECUTABLE.get(mechanism)
-    if code is None and mechanism not in ORDINARY:
+    if continuous is not None:code=None
+    if code is None and mechanism not in ORDINARY and continuous is None:
         code='ORDINARY_TASK_ADAPTER_PENDING:'+mechanism
     checks=[expectation('mechanism_compatibility','ordinary_route_implemented',True,
                         code is None,code or 'ORDINARY_TASK_ROUTE')]
     if code is None:
         actual=_MISSING
-        if worker is not None:
+        if continuous is not None:actual=True
+        elif worker is not None:
             if mechanism in ('8.restore_offset','18.api_half','22.wrong_row'):
                 from .serving_tensor_binding import TensorServingBinding, _ATTRIBUTE
                 bindings=getattr(worker,_ATTRIBUTE,None)
@@ -66,7 +70,7 @@ def ordinary_route_report(mechanism, worker=None, model=None):
                        '8.restore_offset':'MOE8_ORDINARY_BINDING_REQUIRED',
                        '18.api_half':'RMS18_ORDINARY_BINDING_REQUIRED',
                        '39.output_proxy':'OUTPUT39_ORDINARY_TASK_BINDING_REQUIRED',
-                       'quant.batch_shared_scale':'QUANT_ORDINARY_PROJECTION_BINDING_REQUIRED'}[mechanism]))
+                       'quant.batch_shared_scale':'QUANT_ORDINARY_PROJECTION_BINDING_REQUIRED'}.get(mechanism,'CONTINUOUS_TYPED_BINDING_REQUIRED')))
     from .deployment_acceptance import deployment_acceptance_report
     accepted=deployment_acceptance_report(mechanism,worker,model,implemented=code is None)
     if code is None:
