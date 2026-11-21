@@ -9,7 +9,7 @@ import hashlib,json,os,threading
 from .serving_context import require
 
 ATTRIBUTE='_demoncat_continuous_bindings'
-SUPPORTED=('28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy')
+SUPPORTED=('28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','18.api_half','22.wrong_row')
 
 
 def digest(value):
@@ -56,11 +56,11 @@ def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithme
         and all(type(p) is list and 2<=len(p)<=1024 and all(type(t) is int and t>=0 for t in p) for p in prompts),
         'CONTINUOUS_BOUNDED_TOKEN_PROMPTS_REQUIRED')
     runner=worker.model_runner;model=runner.model
-    from .v026_text_observer import SourceBoundTextObserver
+    from .continuous_model import validate_continuous_model
     # Validate exact pinned execute/preprocess/sample/model sources and real
     # parallel groups, without installing hooks or creating any NPU call.
-    SourceBoundTextObserver(runner,{'pending-'+str(i):p for i,p in enumerate(prompts)},
-        source_profile='v026_installed_c9c9432b').validate()
+    family=validate_continuous_model(runner,{'pending-'+str(i):p for i,p in enumerate(prompts)})
+    require(family!='deepseek_v2' or mechanism=='28.fia.denominator_replay','MLA_CONTINUOUS_SITE_NOT_ADAPTED')
     require(not model.training and not runner.vllm_config.cache_config.enable_prefix_caching
         and runner.vllm_config.kv_transfer_config is None,'CONTINUOUS_FRESH_CACHE_INFERENCE_REQUIRED')
     identity=worker.demoncat_worker_identity()['worker'];c=deepcopy(group_contract)
@@ -188,7 +188,17 @@ class ContinuousRequest:
             self.hooks.append(self.model.register_forward_hook(model_output))
             visual_module=getattr(self.model,'visual',None)
             if visual_module is not None:self.hooks.append(visual_module.register_forward_pre_hook(visual))
-            if self.binding.mechanism=='39.output_proxy':
+            if self.binding.mechanism in ('18.api_half','22.wrong_row'):
+                from fault_injection.sites.norm18 import Norm18Site
+                from fault_injection.sites.rope22 import Rope22Site
+                from fault_injection.engines.region_lease import RegionLeases
+                def complete(stream):
+                    event=torch.npu.Event();event.record(stream);event.synchronize()
+                leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
+                    stream=torch.npu.current_stream,complete=complete)
+                site_type=Norm18Site if self.binding.mechanism=='18.api_half' else Rope22Site
+                self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
+            elif self.binding.mechanism=='39.output_proxy':
                 from fault_injection.sites.projection39 import Projection39Site
                 from fault_injection.engines.region_lease import RegionLeases
                 def complete(stream):
@@ -207,12 +217,14 @@ class ContinuousRequest:
                                         arithmetic_device=self.binding.arithmetic_device,region_leases=leases)
             else:
                 from fault_injection.sites.gqa28 import GQA28Site
+                from fault_injection.sites.mla28 import MLA28Site
                 from fault_injection.engines.region_lease import RegionLeases
                 def complete(stream):
                     event=torch.npu.Event();event.record(stream);event.synchronize()
                 leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
                     stream=torch.npu.current_stream,complete=complete)
-                self.site=GQA28Site(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
+                site_type=MLA28Site if type(self.model).__name__=='DeepseekV2ForCausalLM' else GQA28Site
+                self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
             self.site.install()
         except BaseException:
             self.close();raise
@@ -221,7 +233,7 @@ class ContinuousRequest:
         require(self.inside==0 and self.samples==4 and self.error is None,'CONTINUOUS_REQUEST_NOT_COMPLETE')
         events=self.site.events
         actual_sites={e['site'] for e in events}
-        if self.binding.mechanism=='39.output_proxy':
+        if self.binding.mechanism in ('39.output_proxy','18.api_half','22.wrong_row'):
             calls=self.site.forward_calls
             require(len(calls)==4 and all(calls) and sum(sum(c.values()) for c in calls)==len(events),
                     'CONTINUOUS_ACTUAL_FORWARD_COVERAGE_INCOMPLETE')
@@ -259,6 +271,10 @@ class ContinuousRequest:
             projection_effect=dict(already_positive_inf_calls=sum(bool(e.get('already_positive_inf')) for e in events),
                 upstream_nonfinite_calls=sum(bool(e.get('upstream_nonfinite')) for e in events),
                 consumer_operators=sorted({e['consumer_operator'] for e in events if e.get('consumer_operator')})),
+            rotary_effect=dict(rows_changed=sum(e.get('rotary_rows_changed',0) for e in events),
+                position_rows_changed=sum(e.get('position_rows_changed',0) for e in events),
+                qk_output_fingerprints=[dict(site=e['site'],q=e['q_output_sha256'],k=e['k_output_sha256'])
+                    for e in events if e.get('q_output_sha256')]),
             quant_reference=dict(sampled_elements=sum(e.get('sampled_elements',0) for e in events),
                 q_sample_differences=sum(e.get('q_sample_differences',0) for e in events),
                 backend=self.binding.arithmetic_device))

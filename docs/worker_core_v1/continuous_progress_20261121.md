@@ -38,8 +38,8 @@ CPU 参考例：256 个等权 key、V 全 1，重放其中 128 个 key 的分母
 
 |交付能力|新栈 Qwen3.8 TP2|V2-Lite TP2|87 Qwen3.8|87 DeepSeek|
 |---|---|---|---|---|
-|18|待持续接线/重验|待适配|待持续验收|待适配/验收|
-|22|待持续接线/重验|待适配|待持续验收|待适配/验收|
+|18|公共入口两作用域通过；161实际输出点×4步/每rank，644次；恢复通过|待适配|待持续验收|待适配/验收|
+|22|公共适配已完成，a15实测中；未登记|待适配|待持续验收|待适配/验收|
 |39 output_proxy|公共入口两作用域通过；304真实投影×4步，每rank1216次；实际消费者与恢复通过|待适配|待验收|待验收|
 |39 matmul_range|待实现|未列为首批蓝区模型|待验收|待适配/验收|
 |Batch|公共入口CPU/NPU各两作用域通过；304投影×4步/每rank，1216次；最终交付负向检查通过|未列为首批蓝区模型|待验收|W8A8独立DynamicQuant部分待适配|
@@ -62,3 +62,5 @@ RC3 预览 r2 已冻结推送，仅28/Batch；安装源码校验348文件通过�
 28 public-a5：每rank每作用域64次applied/changed/consumed/restored，failed=0；1.4265×/1.3416×；真实消费者与对象区间恢复、完整OFF/health均通过。Batch public-a3 NPU：1216次applied/consumed/restored，changed分别1214/1213，failed=0；6.2112×/6.0967×。public-a4 CPU同路径为6.0880×/6.4494×，尚无明确性能优势。这里只登记实际A2/0.26/Qwen3.8社区W8A8/TP2，不外推A3、MLA或其他输入长度。
 
 39 public-a12：每rank每作用域1216次 applied/changed/consumed/restored，failed=0；2.42345×/2.43357×。上游非有限1208次，原位置已为正Inf为0次，两者分开记录。详见 [39公共入口报告](continuous39_real_model_20261121.md)。仅增加开发线候选，未变更预览r2，不冻结r3。
+
+18 public-a14：每rank每作用域644次applied/changed/consumed/restored，failed=0；1.88848×/1.84664×；覆盖129模块输出和32融合Q/K归一化输出。见 [18报告](continuous18_real_model_20261121.md)。22未沿用18结果，独立实测进行中。

@@ -54,16 +54,19 @@ class MLA28Site:
                 require(torch.npu.current_stream()==lease['stream'],'CONSUMER_STREAM_CHANGED')
                 lease['event']['consumed']=True
             def post(mod,args,out,_name=name):
-                lease=self.pending.pop(_name,None)
+                lease=self.pending.get(_name)
                 if lease is None:return
                 require(lease['event']['consumed'],'OPROJ_CONSUMPTION_NOT_OBSERVED')
                 completion=torch.npu.Event();completion.record(lease['stream']);completion.synchronize()
-                lease['replacement'][lease['row']].copy_(lease['backup'])
+                if self.region_leases is None:lease['replacement'][lease['row']].copy_(lease['backup'])
+                else:
+                    self.region_leases.consumed(lease['token']);self.region_leases.restore(lease['token'])
                 restored=torch.npu.Event();restored.record(lease['stream']);restored.synchronize()
                 require(torch.equal(lease['replacement'][lease['row']],lease['backup']),'SCRATCH_BYTES_NOT_RESTORED')
                 lease['event']['restored_sha256']=fingerprint(lease['replacement'][lease['row']])
                 require(lease['event']['restored_sha256']==lease['event']['before_sha256'],'SCRATCH_BYTE_HASH_MISMATCH')
                 lease['event']['restored']=True
+                del self.pending[_name]
             self.hooks.extend([impl.o_proj.register_forward_pre_hook(pre),impl.o_proj.register_forward_hook(post)])
         require(self.sites,'NO_REAL_MLA_IMPLEMENTATION')
         return self.sites
@@ -108,13 +111,16 @@ class MLA28Site:
             event.update(representation='absorbed_decode_latent',key_count=length,kv_nz=impl.enable_kv_nz)
         require(value.shape==result[row].shape and value.dtype==result.dtype,'OUTPUT_LAYOUT_MISMATCH')
         require(torch.isfinite(value).all().item(),'RECOMPUTED_OUTPUT_NOT_FINITE')
-        replacement=result.clone();backup=result[row].clone();replacement[row].copy_(value)
+        replacement=result.clone();backup=result[row].clone();token=None
+        if self.region_leases is None:replacement[row].copy_(value)
+        else:
+            token=self.region_leases.acquire(replacement[row]);self.region_leases.write(token,value)
         require(torch.equal(replacement[:row],result[:row]) and torch.equal(replacement[row+1:],result[row+1:]),
                 'NON_TARGET_ROWS_CHANGED')
         event.update(applied=True,changed=int((replacement[row]!=backup).sum().item()),row=row,
                      non_target_exact=True,stream=str(torch.npu.current_stream()),
                      before_sha256=fingerprint(backup),after_sha256=fingerprint(value))
-        self.pending[name]=dict(replacement=replacement,backup=backup,row=row,event=event,stream=torch.npu.current_stream())
+        self.pending[name]=dict(replacement=replacement,backup=backup,row=row,event=event,stream=torch.npu.current_stream(),token=token)
         return replacement
 
     def close(self):

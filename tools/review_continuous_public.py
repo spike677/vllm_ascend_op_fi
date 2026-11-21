@@ -66,7 +66,7 @@ def review(report, *, require_negative_creation=False):
             clean=s['unregister']['response']['provider_state']['rank_states'][str(rank)]
             need(all(clean[k] in (False,0) for k in ('leases','inflight','owned_hooks','registered','native_registered','enabled')),
                 'FINAL_OWNED_RESOURCES_REMAIN')
-            if report['mechanism']=='39.output_proxy':
+            if report['mechanism'] in ('39.output_proxy','18.api_half','22.wrong_row'):
                 calls=f.get('actual_forward_calls',[])
                 need(len(calls)==4 and all(calls) and all(isinstance(n,int) and n>0 for c in calls for n in c.values())
                     and sum(sum(c.values()) for c in calls)==f['coverage']['observed']
@@ -81,6 +81,13 @@ def review(report, *, require_negative_creation=False):
                 logits_changed=any(a['logits']!=b['logits'] for a,b in zip(n['output'],f['output'])),
                 recovered=True,events_sha256=f['events_sha256'])
             effects[rank]['projection_effect']=f.get('projection_effect')
+            if report['mechanism']=='22.wrong_row':
+                rot=f['rotary_effect'];need(rot['rows_changed']>0,'ROTARY_ROWS_UNCHANGED')
+                before=n['rotary_effect']['qk_output_fingerprints'];after=rot['qk_output_fingerprints']
+                need(len(before)==len(after)==f['coverage']['applied'] and [r['site'] for r in before]==[r['site'] for r in after], 'ROTARY_QK_CALL_ALIGNMENT')
+                changed=sum(a['q']!=b['q'] or a['k']!=b['k'] for a,b in zip(before,after))
+                need(changed>0,'ROTARY_QK_OUTPUT_UNCHANGED')
+                effects[rank]['rotary_effect']=dict(rows_changed=rot['rows_changed'],position_rows_changed=rot['position_rows_changed'],qk_changed_calls=changed)
             effects[rank]['structural_candidates_without_call']=f.get('structural_candidates_without_call',[])
             effects[rank]['fault_all_finite']=f['all_finite']
             quant=f['quant_reference'];sample_count=quant.get('sampled_elements',0)

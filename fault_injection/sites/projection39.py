@@ -44,15 +44,17 @@ class ProjectionConsumerMode(TorchDispatchMode):
     def __init__(self,leases):
         super().__init__();self.leases=leases;self.pending=[]
 
-    def watch(self,region,event,*,inject=True):
+    def watch(self,region,event,*,inject=True,replacement=None):
         if not inject:
             self.pending.append(dict(region=region,token=None,event=event));return
         with _disable_current_modes():
             token=self.leases.acquire(region)
             event.update(before_sha256=fingerprint(region),already_positive_inf=bool(torch.isposinf(region).all().item()),
                          upstream_nonfinite=bool((~torch.isfinite(region)).any().item()))
-            self.leases.write(token,torch.full_like(region,torch.inf))
-            event.update(applied=True,changed=int(not event['already_positive_inf']),after_sha256=fingerprint(region))
+            value=torch.full_like(region,torch.inf) if replacement is None else replacement(region)
+            changed=not exact(region,value)
+            self.leases.write(token,value)
+            event.update(applied=True,changed=int(changed),after_sha256=fingerprint(region))
         self.pending.append(dict(region=region,token=token,event=event))
 
     def complete_consumers(self,matched,operator):

@@ -96,6 +96,38 @@
       "scopes": 2,
       "request_count": 1,
       "generated_tokens": 4
+    },
+    {
+      "mechanism": "18.api_half",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_18_review_20261121.json",
+      "review_sha256": "408b0444e179cefbf26dcaf1d2945d85508428343dd8e84b7e97b4944680ad0d",
+      "source_manifest_sha256": "bba4a8df8e23a1e8788f7c68db608ddcb3cb1a8a13caee432c717794ddac6f11",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "torch_actual_norm_output_half",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4
     }
   ]
 }

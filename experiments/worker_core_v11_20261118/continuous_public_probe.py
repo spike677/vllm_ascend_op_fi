@@ -39,13 +39,14 @@ def bootstrap(wrapper,action,mechanism,options=None):
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','39'),required=True)
+    p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','39','18','22'),required=True)
+    p.add_argument('--model-family',choices=('qwen35','deepseek_v2'),default='qwen35')
     p.add_argument('--arithmetic-device',choices=('input','cpu'),default='input')
     p.add_argument('--model',default='/model');p.add_argument('--evidence',default='/evidence')
     p.add_argument('--source-manifest',default='/source/source_manifest.json')
     p.add_argument('--deployment-source',choices=('BLUE_COMBINATION','YELLOW_DEDICATED_INSTANCE'),default='BLUE_COMBINATION')
     a=p.parse_args()
-    mechanism={'batch':'quant.batch_shared_scale','28':'28.fia.denominator_replay','39':'39.output_proxy'}[a.mechanism]
+    mechanism={'batch':'quant.batch_shared_scale','28':'28.fia.denominator_replay','39':'39.output_proxy','18':'18.api_half','22':'22.wrong_row'}[a.mechanism]
     batch=8 if a.mechanism=='batch' else 1
     report=dict(status='STARTED',mechanism=mechanism,scopes=[],warmup=[],qualification_granted=False,
         acceptance_scope='PUBLIC_WORKER_RUNTIME',arithmetic_device=a.arithmetic_device)
@@ -61,13 +62,13 @@ def main():
         from demoncat.runtime.vllm_ascend.worker_extension.host import HostAdapter,WorkerFaultClient
         from demoncat.runtime.vllm_ascend.worker_extension.continuous_binding import digest
         from demoncat.runtime.vllm_ascend.worker_extension.serving_context import actual_driver_request_map
+        extra=dict(limit_mm_per_prompt={'image':0,'video':0}) if a.model_family=='qwen35' else {}
         llm=LLM(model=a.model,dtype='bfloat16',quantization='ascend',tensor_parallel_size=2,
             distributed_executor_backend='mp',enforce_eager=True,enable_prefix_caching=False,
             async_scheduling=False,enable_chunked_prefill=True,max_num_batched_tokens=1024,
             max_model_len=1024,max_num_seqs=batch,gpu_memory_utilization=.8,seed=42,
             speculative_config=None,kv_transfer_config=None,trust_remote_code=True,
-            limit_mm_per_prompt={'image':0,'video':0},
-            worker_extension_cls='demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension')
+            worker_extension_cls='demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension',**extra)
         seeds=['Explain in one sentence why the sky appears blue.','Explain in one sentence why the grass appears green.',
             'Summarize the purpose of a computer in one sentence.','What makes a stone sink in water?',
             'Explain why snow appears white in daylight.','Give one example of a simple machine.',
