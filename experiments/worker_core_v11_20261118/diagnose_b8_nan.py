@@ -53,7 +53,7 @@ class Monitor:
         original=getattr(obj,name);local=name in vars(obj);saved=vars(obj).get(name)
         @functools.wraps(original)
         def wrapped(*args,**kwargs):
-            observing=self.path is not None
+            observing=self.path is not None or name=='compute_logits'
             if observing:self.emit('api_input',name,(args[1:] if mutated==0 else args,kwargs))
             result=original(*args,**kwargs)
             if observing and name=='recompute_w_u_fwd' and not self.captured:
@@ -73,6 +73,7 @@ class Monitor:
             import gdn_launch_diagnostics
             gdn_launch_diagnostics.install(self,self.kernel_control)
         model=self.w.model_runner.model
+        self.patch(model,'compute_logits')
         for name,module in model.named_modules():
             parts=name.split('.');layer=None
             if 'layers' in parts:
