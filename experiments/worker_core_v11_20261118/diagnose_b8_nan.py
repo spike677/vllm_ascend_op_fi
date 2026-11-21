@@ -31,8 +31,8 @@ def stats(value):
     return out
 
 class Monitor:
-    def __init__(self,w,mode,label):
-        self.w=w;self.mode=mode;self.label=label;self.hooks=[];self.patches=[];self.path=None;self.sequence=0;self.forward=0
+    def __init__(self,w,mode,label,allocation='empty'):
+        self.w=w;self.mode=mode;self.label=label;self.allocation=allocation;self.captured=False;self.hooks=[];self.patches=[];self.path=None;self.sequence=0;self.forward=0
         self.file=pathlib.Path('/evidence')/('rank'+str(w.rank)+'-'+label+'.jsonl')
     def emit(self,kind,name,value):
         self.sequence+=1
@@ -56,6 +56,15 @@ class Monitor:
             observing=self.path is not None
             if observing:self.emit('api_input',name,(args[1:] if mutated==0 else args,kwargs))
             result=original(*args,**kwargs)
+            if observing and name=='recompute_w_u_fwd' and not self.captured:
+                import torch
+                def cpu(x):
+                    if isinstance(x,torch.Tensor):return x.detach().cpu().clone()
+                    if isinstance(x,dict):return {k:cpu(v) for k,v in x.items()}
+                    if isinstance(x,(tuple,list)):return type(x)(cpu(v) for v in x)
+                    return x
+                torch.save(dict(args=cpu(args),kwargs=cpu(kwargs),output=cpu(result)),self.file.with_suffix('.private-wy.pt'))
+                self.captured=True
             if observing:self.emit('api_output',name,args[mutated] if mutated is not None else result)
             return result
         setattr(obj,name,wrapped);self.patches.append((obj,name,wrapped,local,saved))
@@ -70,6 +79,17 @@ class Monitor:
             if not selected:continue
             self.hooks.append(module.register_forward_pre_hook(functools.partial(self.pre,name),with_kwargs=True))
             self.hooks.append(module.register_forward_hook(functools.partial(self.post,name),with_kwargs=True))
+        if self.allocation!='empty':
+            import vllm_ascend.ops.triton.fla.chunk as chunk
+            original=chunk.recompute_w_u_fwd
+            source=inspect.getsource(original)
+            revised=allocation_source(source,self.allocation)
+            namespace=dict(original.__globals__)
+            exec(compile(revised,'<diagnostic-wy-allocation>','exec'),namespace)
+            replacement=namespace[original.__name__]
+            chunk.recompute_w_u_fwd=replacement
+            self.patches.append((chunk,'recompute_w_u_fwd',replacement,True,original))
+            with self.file.open('a') as f:f.write(json.dumps(dict(kind='allocation_control',allocation=self.allocation,original_sha256=hashlib.sha256(source.encode()).hexdigest(),control_sha256=hashlib.sha256(revised.encode()).hexdigest(),qualification=False))+'\n')
         if self.mode=='trace':
             import torch
             import vllm_ascend.ops.gdn as gdn
@@ -93,13 +113,22 @@ class Monitor:
             else:delattr(obj,name)
         self.patches.clear()
 
+def allocation_source(source,allocation):
+    assert allocation in ('zero','nan')
+    changes={'u = torch.empty_like(v)':('u = torch.zeros_like(v)' if allocation=='zero' else "u = torch.full_like(v,float('nan'))"),
+             'w = k.new_empty(B, T, H, K)':('w = k.new_zeros(B, T, H, K)' if allocation=='zero' else "w = k.new_full((B, T, H, K),float('nan'))")}
+    for before,after in changes.items():
+        assert source.count(before)==1,'UNREVIEWED_WY_ALLOCATION_SOURCE'
+        source=source.replace(before,after)
+    return source
+
 ATTRIBUTE='_dcat_nan_diagnostic_only'
-def rpc(wrapper,action,mode=None,label=None):
+def rpc(wrapper,action,mode=None,label=None,allocation='empty'):
     from vllm.v1.worker.worker_base import WorkerWrapperBase
     w=wrapper.worker if isinstance(wrapper,WorkerWrapperBase) else wrapper
     if action=='install':
         assert not hasattr(w,ATTRIBUTE)
-        m=Monitor(w,mode,label)
+        m=Monitor(w,mode,label,allocation)
         try:m.install()
         except BaseException:
             m.close();raise
@@ -109,8 +138,8 @@ def rpc(wrapper,action,mode=None,label=None):
     return dict(rank=w.rank,hooks=len(m.hooks),patches=len(m.patches),fault_calls=0)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--mode',choices=['root','trace'],required=True);p.add_argument('--atomic-batch',action='store_true');a=p.parse_args()
-    report=dict(status='STARTED',mode=a.mode,atomic_batch=a.atomic_batch,fault_calls=0,rounds=[])
+    p=argparse.ArgumentParser();p.add_argument('--mode',choices=['root','trace'],required=True);p.add_argument('--atomic-batch',action='store_true');p.add_argument('--wy-allocation',choices=['empty','zero','nan'],default='empty');a=p.parse_args()
+    report=dict(status='STARTED',mode=a.mode,atomic_batch=a.atomic_batch,allocation=a.wy_allocation,fault_calls=0,rounds=[])
     def save():pathlib.Path('/evidence/diagnostic.json').write_text(json.dumps(report,indent=2)+'\n')
     try:
         from vllm import LLM,SamplingParams
@@ -124,7 +153,7 @@ def main():
         for n,batch in enumerate([8,8,1]):
             assert llm.reset_prefix_cache(reset_running_requests=False)
             row=dict(index=n,batch=batch);report['rounds'].append(row)
-            row['install']=llm.collective_rpc(rpc,args=('install',a.mode,'round'+str(n)),timeout=120);save()
+            row['install']=llm.collective_rpc(rpc,args=('install',a.mode,'round'+str(n),a.wy_allocation),timeout=120);save()
             try:
                 prompts=[dict(prompt_token_ids=tokens) for _ in range(batch)]
                 params=SamplingParams(temperature=0,max_tokens=2,ignore_eos=True)
