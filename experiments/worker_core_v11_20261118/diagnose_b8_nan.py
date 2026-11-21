@@ -141,7 +141,7 @@ def rpc(wrapper,action,mode=None,label=None,allocation='empty',kernel_control='o
     return dict(rank=w.rank,hooks=len(m.hooks),patches=len(m.patches),fault_calls=0)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--mode',choices=['root','trace'],required=True);p.add_argument('--atomic-batch',action='store_true');p.add_argument('--wy-allocation',choices=['empty','zero','nan','marker'],default='empty');p.add_argument('--kernel-control',choices=['off','audit','clone_meta','compile_first','program_meta','no_multibuffer'],default='off');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--mode',choices=['root','trace'],required=True);p.add_argument('--atomic-batch',action='store_true');p.add_argument('--wy-allocation',choices=['empty','zero','nan','marker'],default='empty');p.add_argument('--kernel-control',choices=['off','audit','clone_meta','compile_first','program_meta','no_multibuffer','reset_atomic'],default='off');a=p.parse_args()
     report=dict(status='STARTED',mode=a.mode,atomic_batch=a.atomic_batch,allocation=a.wy_allocation,kernel_control=a.kernel_control,fault_calls=0,rounds=[])
     def save():pathlib.Path('/evidence/diagnostic.json').write_text(json.dumps(report,indent=2)+'\n')
     try:

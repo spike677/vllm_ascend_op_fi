@@ -19,6 +19,19 @@ class KernelAudit:
                     if isinstance(kwargs.get(k),torch.Tensor):kwargs[k]=kwargs[k].clone()
             if self.control=='compile_first':self.base.run(*args,grid=grid,warmup=True,**kwargs)
             if self.control=='no_multibuffer':kwargs=dict(kwargs,multibuffer=False)
+            if self.control=='reset_atomic':
+                import ctypes
+                if not hasattr(self,'reset_library'):
+                    library=pathlib.Path('/state-reset/libgdn_atomic_reset.so')
+                    assert hashlib.sha256(library.read_bytes()).hexdigest()=='f5593b279eab33f6e30c7d039c80b439996561319dabeec960fce70a0e8f5262'
+                    assert torch.npu.get_device_name()=='Ascend910B4'
+                    self.reset_library=ctypes.CDLL(str(library))
+                    self.reset_library.dcat_gdn_reset_atomic_v1.argtypes=[ctypes.c_void_p]
+                    self.reset_library.dcat_gdn_reset_atomic_v1.restype=None
+                torch.npu.synchronize()
+                self.reset_library.dcat_gdn_reset_atomic_v1(ctypes.c_void_p(torch.npu.current_stream().npu_stream))
+                torch.npu.synchronize()
+                row['state_reset']='ATOMIC_NONE_ONLY_NO_TENSOR_ACCESS'
             debug=None
             if self.control=='program_meta':
                 kwargs=dict(kwargs)
