@@ -40,7 +40,7 @@ CPU 参考例：256 个等权 key、V 全 1，重放其中 128 个 key 的分母
 |---|---|---|---|---|
 |18|待持续接线/重验|待适配|待持续验收|待适配/验收|
 |22|待持续接线/重验|待适配|待持续验收|待适配/验收|
-|39 output_proxy|待 BF16 输出选点及持续验收|待适配|待验收|待验收|
+|39 output_proxy|公共原型实测中；结构候选/实际调用已区分，尚有真实消费者未证明，未登记|待适配|待验收|待验收|
 |39 matmul_range|待实现|未列为首批蓝区模型|待验收|待适配/验收|
 |Batch|公共入口CPU/NPU各两作用域通过；304投影×4步/每rank，1216次；最终交付负向检查通过|未列为首批蓝区模型|待验收|W8A8独立DynamicQuant部分待适配|
 |41|Native 最后阶段|MLA cache 待适配|待验收|待适配/验收|
@@ -56,5 +56,7 @@ CPU 参考例：256 个等权 key、V 全 1，重放其中 128 个 key 的分母
 最终 a4 独立重启复核逐调用恢复字节 SHA、Qwen 实际输出缓冲区 SHA 全部一致；两模型都通过同组 Worker 两作用域。元数据补充：V4.1 两版 config 已获取且完全相同；真实配置的 CPU 结构夹具通过，稀疏 MLA/EP 运行接线与准入未完成，见 deepseek_v41_metadata_20261121.md。
 
 ## 公共入口最新复核
+
+RC3 预览 r2 已冻结推送，仅28/Batch；安装源码校验348文件通过。初次发行Git换行失配保留为失败版本，r2原始字节及Git blob SHA全通过。交付与局限见 `releases/RC3-PREVIEW-REPLACEMENT-20261121.md`。上方“实际设备和真实模型接线缺口”属于首次实现时记录；28/Batch公共Runtime与对象租约缺口已由阶段1闭合，其他项不得继承。
 
 28 public-a5：每rank每作用域64次applied/changed/consumed/restored，failed=0；1.4265×/1.3416×；真实消费者与对象区间恢复、完整OFF/health均通过。Batch public-a3 NPU：1216次applied/consumed/restored，changed分别1214/1213，failed=0；6.2112×/6.0967×。public-a4 CPU同路径为6.0880×/6.4494×，尚无明确性能优势。这里只登记实际A2/0.26/Qwen3.8社区W8A8/TP2，不外推A3、MLA或其他输入长度。
