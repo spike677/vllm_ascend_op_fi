@@ -39,14 +39,14 @@ CPU 参考例：256 个等权 key、V 全 1，重放其中 128 个 key 的分母
 |交付能力|新栈 Qwen3.8 TP2|V2-Lite TP2|87 Qwen3.8|87 DeepSeek|
 |---|---|---|---|---|
 |18|公共入口两作用域通过；161实际输出点×4步/每rank，644次；恢复通过|待适配|待持续验收|待适配/验收|
-|22|公共适配已完成，a15实测中；未登记|待适配|待持续验收|待适配/验收|
+|22|公共入口两作用域通过；16融合调用×4步/每rank，64次；恢复通过|待适配|待持续验收|待适配/验收|
 |39 output_proxy|公共入口两作用域通过；304真实投影×4步，每rank1216次；实际消费者与恢复通过|待适配|待验收|待验收|
 |39 matmul_range|待实现|未列为首批蓝区模型|待验收|待适配/验收|
 |Batch|公共入口CPU/NPU各两作用域通过；304投影×4步/每rank，1216次；最终交付负向检查通过|未列为首批蓝区模型|待验收|W8A8独立DynamicQuant部分待适配|
 |41|Native 最后阶段|MLA cache 待适配|待验收|待适配/验收|
 |17|不扩大模型范围，仅保留既有视觉模型|不适用|仅既有视觉范围，持续验收待完成|不在该模型范围|
 |8|dense 不适用|待持续适配|不适用|M4 待完成|
-|28 denominator torch|公共入口通过：16层×4步/每rank，两作用域，完整恢复与实际创建负向通过|实验binding通过：27层×4步/每rank，两作用域；公共入口待阶段3|待验收|稀疏 MLA/M4 待完成|
+|28 denominator torch|公共入口通过：16层×4步/每rank，两作用域，完整恢复与实际创建负向通过|公共入口两作用域通过：27层×4步/每rank，108次；恢复通过|待验收|稀疏 MLA/M4 待完成|
 |20|Native 最后阶段|待对应 site|待验收|不在 RC3 第二批清单|
 |26 fia_destination|Native 最后阶段|待对应 site|待验收|不在 RC3 第二批清单|
 |33|paged attention 待实现|未列为首批蓝区模型|待验收|不在 RC3 第二批清单|
@@ -63,4 +63,10 @@ RC3 预览 r2 已冻结推送，仅28/Batch；安装源码校验348文件通过�
 
 39 public-a12：每rank每作用域1216次 applied/changed/consumed/restored，failed=0；2.42345×/2.43357×。上游非有限1208次，原位置已为正Inf为0次，两者分开记录。详见 [39公共入口报告](continuous39_real_model_20261121.md)。仅增加开发线候选，未变更预览r2，不冻结r3。
 
-18 public-a14：每rank每作用域644次applied/changed/consumed/restored，failed=0；1.88848×/1.84664×；覆盖129模块输出和32融合Q/K归一化输出。见 [18报告](continuous18_real_model_20261121.md)。22未沿用18结果，独立实测进行中。
+18 public-a14：每rank每作用域644次applied/changed/consumed/restored，failed=0；1.88848×/1.84664×；覆盖129模块输出和32融合Q/K归一化输出。见 [18报告](continuous18_real_model_20261121.md)。22 public-a15独立通过：每rank每作用域64次，rotary行变化672，Q/K变化64调用；1.16110×/1.09448×。见[22报告](continuous22_real_model_20261121.md)。
+
+V2-Lite public-a16：27层108次/rank/作用域，全部applied/changed/consumed/restored，failed=0；2.02685×/1.82329×。同组Worker两作用域公共入口、完整恢复及无许可拒绝通过；不外推V4.1稀疏MLA/EP。见[MLA公共报告](continuous_mla28_public_20261121.md)。
+
+V2-Lite public-a20：8的当前AllGather路由/反排列链已通过公共两作用域，26个site、104应用/消费/恢复，changed26，单组decode78次仍执行但无新变化；failed0，1.58518×/1.49855×。当前请求producer→专家输出→A2 abs→原生unpermute关联完整；EP/多请求未验收。见[MoE报告](continuous_moe8_public_20261121.md)。
+
+Batch public-a17：可选forward延迟核对模式通过公共两作用域，样本数和精度标准不变，耗时5.93327×/5.97488×，默认immediate及r2不变。见[性能记录](continuous_batch_performance_20261121.md)。本轮35项持续框架/consumer/恢复/模式准入CPU测试通过，不代替历史测试欠账修复。

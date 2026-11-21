@@ -1,0 +1,322 @@
+{
+  "schema": "demoncat.continuous.public_review.v1",
+  "mechanism": "quant.batch_shared_scale",
+  "arithmetic_device": "input",
+  "reference_mode": "forward",
+  "passed": true,
+  "scopes": [
+    {
+      "owner": "worker-group-d6a3bf0b0150423786b938ac35580188",
+      "rank_effects": {
+        "0": {
+          "coverage": {
+            "applied": 1216,
+            "attempted": 1216,
+            "changed": 1214,
+            "consumed": 1216,
+            "eligible": 1216,
+            "failed": 0,
+            "observed": 1216,
+            "restored": 1216
+          },
+          "site_count": 304,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "forward",
+            "q_sample_difference_fraction": 0.0,
+            "q_sample_differences": 0,
+            "reference_scope": "SAMPLED",
+            "sampled_elements": 1245170
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "de192dd64504a16285c561016c4de380bbbc12e7b61e713127c0dc07e8336a2c",
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": 0.0
+        },
+        "1": {
+          "coverage": {
+            "applied": 1216,
+            "attempted": 1216,
+            "changed": 1213,
+            "consumed": 1216,
+            "eligible": 1216,
+            "failed": 0,
+            "observed": 1216,
+            "restored": 1216
+          },
+          "site_count": 304,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "forward",
+            "q_sample_difference_fraction": 0.0,
+            "q_sample_differences": 0,
+            "reference_scope": "SAMPLED",
+            "sampled_elements": 1245168
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "13ab915f2e7271f756552d327446ad1f8b06bd2adb6587f70f9d3befcbd85be0",
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": 0.0
+        }
+      },
+      "deployment": {
+        "0": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        },
+        "1": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        }
+      },
+      "fault_time_ratio": 5.933269965990728,
+      "request_plan": {
+        "schema": "demoncat.continuous.request_plan.v1",
+        "mechanism": "quant.batch_shared_scale",
+        "phases": [
+          {
+            "phase": "normal",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "fault",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "off",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "health",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          }
+        ],
+        "unit": "batch",
+        "max_iterations": 4,
+        "max_requests": 32,
+        "external_health_required": false,
+        "advance_argument": "request_ids",
+        "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+        "qualification_granted": false,
+        "completion": "next_phase == complete AND all rank recovery checks passed"
+      },
+      "recovered": true,
+      "resources_zero": true
+    },
+    {
+      "owner": "worker-group-38d8bc851b0847189767053238a8feab",
+      "rank_effects": {
+        "0": {
+          "coverage": {
+            "applied": 1216,
+            "attempted": 1216,
+            "changed": 1214,
+            "consumed": 1216,
+            "eligible": 1216,
+            "failed": 0,
+            "observed": 1216,
+            "restored": 1216
+          },
+          "site_count": 304,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "forward",
+            "q_sample_difference_fraction": 0.0,
+            "q_sample_differences": 0,
+            "reference_scope": "SAMPLED",
+            "sampled_elements": 1245170
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "1ef4cbc0234d8eac72054cd595613f0fab30de7ee279b345076af6101e5836c3",
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": 0.0
+        },
+        "1": {
+          "coverage": {
+            "applied": 1216,
+            "attempted": 1216,
+            "changed": 1213,
+            "consumed": 1216,
+            "eligible": 1216,
+            "failed": 0,
+            "observed": 1216,
+            "restored": 1216
+          },
+          "site_count": 304,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "forward",
+            "q_sample_difference_fraction": 0.0,
+            "q_sample_differences": 0,
+            "reference_scope": "SAMPLED",
+            "sampled_elements": 1245168
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "8ca221bc408a32c866fabe3eb68268c47ad66aa2c100028910b6180f8e1c9afc",
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": 0.0
+        }
+      },
+      "deployment": {
+        "0": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        },
+        "1": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        }
+      },
+      "fault_time_ratio": 5.97487666661272,
+      "request_plan": {
+        "schema": "demoncat.continuous.request_plan.v1",
+        "mechanism": "quant.batch_shared_scale",
+        "phases": [
+          {
+            "phase": "normal",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "fault",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "off",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "health",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          }
+        ],
+        "unit": "batch",
+        "max_iterations": 4,
+        "max_requests": 32,
+        "external_health_required": false,
+        "advance_argument": "request_ids",
+        "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+        "qualification_granted": false,
+        "completion": "next_phase == complete AND all rank recovery checks passed"
+      },
+      "recovered": true,
+      "resources_zero": true
+    }
+  ],
+  "negative_creation_verified": true,
+  "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEW_STILL_REQUIRED",
+  "qualification_granted": false,
+  "source_receipt_sha256": "6ba4a5bacf76d463e22741847448cb3243434b5861a66afec5d15268fc37749b",
+  "reviewer_sha256": "c743cf5725717ce630ea174834ed54a9c8f628a9eccaf270748e9f94bdbcda98"
+}

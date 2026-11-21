@@ -128,6 +128,135 @@
       "scopes": 2,
       "request_count": 1,
       "generated_tokens": 4
+    },
+    {
+      "mechanism": "22.wrong_row",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_22_review_20261121.json",
+      "review_sha256": "e60316a52b244cc74fa28ead3a7ac2298435e3b0f3c704f06a6a3cb4110e80bd",
+      "source_manifest_sha256": "02912cccfa9bbda43918ec88d52322450e0e0dee14a016e5077bcb50353b674d",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "torch_fused_mrope_wrong_lookup_row",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4
+    },
+    {
+      "mechanism": "28.fia.denominator_replay",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+        "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_mla28_review_20261121.json",
+      "review_sha256": "457dcfd17568507406503c3de76a25f6f45d094d9ca6e3b6f39cdb667d722253",
+      "source_manifest_sha256": "6d1610b620d447ab5fa1f42c4eba3107c94601634cba3af21172c69ee6898266",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "torch_mla_denominator_replay",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4
+    },
+    {
+      "mechanism": "quant.batch_shared_scale",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_batch_forward_review_20261121.json",
+      "review_sha256": "687927374c0d6ffc5a23bf0537d61bec7ceb6912a79eaa5f49ac3f6b9d2bb15d",
+      "source_manifest_sha256": "422a927b91c3481ae37a8a8c3c974ef5d8e13e625365f1e5f822b1f5ee3d2f14",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "torch_shared_scale_deferred_reference",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 8,
+      "generated_tokens": 4,
+      "reference_mode": "forward"
+    },
+    {
+      "mechanism": "8.restore_offset",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+        "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_moe8_review_20261121.json",
+      "review_sha256": "b6799cc3acaac031573d51ada6d7b94f3e2bf84bf7fb513c8f7ec9d7d0b66707",
+      "source_manifest_sha256": "56de605fe3c6c58026231647b61f22235795bd203eb09d715284688dc935eccb",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "torch_actual_moe_unpermute_group_offset",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4
     }
   ]
 }

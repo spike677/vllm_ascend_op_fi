@@ -166,6 +166,7 @@ def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=
         for candidate in records:
             if (source=='BLUE_COMBINATION' and candidate['mechanism']==mechanism
                     and candidate['arithmetic_device']==continuous.arithmetic_device
+                    and candidate.get('reference_mode','immediate')==continuous.reference_mode
                     and candidate['request_count']==len(continuous.prompts)
                     and candidate['expected']==actual):
                 expected=dict(candidate['expected']);accepted=True

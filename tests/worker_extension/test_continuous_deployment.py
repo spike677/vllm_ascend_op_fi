@@ -29,3 +29,6 @@ class ContinuousDeploymentTests(unittest.TestCase):
         b.arithmetic_device='cpu'
         with patch.object(a,'observe_deployment',return_value=expected):
             self.assertFalse(a.deployment_acceptance_report(key,w,m)['accepted'])
+        b.arithmetic_device='input';b.reference_mode='forward'
+        with patch.object(a,'observe_deployment',return_value=expected):
+            self.assertFalse(a.deployment_acceptance_report(key,w,m)['accepted'])

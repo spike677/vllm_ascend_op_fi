@@ -52,6 +52,9 @@ def review(report, *, require_negative_creation=False):
             need(final['complete'] is True and final['next_phase']=='complete','RANK_NOT_COMPLETE')
             rows=final['evidence']['actual_requests'];need([r['phase'] for r in rows]==['normal','fault','off','health'],'RANK_PHASE_SEQUENCE')
             n,f,o,h=rows
+            if report['mechanism']=='quant.batch_shared_scale':
+                need(all(row['quant_reference'].get('mode','immediate')==report.get('reference_mode','immediate') for row in rows),
+                    'QUANT_REFERENCE_MODE_IDENTITY_MISMATCH')
             ids=[]
             for hostrow,row in zip(s['requests'],rows):
                 need(hostrow['result']['status']=='QUERY_OK','REQUEST_QUERY_FAILED')
@@ -66,7 +69,7 @@ def review(report, *, require_negative_creation=False):
             clean=s['unregister']['response']['provider_state']['rank_states'][str(rank)]
             need(all(clean[k] in (False,0) for k in ('leases','inflight','owned_hooks','registered','native_registered','enabled')),
                 'FINAL_OWNED_RESOURCES_REMAIN')
-            if report['mechanism'] in ('39.output_proxy','18.api_half','22.wrong_row'):
+            if report['mechanism'] in ('39.output_proxy','18.api_half','22.wrong_row','8.restore_offset'):
                 calls=f.get('actual_forward_calls',[])
                 need(len(calls)==4 and all(calls) and all(isinstance(n,int) and n>0 for c in calls for n in c.values())
                     and sum(sum(c.values()) for c in calls)==f['coverage']['observed']
@@ -80,6 +83,10 @@ def review(report, *, require_negative_creation=False):
                 hidden_changed=any(a['hidden']!=b['hidden'] for a,b in zip(n['output'],f['output'])),
                 logits_changed=any(a['logits']!=b['logits'] for a,b in zip(n['output'],f['output'])),
                 recovered=True,events_sha256=f['events_sha256'])
+            if report['mechanism']=='8.restore_offset':
+                moe=f['moe_effect'];need(moe['actual_producer_joins']==moe['native_combine_calls']==f['coverage']['eligible']
+                    and moe['request_rows_verified']>=f['coverage']['eligible'],'MOE_CURRENT_PRODUCER_CONSUMER_MAPPING_MISSING')
+                effects[rank]['moe_effect']=moe
             effects[rank]['projection_effect']=f.get('projection_effect')
             if report['mechanism']=='22.wrong_row':
                 rot=f['rotary_effect'];need(rot['rows_changed']>0,'ROTARY_ROWS_UNCHANGED')
@@ -99,7 +106,7 @@ def review(report, *, require_negative_creation=False):
             recovered=True,resources_zero=True))
     need(owners[0]!=owners[1],'INDEPENDENT_OWNER_REQUIRED')
     return dict(schema='demoncat.continuous.public_review.v1',mechanism=report['mechanism'],
-        arithmetic_device=report.get('arithmetic_device'),passed=True,scopes=result,
+        arithmetic_device=report.get('arithmetic_device'),reference_mode=report.get('reference_mode','immediate'),passed=True,scopes=result,
         negative_creation_verified=all(bool(s.get('negative_missing_permit_creation')) for s in scopes),
         acceptance_scope='PUBLIC_RUNTIME_SOURCE_REVIEW_STILL_REQUIRED',qualification_granted=False)
 

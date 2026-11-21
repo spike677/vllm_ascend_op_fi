@@ -53,7 +53,7 @@ class Norm18Site:
         visual=getattr(self.model,'visual',None);visual_ids={id(m) for m in visual.modules()} if visual is not None else set()
         for name,module in self.model.named_modules():
             if id(module) in visual_ids:continue
-            if type(module).__name__=='AscendGemmaRMSNorm':
+            if type(module).__name__ in ('AscendGemmaRMSNorm','AscendRMSNorm'):
                 require(hashlib.sha256(Path(inspect.getsourcefile(type(module))).read_bytes()).hexdigest()==NORM_SHA,'UNREVIEWED_NORM_SOURCE')
                 self.sites.append(name)
                 def output(mod,args,result,_name=name):self.output(_name,result[0] if isinstance(result,tuple) else result)

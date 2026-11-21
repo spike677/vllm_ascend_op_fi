@@ -24,9 +24,12 @@ def cpu_reference(rows):
 
 
 class BatchQuantSite:
-    def __init__(self,model,runner,*,fault,arithmetic_device='cpu',region_leases=None):
+    def __init__(self,model,runner,*,fault,arithmetic_device='cpu',region_leases=None,reference_mode='immediate'):
         require(arithmetic_device in ('cpu','input'),'UNKNOWN_QUANT_ARITHMETIC_BACKEND')
         self.arithmetic_device=arithmetic_device
+        require(reference_mode in ('immediate','forward') and (reference_mode=='immediate' or arithmetic_device=='input'),
+                'UNREVIEWED_REFERENCE_MODE')
+        self.reference_mode=reference_mode;self.reference_queue=None
         self.region_leases=region_leases
         self.model=model;self.runner=runner;self.fault=fault
         self.events=[];self.methods=[];self.sites=[];self.uncovered=[]
@@ -35,6 +38,11 @@ class BatchQuantSite:
     def install(self):
         import torch_npu
         self.api=torch_npu
+        if self.reference_mode=='forward':
+            from fault_injection.engines.deferred_quant_reference import DeferredQuantReference
+            def complete(stream):
+                event=torch.npu.Event();event.record(stream);event.synchronize()
+            self.reference_queue=DeferredQuantReference(stream=torch.npu.current_stream,complete=complete)
         self.original_quant=torch_npu.npu_dynamic_quant;self.original_qmm=torch_npu.npu_quant_matmul
         require(not getattr(self.original_quant,'_dcat_site',False),'QUANT_ALREADY_WRAPPED')
         seen=set()
@@ -76,8 +84,13 @@ class BatchQuantSite:
                 event.update(reference_passed=True,reference_exact=True,reference_scope='FULL_CPU_REFERENCE',
                              arithmetic_backend='torch_cpu_fp32')
             else:
-                from fault_injection.engines.quant_reference import sampled_reference
-                event.update(sampled_reference(x,newq,news),arithmetic_backend='torch_input_fp32')
+                if self.reference_queue is None:
+                    from fault_injection.engines.quant_reference import sampled_reference
+                    event.update(sampled_reference(x,newq,news))
+                else:
+                    self.reference_queue.enqueue(len(self.events)-1,x,newq,news)
+                    event['reference_pending']=True
+                event['arithmetic_backend']='torch_input_fp32'
             event.update(changed=int((q!=newq).sum().item())+int((s!=news).sum().item()),
                          shared_scale=float(news[0].item()),all_real_rows=True)
             if self.region_leases is None:q.copy_(newq);s.copy_(news)
@@ -99,7 +112,16 @@ class BatchQuantSite:
         torch_npu.npu_dynamic_quant=quant;torch_npu.npu_quant_matmul=qmm
         def pre(*unused):self.forward_index+=1
         self.hooks.append(self.model.register_forward_pre_hook(pre))
+        if self.reference_queue is not None:
+            def post(*unused):self.flush_reference()
+            self.hooks.append(self.model.register_forward_hook(post))
         return self.sites
+
+    def flush_reference(self):
+        for report in self.reference_queue.flush():
+            event=self.events[report.pop('key')]
+            require(event.get('reference_pending') is True,'REFERENCE_CALL_ASSOCIATION_CHANGED')
+            event.update(report,reference_pending=False)
 
     def actual_rows(self):
         from vllm.forward_context import get_forward_context
@@ -142,6 +164,7 @@ class BatchQuantSite:
             self.local.context=None
 
     def close(self):
+        require(self.reference_queue is None or self.reference_queue.pending()==0,'QUANT_REFERENCE_SNAPSHOTS_PENDING')
         require(self.region_leases is None or self.region_leases.count()==0,'QUANT_OBJECT_LEASES_PENDING')
         require(self.pending==0 and getattr(self.local,'context',None) is None,'QUANT_LEASES_PENDING')
         require(self.api.npu_dynamic_quant is self.quant_wrapper and self.api.npu_quant_matmul is self.qmm_wrapper,'QUANT_WRAPPER_OWNERSHIP_CHANGED')

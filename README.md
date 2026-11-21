@@ -2,7 +2,7 @@
 
 已冻结 [RC3 预览 r2](releases/RC3-PREVIEW-REPLACEMENT-20261121.md)，仅 28/Batch；标签 `demoncatpfi-rc3-preview-20261121-r2`。三个 wheel、源码包、SHA、无设备安装检查及 A3 TP2 验收步骤齐备。原预览标签发生 Git 换行归一化导致清单失配，保留失败记录，不应使用。r2 从 Git 对象复核全部发行 SHA 一致。完整 RC3 与 A3 验收尚未完成。
 
-[阶段1实施及验收](docs/worker_core_v1/continuous_runtime_20261121.md)：28 torch denominator_replay 已在 A2 / 0.26 / Qwen3.8 社区 W8A8 / TP2 通过公共 Runtime 同组 Worker 两作用域，逐次租约、消费者事件、OFF/health 完整恢复及真实无许可创建拒绝均通过。Batch NPU 与 CPU 公共入口两作用域完成，最终交付脚本真实创建负向检查通过。其余10项仍未通过本轮持续公共契约。
+[阶段1实施及验收](docs/worker_core_v1/continuous_runtime_20261121.md)：28 torch denominator_replay 已在 A2 / 0.26 / Qwen3.8 社区 W8A8 / TP2 通过公共 Runtime 同组 Worker 两作用域，逐次租约、消费者事件、OFF/health 完整恢复及真实无许可创建拒绝均通过。Batch NPU 与 CPU 公共入口两作用域完成，最终交付脚本真实创建负向检查通过。开发线新增39 output_proxy、18、22公共持续两作用域通过，消费者及恢复完整。它们未加入冻结r2。详见[增量候选](docs/worker_core_v1/rc3_continuous_candidates_20261121_night.md)。
 
 [12项进度总表](docs/worker_core_v1/continuous_progress_20261121.md)区分实验 binding 和公共入口；[RC3预览验收步骤](docs/worker_core_v1/rc3_preview_acceptance_20261121.md)仅含28/Batch，A3待验。Native28研究入口继续关闭。以下旧记录保留历史适用范围，不覆盖本节新状态。
 

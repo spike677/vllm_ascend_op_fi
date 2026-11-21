@@ -24,17 +24,15 @@ class DeferredQuantReference:
         current=self.stream()
         if self.rows and (current!=self.rows[0]['stream'] or x.device!=self.rows[0]['device']):
             raise ValueError('REFERENCE_STREAM_OR_DEVICE_CHANGED')
-        n=x.numel();count=min(n,self.sample_limit)
+        n=x.numel();count=min(n,self.sample_limit-1)+1
         estimate=count*(4+1+8)+scales.numel()*4+4
         # Reserve both retained snapshots and the equally-sized packed device
         # buffers. This budget excludes the operator's transient FP32 x/abs.
         if len(self.rows)>=self.max_calls or 2*(self.bytes+estimate)>self.max_bytes:
             raise ValueError('REFERENCE_SNAPSHOT_BUDGET_EXCEEDED')
         flat=x.detach().float().reshape(-1);maximum,index=flat.abs().max(dim=0)
-        if n<=self.sample_limit:indexes=torch.arange(n,device=x.device)
-        else:
-            grid=torch.linspace(0,n-1,self.sample_limit-1,device=x.device).to(torch.int64)
-            indexes=torch.cat((grid,index.reshape(1)))
+        grid=torch.linspace(0,n-1,count-1,device=x.device).to(torch.int64)
+        indexes=torch.cat((grid,index.reshape(1)))
         # No CPU conversion/item/unique here. Snapshots cannot alias live buffers.
         row=dict(key=key,total=n,stream=current,device=x.device,
             values=flat[indexes].clone(),q=q.detach().reshape(-1)[indexes].clone(),

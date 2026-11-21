@@ -40,9 +40,18 @@ class DeferredReferenceTests(unittest.TestCase):
 
     def test_budget_reserves_packing_peak_not_only_retained_samples(self):
         x=torch.ones(2,4);q,s=shared_dynamic_quant(x)
-        retained=8*(4+1+8)+2*4+4
+        retained=9*(4+1+8)+2*4+4
         queue=self.queue(max_bytes=retained)
         with self.assertRaisesRegex(ValueError,'BUDGET'):queue.enqueue('one',x,q,s)
         self.assertEqual(queue.pending(),0)
         queue=self.queue(max_bytes=2*retained)
         queue.enqueue('one',x,q,s);self.assertEqual(len(queue.flush()),1)
+
+    def test_immediate_and_deferred_use_identical_sample_set_at_budget_boundary(self):
+        from fault_injection.engines.quant_reference import sampled_reference
+        for size in (15,16,17,128):
+            x=torch.arange(1,size+1,dtype=torch.float32).reshape(1,-1)
+            q,s=shared_dynamic_quant(x,arithmetic_device='cpu')
+            expected=sampled_reference(x,q,s,sample_limit=16)
+            queue=self.queue(sample_limit=16);queue.enqueue('same',x,q,s)
+            actual=queue.flush()[0];actual.pop('key');self.assertEqual(actual,expected)

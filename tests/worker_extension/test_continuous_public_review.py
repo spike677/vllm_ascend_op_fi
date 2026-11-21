@@ -34,6 +34,40 @@ def fixture():
 
 
 class ReviewTests(unittest.TestCase):
+    def test_moe_requires_current_routing_join_and_native_consumer(self):
+        r=fixture();r['mechanism']='8.restore_offset'
+        for scope in r['scopes']:
+            for host in scope['requests']:
+                for state in host['result']['response']['provider_state']['rank_states'].values():
+                    for row in state['evidence']['actual_requests']:
+                        row['actual_forward_calls']=[{'moe':1} for _ in range(4)]
+                        row['moe_effect']=dict(actual_producer_joins=4,native_combine_calls=4,request_rows_verified=7)
+        self.assertTrue(review(r)['passed'])
+        for key in ('actual_producer_joins','native_combine_calls','request_rows_verified'):
+            bad=deepcopy(r)
+            bad['scopes'][1]['requests'][-1]['result']['response']['provider_state']['rank_states']['0']['evidence']['actual_requests'][1]['moe_effect'][key]=0
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'MOE_CURRENT_'):review(bad)
+
+    def test_rotary_requires_changed_rows_and_aligned_qk_not_only_logits(self):
+        r=fixture();r['mechanism']='22.wrong_row'
+        for scope in r['scopes']:
+            for host in scope['requests']:
+                for state in host['result']['response']['provider_state']['rank_states'].values():
+                    for row in state['evidence']['actual_requests']:
+                        fault=row['phase']=='fault'
+                        row['actual_forward_calls']=[{'rope':1} for _ in range(4)]
+                        row['rotary_effect']=dict(rows_changed=4 if fault else 0,position_rows_changed=4 if fault else 0,
+                            qk_output_fingerprints=[dict(site='rope',q='fault' if fault else 'normal',k='same') for _ in range(4)])
+        self.assertTrue(review(r)['passed'])
+        for field in ('rows','qk','site'):
+            bad=deepcopy(r)
+            effect=bad['scopes'][1]['requests'][-1]['result']['response']['provider_state']['rank_states']['0']['evidence']['actual_requests'][1]['rotary_effect']
+            if field=='rows':effect['rows_changed']=0
+            elif field=='qk':
+                for item in effect['qk_output_fingerprints']:item['q']='normal'
+            else:effect['qk_output_fingerprints'][0]['site']='different'
+            with self.subTest(field=field),self.assertRaisesRegex(ValueError,'ROTARY_'):review(bad)
+
     def test_projection_nonfinite_fault_allowed_but_actual_calls_and_healthy_outputs_required(self):
         r=fixture();r['mechanism']='39.output_proxy'
         for scope in r['scopes']:

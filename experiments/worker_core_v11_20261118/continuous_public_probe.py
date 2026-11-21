@@ -39,17 +39,18 @@ def bootstrap(wrapper,action,mechanism,options=None):
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','39','18','22'),required=True)
+    p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','39','18','22','8'),required=True)
+    p.add_argument('--reference-mode',choices=('immediate','forward'),default='immediate')
     p.add_argument('--model-family',choices=('qwen35','deepseek_v2'),default='qwen35')
     p.add_argument('--arithmetic-device',choices=('input','cpu'),default='input')
     p.add_argument('--model',default='/model');p.add_argument('--evidence',default='/evidence')
     p.add_argument('--source-manifest',default='/source/source_manifest.json')
     p.add_argument('--deployment-source',choices=('BLUE_COMBINATION','YELLOW_DEDICATED_INSTANCE'),default='BLUE_COMBINATION')
     a=p.parse_args()
-    mechanism={'batch':'quant.batch_shared_scale','28':'28.fia.denominator_replay','39':'39.output_proxy','18':'18.api_half','22':'22.wrong_row'}[a.mechanism]
+    mechanism={'batch':'quant.batch_shared_scale','28':'28.fia.denominator_replay','39':'39.output_proxy','18':'18.api_half','22':'22.wrong_row','8':'8.restore_offset'}[a.mechanism]
     batch=8 if a.mechanism=='batch' else 1
     report=dict(status='STARTED',mechanism=mechanism,scopes=[],warmup=[],qualification_granted=False,
-        acceptance_scope='PUBLIC_WORKER_RUNTIME',arithmetic_device=a.arithmetic_device)
+        acceptance_scope='PUBLIC_WORKER_RUNTIME',arithmetic_device=a.arithmetic_device,reference_mode=a.reference_mode)
     evidence=Path(a.evidence);evidence.mkdir(parents=True,exist_ok=True)
     out=evidence/'continuous_public.json'
     if out.exists():raise RuntimeError('EVIDENCE_MUST_NOT_BE_OVERWRITTEN')
@@ -104,7 +105,7 @@ def main():
             contract=client.contract()
             members=sorted([r['worker'] for r in llm.collective_rpc('demoncat_worker_identity')],key=lambda r:r['rank'])
             contract.update(members=members,members_sha256=digest(members))
-            rpc('bind',dict(prompts=tokens,group_contract=contract,arithmetic_device=a.arithmetic_device))
+            rpc('bind',dict(prompts=tokens,group_contract=contract,arithmetic_device=a.arithmetic_device,reference_mode=a.reference_mode))
             negative=rpc('negative');assert all(not r['can_prepare'] for r in negative),'MISSING_PERMIT_ADMITTED'
             for attempt in range(6):
                 ids,mapping=enqueue();rpc('warmup',ids);run(mapping)
