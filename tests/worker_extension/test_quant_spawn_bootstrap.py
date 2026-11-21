@@ -7,7 +7,7 @@ from experiments.worker_core_v11_20261118 import quant_spawn_bootstrap as b
 class SpawnVendorTests(unittest.TestCase):
     def run_fixture(self, fail=False, foreign=False):
         with tempfile.TemporaryDirectory() as directory:
-            root=Path(directory);stock=root/'stock';private=root/'quant/runtime/vendor';vendor=stock/'vendor'
+            root=Path(directory).resolve();stock=root/'stock';private=root/'quant/runtime/vendor';vendor=stock/'vendor'
             for d in (private/'op_api/lib',vendor/'op_api/lib'):d.mkdir(parents=True)
             (stock/'platform.py').write_bytes(b'platform');(vendor/'op_api/lib/libcust_opapi.so').write_bytes(b'stock')
             (private/'op_api/lib/libcust_opapi.so').write_bytes(b'private')

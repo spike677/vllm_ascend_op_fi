@@ -4,7 +4,7 @@ from pathlib import Path
 
 VERSIONS={'demoncatpfi':'0.4.0rc1','demoncat-worker-extension':'0.3.0rc1','demoncat-fault39-core':'0.3.0rc1'}
 ROOTS=('src/','fault_injection/','fault39/src/','native_execution_strategy/','engineering_closure/',
-       'tools/','docs/worker_core_v1/')
+       'tools/','tests/','docs/worker_core_v1/')
 EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',
        'experiments/worker_core_v11_20261118/continuous_public_probe.py')
 SUFFIXES={'.py','.json','.toml','.md','.cpp','.h','.inc','.sh','.yaml','.yml'}
@@ -31,6 +31,7 @@ def build(repo,output):
         dirty=subprocess.run(['git','-C',str(repo),'diff','--quiet',commit,'--',*paths[start:start+40]])
         if dirty.returncode:raise RuntimeError('UNCOMMITTED_RELEASE_SOURCE')
     output.mkdir(parents=True);wheels=output/'wheels';wheels.mkdir()
+    (repo/'.codex-tmp').mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='rc3-preview-',dir=repo/'.codex-tmp') as temp:
         stage=Path(temp);files=[]
         for name in sorted(paths):
