@@ -31,9 +31,7 @@ _SCOPES = {
         'Reuse the accepted actual-call mapping with the common row/storage actions.'),
     '25.reduce_scatter': ('UNSUPPORTED', [],
         'Stopped; no communication-output corruption substitute.'),
-    '26.residual_stomp': ('ACCEPTED_SCOPE_RETAINED',
-        ['matched Native QMM', 'live allocator adjacency', 'exact residual consumer/recovery'],
-        'Prefer the accepted Native single target; report inapplicable if adjacency is absent.'),
+    '26.residual_stomp': ('EXCLUDED_CURRENT_DELIVERY', [], '本轮排除'),
     '26.fia_destination': ('ACCEPTED_SCOPE_RETAINED',
         ['actual FIA writer', 'current-request live residual destination/consumer'],
         'Rebind live objects in the actual deployment; reuse accepted lifecycle and output.'),
@@ -69,7 +67,7 @@ def describe_delivery(mechanism):
     from .request_plan import request_plan
     from .research_entries import research_entry
     state, requirements, next_step = _SCOPES[mechanism]
-    selected = state not in ('UNSUPPORTED', 'HISTORICAL_ONLY')
+    selected = state not in ('UNSUPPORTED', 'HISTORICAL_ONLY', 'EXCLUDED_CURRENT_DELIVERY')
     from .rc1_profile import test_candidate
     from .rc2_profile import RC_ID, test_candidate as rc2_candidate
     return deepcopy(dict(

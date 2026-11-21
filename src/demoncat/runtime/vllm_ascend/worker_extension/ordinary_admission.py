@@ -8,6 +8,7 @@ from .prerequisites import assessment, expectation, _MISSING
 
 ORDINARY = {'41.tail_column','22.wrong_row','17.spatial_padding','8.restore_offset','18.api_half','39.output_proxy','quant.batch_shared_scale'}
 NON_EXECUTABLE = {
+    '26.residual_stomp': 'EXCLUDED_CURRENT_DELIVERY:本轮排除',
     '15.alias_detach': 'FAULT15_CURRENT_DEPLOYMENT_NO_PRIVATE_VIEW_WRITE_CHAIN',
     '25.reduce_scatter': 'FAULT25_UNSUPPORTED_NO_SUBSTITUTE',
     '28.fa.legal_tiling': 'FAULT28_LEGAL_HISTORICAL_ONLY',

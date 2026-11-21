@@ -11,15 +11,23 @@ import uuid
 from .config import FaultConfig
 from .host import HostAdapter, WorkerFaultClient, HostContractError, _GroupIdentity
 from fault_injection.request_plan import request_plan
+from fault_injection.continuous_contract import continuous_request_plan, MECHANISMS
 
 RESTORE = {'recover', 'abort', 'disable', 'unregister', 'detach', 'clean'}
 SUPPORTED = {'18.api_half', '39.output_proxy', '22.wrong_row', 'quant.batch_shared_scale', '41.tail_column'}
 
 
 class MultiRankTaskClient:
-    def __init__(self, executor, config, *, prepare_binding, commit_roles=None, timeout=30):
-        if not isinstance(config, FaultConfig) or config.mechanism not in SUPPORTED:
+    def __init__(self, executor, config, *, prepare_binding, commit_roles=None, timeout=30,
+                 continuous=False, world_size=2, batch_size=None):
+        # Trusted host constructor only, never a public FaultConfig bypass.
+        if type(continuous) is not bool or type(world_size) is not int or world_size < 1:
+            raise ValueError('INVALID_GROUP_POLICY')
+        if not continuous and world_size != 2:
+            raise ValueError('LEGACY_GROUP_IS_TP2_ONLY')
+        if not isinstance(config, FaultConfig) or config.mechanism not in (MECHANISMS if continuous else SUPPORTED):
             raise ValueError('MULTI_RANK_FIRST_BATCH_ONLY')
+        self.continuous=continuous; self.world_size=world_size
         if not callable(prepare_binding):raise TypeError('TRUSTED_GROUP_BINDING_REQUIRED')
         if commit_roles is not None and not callable(commit_roles):
             raise TypeError('TRUSTED_ROLE_COMMIT_CALLBACK_REQUIRED')
@@ -30,15 +38,16 @@ class MultiRankTaskClient:
                                      'worker-group-client-'+uuid.uuid4().hex, 1)
         self.members=[];self.clients={};self.failed=None;self.history=[]
         self.started=False;self._recovering=False;self._last_request_id=None;self._normal_request_id=None;self._lock=threading.RLock()
-        self.plan=request_plan(config.mechanism)
+        self.plan=(continuous_request_plan(config.mechanism, batch_size=batch_size if batch_size is not None else 1)
+                   if continuous else request_plan(config.mechanism))
 
     def _census(self, *, allow_quarantined=False):
         rows=self.host.discover_workers()
         if not allow_quarantined and any(row.get('quarantined') is not False for row in rows):
             raise HostContractError('GROUP_WORKER_RECOVERY_REQUIRED')
         members=sorted((row['worker'] for row in rows),key=lambda x:x['rank'])
-        if [row['rank'] for row in members]!=[0,1]:
-            raise HostContractError('EXACT_TP2_MEMBERS_REQUIRED')
+        if [row['rank'] for row in members]!=list(range(self.world_size)):
+            raise HostContractError('EXACT_GROUP_MEMBERS_REQUIRED' if self.continuous else 'EXACT_TP2_MEMBERS_REQUIRED')
         if self.members and self.members!=members:
             raise HostContractError('GROUP_WORKER_OR_MODEL_CHANGED')
         return members
@@ -47,8 +56,9 @@ class MultiRankTaskClient:
         return dict(owner=self.identity.owner,group_generation=self.identity.generation,
             members=deepcopy(self.members),members_sha256=hashlib.sha256(
                 json.dumps(self.members,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest(),
-            mechanism=self.config.mechanism,tp=2,
-            injection_policy='ONE_AUTOMATIC_RANK',qualification_granted=False)
+            mechanism=self.config.mechanism,tp=self.world_size,
+            injection_policy='ALL_RANK_EVERY_ELIGIBLE_CALL' if self.continuous else 'ONE_AUTOMATIC_RANK',
+            qualification_granted=False)
 
     def _init_clients(self):
         self.members=self._census()
@@ -65,7 +75,7 @@ class MultiRankTaskClient:
         if any(row.get('response',{}).get('recovery_required') is True for row in rows.values()):
             self.failed=self.failed or 'RANK_REQUIRES_RECOVERY'
         observed=[state for state in states.values() if isinstance(state,dict)]
-        if len(observed)==2:
+        if len(observed)==self.world_size:
             phases=[s.get('next_phase',(s.get('serving') or {}).get('next_phase')) for s in observed]
             plans=[s.get('request_plan') for s in observed]
             if (all(p==self.plan for p in plans) and len(set(phases))==1
@@ -74,7 +84,7 @@ class MultiRankTaskClient:
             elif action in ('query','advance','advance_batch') and status in ('QUERY_OK','ACTION_COMPLETED'):
                 self.failed=self.failed or 'GROUP_PHASE_OR_REQUEST_PLAN_MISMATCH'
                 status='GROUP_ACTION_FAILED'
-        if len(observed)!=2 and action in ('query','advance','advance_batch') and status in ('QUERY_OK','ACTION_COMPLETED'):
+        if len(observed)!=self.world_size and action in ('query','advance','advance_batch') and status in ('QUERY_OK','ACTION_COMPLETED'):
             self.failed=self.failed or 'ALL_RANK_PROVIDER_STATE_REQUIRED'
             status='GROUP_ACTION_FAILED'
         result=dict(status=status,group=self.contract(),action=action,
@@ -110,7 +120,7 @@ class MultiRankTaskClient:
                         rows[rank]=dict(status='RPC_UNCERTAIN',error=repr(error))
                         self.failed=self.failed or 'RANK_'+str(rank)+'_'+action.upper()+'_UNCERTAIN'
                         if action not in RESTORE:break
-                success=len(rows)==2 and all(row['status'] in (expected,'NO_OWNED_ATTACHMENT','DETACHED')
+                success=len(rows)==self.world_size and all(row['status'] in (expected,'NO_OWNED_ATTACHMENT','DETACHED')
                     if action=='recover' else row['status']==expected for row in rows.values())
                 return self._result(action,rows,expected if success else 'GROUP_ACTION_FAILED')
             except Exception as error:
@@ -119,7 +129,7 @@ class MultiRankTaskClient:
 
     def _guard_fault_roles(self,state, *, require_committed=True):
         ranks=state['response']['provider_state']['rank_states']
-        if len(ranks)!=2:raise HostContractError('ALL_RANK_NORMAL_EVIDENCE_REQUIRED')
+        if len(ranks)!=self.world_size:raise HostContractError('ALL_RANK_NORMAL_EVIDENCE_REQUIRED')
         candidates=[];fingerprints=[]
         for rank,row in ranks.items():
             proof=row.get('multi_rank') or {}
@@ -137,6 +147,18 @@ class MultiRankTaskClient:
             if proof.get('eligible_target') is True:candidates.append(rank)
         if len(set(fingerprints))!=1:
             raise HostContractError('RANK_REQUEST_INPUTS_NOT_ALIGNED')
+        if self.continuous:
+            # No baseline candidate list constrains later dynamic EP routing.
+            # Every rank arms its own sites; absent local calls generate no writes.
+            decision=dict(group=self.contract(),selected_rank=None,normal_request_id=self._normal_request_id,
+                request_fingerprint=fingerprints[0],roles={rank:'injector' for rank in ranks})
+            if require_committed:
+                for row in ranks.values():
+                    proof=row['multi_rank']
+                    if (proof.get('injection_policy')!='ALL_RANK_EVERY_ELIGIBLE_CALL'
+                            or proof.get('role')!='injector' or proof.get('selected_rank') is not None):
+                        raise HostContractError('CONTINUOUS_ROLE_READBACK_REQUIRED')
+            return decision
         selected=0 if self.config.mechanism=='18.api_half' else min(candidates,default=None)
         if selected not in candidates:raise HostContractError('NO_ACTUAL_AUTOMATIC_TARGET_RANK')
         decision=dict(group=self.contract(),selected_rank=selected,normal_request_id=self._normal_request_id,
@@ -153,9 +175,10 @@ class MultiRankTaskClient:
         return self._advance(request_id,'advance')
 
     def advance_batch(self,request_ids):
-        if (self.plan['unit']!='batch' or not isinstance(request_ids,list) or len(request_ids)!=8
+        count=self.plan['phases'][0]['request_count']
+        if (self.plan['unit']!='batch' or not isinstance(request_ids,list) or len(request_ids)!=count
                 or any(not isinstance(x,str) or not x.strip() for x in request_ids)
-                or len(set(request_ids))!=8):raise ValueError('EIGHT_ACTUAL_INTERNAL_IDS_REQUIRED')
+                or len(set(request_ids))!=count):raise ValueError('PLANNED_ACTUAL_INTERNAL_IDS_REQUIRED' if self.continuous else 'EIGHT_ACTUAL_INTERNAL_IDS_REQUIRED')
         return self._advance(list(request_ids),'advance_batch')
 
     def _advance(self,request_id,action):

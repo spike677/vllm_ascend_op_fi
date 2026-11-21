@@ -106,7 +106,8 @@ def describe_worker_provider(mechanism):
     route = next((row for row in rpc_provider_capabilities() if row['mechanism'] == mechanism), None)
     return dict(mechanism=mechanism, implementation_version='1', rpc_available=route is not None,
         entrypoint=('demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension' if route else _SEPARATE.get(mechanism)),
-        route=route, status=('UNSUPPORTED' if delivery['state'] == 'UNSUPPORTED' else
+        route=route, status=('EXCLUDED_CURRENT_DELIVERY' if delivery['state'] == 'EXCLUDED_CURRENT_DELIVERY' else
+                            'UNSUPPORTED' if delivery['state'] == 'UNSUPPORTED' else
                             'ORDINARY_ADAPTER_AND_ACCEPTED_DEPLOYMENT_REQUIRED' if route else 'WORKER_RPC_ADAPTATION_PENDING'),
         current_delivery=delivery,
         mechanism_boundary=capability.boundary, target_selection='actual_objects_and_calls',
