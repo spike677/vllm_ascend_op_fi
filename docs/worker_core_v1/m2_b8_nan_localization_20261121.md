@@ -2,7 +2,7 @@
 
 范围：BLUE_COMBINATION / A2 Ascend910B4 / TP2 / Qwen3.8-27B 社区 W8A8 / eager。镜像 c9c9432b69767cf1855efad44f20eaa8ab02520ae05b75c936e67ea4e7eb2702；vLLM 0.26.0+empty、vllm-ascend 0.26.0rc1、torch_npu 2.10.0.post4、CANN 9.1.0。不是黄区 A3 验收，不授予 Batch 故障准入。
 
-结论：完整模型首次B8的GDN WY输出存在整条请求的写入覆盖缺失，未初始化输出泄漏为NaN和异常有限值。已定位直接原因；尚未唯一确定造成该覆盖缺失的底层编译/launch/同步原因。**零初始化不是完整修复，Batch基线继续阻塞。**
+更新结论：首次B8的GDN存在错误累加。有限哨兵逐位实验推翻了早先“整块没有写入”的解释：WY request1的BF16输出被按相邻两个BF16组成的FP32字参与旧存储加法。KKT还有同一物理core前序任务累加异常。**零初始化不是修复；原kernel内状态修正正在实测，Batch基线尚未通过。**
 
 ## 已定位的直接异常边界
 
@@ -44,7 +44,7 @@
 
 完整模型NaN哨兵控制完成：两个rank的w/u各残留33,792个NaN，严格对应request1的11行×24头×128维。w/u的其余请求行均有限；后续B8和B1不再残留。与原stock捕获的k/v/beta/A/g_cumsum/cu_seqlens/chunk_indices逐元素完全相同。
 
-独立参考确认这些残留位置全部应为有限且非零值。rank0中w范围[-0.37699888178527885,0.8958594343028196]，u范围[-1.3085590153932571,32.767637491226196]。因此本机证据支持整条请求WY块没有被正常覆盖；原stock中w偶然有限不能视为写入覆盖正确。零初始化会把遗漏位置变为0，不能恢复这些本应非零的计算值。
+独立参考确认这些残留位置全部应为有限且非零值。rank0中w范围[-0.37699888178527885,0.8958594343028196]，u范围[-1.3085590153932571,32.767637491226196]。早期据此推断“未覆盖”不充分：NaN与任意值的原子加法也会保留NaN。有限哨兵实验已区分这两种解释；stock中w偶然有限仍不能视为正确。
 
 不把诊断对照当作故障注入验收或已发布修复，不修改冻结包、公共准入或宿主软件。更底层原因仍需对实际Triton生成代码、launch与同步进一步隔离；本次没有证据把它唯一归因于编译器或驱动。
 
@@ -64,3 +64,21 @@
 | a5 | 05:47:17.397671 | 05:51:15.879543 | 238.482 |
 
 日期均为2026-11-21；北京时间为UTC+8。汇总回执见 [m2_b8_nan_summary_20261121.json](../../experiments/worker_core_v11_20261118/m2_b8_nan_summary_20261121.json)。Git外日志归档保存在D盘 intake/blue/20261121/b8-nan-localization；归档SHA写入汇总。3个诊断统计/准入源码检查与1个独立分段参考CPU测试通过。
+
+## 逐位追因：错误FP32原子累加（历史诊断，已停止）
+
+2026-11-21晚负责人决定：以下修正试验安排已终止，不继续追查第三方kernel。现行结论与部署建议见 [环境缺陷报告](env_defect_gdn_b8_20261121.md)；历史控制记录不代表修复验收。
+
+有限哨兵BF16=1.25只用于诊断。独立分析器匹配同一次实际调用中k/v/beta/g/A全部相同的请求与head，以健康请求输出作为期望写入字。request1的23个可匹配head中，w/u各16,192个FP32字（每字两个BF16）全部逐位符合“旧字+正确字”，正常覆盖逐位匹配均为0。head17输入不匹配，保留不参与证明。
+
+[派生证据](../../experiments/worker_core_v11_20261118/gdn_atomic_store_evidence_20261121.json)保留捕获SHA与逐head结果；完整捕获不提交Git。`analyze_gdn_atomic.py`不修改张量，CPU测试区分正常覆盖、原子加与未写入。
+
+KKT更早出现有限值错误：grid20中异常task为21、41、61、…、181，均为owner1，首个task1正常。CPU-FP64参考显示，累加该core此前任务的Gram矩阵可以解释异常A（保留BF16舍入误差）。首个NaN边界WY不是首个错误计算边界。
+
+原kernel记录的请求边界和chunk索引正确；冷/热binary、grid、形状一致。提前编译、克隆索引、关闭multibuffer、单独前置atomic-none复位均未修复。关闭auto-blockify仅移动异常请求。修复试验改为在原GDN kernel AIC/AIV入口复位，保留empty分配、公式和dtype。完整冷启动、重复B8、独立重启的hidden/logits一致性通过前，不进入Batch故障验收，不宣布最终编译器/运行时责任边界。
+
+### 控制状态接口依据及验证边界
+
+[AscendNPU IR 的 set_atomic 文档](https://ascendnpu-ir.gitcode.com/en/developer_guide/dialects/hivm_dialect.html)说明，原子模式会影响后续GM写入，NONE用于恢复普通写入。[Ascend C asc_init文档](https://asc.gitcode.com/api/SIMD-API/c_api/utils/sys_init/asc_init.html)明确区分控制状态初始化与张量清零，并说明前序算子遗留状态可导致精度错误。这支持当前试验方向，但不替代本机核验，也不证明是哪一个前序算子留下了状态。
+
+实际修正试验仅在私有源码快照和隔离容器内重编译两个GDN kernel。新JIT名字防止复用镜像内旧缓存；原数学输入、公式、输出分配不变。分别记录原IR、修正IR、辅助bitcode与实际binary的SHA。只有重新编译记录和真实执行同时成立才判定干预有效；此前命中旧缓存的运行保留为无效修复试验。

@@ -1,6 +1,6 @@
 {
   "schema": "demoncat.nan_localization.summary.v1",
-  "status": "MODEL_CONTEXT_WY_WRITE_COVERAGE_FAILURE_BASELINE_NOT_QUALIFIED",
+  "status": "ERRONEOUS_ATOMIC_ACCUMULATION_BASELINE_NOT_QUALIFIED",
   "combination": {
     "hardware": "Ascend910B4 A2",
     "tp": 2,
@@ -2859,5 +2859,8 @@
   ],
   "private_archive_sha256": "9f29a8e14c4885c44cf8a40b0b25943e393bf982bbdee7630b907819a2fa8b20",
   "private_tensors_published": false,
-  "window_seconds_total": 1516.3810257881414
+  "window_seconds_total": 1516.3810257881414,
+  "previous_status_superseded": "MODEL_CONTEXT_WY_WRITE_COVERAGE_FAILURE_BASELINE_NOT_QUALIFIED",
+  "correction": "NaN sentinels alone cannot distinguish missing writes from atomic addition. Finite BF16 sentinel 1.25 gives exact packed-FP32 addition for 16192/16192 matched words of each WY output; KKT already has finite cross-task accumulation.",
+  "followup_evidence": "gdn_atomic_store_evidence_20261121.json"
 }
