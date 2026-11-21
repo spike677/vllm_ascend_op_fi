@@ -1,0 +1,137 @@
+"""Trusted eager W8A8 real DynamicQuant -> original QMM continuous site.
+
+Only pinned separate linear quantization; not fused MoE/GroupedMatmul quant.
+Original quantized buffers are restored after all real QMM consumers complete.
+No public Runtime qualification is granted by installing this experiment site.
+"""
+import hashlib
+import inspect
+import threading
+from pathlib import Path
+import numpy as np
+import torch
+from fault_injection.engines.dynamic_quant import shared_dynamic_quant
+from fault_injection.sites.mla28 import require, fingerprint
+
+SOURCE_SHA='ac9bd6ec05356b639665ec05ae21b19e1d0f0dc6723f7568b2f0ab70821285de'
+
+
+def cpu_reference(rows):
+    x=rows.detach().float().cpu().numpy()
+    scale=np.max(np.abs(x))/np.float32(127)
+    q=np.clip(np.rint(x/(scale if scale else np.float32(1))),-127,127).astype(np.int8)
+    return q,np.full(x.shape[0],scale,dtype=np.float32)
+
+
+class BatchQuantSite:
+    def __init__(self,model,runner,*,fault):
+        self.model=model;self.runner=runner;self.fault=fault
+        self.events=[];self.methods=[];self.sites=[];self.uncovered=[]
+        self.local=threading.local();self.forward_index=-1;self.hooks=[];self.pending=0
+
+    def install(self):
+        import torch_npu
+        self.api=torch_npu
+        self.original_quant=torch_npu.npu_dynamic_quant;self.original_qmm=torch_npu.npu_quant_matmul
+        require(not getattr(self.original_quant,'_dcat_site',False),'QUANT_ALREADY_WRAPPED')
+        seen=set()
+        for name,module in self.model.named_modules():
+            scheme=getattr(getattr(module,'quant_method',None),'quant_method',None)
+            if type(scheme).__name__!='AscendW8A8DynamicLinearMethod':continue
+            require(id(scheme) not in seen,'SHARED_SCHEME_OBJECT_REQUIRES_ADAPTER');seen.add(id(scheme))
+            require(hashlib.sha256(Path(inspect.getsourcefile(type(scheme))).read_bytes()).hexdigest()==SOURCE_SHA,'UNREVIEWED_QUANT_SOURCE')
+            require('apply' not in vars(scheme),'SCHEME_ALREADY_WRAPPED')
+            original=scheme.apply
+            def wrapped(layer,x,*args,_name=name,_original=original,**kwargs):
+                return self.call(_name,_original,layer,x,args,kwargs)
+            scheme.apply=wrapped;self.methods.append((scheme,wrapped));self.sites.append(name)
+        require(self.sites,'NO_SEPARATE_W8A8_LINEAR_SITE')
+        def quant(x,*args,**kwargs):
+            result=self.original_quant(x,*args,**kwargs)
+            ctx=getattr(self.local,'context',None)
+            if ctx is None:
+                self.uncovered.append(dict(operator='npu_dynamic_quant',reason='OUTSIDE_DISCOVERED_LINEAR_SCHEME'));return result
+            require(ctx['x'] is x and ctx.get('buffers') is None,'QUANT_INPUT_OR_MULTIPLICITY_CHANGED')
+            q,s=result;event=ctx['event']
+            event.update(shape=list(x.shape),q_dtype=str(q.dtype),scale_dtype=str(s.dtype))
+            require(x.ndim==2 and q.shape==x.shape and s.shape==(x.shape[0],) and q.dtype==torch.int8 and s.dtype==torch.float32,'UNSUPPORTED_QUANT_LAYOUT')
+            require(q.is_contiguous() and s.is_contiguous(),'QUANT_LAYOUT_NOT_CONTIGUOUS')
+            ctx['buffers']=(q,s)
+            if not self.fault:return result
+            require(len(event['request_ids'])>=2,'MULTIPLE_ACTUAL_REQUESTS_REQUIRED')
+            require(self.actual_rows()==x.shape[0],'PADDED_OR_UNMAPPED_QUANT_ROWS')
+            backups=(q.clone(),s.clone());ctx['backups']=backups;self.pending+=1
+            event['before_sha256']=[fingerprint(t) for t in backups]
+            newq,news=shared_dynamic_quant(x,arithmetic_device='cpu')
+            refq,refs=cpu_reference(x)
+            aq,as_=newq.cpu().numpy(),news.cpu().numpy()
+            require(np.array_equal(aq,refq) and np.array_equal(as_,refs),
+                    'CPU_REFERENCE_QUANT_MISMATCH:'+str(dict(q_changed=int(np.count_nonzero(aq!=refq)),
+                        scale_changed=int(np.count_nonzero(as_!=refs)),actual_scale=float(as_[0]),reference_scale=float(refs[0]),
+                        scale_max_abs=float(np.max(np.abs(as_-refs))),q_max_abs=int(np.max(np.abs(aq.astype(np.int16)-refq.astype(np.int16)))))))
+            event.update(reference_exact=True,arithmetic_backend='torch_cpu_fp32',changed=int((q!=newq).sum().item())+int((s!=news).sum().item()),
+                         shared_scale=float(news[0].item()),all_real_rows=True)
+            q.copy_(newq);s.copy_(news)
+            event.update(applied=True,after_sha256=[fingerprint(t) for t in (q,s)])
+            return result
+        def qmm(x,*args,**kwargs):
+            ctx=getattr(self.local,'context',None)
+            if ctx is None:return self.original_qmm(x,*args,**kwargs)
+            require(ctx.get('buffers') is not None,'QMM_WITHOUT_QUANT')
+            q,s=ctx['buffers'];require(x is q and kwargs.get('pertoken_scale') is s,'QMM_DID_NOT_CONSUME_EXACT_Q_SCALE')
+            require(torch.npu.current_stream()==ctx['stream'],'QMM_STREAM_CHANGED')
+            out=self.original_qmm(x,*args,**kwargs)
+            ctx['event']['qmm_calls']+=1
+            return out
+        quant._dcat_site=True
+        self.quant_wrapper=quant;self.qmm_wrapper=qmm
+        torch_npu.npu_dynamic_quant=quant;torch_npu.npu_quant_matmul=qmm
+        def pre(*unused):self.forward_index+=1
+        self.hooks.append(self.model.register_forward_pre_hook(pre))
+        return self.sites
+
+    def actual_rows(self):
+        from vllm.forward_context import get_forward_context
+        metadata=get_forward_context().attn_metadata
+        candidates=list(metadata.values()) if isinstance(metadata,dict) else [metadata]
+        counts={int(m.num_actual_tokens) for m in candidates if hasattr(m,'num_actual_tokens')}
+        require(len(counts)==1,'ACTUAL_TOKEN_METADATA_UNPROVEN')
+        return counts.pop()
+
+    def call(self,name,original,layer,x,args,kwargs):
+        require(getattr(self.local,'context',None) is None,'OVERLAPPING_QUANT_CALL')
+        event=dict(site=name,method='_forward_prefill' if self.forward_index==0 else '_forward_decode',
+                   request_ids=list(self.runner.input_batch.req_ids),applied=False,changed=0,consumed=False,
+                   restored=False,failed=False,qmm_calls=0)
+        self.events.append(event)
+        ctx=dict(x=x,event=event,stream=torch.npu.current_stream());self.local.context=ctx
+        try:
+            output=original(layer,x,*args,**kwargs)
+            require(ctx.get('buffers') is not None and event['qmm_calls'] in (1,2),'EXPECTED_REAL_CONSUMERS_MISSING')
+            require(torch.npu.current_stream()==ctx['stream'],'RETURN_STREAM_CHANGED')
+            completion=torch.npu.Event();completion.record(ctx['stream']);completion.synchronize()
+            event['consumed']=event['applied']
+            return output
+        except BaseException:
+            event['failed']=True
+            raise
+        finally:
+            if 'backups' in ctx:
+                # A same-stream event orders restoration after any enqueued QMM.
+                done=torch.npu.Event();done.record(ctx['stream']);done.synchronize()
+                for t,b in zip(ctx['buffers'],ctx['backups']):t.copy_(b)
+                done=torch.npu.Event();done.record(ctx['stream']);done.synchronize()
+                event['restored_sha256']=[fingerprint(t) for t in ctx['buffers']]
+                require(event['restored_sha256']==event['before_sha256'],'QUANT_BYTES_NOT_RESTORED')
+                event['restored']=True;self.pending-=1
+            self.local.context=None
+
+    def close(self):
+        require(self.pending==0 and getattr(self.local,'context',None) is None,'QUANT_LEASES_PENDING')
+        require(self.api.npu_dynamic_quant is self.quant_wrapper and self.api.npu_quant_matmul is self.qmm_wrapper,'QUANT_WRAPPER_OWNERSHIP_CHANGED')
+        self.api.npu_dynamic_quant=self.original_quant;self.api.npu_quant_matmul=self.original_qmm
+        for scheme,wrapped in self.methods:
+            require(vars(scheme).get('apply') is wrapped,'SCHEME_OWNER_CHANGED');delattr(scheme,'apply')
+        for hook in self.hooks:hook.remove()
+        self.methods.clear();self.hooks.clear()
+        return dict(leases=0,hooks=0,inflight=0)
