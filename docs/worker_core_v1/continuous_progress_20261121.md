@@ -1,6 +1,6 @@
 # 全 rank 持续触发：开发记录（2026-11-21）
 
-本页以负责人最新 12 项任务为准。以下基础开发记录保留；28 已开始真实模型验收，最新进展见 [实机报告](continuous28_real_model_20261121.md)。公共 Runtime 的持续准入尚未完成，不继承旧单次验收。冻结发行物未修改。
+本页以负责人最新 12 项任务为准。以下基础开发记录保留；28 已开始真实模型验收，最新进展见 [实机报告](continuous28_real_model_20261121.md)。公共 Runtime 的28/Batch已接线，最新复核见 [公共入口记录](continuous_runtime_20261121.md)；不继承旧单次验收。冻结发行物未修改。
 
 ## 已实现的第一批基础代码
 
@@ -20,7 +20,7 @@
 
 CPU 参考例：256 个等权 key、V 全 1，重放其中 128 个 key 的分母贡献后输出从 1 变为 2/3。只证明错误公式实现，不代替模型 hidden/logits 效果。
 
-## 当前缺口，不能提前宣称公共框架完成
+## 第一批基础开发时的缺口（历史，最新状态见总表）
 
 1. 28 的实际 site 已补齐逐命中生命周期、重叠拒绝和同 stream 完成证据；其他能力及公共 provider 最终收尾待接线。
 2. 覆盖审查器是纯校验函数，须接入实际 provider 的查询、finish 和最终收尾；计数不能由模拟回执代替实测。
@@ -42,11 +42,11 @@ CPU 参考例：256 个等权 key、V 全 1，重放其中 128 个 key 的分母
 |22|待持续接线/重验|待适配|待持续验收|待适配/验收|
 |39 output_proxy|待 BF16 输出选点及持续验收|待适配|待验收|待验收|
 |39 matmul_range|待实现|未列为首批蓝区模型|待验收|待适配/验收|
-|Batch|B8真实304投影/两rank/两作用域通过，每rank1216次；CPU-FP32重算，原NPU QMM消费；公共Runtime待完成|未列为首批蓝区模型|待验收|W8A8独立DynamicQuant部分待适配|
+|Batch|公共入口CPU/NPU各两作用域通过；304投影×4步/每rank，1216次；最终交付负向检查通过|未列为首批蓝区模型|待验收|W8A8独立DynamicQuant部分待适配|
 |41|Native 最后阶段|MLA cache 待适配|待验收|待适配/验收|
 |17|不扩大模型范围，仅保留既有视觉模型|不适用|仅既有视觉范围，持续验收待完成|不在该模型范围|
 |8|dense 不适用|待持续适配|不适用|M4 待完成|
-|28 denominator torch|真实16层/两rank/两作用域通过，每rank64次；公共Runtime接线待完成|真实27层/两rank/两作用域通过，每rank108次；公共Runtime接线待完成|待验收|稀疏 MLA/M4 待完成|
+|28 denominator torch|公共入口通过：16层×4步/每rank，两作用域，完整恢复与实际创建负向通过|实验binding通过：27层×4步/每rank，两作用域；公共入口待阶段3|待验收|稀疏 MLA/M4 待完成|
 |20|Native 最后阶段|待对应 site|待验收|不在 RC3 第二批清单|
 |26 fia_destination|Native 最后阶段|待对应 site|待验收|不在 RC3 第二批清单|
 |33|paged attention 待实现|未列为首批蓝区模型|待验收|不在 RC3 第二批清单|
@@ -54,3 +54,7 @@ CPU 参考例：256 个等权 key、V 全 1，重放其中 128 个 key 的分母
 覆盖统计与性能（28 新实机）：V2-Lite 每作用域每 rank 108 次 applied/changed/consumed/restored，failed=0，耗时 1.7266×/1.6460×；Qwen 每作用域每 rank 64 次，failed=0，耗时 1.2898×/1.2172×。Batch新增实机见 [报告](continuous_batch_real_model_20261121.md)：Qwen3.8每rank每作用域1216次applied/consumed/restored，changed为rank0 1214、rank1 1213，failed=0，4.3012×/4.2694×；Qwen3-0.6B每rank336次，2.8584×/2.7968×。其余10项仍没有本轮持续实测通过结论。既有单次通过结果作为历史证据保留，不提升为新契约通过。
 
 最终 a4 独立重启复核逐调用恢复字节 SHA、Qwen 实际输出缓冲区 SHA 全部一致；两模型都通过同组 Worker 两作用域。元数据补充：V4.1 两版 config 已获取且完全相同；真实配置的 CPU 结构夹具通过，稀疏 MLA/EP 运行接线与准入未完成，见 deepseek_v41_metadata_20261121.md。
+
+## 公共入口最新复核
+
+28 public-a5：每rank每作用域64次applied/changed/consumed/restored，failed=0；1.4265×/1.3416×；真实消费者与对象区间恢复、完整OFF/health均通过。Batch public-a3 NPU：1216次applied/consumed/restored，changed分别1214/1213，failed=0；6.2112×/6.0967×。public-a4 CPU同路径为6.0880×/6.4494×，尚无明确性能优势。这里只登记实际A2/0.26/Qwen3.8社区W8A8/TP2，不外推A3、MLA或其他输入长度。

@@ -1,0 +1,69 @@
+{
+  "schema": "demoncat.continuous.reviewed.v1",
+  "records": [
+    {
+      "mechanism": "28.fia.denominator_replay",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_28_review_20261121.json",
+      "review_sha256": "d6598c94d8551738f04236e78c0f1f7823a78c751538714ea471e54942144f43",
+      "source_manifest_sha256": "44d766c31a2d8e57436445008779f34268b62f85afe515447b5a0c3d6d30723e",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "torch_denominator_replay",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4
+    },
+    {
+      "mechanism": "quant.batch_shared_scale",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_batch_final_review_20261121.json",
+      "review_sha256": "a63e21aa080021f8cde3f8e5ea0d5e761f66b3ab5199419342bbf963293ccc42",
+      "source_manifest_sha256": "d496f89bce3d50d451df998c806422b2f13c1b7acd6c51dd8bb8a8d2d5889d48",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "torch_batch_shared_scale_input",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 8,
+      "generated_tokens": 4
+    }
+  ]
+}

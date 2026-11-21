@@ -1,3 +1,9 @@
+## 2026-11-21 晚：公共持续入口
+
+[阶段1实施及验收](docs/worker_core_v1/continuous_runtime_20261121.md)：28 torch denominator_replay 已在 A2 / 0.26 / Qwen3.8 社区 W8A8 / TP2 通过公共 Runtime 同组 Worker 两作用域，逐次租约、消费者事件、OFF/health 完整恢复及真实无许可创建拒绝均通过。Batch NPU 与 CPU 公共入口两作用域完成，最终交付脚本真实创建负向检查通过。其余10项仍未通过本轮持续公共契约。
+
+[12项进度总表](docs/worker_core_v1/continuous_progress_20261121.md)区分实验 binding 和公共入口；[RC3预览验收步骤](docs/worker_core_v1/rc3_preview_acceptance_20261121.md)仅含28/Batch，A3待验。Native28研究入口继续关闭。以下旧记录保留历史适用范围，不覆盖本节新状态。
+
 [2026-11-20最新实机进展](docs/worker_core_v1/npu_progress_20261120.md)：A2/0.18/Qwen3-0.6B的18、22、39、Batch、41 TP2已完成限定的同Worker双作用域闭环。新栈A2/0.26/CANN9.1/社区Qwen3.8 W8A8 TP2的18及22，已通过预热后双作用域的实际命中、全rank OFF/health精确恢复与资源清零；冷启动首请求有无注入差异，仍不在验收范围。22覆盖实际融合mRoPE目标Q/K行；39的社区量化out_proj不等价于黄区BF16目标。详见[新栈适配](docs/worker_core_v1/v026_adaptation_20261120.md)。
 
 [2026-11-21无注入定位](docs/worker_core_v1/m2_b8_nan_localization_20261121.md)：新证据将“GDN请求块漏写”修正为错误累加：WY的23个可匹配head逐位符合把两个BF16作为FP32与旧存储相加，KKT也出现跨任务累加。零初始化及单独前置复位均不是完整修复；按负责人决定已停止继续追查和复位试验，保留为环境缺陷证据。冻结包与公共准入不变。

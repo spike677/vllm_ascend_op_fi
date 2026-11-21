@@ -1,0 +1,279 @@
+{
+  "schema": "demoncat.continuous.public_review.v1",
+  "mechanism": "quant.batch_shared_scale",
+  "arithmetic_device": "input",
+  "passed": true,
+  "scopes": [
+    {
+      "owner": "worker-group-9ab7807117f14dcabaf0c13d9ede185e",
+      "rank_effects": {
+        "0": {
+          "coverage": {
+            "applied": 1216,
+            "attempted": 1216,
+            "changed": 1214,
+            "consumed": 1216,
+            "eligible": 1216,
+            "failed": 0,
+            "observed": 1216,
+            "restored": 1216
+          },
+          "site_count": 304,
+          "quant_reference": {
+            "backend": "input",
+            "q_sample_differences": 0,
+            "sampled_elements": 1245170
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "c4b059f6cdc34dee80fbc25f03acf77757ca018d37148ce0ac3aa5f805b67138",
+          "sampled_q_difference_fraction": 0.0
+        },
+        "1": {
+          "coverage": {
+            "applied": 1216,
+            "attempted": 1216,
+            "changed": 1213,
+            "consumed": 1216,
+            "eligible": 1216,
+            "failed": 0,
+            "observed": 1216,
+            "restored": 1216
+          },
+          "site_count": 304,
+          "quant_reference": {
+            "backend": "input",
+            "q_sample_differences": 0,
+            "sampled_elements": 1245168
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "54890a9f084debb31e532ee0186dd4548011e80cb54f114503f18a33cdee8dc5",
+          "sampled_q_difference_fraction": 0.0
+        }
+      },
+      "deployment": {
+        "0": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        },
+        "1": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        }
+      },
+      "fault_time_ratio": 6.211185488619944,
+      "request_plan": {
+        "schema": "demoncat.continuous.request_plan.v1",
+        "mechanism": "quant.batch_shared_scale",
+        "phases": [
+          {
+            "phase": "normal",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "fault",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "off",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "health",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          }
+        ],
+        "unit": "batch",
+        "max_iterations": 4,
+        "max_requests": 32,
+        "external_health_required": false,
+        "advance_argument": "request_ids",
+        "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+        "qualification_granted": false,
+        "completion": "next_phase == complete AND all rank recovery checks passed"
+      },
+      "recovered": true,
+      "resources_zero": true
+    },
+    {
+      "owner": "worker-group-eddb95072674493d973bad951527258c",
+      "rank_effects": {
+        "0": {
+          "coverage": {
+            "applied": 1216,
+            "attempted": 1216,
+            "changed": 1214,
+            "consumed": 1216,
+            "eligible": 1216,
+            "failed": 0,
+            "observed": 1216,
+            "restored": 1216
+          },
+          "site_count": 304,
+          "quant_reference": {
+            "backend": "input",
+            "q_sample_differences": 0,
+            "sampled_elements": 1245170
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "fc62642bace6fdb7f4f805099486fd341012f91f7116d52b73e9701a2bb88dd2",
+          "sampled_q_difference_fraction": 0.0
+        },
+        "1": {
+          "coverage": {
+            "applied": 1216,
+            "attempted": 1216,
+            "changed": 1213,
+            "consumed": 1216,
+            "eligible": 1216,
+            "failed": 0,
+            "observed": 1216,
+            "restored": 1216
+          },
+          "site_count": 304,
+          "quant_reference": {
+            "backend": "input",
+            "q_sample_differences": 0,
+            "sampled_elements": 1245168
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "70169e8ce7dfc18ef8ef147ed3eed47765941b59534656947c5fa1766608af96",
+          "sampled_q_difference_fraction": 0.0
+        }
+      },
+      "deployment": {
+        "0": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        },
+        "1": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        }
+      },
+      "fault_time_ratio": 6.096650745877549,
+      "request_plan": {
+        "schema": "demoncat.continuous.request_plan.v1",
+        "mechanism": "quant.batch_shared_scale",
+        "phases": [
+          {
+            "phase": "normal",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "fault",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "off",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "health",
+            "request_count": 8,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          }
+        ],
+        "unit": "batch",
+        "max_iterations": 4,
+        "max_requests": 32,
+        "external_health_required": false,
+        "advance_argument": "request_ids",
+        "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+        "qualification_granted": false,
+        "completion": "next_phase == complete AND all rank recovery checks passed"
+      },
+      "recovered": true,
+      "resources_zero": true
+    }
+  ],
+  "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEW_STILL_REQUIRED",
+  "qualification_granted": false,
+  "source_receipt_sha256": "04b887c5b6fc1e5f38ae5f17126fb57ac2e7984427f3d96e7e88d306387a892f"
+}

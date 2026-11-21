@@ -155,6 +155,24 @@ def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=
             checks=[expectation('deployment_identity','accepted_combination.'+k,v,actual.get(k),'ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT') for k,v in expected.items()]
             record=(expected['model_config_sha256'],expected['model_class'],candidate['review_reference'])
             break
+    # Continuous torch evidence must never grant the unbound Native/research
+    # implementation sharing the historical mechanism name.
+    from .continuous_binding import current_binding,SUPPORTED
+    continuous=current_binding(worker,model,mechanism) if worker is not None and mechanism in SUPPORTED else None
+    if continuous is not None:
+        accepted=False;expected=None;record=None;checks=[]
+        records_path=Path(__file__).with_name('continuous_blue_records.json')
+        records=json.loads(records_path.read_text(encoding='utf-8'))['records'] if records_path.is_file() else []
+        for candidate in records:
+            if (source=='BLUE_COMBINATION' and candidate['mechanism']==mechanism
+                    and candidate['arithmetic_device']==continuous.arithmetic_device
+                    and candidate['request_count']==len(continuous.prompts)
+                    and candidate['expected']==actual):
+                expected=dict(candidate['expected']);accepted=True
+                record=(expected['model_config_sha256'],expected['model_class'],candidate['review_reference'])
+                checks=[expectation('deployment_identity','accepted_continuous_combination.'+k,v,actual.get(k),
+                    'CONTINUOUS_COMBINATION_NOT_MATCHED') for k,v in expected.items()]
+                break
     permit=getattr(worker,_BLUE,None)
     blue=(type(permit) is BlueAcceptancePermit and permit.worker is worker and permit.model is model
         and worker.model_runner.model is model and mechanism in permit.mechanisms
@@ -164,7 +182,9 @@ def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=
     status=('NOT_IMPLEMENTED' if not implemented else 'ACCEPTED_DEPLOYMENT' if accepted
         else 'IMPLEMENTED_NOT_ACCEPTED_FOR_DEPLOYMENT')
     return dict(schema='demoncat.deployment_acceptance.v1',status=status,accepted=accepted,
-        can_prepare=bool(implemented and (accepted or blue or cpu)),
+        # Continuous preview still requires a scoped trusted permit even for a
+        # reviewed blue combination. Acceptance is evidence, not a user bypass.
+        can_prepare=bool(implemented and (blue if continuous is not None else accepted or blue or cpu)),
         mode='CPU_FIXTURE_ONLY' if cpu else ('BLUE_ACCEPTANCE_ONLY' if source=='BLUE_COMBINATION' else 'DEPLOYMENT_ACCEPTANCE_ONLY') if blue else 'DEFAULT',
         registration_source=source,
         acceptance_permit=(dict(permit_id=permit.permit_id,source=permit.source,operator=permit.operator,

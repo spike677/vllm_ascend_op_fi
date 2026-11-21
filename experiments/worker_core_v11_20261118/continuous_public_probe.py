@@ -1,0 +1,157 @@
+"""Public Runtime TP2 acceptance. Trusted bootstrap only installs inert bindings.
+
+Inference remains llm.enqueue/wait_for_completion. No experiment injection RPC
+is used. Raw receipts remain local; this script grants no deployment record.
+"""
+import argparse,hashlib,json,time,traceback
+from pathlib import Path
+
+
+def bootstrap(wrapper,action,mechanism,options=None):
+    from vllm.v1.worker.worker_base import WorkerWrapperBase
+    worker=wrapper.worker if isinstance(wrapper,WorkerWrapperBase) else wrapper
+    from demoncat.runtime.vllm_ascend.worker_extension.continuous_binding import (
+        install_continuous_binding,remove_continuous_binding,observe_continuous_warmup)
+    from demoncat.runtime.vllm_ascend.worker_extension.deployment_authorization import (
+        authority_for,configure_deployment_acceptance,install_deployment_acceptance_permit,
+        remove_deployment_acceptance_permit)
+    if action=='bind':return install_continuous_binding(worker,mechanism=mechanism,**options)
+    if action=='warmup':return observe_continuous_warmup(worker,mechanism,request_ids=options)
+    if action=='permit':
+        options=dict(options);source=options.pop('source')
+        authority=authority_for(worker)
+        if authority is None:
+            authority=configure_deployment_acceptance(worker,source=source,
+                authorize_operator=lambda principal,operation:principal=='rc3-acceptance-harness')
+        assert authority.source==source,'AUTHORITY_SOURCE_CHANGED'
+        return install_deployment_acceptance_permit(worker,authority=authority,
+            operator='rc3-acceptance-harness',mechanisms=[mechanism],**options)
+    if action=='cleanup':
+        remove_deployment_acceptance_permit(worker,authority=authority_for(worker),operator='rc3-acceptance-harness')
+        remove_continuous_binding(worker,mechanism)
+        runtime=worker._demoncat_worker_fault_runtime
+        return dict(rank=worker.rank,status='REMOVED',permit_remaining=hasattr(worker,'_demoncat_blue_acceptance_permit'),
+                    runtime_leases=len(runtime._leases),runtime_tenants=len(runtime._tenants))
+    if action=='negative':
+        from demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission import ordinary_route_report
+        return ordinary_route_report(mechanism,worker,worker.model_runner.model)
+    raise ValueError('UNKNOWN_BOOTSTRAP_ACTION')
+
+
+def main():
+    p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch'),required=True)
+    p.add_argument('--arithmetic-device',choices=('input','cpu'),default='input')
+    p.add_argument('--model',default='/model');p.add_argument('--evidence',default='/evidence')
+    p.add_argument('--source-manifest',default='/source/source_manifest.json')
+    p.add_argument('--deployment-source',choices=('BLUE_COMBINATION','YELLOW_DEDICATED_INSTANCE'),default='BLUE_COMBINATION')
+    a=p.parse_args()
+    mechanism='quant.batch_shared_scale' if a.mechanism=='batch' else '28.fia.denominator_replay'
+    batch=8 if a.mechanism=='batch' else 1
+    report=dict(status='STARTED',mechanism=mechanism,scopes=[],warmup=[],qualification_granted=False,
+        acceptance_scope='PUBLIC_WORKER_RUNTIME',arithmetic_device=a.arithmetic_device)
+    evidence=Path(a.evidence);evidence.mkdir(parents=True,exist_ok=True)
+    out=evidence/'continuous_public.json'
+    if out.exists():raise RuntimeError('EVIDENCE_MUST_NOT_BE_OVERWRITTEN')
+    def save():out.write_text(json.dumps(report,indent=2)+'\n')
+    client=None
+    try:
+        from vllm import LLM,SamplingParams
+        from demoncat.runtime.vllm_ascend.worker_extension.config import FaultConfig
+        from demoncat.runtime.vllm_ascend.worker_extension.multi_rank import MultiRankTaskClient
+        from demoncat.runtime.vllm_ascend.worker_extension.host import HostAdapter,WorkerFaultClient
+        from demoncat.runtime.vllm_ascend.worker_extension.continuous_binding import digest
+        from demoncat.runtime.vllm_ascend.worker_extension.serving_context import actual_driver_request_map
+        llm=LLM(model=a.model,dtype='bfloat16',quantization='ascend',tensor_parallel_size=2,
+            distributed_executor_backend='mp',enforce_eager=True,enable_prefix_caching=False,
+            async_scheduling=False,enable_chunked_prefill=True,max_num_batched_tokens=1024,
+            max_model_len=1024,max_num_seqs=batch,gpu_memory_utilization=.8,seed=42,
+            speculative_config=None,kv_transfer_config=None,trust_remote_code=True,
+            limit_mm_per_prompt={'image':0,'video':0},
+            worker_extension_cls='demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension')
+        seeds=['Explain in one sentence why the sky appears blue.','Explain in one sentence why the grass appears green.',
+            'Summarize the purpose of a computer in one sentence.','What makes a stone sink in water?',
+            'Explain why snow appears white in daylight.','Give one example of a simple machine.',
+            'What is the sum of four and five?','Name one planet in the solar system.']
+        tokens=[llm.get_tokenizer().encode(s,add_special_tokens=True) for s in seeds[:batch]]
+        params=SamplingParams(temperature=0,max_tokens=4,min_tokens=4,ignore_eos=True)
+        source_sha=hashlib.sha256(Path(a.source_manifest).read_bytes()).hexdigest()
+        report['source_manifest_sha256']=source_sha
+        report['request_seconds_limit']=120
+        def rpc(action,options=None):
+            print(json.dumps(dict(progress='rpc_begin',action=action)),flush=True)
+            result=llm.collective_rpc(bootstrap,args=(action,mechanism,options),timeout=120)
+            print(json.dumps(dict(progress='rpc_end',action=action)),flush=True)
+            return result
+        def enqueue():
+            assert llm.reset_prefix_cache(reset_running_requests=False)
+            llm.sleep(level=0,mode='wait')
+            ids=list(llm.enqueue([dict(prompt_token_ids=t) for t in tokens],params,use_tqdm=False))
+            mapping=actual_driver_request_map(llm.llm_engine.output_processor)
+            assert len(mapping)==len(ids)==batch and {r['internal_request_id'] for r in mapping}==set(ids)
+            return ids,mapping
+        def run(mapping):
+            start=time.monotonic();llm.wake_up(tags=['scheduling'])
+            outputs=llm.wait_for_completion(use_tqdm=False)
+            assert {o.request_id for o in outputs}=={r['external_request_id'] for r in mapping}
+            elapsed=time.monotonic()-start
+            assert elapsed<=120,'CONTINUOUS_REQUEST_EXPERIMENT_TIME_BUDGET_EXCEEDED'
+            return dict(seconds=elapsed,tokens=[list(o.outputs[0].token_ids) for o in outputs])
+        for scope_index in range(2):
+            config=FaultConfig('quant','batch_shared_scale') if batch>1 else FaultConfig(28,'fia.denominator_replay')
+            client=MultiRankTaskClient(llm,config,prepare_binding=lambda *_:{},continuous=True,world_size=2,
+                batch_size=batch,timeout=120)
+            contract=client.contract()
+            members=sorted([r['worker'] for r in llm.collective_rpc('demoncat_worker_identity')],key=lambda r:r['rank'])
+            contract.update(members=members,members_sha256=digest(members))
+            rpc('bind',dict(prompts=tokens,group_contract=contract,arithmetic_device=a.arithmetic_device))
+            negative=rpc('negative');assert all(not r['can_prepare'] for r in negative),'MISSING_PERMIT_ADMITTED'
+            for attempt in range(6):
+                ids,mapping=enqueue();rpc('warmup',ids);run(mapping)
+                warm=rpc('warmup');report['warmup'].append(dict(scope=scope_index,attempt=attempt,ranks=warm));save()
+                if all(r['warmup_valid'] for r in warm):break
+            else:raise RuntimeError('BASELINE_NOT_STABLE_IN_SIX')
+            negative_creation=[]
+            for member in members:
+                host=HostAdapter(llm,select_worker=lambda config,rows,m=member:m,
+                    prepare_binding=lambda *_:{},timeout=120)
+                denied=WorkerFaultClient(host,config)
+                creation=denied.prepare()
+                assert creation['status'] in ('PROVIDER_UNAVAILABLE','REJECTED'),creation
+                assert denied.snapshot()['ticket'] is None,creation
+                detached=denied.detach();assert detached['status']=='DETACHED',detached
+                negative_creation.append(dict(rank=member['rank'],prepare=creation,detach=detached,
+                    snapshot=denied.snapshot()))
+            rpc('permit',dict(attempt='continuous-public-'+str(scope_index),source_manifest_sha256=source_sha,
+                              source=a.deployment_source))
+            scope=dict(owner=contract['owner'],requests=[],negative_missing_permit=negative,
+                       negative_missing_permit_creation=negative_creation)
+            report['scopes'].append(scope);save()
+            for action in ('prepare','register','check','enable'):
+                result=getattr(client,action)();scope[action]=result;save()
+                assert result['status']=='ACTION_COMPLETED',(action,result)
+            for phase in ('normal','fault','off','health'):
+                ids,mapping=enqueue()
+                result=client.advance_batch(ids) if batch>1 else client.advance(ids[0])
+                assert result['status']=='ACTION_COMPLETED',result
+                timing=run(mapping);result=client.query()
+                scope['requests'].append(dict(phase=phase,mapping=mapping,result=result,**timing));save()
+                assert result['status']=='QUERY_OK',result
+            extra=client.advance_batch(['extra'+str(i) for i in range(batch)]) if batch>1 else client.advance('extra')
+            assert extra['status']=='GROUP_PHASES_EXHAUSTED';scope['negative_extra_advance']=extra['status']
+            for action in ('finish','unregister','detach'):
+                result=getattr(client,action)();scope[action]=result;save()
+                assert result['status']==('DETACHED' if action=='detach' else 'ACTION_COMPLETED'),result
+            scope['snapshot']=client.snapshot();scope['cleanup']=rpc('cleanup')
+            scope['fault_time_ratio']=scope['requests'][1]['seconds']/scope['requests'][0]['seconds'];save()
+        report['status']='PUBLIC_TWO_SCOPES_COMPLETED_PENDING_INDEPENDENT_REVIEW'
+    except BaseException as e:
+        report.update(status='FAILED',error=repr(e),traceback=traceback.format_exc())
+        if client is not None:
+            report['failure_snapshot']=client.snapshot()
+            try:report['recovery']=client.recover()
+            except Exception as cleanup:report['recovery_error']=repr(cleanup)
+    save();print(json.dumps(dict(status=report['status'],error=report.get('error'))),flush=True)
+    return 0 if report['status'].startswith('PUBLIC_TWO') else 2
+
+
+if __name__=='__main__':raise SystemExit(main())
