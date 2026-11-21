@@ -63,7 +63,8 @@ def install(monitor,control):
     import vllm_ascend.device.device_op as device
     for obj,name in ((wy,'recompute_w_u_fwd_kernel'),(device,'chunk_scaled_dot_kkt_fwd_kernel')):
         original=getattr(obj,name)
-        base=instrument_metadata(original,monitor,name) if control=='program_meta' else original
+        base=(instrument_metadata(original,monitor,name) if control=='program_meta' else
+              clone_inline_kernel(original,monitor,name) if control=='inline_atomic' else original)
         wrapper=KernelAudit(base,monitor,name,control)
         setattr(obj,name,wrapper);monitor.patches.append((obj,name,wrapper,True,original))
 
@@ -96,3 +97,18 @@ def metadata_source(source,name):
     statements='\n'.join('            tl.store(Debug + '+slot+' * 16 + '+str(i)+', '+v+')' for i,v in enumerate(('i_n','i_t','bos','eos')))
     source=source.replace(anchor,anchor+'\n'+statements)
     return source
+
+def clone_inline_kernel(original,monitor,name):
+    """Separate JIT identity prevents reuse of prebuilt unpatched binaries."""
+    import importlib.util,inspect,sys
+    jit=original
+    while not hasattr(jit,'src'):jit=jit.fn
+    source=pathlib.Path(inspect.getsourcefile(jit.fn)).read_text()
+    marker='def '+name+'('
+    assert source.count(marker)==1
+    revised=name+'_atomic_none'
+    source=source.replace(marker,'def '+revised+'(',1)
+    target=monitor.file.with_name(monitor.file.stem+'-'+revised+'.py');target.write_text(source)
+    module_name='vllm_ascend.ops.triton.fla._dcat_'+revised+'_'+monitor.file.stem.replace('-','_')
+    spec=importlib.util.spec_from_file_location(module_name,target);module=importlib.util.module_from_spec(spec);sys.modules[module_name]=module;spec.loader.exec_module(module)
+    return getattr(module,revised)
