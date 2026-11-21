@@ -33,6 +33,13 @@ def _call(worker, action, payload=None):
 
 
 class DemoncatWorkerExtension:
+    def demoncat_inspect_readonly(self, offset=0, limit=128):
+        from .readonly_inspect import inspect_worker
+        try:return inspect_worker(self,offset=offset,limit=limit)
+        except Exception as error:
+            return dict(status='INSPECTION_UNAVAILABLE',rank=getattr(self,'rank',None),
+                error_type=type(error).__name__,qualification_granted=False)
+
     def demoncat_worker_identity(self):
         return _call(self, 'worker_identity')
 

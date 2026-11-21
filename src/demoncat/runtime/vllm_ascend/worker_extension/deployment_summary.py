@@ -23,6 +23,17 @@ _EFFECT=('phase','request_id','request_ids','actual_internal_request_id','input_
     'hidden_sha256','logits_sha256','hidden_finite','logits_finite','logits_returned','returned',
     'top1','projection','functional_effect_observed','fault_attempted','actual_fault_hits',
     'batch','batch_phase','selected_site','original_calls','target','elements','dtype','shape')
+_EFFECT += ('positions','scope','invocation','numeric_change','position','path','ordinal',
+    'complete_qk_changed','non_target_unchanged','position_transform','reader',
+    'finite_pair_elements','finite_difference_overflow','finite_to_nan','finite_to_positive_inf',
+    'finite_to_negative_inf','nonfinite_to_finite','before_nonfinite','after_nonfinite',
+    'before','after','samples','flat_index','applied_events','matched_effects','omitted_positions',
+    'coverage','observed','eligible','attempted','changed','consumed','restored','failed',
+    'same_stream_verified','bytes_restored','site_count','all_finite','quant_reference',
+    'sampled_elements','q_sample_differences','backend','events_sha256','reported_recovered',
+    'semantic_position','actual_consumer_observed','values','correct_source_row','replacement_source_row',
+    'comparison','actual_final_reader','complete_output','non_target_output','non_target_qk_before',
+    'native_calls','integer_overflow_reproduced')
 
 def _bytes(x):
     return json.dumps(x,sort_keys=True,allow_nan=False,separators=(',',':')).encode()
@@ -62,6 +73,9 @@ def summarize_scope(receipt):
     if not rows:rows=ev.get('actual_requests',[])
     if not rows:errors.append('ACTUAL_REQUEST_ROWS_MISSING')
     recovery=ev.get('matched_off_and_health_confirmed',serving.get('matched_off_and_health_confirmed',serving.get('recovery_proven')))
+    reported_recovered=ev.get('recovered',serving.get('recovered'))
+    if type(reported_recovered) is bool and reported_recovered is not recovery:
+        errors.append('RECOVERY_FIELDS_CONTRADICT')
     if recovery is not True:errors.append('OFF_AND_HEALTH_RECOVERY_UNCONFIRMED')
     if receipt.get('mechanism')=='quant.batch_shared_scale' and not any(r.get('phase')=='health' for r in rows):
         errors.append('BATCH_EXTERNAL_HEALTH_RECEIPT_REQUIRES_SEPARATE_REVIEW')
@@ -75,7 +89,8 @@ def summarize_scope(receipt):
     return dict(schema='demoncat.deployment_scope_summary.v1',mechanism=receipt.get('mechanism'),
         owner=receipt.get('owner'),worker=deepcopy(receipt.get('worker')),source_receipt_sha256=hashlib.sha256(raw).hexdigest(),
         actual={k:actual.get(k) for k in _FIELDS},registration_source=use.get('registration_source'),
-        permit=deepcopy(use.get('permit')),requests=_compact(rows),effects=_compact(ev),
+        permit=deepcopy(use.get('permit')),requests=_compact(rows),effects=dict(_compact(ev),
+            reported_recovered=reported_recovered,recovered=recovery),
         recovery_confirmed=recovery,resources=resources,ownership_retained=receipt.get('ownership_retained'),
         evidence_complete=not errors,missing_or_failed=errors,review_required=True,acceptance_granted=False)
 
