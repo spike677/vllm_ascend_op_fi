@@ -1,0 +1,454 @@
+{
+  "schema": "demoncat.continuous.public_review.v1",
+  "mechanism": "18.api_half",
+  "arithmetic_device": "input",
+  "reference_mode": "immediate",
+  "passed": true,
+  "scopes": [
+    {
+      "owner": "worker-group-9514c6a7c3f2403bab8fe6a441dd7e0e",
+      "rank_effects": {
+        "0": {
+          "coverage": {
+            "applied": 220,
+            "attempted": 220,
+            "changed": 220,
+            "consumed": 220,
+            "eligible": 220,
+            "failed": 0,
+            "observed": 220,
+            "restored": 220
+          },
+          "site_count": 55,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "immediate",
+            "q_sample_difference_fraction": null,
+            "q_sample_differences": 0,
+            "reference_scope": "NOT_APPLIED",
+            "sampled_elements": 0
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "1a126659c64eca99087f6973c10492700a23f3c2e0877bd980a5f5bab6e75c71",
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::mla_forward",
+              "vllm::moe_forward_shared"
+            ],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [
+            "model.layers.0.self_attn.kv_a_layernorm",
+            "model.layers.1.self_attn.kv_a_layernorm",
+            "model.layers.10.self_attn.kv_a_layernorm",
+            "model.layers.11.self_attn.kv_a_layernorm",
+            "model.layers.12.self_attn.kv_a_layernorm",
+            "model.layers.13.self_attn.kv_a_layernorm",
+            "model.layers.14.self_attn.kv_a_layernorm",
+            "model.layers.15.self_attn.kv_a_layernorm",
+            "model.layers.16.self_attn.kv_a_layernorm",
+            "model.layers.17.self_attn.kv_a_layernorm",
+            "model.layers.18.self_attn.kv_a_layernorm",
+            "model.layers.19.self_attn.kv_a_layernorm",
+            "model.layers.2.self_attn.kv_a_layernorm",
+            "model.layers.20.self_attn.kv_a_layernorm",
+            "model.layers.21.self_attn.kv_a_layernorm",
+            "model.layers.22.self_attn.kv_a_layernorm",
+            "model.layers.23.self_attn.kv_a_layernorm",
+            "model.layers.24.self_attn.kv_a_layernorm",
+            "model.layers.25.self_attn.kv_a_layernorm",
+            "model.layers.26.self_attn.kv_a_layernorm",
+            "model.layers.3.self_attn.kv_a_layernorm",
+            "model.layers.4.self_attn.kv_a_layernorm",
+            "model.layers.5.self_attn.kv_a_layernorm",
+            "model.layers.6.self_attn.kv_a_layernorm",
+            "model.layers.7.self_attn.kv_a_layernorm",
+            "model.layers.8.self_attn.kv_a_layernorm",
+            "model.layers.9.self_attn.kv_a_layernorm"
+          ],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        },
+        "1": {
+          "coverage": {
+            "applied": 220,
+            "attempted": 220,
+            "changed": 220,
+            "consumed": 220,
+            "eligible": 220,
+            "failed": 0,
+            "observed": 220,
+            "restored": 220
+          },
+          "site_count": 55,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "immediate",
+            "q_sample_difference_fraction": null,
+            "q_sample_differences": 0,
+            "reference_scope": "NOT_APPLIED",
+            "sampled_elements": 0
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "1a126659c64eca99087f6973c10492700a23f3c2e0877bd980a5f5bab6e75c71",
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::mla_forward",
+              "vllm::moe_forward_shared"
+            ],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [
+            "model.layers.0.self_attn.kv_a_layernorm",
+            "model.layers.1.self_attn.kv_a_layernorm",
+            "model.layers.10.self_attn.kv_a_layernorm",
+            "model.layers.11.self_attn.kv_a_layernorm",
+            "model.layers.12.self_attn.kv_a_layernorm",
+            "model.layers.13.self_attn.kv_a_layernorm",
+            "model.layers.14.self_attn.kv_a_layernorm",
+            "model.layers.15.self_attn.kv_a_layernorm",
+            "model.layers.16.self_attn.kv_a_layernorm",
+            "model.layers.17.self_attn.kv_a_layernorm",
+            "model.layers.18.self_attn.kv_a_layernorm",
+            "model.layers.19.self_attn.kv_a_layernorm",
+            "model.layers.2.self_attn.kv_a_layernorm",
+            "model.layers.20.self_attn.kv_a_layernorm",
+            "model.layers.21.self_attn.kv_a_layernorm",
+            "model.layers.22.self_attn.kv_a_layernorm",
+            "model.layers.23.self_attn.kv_a_layernorm",
+            "model.layers.24.self_attn.kv_a_layernorm",
+            "model.layers.25.self_attn.kv_a_layernorm",
+            "model.layers.26.self_attn.kv_a_layernorm",
+            "model.layers.3.self_attn.kv_a_layernorm",
+            "model.layers.4.self_attn.kv_a_layernorm",
+            "model.layers.5.self_attn.kv_a_layernorm",
+            "model.layers.6.self_attn.kv_a_layernorm",
+            "model.layers.7.self_attn.kv_a_layernorm",
+            "model.layers.8.self_attn.kv_a_layernorm",
+            "model.layers.9.self_attn.kv_a_layernorm"
+          ],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        }
+      },
+      "deployment": {
+        "0": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        },
+        "1": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        }
+      },
+      "fault_time_ratio": 1.7232898667894976,
+      "request_plan": {
+        "schema": "demoncat.continuous.request_plan.v1",
+        "mechanism": "18.api_half",
+        "phases": [
+          {
+            "phase": "normal",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "fault",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "off",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "health",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          }
+        ],
+        "unit": "request",
+        "max_iterations": 4,
+        "max_requests": 4,
+        "external_health_required": false,
+        "advance_argument": "request_id",
+        "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+        "qualification_granted": false,
+        "completion": "next_phase == complete AND all rank recovery checks passed"
+      },
+      "recovered": true,
+      "resources_zero": true
+    },
+    {
+      "owner": "worker-group-05fba92d5b95437094c7e6c028df4540",
+      "rank_effects": {
+        "0": {
+          "coverage": {
+            "applied": 220,
+            "attempted": 220,
+            "changed": 220,
+            "consumed": 220,
+            "eligible": 220,
+            "failed": 0,
+            "observed": 220,
+            "restored": 220
+          },
+          "site_count": 55,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "immediate",
+            "q_sample_difference_fraction": null,
+            "q_sample_differences": 0,
+            "reference_scope": "NOT_APPLIED",
+            "sampled_elements": 0
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "cde26e4f6f79ff8a01e52bd896d2ba4a0ce399bda8b77ab411a4530e24b08a5b",
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::mla_forward",
+              "vllm::moe_forward_shared"
+            ],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [
+            "model.layers.0.self_attn.kv_a_layernorm",
+            "model.layers.1.self_attn.kv_a_layernorm",
+            "model.layers.10.self_attn.kv_a_layernorm",
+            "model.layers.11.self_attn.kv_a_layernorm",
+            "model.layers.12.self_attn.kv_a_layernorm",
+            "model.layers.13.self_attn.kv_a_layernorm",
+            "model.layers.14.self_attn.kv_a_layernorm",
+            "model.layers.15.self_attn.kv_a_layernorm",
+            "model.layers.16.self_attn.kv_a_layernorm",
+            "model.layers.17.self_attn.kv_a_layernorm",
+            "model.layers.18.self_attn.kv_a_layernorm",
+            "model.layers.19.self_attn.kv_a_layernorm",
+            "model.layers.2.self_attn.kv_a_layernorm",
+            "model.layers.20.self_attn.kv_a_layernorm",
+            "model.layers.21.self_attn.kv_a_layernorm",
+            "model.layers.22.self_attn.kv_a_layernorm",
+            "model.layers.23.self_attn.kv_a_layernorm",
+            "model.layers.24.self_attn.kv_a_layernorm",
+            "model.layers.25.self_attn.kv_a_layernorm",
+            "model.layers.26.self_attn.kv_a_layernorm",
+            "model.layers.3.self_attn.kv_a_layernorm",
+            "model.layers.4.self_attn.kv_a_layernorm",
+            "model.layers.5.self_attn.kv_a_layernorm",
+            "model.layers.6.self_attn.kv_a_layernorm",
+            "model.layers.7.self_attn.kv_a_layernorm",
+            "model.layers.8.self_attn.kv_a_layernorm",
+            "model.layers.9.self_attn.kv_a_layernorm"
+          ],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        },
+        "1": {
+          "coverage": {
+            "applied": 220,
+            "attempted": 220,
+            "changed": 220,
+            "consumed": 220,
+            "eligible": 220,
+            "failed": 0,
+            "observed": 220,
+            "restored": 220
+          },
+          "site_count": 55,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "immediate",
+            "q_sample_difference_fraction": null,
+            "q_sample_differences": 0,
+            "reference_scope": "NOT_APPLIED",
+            "sampled_elements": 0
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "cde26e4f6f79ff8a01e52bd896d2ba4a0ce399bda8b77ab411a4530e24b08a5b",
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::mla_forward",
+              "vllm::moe_forward_shared"
+            ],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [
+            "model.layers.0.self_attn.kv_a_layernorm",
+            "model.layers.1.self_attn.kv_a_layernorm",
+            "model.layers.10.self_attn.kv_a_layernorm",
+            "model.layers.11.self_attn.kv_a_layernorm",
+            "model.layers.12.self_attn.kv_a_layernorm",
+            "model.layers.13.self_attn.kv_a_layernorm",
+            "model.layers.14.self_attn.kv_a_layernorm",
+            "model.layers.15.self_attn.kv_a_layernorm",
+            "model.layers.16.self_attn.kv_a_layernorm",
+            "model.layers.17.self_attn.kv_a_layernorm",
+            "model.layers.18.self_attn.kv_a_layernorm",
+            "model.layers.19.self_attn.kv_a_layernorm",
+            "model.layers.2.self_attn.kv_a_layernorm",
+            "model.layers.20.self_attn.kv_a_layernorm",
+            "model.layers.21.self_attn.kv_a_layernorm",
+            "model.layers.22.self_attn.kv_a_layernorm",
+            "model.layers.23.self_attn.kv_a_layernorm",
+            "model.layers.24.self_attn.kv_a_layernorm",
+            "model.layers.25.self_attn.kv_a_layernorm",
+            "model.layers.26.self_attn.kv_a_layernorm",
+            "model.layers.3.self_attn.kv_a_layernorm",
+            "model.layers.4.self_attn.kv_a_layernorm",
+            "model.layers.5.self_attn.kv_a_layernorm",
+            "model.layers.6.self_attn.kv_a_layernorm",
+            "model.layers.7.self_attn.kv_a_layernorm",
+            "model.layers.8.self_attn.kv_a_layernorm",
+            "model.layers.9.self_attn.kv_a_layernorm"
+          ],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        }
+      },
+      "deployment": {
+        "0": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        },
+        "1": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        }
+      },
+      "fault_time_ratio": 1.6517447859090928,
+      "request_plan": {
+        "schema": "demoncat.continuous.request_plan.v1",
+        "mechanism": "18.api_half",
+        "phases": [
+          {
+            "phase": "normal",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "fault",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "off",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "health",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          }
+        ],
+        "unit": "request",
+        "max_iterations": 4,
+        "max_requests": 4,
+        "external_health_required": false,
+        "advance_argument": "request_id",
+        "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+        "qualification_granted": false,
+        "completion": "next_phase == complete AND all rank recovery checks passed"
+      },
+      "recovered": true,
+      "resources_zero": true
+    }
+  ],
+  "negative_creation_verified": true,
+  "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEW_STILL_REQUIRED",
+  "qualification_granted": false,
+  "source_receipt_sha256": "20c4a848a5149d9f27d5d7394590590c875c7b2175da1699b590f5758ba50dd1",
+  "reviewer_sha256": "c743cf5725717ce630ea174834ed54a9c8f628a9eccaf270748e9f94bdbcda98"
+}

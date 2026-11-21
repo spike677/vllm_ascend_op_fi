@@ -1,0 +1,32 @@
+{
+  "schema": "demoncat.night_cpu_review.v1",
+  "utc": "2026-11-21T13:57:05.761238+00:00",
+  "modules": [
+    "test_continuous_group",
+    "test_continuous_contract",
+    "test_continuous_model",
+    "test_continuous_runtime",
+    "test_continuous_public_review",
+    "test_continuous_deployment",
+    "test_norm18_continuous",
+    "test_rope22_continuous",
+    "test_projection39_continuous",
+    "test_moe8_continuous",
+    "test_mla_rope22_continuous",
+    "test_deferred_quant_reference"
+  ],
+  "tests_run": 37,
+  "failures": [],
+  "errors": [],
+  "skips": [],
+  "passed": true,
+  "source_sha256": {
+    "fault_injection/sites/projection39.py": "af0979814ff2f9db7711bb385e38f6c3ba01813b40af2fd2b115972294963a2d",
+    "fault_injection/sites/moe8.py": "030723665ff670f2a2f74793338d44edd032bd179b61637f446a04277745fb96",
+    "fault_injection/sites/mla_rope22.py": "4f7e69fb52dbacf5b74ad402262a7c7c3760cec263ab04acda1390d7a2ba70e5",
+    "fault_injection/sites/norm18.py": "82a0237223e4ead74100f8a2a97f0a9b4298bb357a0fface53b645fbec508d18",
+    "fault_injection/engines/deferred_quant_reference.py": "a907956ea0dea66d69e323add44143ddc69d9ca56f3fe1c540a5b663a255c181",
+    "src/demoncat/runtime/vllm_ascend/worker_extension/continuous_binding.py": "3853f1290cb710b06c9d8f39650d3b1cd979be02d8fbafa405ed326b11a91bea"
+  },
+  "scope": "selected continuous framework and site regression; not the complete historical suite"
+}

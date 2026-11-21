@@ -4,10 +4,28 @@ from types import SimpleNamespace
 from unittest.mock import patch
 import torch
 from fault_injection.engines.region_lease import RegionLeases
-from fault_injection.sites.projection39 import ProjectionConsumerMode,Projection39Site,contains_element
+from fault_injection.sites.projection39 import ProjectionConsumerMode,Projection39Site,contains_element,projection_region
 
 
 class ProjectionTests(unittest.TestCase):
+    def test_nested_modes_share_lease_and_complete_exactly_once(self):
+        x=torch.ones(2,dtype=torch.bfloat16);leases=RegionLeases('cpu',1,stream=lambda:0,complete=lambda s:None)
+        parent=ProjectionConsumerMode(leases);event={};parent.watch(x[:1],event)
+        with parent,parent.fork():result=x.clone()
+        self.assertTrue(torch.isinf(result[0]));self.assertTrue(torch.equal(x,torch.ones_like(x)))
+        self.assertFalse(parent.pending);self.assertEqual(leases.count(),0)
+
+    def test_three_dimensional_strided_projection_keeps_real_storage(self):
+        x=torch.arange(48,dtype=torch.bfloat16).reshape(2,4,6).transpose(1,2)
+        before=x.clone();leases=RegionLeases('cpu',1,stream=lambda:0,complete=lambda s:None)
+        mode=ProjectionConsumerMode(leases);event={};region=projection_region(x)
+        self.assertEqual(region.untyped_storage()._cdata,x.untyped_storage()._cdata)
+        mode.watch(region,event)
+        with mode:result=x.clone()
+        self.assertTrue(torch.isinf(result[-1,0,0]));result[-1,0,0]=before[-1,0,0]
+        self.assertTrue(torch.equal(result,before));self.assertTrue(torch.equal(x,before))
+        self.assertEqual(leases.count(),0);self.assertTrue(event['consumed'] and event['restored'])
+
     def test_alias_schema_contiguous_copy_is_consumption_but_noop_is_not(self):
         class Contiguous:
             _schema=torch.ops.aten.contiguous.default._schema

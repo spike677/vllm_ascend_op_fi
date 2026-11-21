@@ -257,6 +257,108 @@
       "scopes": 2,
       "request_count": 1,
       "generated_tokens": 4
+    },
+    {
+      "mechanism": "18.api_half",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+        "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_dsv18_review_20261121.json",
+      "review_sha256": "3441ae28eb0b956b02aa11eeefbcf41819d4cd9166f965abe8303e54432c2dda",
+      "source_manifest_sha256": "c821325e9e0189b797eb60b16d3900916fd55ccfdb5e69a4ead897f5a8a64e4c",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "torch_actual_rmsnorm_module_output_half",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4,
+      "limitations": [
+        "55 actual module forwards; 27 kv_a_layernorm weights consumed by fused KV kernel are not module calls and are not covered"
+      ]
+    },
+    {
+      "mechanism": "22.wrong_row",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+        "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_dsv22_review_20261121.json",
+      "review_sha256": "324a5125230020150ecfd6cc9471a03263ea94849ce5a5cd00ac9f1526ec9fd2",
+      "source_manifest_sha256": "f0d76b62f3ca31f4ec404e6c6d744c5697c7bdc14115ece1ce421da2985ef9e9",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "torch_actual_mla_rotary_wrong_lookup_row",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4
+    },
+    {
+      "mechanism": "39.output_proxy",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+        "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_dsv39_review_20261121.json",
+      "review_sha256": "917673a0d592e2f35accfcc63ea14ffc48d53501e4506a9928489cdc285f615f",
+      "source_manifest_sha256": "59151d8cd67c5b79a307cce24aff87f6b3f9f2cc3e72557a5080ec69638d61b6",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "torch_actual_bf16_nd_projection_inf",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4,
+      "limitations": [
+        "Only actual LinearBase calls returning BF16 ND; other output formats/dtypes excluded; direct grouped expert kernels are outside this module adapter"
+      ]
     }
   ]
 }

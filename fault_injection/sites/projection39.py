@@ -4,6 +4,8 @@ One last-row element per actual projection return, on every rank. A tensor
 view is not a value consumer. A consumer that writes the protected element is
 refused, rather than restoring over a legitimate in-place update.
 """
+import hashlib,inspect
+from pathlib import Path
 import torch
 from torch.utils._python_dispatch import TorchDispatchMode,_disable_current_modes
 from .mla28 import require,fingerprint
@@ -44,6 +46,9 @@ class ProjectionConsumerMode(TorchDispatchMode):
     def __init__(self,leases):
         super().__init__();self.leases=leases;self.pending=[]
 
+    def fork(self):
+        child=ProjectionConsumerMode(self.leases);child.pending=self.pending;return child
+
     def watch(self,region,event,*,inject=True,replacement=None):
         if not inject:
             self.pending.append(dict(region=region,token=None,event=event));return
@@ -59,13 +64,14 @@ class ProjectionConsumerMode(TorchDispatchMode):
 
     def complete_consumers(self,matched,operator):
         for lease in matched:
+            if not any(item is lease for item in self.pending):continue
             e=lease['event'];e.update(consumed=True,consumer_operator=operator)
             if lease['token'] is not None:
                 self.leases.consumed(lease['token'])
                 self.leases.restore(lease['token'])
                 e.update(restored=True,restored_sha256=fingerprint(lease['region']))
                 require(e['before_sha256']==e['restored_sha256'],'PROJECTION_RESTORE_BYTES_DIFFER')
-            self.pending=[item for item in self.pending if item is not lease]
+            self.pending[:]=[item for item in self.pending if item is not lease]
 
     def __torch_dispatch__(self,func,types,args=(),kwargs=None):
         kwargs=kwargs or {};schema=func._schema
@@ -106,11 +112,16 @@ class ProjectionConsumerMode(TorchDispatchMode):
         return result
 
 
+def projection_region(t):
+    require(isinstance(t,torch.Tensor) and t.ndim>=1 and t.numel()>0,'PROJECTION_OUTPUT_LAYOUT_CHANGED')
+    return torch.as_strided(t,(1,),(1,),t.storage_offset()+(t.shape[0]-1)*t.stride(0))
+
+
 class Projection39Site:
     def __init__(self,model,runner,*,fault,region_leases):
         self.model=model;self.runner=runner;self.fault=fault;self.region_leases=region_leases
         self.events=[];self.sites=[];self.hooks=[];self.uncovered=[];self.active=False
-        self.excluded=[];self.forward_calls=[];self.patches=[]
+        self.excluded=[];self.forward_calls=[];self.patches=[];self.inner_methods=[]
         self.mode=ProjectionConsumerMode(region_leases)
 
     @property
@@ -129,6 +140,24 @@ class Projection39Site:
                      observed_read_ops=p['event'].get('observed_read_ops')) for p in self.mode.pending]))
             self.mode.__exit__(None,None,None);self.active=False
         self.hooks.extend([self.model.register_forward_pre_hook(enter),self.model.register_forward_hook(leave)])
+        # An opaque vLLM custom op suspends the outer dispatch mode while its
+        # Python MLA body runs. Observe its reviewed real boundaries with fresh
+        # modes sharing the live lease list; never infer consumption on return.
+        from .mla28 import SOURCE_SHA as MLA_SOURCE_SHA
+        seen=set()
+        for module in self.model.modules():
+            impl=getattr(module,'impl',None)
+            if impl is None or type(impl).__name__!='AscendMLAImpl' or id(impl) in seen:continue
+            seen.add(id(impl))
+            require(hashlib.sha256(Path(inspect.getsourcefile(type(impl))).read_bytes()).hexdigest()==MLA_SOURCE_SHA,
+                'UNREVIEWED_PROJECTION_MLA_BOUNDARY')
+            for method in ('forward','_mla_preprocess','mla_preprocess_prefill','mla_preprocess_decode'):
+                require(method not in vars(impl),'PROJECTION_MLA_BOUNDARY_ALREADY_OWNED')
+                original=getattr(impl,method)
+                def wrapped(*args,_original=original,**kwargs):
+                    require(self.active,'PROJECTION_MLA_OUTSIDE_MODEL')
+                    with self.mode.fork():return _original(*args,**kwargs)
+                setattr(impl,method,wrapped);self.inner_methods.append((impl,method,wrapped))
         visual=getattr(self.model,'visual',None)
         visual_ids={id(m) for m in visual.modules()} if visual is not None else set()
         for name,module in self.model.named_modules():
@@ -141,14 +170,14 @@ class Projection39Site:
                 require(self.active,'PROJECTION_OUTSIDE_REAL_MODEL_FORWARD')
                 calls=self.forward_calls[-1];calls[_name]=calls.get(_name,0)+1
                 t=result[0] if isinstance(result,tuple) else result
-                require(isinstance(t,torch.Tensor) and t.ndim==2 and t.is_contiguous(),'PROJECTION_OUTPUT_LAYOUT_CHANGED')
+                require(isinstance(t,torch.Tensor) and t.ndim>=1 and t.numel()>0,'PROJECTION_OUTPUT_LAYOUT_CHANGED:'+_name)
                 with _disable_current_modes():
                     eligible=t.dtype==torch.bfloat16 and torch_npu.get_npu_format(t)==2
                     event=dict(site=_name,request_ids=list(self.runner.input_batch.req_ids),observed=True,
                         eligible=eligible,applied=False,changed=0,consumed=False,restored=False,failed=False,
-                        reason=None if eligible else 'OUTPUT_NOT_BF16_ND',shape=list(t.shape),dtype=str(t.dtype))
+                        reason=None if eligible else 'OUTPUT_NOT_BF16_ND',shape=list(t.shape),stride=list(t.stride()),dtype=str(t.dtype))
                     self.events.append(event)
-                    if eligible:self.mode.watch(t[-1:,:1].reshape(1),event,inject=self.fault)
+                    if eligible:self.mode.watch(projection_region(t),event,inject=self.fault)
             self.hooks.append(module.register_forward_hook(output))
         require(self.sites,'NO_LINEAR_PROJECTION_SITES')
         return self.sites
@@ -156,6 +185,9 @@ class Projection39Site:
     def close(self):
         require(not self.pending and self.region_leases.count()==0,'PROJECTION_REGION_LEASES_REMAIN')
         if self.active:self.mode.__exit__(None,None,None);self.active=False
+        for impl,name,wrapped in reversed(self.inner_methods):
+            require(vars(impl).get(name) is wrapped,'PROJECTION_MLA_OWNER_CHANGED');delattr(impl,name)
+        self.inner_methods.clear()
         for obj,name,original,wrapped in reversed(self.patches):
             require(getattr(obj,name) is wrapped,'PROJECTION_CONSUMER_OWNER_CHANGED')
             setattr(obj,name,original)
