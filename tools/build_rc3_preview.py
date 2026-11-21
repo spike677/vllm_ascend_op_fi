@@ -45,7 +45,7 @@ def build(repo,output):
             for row in files:tf.add(stage/row['path'],arcname=row['path'],recursive=False)
         env=dict(os.environ,PIP_NO_INDEX='1',PYTHONDONTWRITEBYTECODE='1')
         for package in (stage,stage/'src',stage/'fault39'):
-            subprocess.run([sys.executable,'-m','pip','wheel','--no-deps','--no-build-isolation',
+            subprocess.run([sys.executable,'-m','pip','wheel','--no-cache-dir','--no-deps','--no-build-isolation',
                 '--no-index','--wheel-dir',str(wheels),str(package)],env=env,check=True)
     if len(list(wheels.glob('*.whl')))!=3:raise RuntimeError('THREE_WHEELS_REQUIRED')
     manifest=dict(schema='demoncat.rc3_preview.release.v1',source_commit=commit,versions=VERSIONS,
