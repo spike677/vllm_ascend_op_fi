@@ -31,8 +31,8 @@ def stats(value):
     return out
 
 class Monitor:
-    def __init__(self,w,mode,label,allocation='empty'):
-        self.w=w;self.mode=mode;self.label=label;self.allocation=allocation;self.captured=False;self.hooks=[];self.patches=[];self.path=None;self.sequence=0;self.forward=0
+    def __init__(self,w,mode,label,allocation='empty',kernel_control='off'):
+        self.kernel_control=kernel_control;self.w=w;self.mode=mode;self.label=label;self.allocation=allocation;self.captured=False;self.hooks=[];self.patches=[];self.path=None;self.sequence=0;self.forward=0
         self.file=pathlib.Path('/evidence')/('rank'+str(w.rank)+'-'+label+'.jsonl')
     def emit(self,kind,name,value):
         self.sequence+=1
@@ -69,6 +69,9 @@ class Monitor:
             return result
         setattr(obj,name,wrapped);self.patches.append((obj,name,wrapped,local,saved))
     def install(self):
+        if self.kernel_control!='off':
+            import gdn_launch_diagnostics
+            gdn_launch_diagnostics.install(self,self.kernel_control)
         model=self.w.model_runner.model
         for name,module in model.named_modules():
             parts=name.split('.');layer=None
@@ -123,12 +126,12 @@ def allocation_source(source,allocation):
     return source
 
 ATTRIBUTE='_dcat_nan_diagnostic_only'
-def rpc(wrapper,action,mode=None,label=None,allocation='empty'):
+def rpc(wrapper,action,mode=None,label=None,allocation='empty',kernel_control='off'):
     from vllm.v1.worker.worker_base import WorkerWrapperBase
     w=wrapper.worker if isinstance(wrapper,WorkerWrapperBase) else wrapper
     if action=='install':
         assert not hasattr(w,ATTRIBUTE)
-        m=Monitor(w,mode,label,allocation)
+        m=Monitor(w,mode,label,allocation,kernel_control)
         try:m.install()
         except BaseException:
             m.close();raise
@@ -138,8 +141,8 @@ def rpc(wrapper,action,mode=None,label=None,allocation='empty'):
     return dict(rank=w.rank,hooks=len(m.hooks),patches=len(m.patches),fault_calls=0)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--mode',choices=['root','trace'],required=True);p.add_argument('--atomic-batch',action='store_true');p.add_argument('--wy-allocation',choices=['empty','zero','nan'],default='empty');a=p.parse_args()
-    report=dict(status='STARTED',mode=a.mode,atomic_batch=a.atomic_batch,allocation=a.wy_allocation,fault_calls=0,rounds=[])
+    p=argparse.ArgumentParser();p.add_argument('--mode',choices=['root','trace'],required=True);p.add_argument('--atomic-batch',action='store_true');p.add_argument('--wy-allocation',choices=['empty','zero','nan'],default='empty');p.add_argument('--kernel-control',choices=['off','audit','clone_meta','compile_first'],default='off');a=p.parse_args()
+    report=dict(status='STARTED',mode=a.mode,atomic_batch=a.atomic_batch,allocation=a.wy_allocation,kernel_control=a.kernel_control,fault_calls=0,rounds=[])
     def save():pathlib.Path('/evidence/diagnostic.json').write_text(json.dumps(report,indent=2)+'\n')
     try:
         from vllm import LLM,SamplingParams
@@ -153,7 +156,7 @@ def main():
         for n,batch in enumerate([8,8,1]):
             assert llm.reset_prefix_cache(reset_running_requests=False)
             row=dict(index=n,batch=batch);report['rounds'].append(row)
-            row['install']=llm.collective_rpc(rpc,args=('install',a.mode,'round'+str(n),a.wy_allocation),timeout=120);save()
+            row['install']=llm.collective_rpc(rpc,args=('install',a.mode,'round'+str(n),a.wy_allocation,a.kernel_control),timeout=120);save()
             try:
                 prompts=[dict(prompt_token_ids=tokens) for _ in range(batch)]
                 params=SamplingParams(temperature=0,max_tokens=2,ignore_eos=True)
