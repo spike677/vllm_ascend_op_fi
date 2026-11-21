@@ -1,0 +1,2863 @@
+{
+  "schema": "demoncat.nan_localization.summary.v1",
+  "status": "MODEL_CONTEXT_WY_WRITE_COVERAGE_FAILURE_BASELINE_NOT_QUALIFIED",
+  "combination": {
+    "hardware": "Ascend910B4 A2",
+    "tp": 2,
+    "model": "Qwen3.8-27B community W8A8",
+    "vllm": "0.26.0+empty",
+    "vllm_ascend": "0.26.0rc1",
+    "cann": "9.1.0",
+    "eager": true
+  },
+  "windows": [
+    {
+      "start": "2026-11-21T05:23:44.108466+00:00",
+      "ended": "2026-11-21T05:31:44.916729+00:00",
+      "elapsed_seconds": 480.8082919410663,
+      "status": "FINISHED",
+      "isolation_removed": true,
+      "attempt": "a1",
+      "stopped_external_containers": []
+    },
+    {
+      "start": "2026-11-21T05:32:36.990533+00:00",
+      "ended": "2026-11-21T05:40:31.139817+00:00",
+      "elapsed_seconds": 474.1493128160946,
+      "status": "FINISHED",
+      "isolation_removed": true,
+      "attempt": "a3",
+      "stopped_external_containers": []
+    },
+    {
+      "start": "2026-11-21T05:40:48.122478+00:00",
+      "ended": "2026-11-21T05:46:11.063965+00:00",
+      "elapsed_seconds": 322.94151713198517,
+      "status": "FINISHED",
+      "isolation_removed": true,
+      "attempt": "a4",
+      "stopped_external_containers": []
+    },
+    {
+      "start": "2026-11-21T05:47:17.397671+00:00",
+      "ended": "2026-11-21T05:51:15.879543+00:00",
+      "elapsed_seconds": 238.48190389899537,
+      "status": "FINISHED",
+      "isolation_removed": true,
+      "attempt": "a5",
+      "stopped_external_containers": []
+    }
+  ],
+  "cases": [
+    {
+      "id": "m2-nan-root",
+      "attempt": "a1",
+      "exit_code": 0,
+      "started_utc": "2026-11-21T05:23:46.459146+00:00",
+      "ended_utc": "2026-11-21T05:27:46.104817+00:00",
+      "source_manifest_sha256": "49ec4e3baba3ea8e9470a36d02053fd1249ce85dcf71534be41ceedf39c2df04",
+      "source_commit": "d967f524",
+      "rank_rounds": [
+        {
+          "file": "rank0-round0.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "6adc139008f53484197638d490445b2d85525c2ec328c78affab2ea0e061d3fd"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    78,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "2e6e0c7ccb67d1eda86c19e3f26bfdf6ceaeb1bd0119c1deab671e538b11adb6"
+                }
+              ]
+            },
+            {
+              "forward": 3,
+              "outputs": [
+                {
+                  "shape": [
+                    7,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "ef7aad2b0a17d2d4b306e702709549737ef8e2e5453e165cdd75f4489cf2cf12"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank0-round1.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    78,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "71a13ad9228d57f0ed5f9340fc76df00b2e607fc6b35119bc0dabbcb9aef6cb9"
+                }
+              ]
+            },
+            {
+              "forward": 3,
+              "outputs": [
+                {
+                  "shape": [
+                    7,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "ef7aad2b0a17d2d4b306e702709549737ef8e2e5453e165cdd75f4489cf2cf12"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank0-round2.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    1,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "c168c6ed8ff8d89be0bce9f32f47890a211e31330c773749a54b4fb5893e86c9"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round0.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "6adc139008f53484197638d490445b2d85525c2ec328c78affab2ea0e061d3fd"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    78,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "2e6e0c7ccb67d1eda86c19e3f26bfdf6ceaeb1bd0119c1deab671e538b11adb6"
+                }
+              ]
+            },
+            {
+              "forward": 3,
+              "outputs": [
+                {
+                  "shape": [
+                    7,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "ef7aad2b0a17d2d4b306e702709549737ef8e2e5453e165cdd75f4489cf2cf12"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round1.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    78,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "71a13ad9228d57f0ed5f9340fc76df00b2e607fc6b35119bc0dabbcb9aef6cb9"
+                }
+              ]
+            },
+            {
+              "forward": 3,
+              "outputs": [
+                {
+                  "shape": [
+                    7,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "ef7aad2b0a17d2d4b306e702709549737ef8e2e5453e165cdd75f4489cf2cf12"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round2.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    1,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "c168c6ed8ff8d89be0bce9f32f47890a211e31330c773749a54b4fb5893e86c9"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "diagnostic_status": "DIAGNOSTIC_COMPLETED_NOT_QUALIFICATION",
+      "rounds": [
+        {
+          "index": 0,
+          "batch": 8,
+          "tokens": [
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "batch": 8,
+          "tokens": [
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "batch": 1,
+          "tokens": [
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        }
+      ],
+      "operator_replays": []
+    },
+    {
+      "id": "m2-nan-trace",
+      "attempt": "a1",
+      "exit_code": 0,
+      "started_utc": "2026-11-21T05:27:47.297911+00:00",
+      "ended_utc": "2026-11-21T05:31:43.861059+00:00",
+      "source_manifest_sha256": "49ec4e3baba3ea8e9470a36d02053fd1249ce85dcf71534be41ceedf39c2df04",
+      "source_commit": "d967f524",
+      "rank_rounds": [
+        {
+          "file": "rank0-round0.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "6adc139008f53484197638d490445b2d85525c2ec328c78affab2ea0e061d3fd"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    78,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "2e6e0c7ccb67d1eda86c19e3f26bfdf6ceaeb1bd0119c1deab671e538b11adb6"
+                }
+              ]
+            },
+            {
+              "forward": 3,
+              "outputs": [
+                {
+                  "shape": [
+                    7,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "ef7aad2b0a17d2d4b306e702709549737ef8e2e5453e165cdd75f4489cf2cf12"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank0-round1.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    78,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "71a13ad9228d57f0ed5f9340fc76df00b2e607fc6b35119bc0dabbcb9aef6cb9"
+                }
+              ]
+            },
+            {
+              "forward": 3,
+              "outputs": [
+                {
+                  "shape": [
+                    7,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "ef7aad2b0a17d2d4b306e702709549737ef8e2e5453e165cdd75f4489cf2cf12"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank0-round2.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    1,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "c168c6ed8ff8d89be0bce9f32f47890a211e31330c773749a54b4fb5893e86c9"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round0.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "6adc139008f53484197638d490445b2d85525c2ec328c78affab2ea0e061d3fd"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    78,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "2e6e0c7ccb67d1eda86c19e3f26bfdf6ceaeb1bd0119c1deab671e538b11adb6"
+                }
+              ]
+            },
+            {
+              "forward": 3,
+              "outputs": [
+                {
+                  "shape": [
+                    7,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "ef7aad2b0a17d2d4b306e702709549737ef8e2e5453e165cdd75f4489cf2cf12"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round1.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    78,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "71a13ad9228d57f0ed5f9340fc76df00b2e607fc6b35119bc0dabbcb9aef6cb9"
+                }
+              ]
+            },
+            {
+              "forward": 3,
+              "outputs": [
+                {
+                  "shape": [
+                    7,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "ef7aad2b0a17d2d4b306e702709549737ef8e2e5453e165cdd75f4489cf2cf12"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round2.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    1,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "c168c6ed8ff8d89be0bce9f32f47890a211e31330c773749a54b4fb5893e86c9"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "diagnostic_status": "DIAGNOSTIC_COMPLETED_NOT_QUALIFICATION",
+      "rounds": [
+        {
+          "index": 0,
+          "batch": 8,
+          "tokens": [
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "batch": 8,
+          "tokens": [
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "batch": 1,
+          "tokens": [
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        }
+      ],
+      "operator_replays": []
+    },
+    {
+      "id": "m2-nan-root-atomic",
+      "attempt": "a3",
+      "exit_code": 0,
+      "started_utc": "2026-11-21T05:32:39.302375+00:00",
+      "ended_utc": "2026-11-21T05:36:28.953943+00:00",
+      "source_manifest_sha256": "3cd7700dc288a0aff3acb39115bea5df7f8f5a26c45e8f57efd8a54a26b3b0e5",
+      "source_commit": "e8ea8ad1",
+      "rank_rounds": [
+        {
+          "file": "rank0-round0.jsonl",
+          "first_nonfinite": {
+            "sequence": 3,
+            "forward": 1,
+            "kind": "module_output",
+            "name": "",
+            "path": null,
+            "bad_fields": [
+              {
+                "field": "value",
+                "shape": [
+                  88,
+                  5120
+                ],
+                "nan": 56320,
+                "inf": 0
+              }
+            ]
+          },
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 56320,
+                  "inf": 0,
+                  "sha256": "cab773fed1782cb8de1fa88fcb464020ab6ba2f3defd576a9334c3e147ae586c"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 5120,
+                  "inf": 0,
+                  "sha256": "888452433fcf3181929c08a5d2997edde7527fe1270c035fe050669a74112a1f"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank0-round1.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "766b16be2054388d20e9e8e410cfe5a81c17144800a6f5806eb110ac15ae0702"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "39300d15c21d1267aa3e410fe7dcee73f1683f56eebc23e1d26a77a653d154fe"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank0-round2.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    1,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "c168c6ed8ff8d89be0bce9f32f47890a211e31330c773749a54b4fb5893e86c9"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round0.jsonl",
+          "first_nonfinite": {
+            "sequence": 3,
+            "forward": 1,
+            "kind": "module_output",
+            "name": "",
+            "path": null,
+            "bad_fields": [
+              {
+                "field": "value",
+                "shape": [
+                  88,
+                  5120
+                ],
+                "nan": 56320,
+                "inf": 0
+              }
+            ]
+          },
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 56320,
+                  "inf": 0,
+                  "sha256": "cab773fed1782cb8de1fa88fcb464020ab6ba2f3defd576a9334c3e147ae586c"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 5120,
+                  "inf": 0,
+                  "sha256": "888452433fcf3181929c08a5d2997edde7527fe1270c035fe050669a74112a1f"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round1.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "766b16be2054388d20e9e8e410cfe5a81c17144800a6f5806eb110ac15ae0702"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "39300d15c21d1267aa3e410fe7dcee73f1683f56eebc23e1d26a77a653d154fe"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round2.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    1,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "c168c6ed8ff8d89be0bce9f32f47890a211e31330c773749a54b4fb5893e86c9"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "diagnostic_status": "DIAGNOSTIC_COMPLETED_NOT_QUALIFICATION",
+      "rounds": [
+        {
+          "index": 0,
+          "batch": 8,
+          "tokens": [
+            [
+              271,
+              760
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              321,
+              1179
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "batch": 8,
+          "tokens": [
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "batch": 1,
+          "tokens": [
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        }
+      ],
+      "operator_replays": []
+    },
+    {
+      "id": "m2-nan-trace-atomic",
+      "attempt": "a3",
+      "exit_code": 0,
+      "started_utc": "2026-11-21T05:36:30.181962+00:00",
+      "ended_utc": "2026-11-21T05:40:30.096874+00:00",
+      "source_manifest_sha256": "3cd7700dc288a0aff3acb39115bea5df7f8f5a26c45e8f57efd8a54a26b3b0e5",
+      "source_commit": "e8ea8ad1",
+      "rank_rounds": [
+        {
+          "file": "rank0-round0.jsonl",
+          "first_nonfinite": {
+            "sequence": 23,
+            "forward": 1,
+            "kind": "api_output",
+            "name": "recompute_w_u_fwd",
+            "path": "language_model.model.layers.0.linear_attn",
+            "bad_fields": [
+              {
+                "field": "value[1]",
+                "shape": [
+                  1,
+                  88,
+                  24,
+                  128
+                ],
+                "nan": 7,
+                "inf": 0
+              }
+            ]
+          },
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 56320,
+                  "inf": 0,
+                  "sha256": "cab773fed1782cb8de1fa88fcb464020ab6ba2f3defd576a9334c3e147ae586c"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 5120,
+                  "inf": 0,
+                  "sha256": "888452433fcf3181929c08a5d2997edde7527fe1270c035fe050669a74112a1f"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank0-round1.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "766b16be2054388d20e9e8e410cfe5a81c17144800a6f5806eb110ac15ae0702"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "39300d15c21d1267aa3e410fe7dcee73f1683f56eebc23e1d26a77a653d154fe"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank0-round2.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    1,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "c168c6ed8ff8d89be0bce9f32f47890a211e31330c773749a54b4fb5893e86c9"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round0.jsonl",
+          "first_nonfinite": {
+            "sequence": 23,
+            "forward": 1,
+            "kind": "api_output",
+            "name": "recompute_w_u_fwd",
+            "path": "language_model.model.layers.0.linear_attn",
+            "bad_fields": [
+              {
+                "field": "value[1]",
+                "shape": [
+                  1,
+                  88,
+                  24,
+                  128
+                ],
+                "nan": 7,
+                "inf": 0
+              }
+            ]
+          },
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 56320,
+                  "inf": 0,
+                  "sha256": "cab773fed1782cb8de1fa88fcb464020ab6ba2f3defd576a9334c3e147ae586c"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 5120,
+                  "inf": 0,
+                  "sha256": "888452433fcf3181929c08a5d2997edde7527fe1270c035fe050669a74112a1f"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round1.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "766b16be2054388d20e9e8e410cfe5a81c17144800a6f5806eb110ac15ae0702"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "39300d15c21d1267aa3e410fe7dcee73f1683f56eebc23e1d26a77a653d154fe"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round2.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    1,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "c168c6ed8ff8d89be0bce9f32f47890a211e31330c773749a54b4fb5893e86c9"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "diagnostic_status": "DIAGNOSTIC_COMPLETED_NOT_QUALIFICATION",
+      "rounds": [
+        {
+          "index": 0,
+          "batch": 8,
+          "tokens": [
+            [
+              271,
+              760
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              321,
+              1179
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "batch": 8,
+          "tokens": [
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "batch": 1,
+          "tokens": [
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        }
+      ],
+      "operator_replays": []
+    },
+    {
+      "id": "m2-nan-zero-atomic",
+      "attempt": "a4",
+      "exit_code": 0,
+      "started_utc": "2026-11-21T05:40:50.494995+00:00",
+      "ended_utc": "2026-11-21T05:44:44.881655+00:00",
+      "source_manifest_sha256": "3e54b97835c3cfc2df99517b339328b0dc4bf36b612335a75df653fc073c5e1e",
+      "source_commit": "a4186308",
+      "rank_rounds": [
+        {
+          "file": "rank0-round0.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "824cc83f932ca79d02a46f9cd40008d2a69bd463e84e84377abc159eaaf16628"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "40bc6da44733cf0328763f329832a22dfd945b144236193e8e60b7a41f538aed"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank0-round1.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "766b16be2054388d20e9e8e410cfe5a81c17144800a6f5806eb110ac15ae0702"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "39300d15c21d1267aa3e410fe7dcee73f1683f56eebc23e1d26a77a653d154fe"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank0-round2.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    1,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "c168c6ed8ff8d89be0bce9f32f47890a211e31330c773749a54b4fb5893e86c9"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round0.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "824cc83f932ca79d02a46f9cd40008d2a69bd463e84e84377abc159eaaf16628"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "40bc6da44733cf0328763f329832a22dfd945b144236193e8e60b7a41f538aed"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round1.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "766b16be2054388d20e9e8e410cfe5a81c17144800a6f5806eb110ac15ae0702"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "39300d15c21d1267aa3e410fe7dcee73f1683f56eebc23e1d26a77a653d154fe"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round2.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    1,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "c168c6ed8ff8d89be0bce9f32f47890a211e31330c773749a54b4fb5893e86c9"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "diagnostic_status": "DIAGNOSTIC_COMPLETED_NOT_QUALIFICATION",
+      "rounds": [
+        {
+          "index": 0,
+          "batch": 8,
+          "tokens": [
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              321,
+              1179
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "batch": 8,
+          "tokens": [
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "batch": 1,
+          "tokens": [
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        }
+      ],
+      "operator_replays": []
+    },
+    {
+      "id": "m2-wy-replay",
+      "attempt": "a4",
+      "exit_code": 0,
+      "started_utc": "2026-11-21T05:44:46.109451+00:00",
+      "ended_utc": "2026-11-21T05:46:10.029529+00:00",
+      "source_manifest_sha256": "3e54b97835c3cfc2df99517b339328b0dc4bf36b612335a75df653fc073c5e1e",
+      "source_commit": "a4186308",
+      "rank_rounds": [],
+      "operator_replays": [
+        {
+          "allocation": "empty",
+          "rounds": [
+            {
+              "index": 0,
+              "outputs": {
+                "w": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.00343114991507254,
+                  "first_nonfinite": []
+                },
+                "u": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.060851410031318665,
+                  "first_nonfinite": []
+                }
+              }
+            },
+            {
+              "index": 1,
+              "outputs": {
+                "w": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.00343114991507254,
+                  "first_nonfinite": []
+                },
+                "u": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.060851410031318665,
+                  "first_nonfinite": []
+                }
+              }
+            },
+            {
+              "index": 2,
+              "outputs": {
+                "w": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.00343114991507254,
+                  "first_nonfinite": []
+                },
+                "u": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.060851410031318665,
+                  "first_nonfinite": []
+                }
+              }
+            },
+            {
+              "index": 3,
+              "outputs": {
+                "w": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.00343114991507254,
+                  "first_nonfinite": []
+                },
+                "u": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.060851410031318665,
+                  "first_nonfinite": []
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allocation": "nan",
+          "rounds": [
+            {
+              "index": 0,
+              "outputs": {
+                "w": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.00343114991507254,
+                  "first_nonfinite": []
+                },
+                "u": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.060851410031318665,
+                  "first_nonfinite": []
+                }
+              }
+            },
+            {
+              "index": 1,
+              "outputs": {
+                "w": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.00343114991507254,
+                  "first_nonfinite": []
+                },
+                "u": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.060851410031318665,
+                  "first_nonfinite": []
+                }
+              }
+            },
+            {
+              "index": 2,
+              "outputs": {
+                "w": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.00343114991507254,
+                  "first_nonfinite": []
+                },
+                "u": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.060851410031318665,
+                  "first_nonfinite": []
+                }
+              }
+            },
+            {
+              "index": 3,
+              "outputs": {
+                "w": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.00343114991507254,
+                  "first_nonfinite": []
+                },
+                "u": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.060851410031318665,
+                  "first_nonfinite": []
+                }
+              }
+            }
+          ]
+        },
+        {
+          "allocation": "zero",
+          "rounds": [
+            {
+              "index": 0,
+              "outputs": {
+                "w": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.00343114991507254,
+                  "first_nonfinite": []
+                },
+                "u": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.060851410031318665,
+                  "first_nonfinite": []
+                }
+              }
+            },
+            {
+              "index": 1,
+              "outputs": {
+                "w": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.00343114991507254,
+                  "first_nonfinite": []
+                },
+                "u": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.060851410031318665,
+                  "first_nonfinite": []
+                }
+              }
+            },
+            {
+              "index": 2,
+              "outputs": {
+                "w": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.00343114991507254,
+                  "first_nonfinite": []
+                },
+                "u": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.060851410031318665,
+                  "first_nonfinite": []
+                }
+              }
+            },
+            {
+              "index": 3,
+              "outputs": {
+                "w": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.00343114991507254,
+                  "first_nonfinite": []
+                },
+                "u": {
+                  "shape": [
+                    1,
+                    88,
+                    24,
+                    128
+                  ],
+                  "nonfinite": 0,
+                  "reference_nonfinite": 0,
+                  "finite_max_abs_error": 0.060851410031318665,
+                  "first_nonfinite": []
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "m2-nan-sentinel-atomic",
+      "attempt": "a5",
+      "exit_code": 0,
+      "started_utc": "2026-11-21T05:47:19.774135+00:00",
+      "ended_utc": "2026-11-21T05:51:14.844118+00:00",
+      "source_manifest_sha256": "3e54b97835c3cfc2df99517b339328b0dc4bf36b612335a75df653fc073c5e1e",
+      "source_commit": "a4186308",
+      "rank_rounds": [
+        {
+          "file": "rank0-round0.jsonl",
+          "first_nonfinite": {
+            "sequence": 23,
+            "forward": 1,
+            "kind": "api_output",
+            "name": "recompute_w_u_fwd",
+            "path": "language_model.model.layers.0.linear_attn",
+            "bad_fields": [
+              {
+                "field": "value[0]",
+                "shape": [
+                  1,
+                  88,
+                  24,
+                  128
+                ],
+                "nan": 33792,
+                "inf": 0
+              },
+              {
+                "field": "value[1]",
+                "shape": [
+                  1,
+                  88,
+                  24,
+                  128
+                ],
+                "nan": 33792,
+                "inf": 0
+              }
+            ]
+          },
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 56320,
+                  "inf": 0,
+                  "sha256": "cab773fed1782cb8de1fa88fcb464020ab6ba2f3defd576a9334c3e147ae586c"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 5120,
+                  "inf": 0,
+                  "sha256": "888452433fcf3181929c08a5d2997edde7527fe1270c035fe050669a74112a1f"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank0-round1.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "766b16be2054388d20e9e8e410cfe5a81c17144800a6f5806eb110ac15ae0702"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "39300d15c21d1267aa3e410fe7dcee73f1683f56eebc23e1d26a77a653d154fe"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank0-round2.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    1,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "c168c6ed8ff8d89be0bce9f32f47890a211e31330c773749a54b4fb5893e86c9"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round0.jsonl",
+          "first_nonfinite": {
+            "sequence": 23,
+            "forward": 1,
+            "kind": "api_output",
+            "name": "recompute_w_u_fwd",
+            "path": "language_model.model.layers.0.linear_attn",
+            "bad_fields": [
+              {
+                "field": "value[0]",
+                "shape": [
+                  1,
+                  88,
+                  24,
+                  128
+                ],
+                "nan": 33792,
+                "inf": 0
+              },
+              {
+                "field": "value[1]",
+                "shape": [
+                  1,
+                  88,
+                  24,
+                  128
+                ],
+                "nan": 33792,
+                "inf": 0
+              }
+            ]
+          },
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 56320,
+                  "inf": 0,
+                  "sha256": "cab773fed1782cb8de1fa88fcb464020ab6ba2f3defd576a9334c3e147ae586c"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 5120,
+                  "inf": 0,
+                  "sha256": "888452433fcf3181929c08a5d2997edde7527fe1270c035fe050669a74112a1f"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round1.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    88,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "766b16be2054388d20e9e8e410cfe5a81c17144800a6f5806eb110ac15ae0702"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    8,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "39300d15c21d1267aa3e410fe7dcee73f1683f56eebc23e1d26a77a653d154fe"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "file": "rank1-round2.jsonl",
+          "first_nonfinite": null,
+          "root_outputs": [
+            {
+              "forward": 1,
+              "outputs": [
+                {
+                  "shape": [
+                    11,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "336089d4bfdb087df7e86eee71c845c2903e8e3ba835b47565c5145068e0f218"
+                }
+              ]
+            },
+            {
+              "forward": 2,
+              "outputs": [
+                {
+                  "shape": [
+                    1,
+                    5120
+                  ],
+                  "nan": 0,
+                  "inf": 0,
+                  "sha256": "c168c6ed8ff8d89be0bce9f32f47890a211e31330c773749a54b4fb5893e86c9"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "diagnostic_status": "DIAGNOSTIC_COMPLETED_NOT_QUALIFICATION",
+      "rounds": [
+        {
+          "index": 0,
+          "batch": 8,
+          "tokens": [
+            [
+              271,
+              760
+            ],
+            [
+              0,
+              0
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              321,
+              1179
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "batch": 8,
+          "tokens": [
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ],
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "batch": 1,
+          "tokens": [
+            [
+              271,
+              760
+            ]
+          ],
+          "removed": [
+            {
+              "rank": 0,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            },
+            {
+              "rank": 1,
+              "hooks": 0,
+              "patches": 0,
+              "fault_calls": 0
+            }
+          ]
+        }
+      ],
+      "operator_replays": []
+    }
+  ],
+  "sentinel_reference": [
+    {
+      "rank": 0,
+      "inputs_exact": {
+        "k": true,
+        "v": true,
+        "beta": true,
+        "A": true,
+        "g_cumsum": true,
+        "cu_seqlens": true,
+        "chunk_indices": true
+      },
+      "outputs": {
+        "w": {
+          "nan": 33792,
+          "nan_by_token": {
+            "11": 3072,
+            "12": 3072,
+            "13": 3072,
+            "14": 3072,
+            "15": 3072,
+            "16": 3072,
+            "17": 3072,
+            "18": 3072,
+            "19": 3072,
+            "20": 3072,
+            "21": 3072
+          },
+          "reference_at_nan_min": -0.37699888178527885,
+          "reference_at_nan_max": 0.8958594343028196,
+          "reference_at_nan_nonzero": 33792
+        },
+        "u": {
+          "nan": 33792,
+          "nan_by_token": {
+            "11": 3072,
+            "12": 3072,
+            "13": 3072,
+            "14": 3072,
+            "15": 3072,
+            "16": 3072,
+            "17": 3072,
+            "18": 3072,
+            "19": 3072,
+            "20": 3072,
+            "21": 3072
+          },
+          "reference_at_nan_min": -1.3085590153932571,
+          "reference_at_nan_max": 32.767637491226196,
+          "reference_at_nan_nonzero": 33792
+        }
+      }
+    },
+    {
+      "rank": 1,
+      "inputs_exact": {
+        "k": true,
+        "v": true,
+        "beta": true,
+        "A": true,
+        "g_cumsum": true,
+        "cu_seqlens": true,
+        "chunk_indices": true
+      },
+      "outputs": {
+        "w": {
+          "nan": 33792,
+          "nan_by_token": {
+            "11": 3072,
+            "12": 3072,
+            "13": 3072,
+            "14": 3072,
+            "15": 3072,
+            "16": 3072,
+            "17": 3072,
+            "18": 3072,
+            "19": 3072,
+            "20": 3072,
+            "21": 3072
+          },
+          "reference_at_nan_min": -0.48218311551988347,
+          "reference_at_nan_max": 0.6535994440652668,
+          "reference_at_nan_nonzero": 33792
+        },
+        "u": {
+          "nan": 33792,
+          "nan_by_token": {
+            "11": 3072,
+            "12": 3072,
+            "13": 3072,
+            "14": 3072,
+            "15": 3072,
+            "16": 3072,
+            "17": 3072,
+            "18": 3072,
+            "19": 3072,
+            "20": 3072,
+            "21": 3072
+          },
+          "reference_at_nan_min": -9.2381591796875,
+          "reference_at_nan_max": 23.36885353922844,
+          "reference_at_nan_nonzero": 33792
+        }
+      }
+    }
+  ],
+  "private_archive_sha256": "9f29a8e14c4885c44cf8a40b0b25943e393bf982bbdee7630b907819a2fa8b20",
+  "private_tensors_published": false,
+  "window_seconds_total": 1516.3810257881414
+}
