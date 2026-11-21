@@ -99,14 +99,18 @@ def rpc(wrapper,action,mode=None,label=None):
     w=wrapper.worker if isinstance(wrapper,WorkerWrapperBase) else wrapper
     if action=='install':
         assert not hasattr(w,ATTRIBUTE)
-        m=Monitor(w,mode,label);m.install();setattr(w,ATTRIBUTE,m)
+        m=Monitor(w,mode,label)
+        try:m.install()
+        except BaseException:
+            m.close();raise
+        setattr(w,ATTRIBUTE,m)
         return dict(rank=w.rank,hooks=len(m.hooks),patches=len(m.patches),fault_calls=0)
     m=getattr(w,ATTRIBUTE);m.close();delattr(w,ATTRIBUTE)
     return dict(rank=w.rank,hooks=len(m.hooks),patches=len(m.patches),fault_calls=0)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--mode',choices=['root','trace'],required=True);a=p.parse_args()
-    report=dict(status='STARTED',mode=a.mode,fault_calls=0,rounds=[])
+    p=argparse.ArgumentParser();p.add_argument('--mode',choices=['root','trace'],required=True);p.add_argument('--atomic-batch',action='store_true');a=p.parse_args()
+    report=dict(status='STARTED',mode=a.mode,atomic_batch=a.atomic_batch,fault_calls=0,rounds=[])
     def save():pathlib.Path('/evidence/diagnostic.json').write_text(json.dumps(report,indent=2)+'\n')
     try:
         from vllm import LLM,SamplingParams
@@ -122,7 +126,16 @@ def main():
             row=dict(index=n,batch=batch);report['rounds'].append(row)
             row['install']=llm.collective_rpc(rpc,args=('install',a.mode,'round'+str(n)),timeout=120);save()
             try:
-                result=llm.generate([dict(prompt_token_ids=tokens) for _ in range(batch)],SamplingParams(temperature=0,max_tokens=2,ignore_eos=True),use_tqdm=False)
+                prompts=[dict(prompt_token_ids=tokens) for _ in range(batch)]
+                params=SamplingParams(temperature=0,max_tokens=2,ignore_eos=True)
+                if a.atomic_batch:
+                    llm.sleep(level=0,mode='wait')
+                    assert llm.llm_engine.is_sleeping()
+                    row['enqueued']=list(llm.enqueue(prompts,params,use_tqdm=False));save()
+                    assert len(row['enqueued'])==batch
+                    llm.wake_up(tags=['scheduling'])
+                    result=llm.wait_for_completion(use_tqdm=False)
+                else:result=llm.generate(prompts,params,use_tqdm=False)
                 row['outputs']=[dict(id=x.request_id,tokens=list(x.outputs[0].token_ids),text=x.outputs[0].text) for x in result]
             finally:row['remove']=llm.collective_rpc(rpc,args=('remove',),timeout=120);save()
         report['status']='DIAGNOSTIC_COMPLETED_NOT_QUALIFICATION'
