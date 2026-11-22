@@ -59,6 +59,7 @@ def bootstrap(wrapper,action,mechanism,options=None):
 def main():
     p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','33','39','39mr','18','22','8','17','41','26fia','20'),required=True)
     p.add_argument('--native-library');p.add_argument('--native-sha256')
+    p.add_argument('--image');p.add_argument('--image-sha256')
     p.add_argument('--tp',type=int,choices=(1,2),default=2)
     p.add_argument('--reference-mode',choices=('immediate','forward'),default='immediate')
     p.add_argument('--model-family',choices=('qwen35','deepseek_v2'),default='qwen35')
@@ -105,7 +106,14 @@ def main():
         image_prompt=None;serial=0;primed=None
         if a.mechanism=='17':
             from PIL import Image
-            image=Image.new('RGB',(64,64));image.putdata([(x*4,y*4,((x+y)%64)*4) for y in range(64) for x in range(64)])
+            from fault_injection.vision_input import load_fixed_image
+            if a.image:
+                image,identity=load_fixed_image(a.image,a.image_sha256)
+            else:
+                if a.deployment_source=='YELLOW_DEDICATED_INSTANCE':raise RuntimeError('YELLOW_FIXED_IMAGE_REQUIRED')
+                image=Image.new('RGB',(64,64));image.putdata([(x*4,y*4,((x+y)%64)*4) for y in range(64) for x in range(64)])
+                identity=dict(source='BLUE_GENERATED_FIXTURE',size=[64,64],pixel_sha256=hashlib.sha256(image.tobytes()).hexdigest())
+            report['visual_input']=identity
             image_prompt='<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Describe this image in one sentence.<|im_end|>\n<|im_start|>assistant\n'
             tokens=[]
         params=SamplingParams(temperature=0,max_tokens=4,min_tokens=4,ignore_eos=True)

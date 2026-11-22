@@ -36,7 +36,7 @@ class PreviewTests(unittest.TestCase):
             p=Path(root)/'source-review.json';write_json_bytes(p,{'review':'source'})
             self.assertEqual(p.read_bytes(),b'{\n  "review": "source"\n}\n')
     def test_allow_list_is_not_a_live_grant(self):
-        self.assertEqual(TEST_CANDIDATES,{'28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','18.api_half','22.wrong_row','39.matmul_range'})
+        self.assertEqual(TEST_CANDIDATES,{'28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','18.api_half','22.wrong_row','39.matmul_range','17.spatial_padding','41.tail_column','26.fia_destination','20.buffer_substitute'})
         group={'injection_policy':'ALL_RANK_EVERY_ELIGIBLE_CALL'}
         def refuse(*args):raise RuntimeError('SOURCE_OR_DEPLOYMENT_REJECTED')
         with self.assertRaisesRegex(RuntimeError,'SOURCE_OR_DEPLOYMENT'):

@@ -1,6 +1,6 @@
 """Trusted host delivery scope. This allow-list never grants a deployment."""
-RC_ID = 'demoncatpfi-rc3-preview-20261122-r3'
-TEST_CANDIDATES = frozenset(('28.fia.denominator_replay', 'quant.batch_shared_scale','39.output_proxy','18.api_half','22.wrong_row','39.matmul_range'))
+RC_ID = 'demoncatpfi-rc3-preview-20261122-r4'
+TEST_CANDIDATES = frozenset(('28.fia.denominator_replay', 'quant.batch_shared_scale','39.output_proxy','18.api_half','22.wrong_row','39.matmul_range','17.spatial_padding','41.tail_column','26.fia_destination','20.buffer_substitute'))
 
 
 def prepare_binding(deployment_callback):

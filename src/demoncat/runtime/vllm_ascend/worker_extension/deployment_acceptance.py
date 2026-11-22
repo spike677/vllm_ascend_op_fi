@@ -63,8 +63,11 @@ def observe_deployment(worker,model):
     actual['cann']=sorted({item['fields'].get('version') for item in toolkit['installations']
         if item['fields'].get('version')})
     from fault_injection.environment import _live_soc
-    soc, _ = _live_soc()
+    soc, soc_source = _live_soc()
     actual['hardware_family']=(soc or {}).get('family')
+    actual['hardware_device_name']=(soc or {}).get('observed_name')
+    actual['hardware_logical_device']=(soc or {}).get('logical_device')
+    actual['hardware_identity_source']=soc_source
     actual['dtype']=str(getattr(config,'dtype',None))
     for key,name in (('tp','tensor'),('pp','pipeline'),('dp','data')):
         actual[key]=_get(runner,'vllm_config.parallel_config.'+name+'_parallel_size')

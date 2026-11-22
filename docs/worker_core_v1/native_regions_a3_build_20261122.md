@@ -28,3 +28,11 @@ python3 -B /source/tools/build_native_regions.py \
 4. 后续验收仍需公共入口、同组 Worker 两个作用域、四阶段和每阶段四 token；逐 rank 覆盖、真实消费者设备事件、区域字节恢复、OFF/health 完整 hidden/logits 精确恢复、资源零。结果仅按实际组合登记。
 
 本文件不赋予未验收部署执行资格，不替代稍后按 A2 实测结论编写的机制验收步骤。
+
+## r4修正：工具与硬件身份
+
+`tools/build_native_regions.py` 不调用、不依赖patchelf。它使用g++、nm和readelf，以 `-L<SDK>/lib64 -lascendcl` 链接；运行时在同一隔离容器加载CANN的set_env.sh，使动态链接器找到真实ACL库。无需安装patchelf，也无需修改宿主环境。若出现ACL依赖找不到，保留readelf/ldd结果和环境来源，不能复制未知库或绕过SHA。
+
+硬件身份以已经初始化的Worker中 `torch_npu.npu.get_device_name(torch_npu.npu.current_device())` 原值为准。单卡逻辑映射的自检通常等价于 `get_device_name(0)`；多rank不能强制都读逻辑0。`Ascend910_9382`识别为A3，`Ascend910B4`识别为A2，npu-smi的泛称 `Ascend910` 不足以分类，保留未证明。deployment回执新增原设备名、逻辑设备和读取来源；族分类不等于Native构建或机制资格。
+
+无设备构建不初始化NPU获取该名字；运行身份来自后续专用实例已有Worker，只读打印原值。构建收据、镜像digest、CANN SDK版本和Native SHA由Codex审查后，才在r4步骤中使用该产物。41、26、20各自验收，TP1/TP2分别登记。

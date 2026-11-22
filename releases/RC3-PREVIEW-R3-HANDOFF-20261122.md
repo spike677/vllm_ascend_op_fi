@@ -1,5 +1,7 @@
 # RC3 预览 r3 交付补充单
 
+11-22夜补充：[参数对齐与并行实例说明](../docs/worker_core_v1/r3_parameter_handoff_20261122.md)。请随本单转交，不能复用chunked关闭、max_model_len4096的旧模板；本补充不修改冻结包。
+
 r3 可以交负责人转发。范围是六项公共持续能力：28 denominator torch、Batch torch、39 output_proxy、18、22、39 matmul_range。33 因完整模型传播未达标不纳入；这不是全部 12 项交付完成，也不是 A3 已验收。未向黄区发送内容。r2 标签和全部发行字节保持不变。
 
 ## 包身份
