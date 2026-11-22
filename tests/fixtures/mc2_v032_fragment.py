@@ -29,7 +29,7 @@ class TokenDispatcherWithMC2:
                 tp_recv_counts,
                 expand_scales,
             ) = output[0:7]
-    
+
             group_list_type = kwargs_mc2["expert_token_nums_type"]
             return MoETokenDispatchOutput(
                 hidden_states=expand_x,
@@ -51,8 +51,8 @@ class TokenDispatcherWithMC2:
 
     def token_combine(self, hidden_states, combine_metadata, bias=None):
             assert bias is None, "Bias is not supported in MoEAlltoAllvTokenDispatcher."
-    
+
             kwargs_mc2 = self.get_combine_mc_kwargs(hidden_states, combine_metadata)
             combined_output = torch_npu.npu_moe_distribute_combine_v2(**kwargs_mc2)
-    
+
             return combined_output

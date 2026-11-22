@@ -19,3 +19,13 @@
 5. 残留兼容方案A/B/C待负责人选择；最终A3验收步骤与组合登记尚未完成。蓝区V2-Lite AllGather通过不代表本路线通过。
 
 这些边界与 `dsv41_sparse_cpu_20261122.md` 的稀疏MLA限制并列记录，下一步是补齐真实runner分片行映射和接收端expert归属，而不是把CPU原生API替身测试包装成A3实测。
+
+## 分片映射的源码复核
+
+同一0.32源码快照中，`prepare_finalize.py` SHA为 `50af2e56317d71606aaa5627547eff9e0e54fef8b0521667cf039f30ef361a91`，`ascend_forward_context.py` SHA为 `a1273c99ab058789160c30411ec7cfcb13e5fb92f8b1e661cacf9034f71bb9d2`。
+
+`PrepareAndFinalizeWithMC2.prepare` 有两条不同的数据路径：`replace_allreduce=False` 时先补齐DP最大token数到TP整除，再按TP切分；为True时输入已经分片，以本地token数算mask起点，然后补本地padding。forward context把实际token标为True，其后padding标为False。这证明不能把原请求列表直接按原长度套在dispatch行上，也不能把padding认领为请求。
+
+0.32 v2 runner使用当轮 `batch_req_state.req_ids` 和实际调度计数；不能照搬0.26的 `input_batch.req_ids` 观察器。下一适配必须以runner当前批次、prepare前后张量身份、mask和实际token位置共同建立映射，再验证它就是进入dispatch的对象。只做形状算术仍不足以证明运行关联。本次未增加一个会被误认为已完成的默认context provider。
+
+接收端仍需识别实际expert展开顺序、计数和通信辅助布局；源码只把opaque assist原样传递给原生combine，没有提供可安全修改的行索引契约。因此当前observer只记录源端路由与原生combine关联，不改opaque assist，不把它登记为可执行故障8。后续需要匹配算子接口及黄区实际分支证据，仍由负责人转交材料。
