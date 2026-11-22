@@ -44,7 +44,7 @@ CPU 参考例：256 个等权 key、V 全 1，重放其中 128 个 key 的分母
 |39 matmul_range|公共两作用域通过；704 eligible/rank/作用域全部消费恢复，512非列分片调用不适用；仅W8A8|未列为首批蓝区模型|待验收|待适配/验收|
 |Batch|公共入口CPU/NPU各两作用域通过；304投影×4步/每rank，1216次；最终交付负向检查通过|未列为首批蓝区模型|待验收|W8A8独立DynamicQuant部分待适配|
 |41|Native 最后阶段|MLA cache 待适配|待验收|待适配/验收|
-|17|按11-22决定新增Qwen3.8视觉塔适配，待验收；旧Qwen3-VL仅历史|不适用|TP1/TP2视觉验收待完成|缺图像预处理配置，不执行|
+|17|公共两作用域通过；每rank每作用域1次真实patch调用，全消费/恢复，原参数恢复，旧Qwen3-VL仅历史|不适用|TP1/TP2视觉验收待完成|缺图像预处理配置，不执行|
 |8|dense 不适用|公共两作用域通过；26MoE×4、104次；26次新变化、78次单组decode保持原值|不适用|M4 待完成|
 |28 denominator torch|公共入口通过：16层×4步/每rank，两作用域，完整恢复与实际创建负向通过|公共入口两作用域通过：27层×4步/每rank，108次；恢复通过|待验收|稀疏 MLA/M4 待完成|
 |20|Native 最后阶段|待对应 site|待验收|不在 RC3 第二批清单|
@@ -74,3 +74,7 @@ Batch public-a17：可选forward延迟核对模式通过公共两作用域，样
 ## 2026-11-22 r3 交付更新
 
 r3 已冻结六项公共持续候选，发行提交 0a10cb2e，源提交112376ee；新标签 demoncatpfi-rc3-preview-20261122-r3。971项范围测试、33项补充检查及124无设备358文件字节核验通过。A3 TP1/TP2分别待验收，未外推登记。上文r2与未冻结描述保留历史时间范围；最新交付见 releases/RC3-PREVIEW-R3-HANDOFF-20261122.md。33维持未通过，17视觉塔下一项，Native门禁尚未满足。
+
+## 2026-11-22 视觉17后续更新
+
+vision17-a3公共入口通过：两rank每作用域observed/eligible/applied/changed/consumed/restored均1、failed0；hidden/logits传播和完整OFF/health精确恢复，1.05504×/1.00378×。详见[视觉报告](continuous_vision17_20261122.md)。仅开发线BLUE_COMBINATION，冻结r3不变；17与33均已有结论，Native进入可实施阶段。DeepSeek稀疏MLA新增CPU参数解析与sink参考，仍不代表实际接线或A3验收。

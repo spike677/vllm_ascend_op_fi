@@ -1,0 +1,41 @@
+{
+  "schema": "demoncat.vision17.preflight_review.v1",
+  "passed": true,
+  "fault_acceptance": false,
+  "qualification_granted": false,
+  "combination": "A2 Ascend910B4 / CANN9.1 vLLM0.26 / community Qwen3.8 W8A8 / TP2",
+  "source_manifest_sha256": "bdcb9575aad531234e93f26bf63673401f2a7b6c495e9c168c84a74b8d8d6cb1",
+  "receipt_sha256": "842803d6e2b3bd6c1b38bf4c0c0d8b1e3a3f3e42dec8fa369e9c47aa50522b22",
+  "kernel": [
+    2,
+    16,
+    16
+  ],
+  "padding": [
+    0,
+    0,
+    0
+  ],
+  "patch_weight_replicated": true,
+  "encoder_calls_per_rank_per_request": 1,
+  "request_seconds": [
+    96.5079494350357,
+    1.377463095006533
+  ],
+  "four_token_complete_hashes_equal": true,
+  "all_outputs_finite": true,
+  "fault_calls": 0,
+  "window": {
+    "start": "2026-11-22T06:39:37.575746+00:00",
+    "end": "2026-11-22T06:44:49.550173+00:00",
+    "seconds": 311.97445903893095,
+    "isolation_removed": true,
+    "external_stops": []
+  },
+  "next_required": [
+    "source-bound multimodal request association",
+    "public all-rank every-call fault17 adapter",
+    "two scopes OFF/health and region/argument recovery",
+    "independent review"
+  ]
+}

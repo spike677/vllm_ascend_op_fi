@@ -34,6 +34,29 @@ def fixture():
 
 
 class ReviewTests(unittest.TestCase):
+    def test_vision_requires_real_uncached_encoder_each_phase_and_padding(self):
+        r=fixture();r['mechanism']='17.spatial_padding'
+        for scope in r['scopes']:
+            for host in scope['requests']:
+                for state in host['result']['response']['provider_state']['rank_states'].values():
+                    for row in state['evidence']['actual_requests']:
+                        fault=row['phase']=='fault'
+                        row.pop('quant_reference')
+                        row['coverage']={k:(0 if k=='failed' else 1) for k in row['coverage']}
+                        row['restore_kind']='CALL_ARGUMENT_ONLY_NO_STORAGE_OVERWRITE'
+                        row['vision_effect']=dict(encoder_calls=1,embedding_consumers=1,changed_outputs=int(fault),
+                            actual_padding=[[0,7,7] if fault else [0,0,0]],consumer_operators=['aten.add.Tensor'])
+        self.assertTrue(review(r)['passed'])
+        for key,value in [('encoder_calls',0),('embedding_consumers',0),('actual_padding',[[0,0,0]]),
+                          ('consumer_operators',[]),('changed_outputs',0)]:
+            bad=deepcopy(r)
+            row=bad['scopes'][1]['requests'][-1]['result']['response']['provider_state']['rank_states']['1']['evidence']['actual_requests'][1]
+            row['vision_effect'][key]=value
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'VISION17_'):review(bad)
+        row=r['scopes'][1]['requests'][-1]['result']['response']['provider_state']['rank_states']['1']['evidence']['actual_requests'][2]
+        row['vision_effect']['encoder_calls']=0
+        with self.assertRaisesRegex(ValueError,'EACH_PHASE'):review(r)
+
     def test_range_and_paged_controls_cannot_be_replaced_by_model_effect(self):
         for mechanism in ('39.matmul_range','33.paged_decode'):
             r=fixture();r['mechanism']=mechanism

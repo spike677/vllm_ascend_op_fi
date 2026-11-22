@@ -1,7 +1,7 @@
 """Continuous site provider using the existing WorkerFaultRuntime lease protocol."""
 from copy import deepcopy
 from ._scope import Scope,reject_unknown
-from ..continuous_binding import current_binding,ContinuousRequest,digest
+from ..continuous_binding import current_binding,make_continuous_request as ContinuousRequest,digest
 from ..serving_context import require
 from fault_injection.continuous_contract import continuous_request_plan
 

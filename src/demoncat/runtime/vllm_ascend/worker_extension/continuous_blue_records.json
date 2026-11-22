@@ -399,6 +399,47 @@
       "source_review_reference": "experiments/worker_core_v11_20261118/continuous_matmul39_source_review_20261122.json",
       "source_review_sha256": "fdebeec58cad55ddae6b0ba8cdbf21e1dcfc9b1c41fe4dda2a72bbec47ea0648",
       "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED"
+    },
+    {
+      "mechanism": "17.spatial_padding",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_vision17_review_20261122.json",
+      "review_sha256": "c17eb93da392bd0331046a1705329d8004c2f35322bf1367ea53d4caa0034036",
+      "source_manifest_sha256": "1496957b6fd55255969c81ebe9cc396c0bb1ee50f22c1919ce15fa224c1485d5",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "actual_patch_conv3d_padding_0_7_7",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4,
+      "limitations": [
+        "Argument-only fault: no tensor storage overwrite; byte-restoration flag means original input/weight bytes unchanged, call arguments restored",
+        "One image, kernel/stride 2x16x16 and exact reviewed model sources; no video/multiple-image/DP encoder coverage",
+        "Visual patch projection replicated on both ranks; this does not mean all ViT layers replicated",
+        "TP1 and A3 require independent acceptance; not included in frozen r3"
+      ],
+      "source_review_reference": "experiments/worker_core_v11_20261118/continuous_vision17_source_review_20261122.json",
+      "source_review_sha256": "661a31281f4e8b5ebefa4d8cffd677bc3c2e110d025622325b7975f6746f0490",
+      "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED"
     }
   ]
 }

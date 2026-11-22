@@ -9,7 +9,7 @@ import torch
 
 
 def recompute_attention_row(query, keys, values, *, scale, block_size,
-                            key_indices=None, replay_blocks=()):
+                            key_indices=None, replay_blocks=(), sinks=None):
     """Shapes Q[Hq,D], K[N,Hkv,D], V[N,Hkv,Dv]; sparse indices are unique.
 
 MLA sites must supply the absorbed Q/K and latent V with the exact model scale.
@@ -34,6 +34,11 @@ No hidden assumption that QK and V head dimensions are equal.
     if (len(set(replay)) != len(replay)
             or any(type(i) is not int or not 0 <= i < blocks for i in replay)):
         raise ValueError('REPLAY_BLOCK_OUT_OF_RANGE_OR_DUPLICATE')
+    if sinks is not None:
+        if (not isinstance(sinks, torch.Tensor) or sinks.shape != (query.shape[0],)
+                or not sinks.is_floating_point() or sinks.device != query.device
+                or not bool(torch.isfinite(sinks).all())):
+            raise ValueError('FINITE_PER_HEAD_SINKS_REQUIRED')
     q = query.float()
     groups = query.shape[0] // keys.shape[1]
     maximum = torch.full((query.shape[0],), -torch.inf, device=q.device)
@@ -50,4 +55,10 @@ No hidden assumption that QK and V head dimensions are equal.
         numerator = numerator * rescale[:, None] + torch.einsum('hk,khd->hd', probability, v)
         denominator = denominator * rescale + probability.sum(dim=-1) * (2 if number in replay else 1)
         maximum = updated
+    if sinks is not None:
+        # A caller-owned sink is one zero-value softmax term, never a replayed key.
+        updated = torch.maximum(maximum, sinks.float())
+        rescale = torch.exp(maximum - updated)
+        numerator = numerator * rescale[:, None]
+        denominator = denominator * rescale + torch.exp(sinks.float() - updated)
     return (numerator / denominator[:, None]).to(query.dtype)

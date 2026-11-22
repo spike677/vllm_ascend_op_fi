@@ -1,0 +1,338 @@
+{
+  "schema": "demoncat.continuous.public_review.v1",
+  "mechanism": "17.spatial_padding",
+  "arithmetic_device": "input",
+  "reference_mode": "immediate",
+  "passed": true,
+  "scopes": [
+    {
+      "owner": "worker-group-81b5d274583f44509d650f56de3d0c22",
+      "rank_effects": {
+        "0": {
+          "coverage": {
+            "applied": 1,
+            "attempted": 1,
+            "changed": 1,
+            "consumed": 1,
+            "eligible": 1,
+            "failed": 0,
+            "observed": 1,
+            "restored": 1
+          },
+          "site_count": 1,
+          "quant_reference": {},
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "90ca7645898148d7c3bc3b49cd5150acabfb39b033168bcd03b2423882b9fc5f",
+          "vision_effect": {
+            "actual_padding": [
+              [
+                0,
+                7,
+                7
+              ]
+            ],
+            "changed_outputs": 1,
+            "consumer_operators": [
+              "aten::add"
+            ],
+            "embedding_consumers": 1,
+            "encoder_calls": 1
+          },
+          "projection_effect": null,
+          "structural_candidates_without_call": [],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        },
+        "1": {
+          "coverage": {
+            "applied": 1,
+            "attempted": 1,
+            "changed": 1,
+            "consumed": 1,
+            "eligible": 1,
+            "failed": 0,
+            "observed": 1,
+            "restored": 1
+          },
+          "site_count": 1,
+          "quant_reference": {},
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "90ca7645898148d7c3bc3b49cd5150acabfb39b033168bcd03b2423882b9fc5f",
+          "vision_effect": {
+            "actual_padding": [
+              [
+                0,
+                7,
+                7
+              ]
+            ],
+            "changed_outputs": 1,
+            "consumer_operators": [
+              "aten::add"
+            ],
+            "embedding_consumers": 1,
+            "encoder_calls": 1
+          },
+          "projection_effect": null,
+          "structural_candidates_without_call": [],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        }
+      },
+      "deployment": {
+        "0": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        },
+        "1": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        }
+      },
+      "fault_time_ratio": 1.0550369464855496,
+      "request_plan": {
+        "schema": "demoncat.continuous.request_plan.v1",
+        "mechanism": "17.spatial_padding",
+        "phases": [
+          {
+            "phase": "normal",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "fault",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "off",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "health",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          }
+        ],
+        "unit": "request",
+        "max_iterations": 4,
+        "max_requests": 4,
+        "external_health_required": false,
+        "advance_argument": "request_id",
+        "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+        "qualification_granted": false,
+        "completion": "next_phase == complete AND all rank recovery checks passed"
+      },
+      "recovered": true,
+      "resources_zero": true
+    },
+    {
+      "owner": "worker-group-09c5165892c24f8a8b24ae7a4e8f0da7",
+      "rank_effects": {
+        "0": {
+          "coverage": {
+            "applied": 1,
+            "attempted": 1,
+            "changed": 1,
+            "consumed": 1,
+            "eligible": 1,
+            "failed": 0,
+            "observed": 1,
+            "restored": 1
+          },
+          "site_count": 1,
+          "quant_reference": {},
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "f5523185a604138ea1eabfb0fadeb118553caa1e3f2fc4287f907c1e0f6a9d35",
+          "vision_effect": {
+            "actual_padding": [
+              [
+                0,
+                7,
+                7
+              ]
+            ],
+            "changed_outputs": 1,
+            "consumer_operators": [
+              "aten::add"
+            ],
+            "embedding_consumers": 1,
+            "encoder_calls": 1
+          },
+          "projection_effect": null,
+          "structural_candidates_without_call": [],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        },
+        "1": {
+          "coverage": {
+            "applied": 1,
+            "attempted": 1,
+            "changed": 1,
+            "consumed": 1,
+            "eligible": 1,
+            "failed": 0,
+            "observed": 1,
+            "restored": 1
+          },
+          "site_count": 1,
+          "quant_reference": {},
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "f5523185a604138ea1eabfb0fadeb118553caa1e3f2fc4287f907c1e0f6a9d35",
+          "vision_effect": {
+            "actual_padding": [
+              [
+                0,
+                7,
+                7
+              ]
+            ],
+            "changed_outputs": 1,
+            "consumer_operators": [
+              "aten::add"
+            ],
+            "embedding_consumers": 1,
+            "encoder_calls": 1
+          },
+          "projection_effect": null,
+          "structural_candidates_without_call": [],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        }
+      },
+      "deployment": {
+        "0": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        },
+        "1": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        }
+      },
+      "fault_time_ratio": 1.003778891835822,
+      "request_plan": {
+        "schema": "demoncat.continuous.request_plan.v1",
+        "mechanism": "17.spatial_padding",
+        "phases": [
+          {
+            "phase": "normal",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "fault",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "off",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "health",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          }
+        ],
+        "unit": "request",
+        "max_iterations": 4,
+        "max_requests": 4,
+        "external_health_required": false,
+        "advance_argument": "request_id",
+        "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+        "qualification_granted": false,
+        "completion": "next_phase == complete AND all rank recovery checks passed"
+      },
+      "recovered": true,
+      "resources_zero": true
+    }
+  ],
+  "negative_creation_verified": true,
+  "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEW_STILL_REQUIRED",
+  "qualification_granted": false,
+  "source_receipt_sha256": "a0228be92477b75d7588b545685433a079d40fc9182e513d12997dfeab8340eb",
+  "reviewer_sha256": "c70e5ebacdf04fdf36528d8316ec1f51fe3ccf027ed80496acb32cd3b4cde82d"
+}

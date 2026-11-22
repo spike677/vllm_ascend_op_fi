@@ -1,0 +1,50 @@
+{
+  "schema": "demoncat.continuous.source_review.v1",
+  "mechanism": "17.spatial_padding",
+  "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED",
+  "passed": true,
+  "scope": "BLUE_COMBINATION A2 CANN9.1 vLLM0.26 Qwen3.8 community W8A8 TP2 image patch Conv3d",
+  "receipt_review_sha256": "c17eb93da392bd0331046a1705329d8004c2f35322bf1367ea53d4caa0034036",
+  "source_manifest_sha256": "1496957b6fd55255969c81ebe9cc396c0bb1ee50f22c1919ce15fa224c1485d5",
+  "checks": {
+    "source_pinned_runner_and_visual": true,
+    "real_request_encoder_cache_embedding_join": true,
+    "actual_native_conv_arguments_not_output_rewrite": true,
+    "unchanged_inputs_weights_and_geometry": true,
+    "each_phase_uncached_encoder": true,
+    "empty_decode_encoder_entry_not_counted": true,
+    "same_stream_real_value_consumer_completion": true,
+    "all_rank_every_eligible_call": true,
+    "argument_restoration_and_two_scopes_reviewed": true,
+    "negative_creation_and_resources_reviewed": true
+  },
+  "limitations": [
+    "Argument-only fault: no tensor storage overwrite; byte-restoration flag means original input/weight bytes unchanged, call arguments restored",
+    "One image, kernel/stride 2x16x16 and exact reviewed model sources; no video/multiple-image/DP encoder coverage",
+    "Visual patch projection replicated on both ranks; this does not mean all ViT layers replicated",
+    "TP1 and A3 require independent acceptance; not included in frozen r3"
+  ],
+  "files": [
+    {
+      "path": "fault_injection/sites/vision17.py",
+      "reviewed_working_sha256": "71e7fab294c774f20126c59936269b56c84ceac28ac20d62aaf04db9736cac29"
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/continuous_vision17.py",
+      "reviewed_working_sha256": "b3a221e6f24c93a165edb7e8439be8252f877215247b346fd1b537ae20abed18"
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/continuous_binding.py",
+      "reviewed_working_sha256": "57d83e1a77640003ec6549dc63e723ff521639b2de921d378d0e7bbf5705f46c"
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/providers/continuous.py",
+      "reviewed_working_sha256": "f09ce257b124fc0dc9b91284e8705ea1f069be24a778ce03dd8be5eb659ff825"
+    },
+    {
+      "path": "tools/review_continuous_public.py",
+      "reviewed_working_sha256": "c70e5ebacdf04fdf36528d8316ec1f51fe3ccf027ed80496acb32cd3b4cde82d"
+    }
+  ],
+  "file_hash_semantics": "Working bytes at source review; NPU execution identity is the separately retained immutable source_manifest_sha256."
+}

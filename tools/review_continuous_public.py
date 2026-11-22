@@ -74,12 +74,27 @@ def review(report, *, require_negative_creation=False):
                 need(len(calls)==4 and all(calls) and all(isinstance(n,int) and n>0 for c in calls for n in c.values())
                     and sum(sum(c.values()) for c in calls)==f['coverage']['observed']
                     and len(set().union(*(set(c) for c in calls)))==f['site_count'],'SITE_ACTUAL_CALL_COVERAGE_MISMATCH')
+            elif report['mechanism']=='17.spatial_padding':
+                for row in rows:
+                    effect=row.get('vision_effect',{})
+                    need(effect.get('encoder_calls')==1 and effect.get('embedding_consumers',0)>=1,
+                        'VISION17_REAL_ENCODER_CONSUMER_REQUIRED_EACH_PHASE')
+                    need(row.get('restore_kind')=='CALL_ARGUMENT_ONLY_NO_STORAGE_OVERWRITE',
+                        'VISION17_ARGUMENT_RESTORE_KIND_REQUIRED')
+                    padding=[0,7,7] if row['phase']=='fault' else [0,0,0]
+                    actual=effect.get('actual_padding',[])
+                    need(len(actual)==row['coverage']['observed'] and bool(actual)
+                        and all(p==padding for p in actual),'VISION17_ACTUAL_PADDING_MISMATCH')
+                    need(bool(effect.get('consumer_operators')),'VISION17_VALUE_CONSUMER_MISSING')
+                need(f['coverage']['observed']==f['site_count']
+                    and f['vision_effect']['changed_outputs']==f['coverage']['changed']>0,
+                    'VISION17_PATCH_CALL_COVERAGE_MISMATCH')
             else:need(f['coverage']['observed']==4*f['site_count'],'SITE_FORWARD_COVERAGE_MISMATCH')
             ranks[rank]=dict(counts=f['coverage'],observation_complete=f.get('observation_complete',False),
                 same_stream_verified=f['same_stream_verified'],bytes_restored=f['bytes_restored'],
                 off_exact=True,health_exact=True,uncovered_sites=f.get('uncovered_sites'),resources=f['resources'],
                 inapplicable_reasons=f.get('inapplicable_reasons',[]))
-            effects[rank]=dict(coverage=f['coverage'],site_count=f['site_count'],quant_reference=f['quant_reference'],
+            effects[rank]=dict(coverage=f['coverage'],site_count=f['site_count'],quant_reference=f.get('quant_reference',{}),
                 hidden_changed=any(a['hidden']!=b['hidden'] for a,b in zip(n['output'],f['output'])),
                 logits_changed=any(a['logits']!=b['logits'] for a,b in zip(n['output'],f['output'])),
                 recovered=True,events_sha256=f['events_sha256'])
@@ -94,6 +109,7 @@ def review(report, *, require_negative_creation=False):
             if report['mechanism']=='39.matmul_range':
                 effect=f['matmul_effect'];need(effect['reference_controls']==f['coverage']['eligible'] and effect['rules']==['omit_final_quarter'],'MATMUL_RANGE_REFERENCE_MISSING')
                 effects[rank]['matmul_effect']=effect
+            if report['mechanism']=='17.spatial_padding':effects[rank]['vision_effect']=f['vision_effect']
             effects[rank]['projection_effect']=f.get('projection_effect')
             if report['mechanism']=='22.wrong_row':
                 rot=f['rotary_effect'];need(rot['rows_changed']>0,'ROTARY_ROWS_UNCHANGED')
@@ -104,7 +120,7 @@ def review(report, *, require_negative_creation=False):
                 effects[rank]['rotary_effect']=dict(rows_changed=rot['rows_changed'],position_rows_changed=rot['position_rows_changed'],qk_changed_calls=changed)
             effects[rank]['structural_candidates_without_call']=f.get('structural_candidates_without_call',[])
             effects[rank]['fault_all_finite']=f['all_finite']
-            quant=f['quant_reference'];sample_count=quant.get('sampled_elements',0)
+            quant=f.get('quant_reference',{});sample_count=quant.get('sampled_elements',0)
             effects[rank]['sampled_q_difference_fraction']=(quant.get('q_sample_differences',0)/sample_count if sample_count else None)
         coverage=review_rank_coverage(range(len(members)),ranks)
         need(coverage['passed'],'COVERAGE_REVIEW_FAILED:'+str(coverage['failures']))

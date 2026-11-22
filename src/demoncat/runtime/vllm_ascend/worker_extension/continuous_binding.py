@@ -9,7 +9,7 @@ import hashlib,json,os,threading
 from .serving_context import require
 
 ATTRIBUTE='_demoncat_continuous_bindings'
-SUPPORTED=('33.paged_decode','28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset')
+SUPPORTED=('17.spatial_padding','33.paged_decode','28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset')
 
 
 def digest(value):
@@ -28,6 +28,7 @@ class ContinuousBinding:
     pid: int
     thread: int
     reference_mode: str='immediate'
+    visual_references: dict=field(default_factory=dict)
     leases: set=field(default_factory=set)
     warmups: list=field(default_factory=list)
     warmup_request: object=None
@@ -62,7 +63,10 @@ def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithme
     from .continuous_model import validate_continuous_model
     # Validate exact pinned execute/preprocess/sample/model sources and real
     # parallel groups, without installing hooks or creating any NPU call.
-    family=validate_continuous_model(runner,{'pending-'+str(i):p for i,p in enumerate(prompts)})
+    if mechanism=='17.spatial_padding':
+        from .continuous_vision17 import validate_visual_model
+        family=validate_visual_model(runner)
+    else:family=validate_continuous_model(runner,{'pending-'+str(i):p for i,p in enumerate(prompts)})
     require(family!='deepseek_v2' or mechanism in ('28.fia.denominator_replay','8.restore_offset','18.api_half','39.output_proxy','22.wrong_row'),'MLA_CONTINUOUS_SITE_NOT_ADAPTED')
     require(not model.training and not runner.vllm_config.cache_config.enable_prefix_caching
         and runner.vllm_config.kv_transfer_config is None,'CONTINUOUS_FRESH_CACHE_INFERENCE_REQUIRED')
@@ -92,12 +96,19 @@ def observe_continuous_warmup(worker,mechanism,*,request_ids=None):
     require(b is not None and not b.leases,'CONTINUOUS_WARMUP_REQUIRES_IDLE_BINDING')
     if request_ids is not None:
         require(b.warmup_request is None and len(b.warmups)<6,'CONTINUOUS_WARMUP_BUDGET')
-        b.warmup_request=ContinuousRequest(b,request_ids,'warmup');b.warmup_request.install()
+        b.warmup_request=make_continuous_request(b,request_ids,'warmup');b.warmup_request.install()
     else:
         require(b.warmup_request is not None,'CONTINUOUS_WARMUP_NOT_STARTED')
         b.warmups.append(b.warmup_request.collect());b.warmup_request=None
     return dict(warmup_valid=b.warmup_valid,attempts=len(b.warmups),
                 observations=deepcopy(b.warmups),qualification_granted=False)
+
+
+def make_continuous_request(binding,ids,phase):
+    if binding.mechanism=='17.spatial_padding':
+        from .continuous_vision17 import ContinuousVisionRequest
+        return ContinuousVisionRequest(binding,ids,phase)
+    return ContinuousRequest(binding,ids,phase)
 
 
 class ContinuousRequest:

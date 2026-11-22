@@ -57,7 +57,7 @@ def bootstrap(wrapper,action,mechanism,options=None):
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','33','39','39mr','18','22','8'),required=True)
+    p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','33','39','39mr','18','22','8','17'),required=True)
     p.add_argument('--tp',type=int,choices=(1,2),default=2)
     p.add_argument('--reference-mode',choices=('immediate','forward'),default='immediate')
     p.add_argument('--model-family',choices=('qwen35','deepseek_v2'),default='qwen35')
@@ -66,7 +66,7 @@ def main():
     p.add_argument('--source-manifest',default='/source/source_manifest.json')
     p.add_argument('--deployment-source',choices=('BLUE_COMBINATION','YELLOW_DEDICATED_INSTANCE'),default='BLUE_COMBINATION')
     a=p.parse_args()
-    mechanism={'batch':'quant.batch_shared_scale','28':'28.fia.denominator_replay','33':'33.paged_decode','39':'39.output_proxy','39mr':'39.matmul_range','18':'18.api_half','22':'22.wrong_row','8':'8.restore_offset'}[a.mechanism]
+    mechanism={'17':'17.spatial_padding','batch':'quant.batch_shared_scale','28':'28.fia.denominator_replay','33':'33.paged_decode','39':'39.output_proxy','39mr':'39.matmul_range','18':'18.api_half','22':'22.wrong_row','8':'8.restore_offset'}[a.mechanism]
     from fault_injection.rc3_preview_profile import TEST_CANDIDATES
     if a.deployment_source=='YELLOW_DEDICATED_INSTANCE' and mechanism not in TEST_CANDIDATES:
         raise RuntimeError('RC3_PREVIEW_OUTSIDE_DELIVERY_SCOPE:'+mechanism)
@@ -86,6 +86,9 @@ def main():
         from demoncat.runtime.vllm_ascend.worker_extension.continuous_binding import digest
         from demoncat.runtime.vllm_ascend.worker_extension.serving_context import actual_driver_request_map
         extra=dict(limit_mm_per_prompt={'image':0,'video':0}) if a.model_family=='qwen35' else {}
+        if a.mechanism=='17':
+            extra=dict(limit_mm_per_prompt={'image':1,'video':0},mm_processor_cache_gb=0,mm_encoder_tp_mode='weights',
+                mm_processor_kwargs={'min_pixels':4096,'max_pixels':16384})
         llm=LLM(model=a.model,dtype='bfloat16',quantization='ascend',tensor_parallel_size=a.tp,
             distributed_executor_backend='mp',enforce_eager=True,enable_prefix_caching=False,
             async_scheduling=False,enable_chunked_prefill=True,max_num_batched_tokens=1024,
@@ -98,6 +101,12 @@ def main():
             'What is the sum of four and five?','Name one planet in the solar system.']
         tokens=[llm.get_tokenizer().encode(s,add_special_tokens=True) for s in seeds[:batch]]
         if a.mechanism=='33':tokens=[(tokens[0]*64)[:768]]
+        image_prompt=None;serial=0;primed=None
+        if a.mechanism=='17':
+            from PIL import Image
+            image=Image.new('RGB',(64,64));image.putdata([(x*4,y*4,((x+y)%64)*4) for y in range(64) for x in range(64)])
+            image_prompt='<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Describe this image in one sentence.<|im_end|>\n<|im_start|>assistant\n'
+            tokens=[]
         params=SamplingParams(temperature=0,max_tokens=4,min_tokens=4,ignore_eos=True)
         source_sha=hashlib.sha256(Path(a.source_manifest).read_bytes()).hexdigest()
         report['source_manifest_sha256']=source_sha
@@ -108,9 +117,18 @@ def main():
             print(json.dumps(dict(progress='rpc_end',action=action)),flush=True)
             return result
         def enqueue():
+            nonlocal serial
             assert llm.reset_prefix_cache(reset_running_requests=False)
             llm.sleep(level=0,mode='wait')
-            ids=list(llm.enqueue([dict(prompt_token_ids=t) for t in tokens],params,use_tqdm=False))
+            inputs=[dict(prompt_token_ids=t) for t in tokens]
+            if image_prompt is not None:
+                serial+=1;inputs=[dict(prompt=image_prompt,multi_modal_data={'image':image},multi_modal_uuids={'image':'vision17-public-'+str(serial)})]
+            ids=list(llm.enqueue(inputs,params,use_tqdm=False))
+            if image_prompt is not None:
+                state=llm.llm_engine.output_processor.request_states[ids[0]]
+                actual=list(state.prompt_token_ids);assert state.request_id==ids[0]
+                if not tokens:tokens.append(actual)
+                else:assert tokens==[actual],'ACTUAL_IMAGE_PROMPT_CHANGED'
             mapping=actual_driver_request_map(llm.llm_engine.output_processor)
             assert len(mapping)==len(ids)==batch and {r['internal_request_id'] for r in mapping}==set(ids)
             return ids,mapping
@@ -121,6 +139,7 @@ def main():
             elapsed=time.monotonic()-start
             assert elapsed<=120,'CONTINUOUS_REQUEST_EXPERIMENT_TIME_BUDGET_EXCEEDED'
             return dict(seconds=elapsed,tokens=[list(o.outputs[0].token_ids) for o in outputs])
+        if image_prompt is not None:primed=enqueue()
         for scope_index in range(2):
             number,variant=mechanism.split('.',1);config=FaultConfig(number if number=='quant' else int(number),variant)
             client=MultiRankTaskClient(llm,config,prepare_binding=lambda *_:{},continuous=True,world_size=a.tp,
@@ -131,7 +150,9 @@ def main():
             rpc('bind',dict(prompts=tokens,group_contract=contract,arithmetic_device=a.arithmetic_device,reference_mode=a.reference_mode))
             negative=rpc('negative');assert all(not r['can_prepare'] for r in negative),'MISSING_PERMIT_ADMITTED'
             for attempt in range(6):
-                ids,mapping=enqueue();rpc('warmup',ids);run(mapping)
+                if primed is not None:ids,mapping=primed;primed=None
+                else:ids,mapping=enqueue()
+                rpc('warmup',ids);run(mapping)
                 warm=rpc('warmup');report['warmup'].append(dict(scope=scope_index,attempt=attempt,ranks=warm));save()
                 if all(r['warmup_valid'] for r in warm):break
             else:raise RuntimeError('BASELINE_NOT_STABLE_IN_SIX')
