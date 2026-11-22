@@ -127,6 +127,13 @@ class Projection39Site:
     @property
     def pending(self):return len(self.mode.pending)
 
+    def classify(self,module,args,t):
+        import torch_npu
+        ok=t.dtype==torch.bfloat16 and torch_npu.get_npu_format(t)==2
+        return ok,None if ok else 'OUTPUT_NOT_BF16_ND'
+
+    def replacement(self,module,args,t,event):return None
+
     def install(self):
         from vllm.model_executor.layers.linear import LinearBase
         import torch_npu
@@ -172,12 +179,13 @@ class Projection39Site:
                 t=result[0] if isinstance(result,tuple) else result
                 require(isinstance(t,torch.Tensor) and t.ndim>=1 and t.numel()>0,'PROJECTION_OUTPUT_LAYOUT_CHANGED:'+_name)
                 with _disable_current_modes():
-                    eligible=t.dtype==torch.bfloat16 and torch_npu.get_npu_format(t)==2
+                    eligible,reason=self.classify(mod,args,t)
                     event=dict(site=_name,request_ids=list(self.runner.input_batch.req_ids),observed=True,
                         eligible=eligible,applied=False,changed=0,consumed=False,restored=False,failed=False,
-                        reason=None if eligible else 'OUTPUT_NOT_BF16_ND',shape=list(t.shape),stride=list(t.stride()),dtype=str(t.dtype))
+                        reason=reason,shape=list(t.shape),stride=list(t.stride()),dtype=str(t.dtype))
                     self.events.append(event)
-                    if eligible:self.mode.watch(projection_region(t),event,inject=self.fault)
+                    if eligible:self.mode.watch(projection_region(t),event,inject=self.fault,
+                        replacement=self.replacement(mod,args,t,event) if self.fault else None)
             self.hooks.append(module.register_forward_hook(output))
         require(self.sites,'NO_LINEAR_PROJECTION_SITES')
         return self.sites

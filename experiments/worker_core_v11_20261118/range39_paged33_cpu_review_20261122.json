@@ -1,0 +1,39 @@
+{
+  "schema": "demoncat.cpu_review.v1",
+  "tests": 45,
+  "failures": 0,
+  "errors": 0,
+  "seconds": 17.271,
+  "scope": "continuous framework plus matmul_range and paged partition controls; CPU is not NPU acceptance",
+  "command": "python -m unittest test_continuous_group test_continuous_contract test_continuous_model test_continuous_runtime test_continuous_public_review test_continuous_deployment test_norm18_continuous test_rope22_continuous test_projection39_continuous test_moe8_continuous test_mla_rope22_continuous test_deferred_quant_reference test_matmul_range_continuous test_paged33_continuous -q",
+  "files": [
+    {
+      "path": "fault_injection/engines/matmul_range.py",
+      "sha256": "b616b365535ca7820ca2d24d69a4987726e27d266623b43c6794cdd4c55d4884"
+    },
+    {
+      "path": "fault_injection/sites/matmul39.py",
+      "sha256": "7081cd91483f2b713ce3fef4ab1ce80fd96bc53aa0ed0b76e5cb8743fa907438"
+    },
+    {
+      "path": "fault_injection/sites/paged33.py",
+      "sha256": "7b76fc4ee0c9ef6813799e21707bd8511624d18fa7aae9c1f1f91b07d3e13cb5"
+    },
+    {
+      "path": "fault_injection/sites/gqa28.py",
+      "sha256": "8b8dc601690ce770ad69194141cffce9c9f62c4a802e46e95db04a4927f5c407"
+    },
+    {
+      "path": "fault_injection/sites/projection39.py",
+      "sha256": "187031baa791ff1720a58e7db8bd9c37635988e62eb328b05c62918ef000e73c"
+    },
+    {
+      "path": "tools/review_continuous_public.py",
+      "sha256": "61e164ea61831d8895eec2dbb6433f97be509bab37cfce01ba295e1a9e01103a"
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/continuous_binding.py",
+      "sha256": "bdf2ab4f089cff4230f8dfc9c63d1e0e96afc963d1a9e306d9a34c090ded6e16"
+    }
+  ]
+}

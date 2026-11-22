@@ -34,6 +34,24 @@ def fixture():
 
 
 class ReviewTests(unittest.TestCase):
+    def test_range_and_paged_controls_cannot_be_replaced_by_model_effect(self):
+        for mechanism in ('39.matmul_range','33.paged_decode'):
+            r=fixture();r['mechanism']=mechanism
+            for scope in r['scopes']:
+                for host in scope['requests']:
+                    for state in host['result']['response']['provider_state']['rank_states'].values():
+                        for row in state['evidence']['actual_requests']:
+                            row['actual_forward_calls']=[{'site':1} for _ in range(4)]
+                            row['matmul_effect']=dict(reference_controls=4,rules=['omit_final_quarter'])
+                            row['partition_effect']=dict(calls=4,selected_changed_elements=1,pairs=[dict(
+                                same_legal_key_set=True,denominator_replay=False,nonselected_exact=True,
+                                key_visits=259,page_mapping=dict(logical_keys=259))])
+            self.assertTrue(review(r)['passed'])
+            row=r['scopes'][1]['requests'][-1]['result']['response']['provider_state']['rank_states']['0']['evidence']['actual_requests'][1]
+            if mechanism=='39.matmul_range':row['matmul_effect']['reference_controls']=3
+            else:row['partition_effect']['pairs'][0]['denominator_replay']=True
+            with self.subTest(mechanism=mechanism),self.assertRaises(ValueError):review(r)
+
     def test_moe_requires_current_routing_join_and_native_consumer(self):
         r=fixture();r['mechanism']='8.restore_offset'
         for scope in r['scopes']:

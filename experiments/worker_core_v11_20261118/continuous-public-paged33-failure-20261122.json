@@ -1,0 +1,151 @@
+{
+  "schema": "demoncat.continuous.failed_review.v1",
+  "mechanism": "33.paged_decode",
+  "passed": false,
+  "qualification_granted": false,
+  "attempts": [
+    {
+      "attempt": "a27",
+      "status": "FAILED",
+      "receipt_sha256": "9f5287d80ebd1ef87b9a60e87fc1963142afa59684938a808da98778386f661c",
+      "source_manifest_sha256": "e789f1bfb93560c69f5ea3d03de071a5eb3ca2396fd9d491dcd812a1891c779e",
+      "completed_scope_count": 0,
+      "phases_observed": [
+        "normal",
+        "fault"
+      ],
+      "query_status": [
+        "QUERY_OK",
+        "GROUP_ACTION_FAILED"
+      ],
+      "fault_diagnostic": null,
+      "failure_diagnostic": null,
+      "request_seconds": [
+        1.0929403849877417,
+        2.8862756920279935
+      ],
+      "recovery_action_status": "ACTION_COMPLETED",
+      "off_health_completed": false,
+      "diagnosis": "query failure; no direct provider diagnostic retained"
+    },
+    {
+      "attempt": "a28",
+      "status": "FAILED",
+      "receipt_sha256": "af0a2977adb8e3c8c554f2f1b1ac5c79e959c2af14efdebec9a26473cea73005",
+      "source_manifest_sha256": "fd6bb091f0aed2fd37bad1ef80e043e53f4294c613035e6d47009cc99e72a8e2",
+      "completed_scope_count": 0,
+      "phases_observed": [
+        "normal",
+        "fault"
+      ],
+      "query_status": [
+        "QUERY_OK",
+        "GROUP_ACTION_FAILED"
+      ],
+      "fault_diagnostic": [
+        {
+          "rank": 0,
+          "read_only": true,
+          "providers": [
+            {
+              "error": "None",
+              "session_error": "None",
+              "samples": 4,
+              "events": 64,
+              "eligible": 48,
+              "applied": 48,
+              "consumed": 48,
+              "restored": 48,
+              "changed_calls": 2,
+              "partition_changed": 8,
+              "selected_changed": 2,
+              "reasons": {
+                "PREFILL_NOT_PAGED_DECODE": 16
+              }
+            }
+          ]
+        },
+        {
+          "rank": 1,
+          "read_only": true,
+          "providers": [
+            {
+              "error": "None",
+              "session_error": "None",
+              "samples": 4,
+              "events": 64,
+              "eligible": 48,
+              "applied": 48,
+              "consumed": 48,
+              "restored": 48,
+              "changed_calls": 1,
+              "partition_changed": 8,
+              "selected_changed": 1,
+              "reasons": {
+                "PREFILL_NOT_PAGED_DECODE": 16
+              }
+            }
+          ]
+        }
+      ],
+      "failure_diagnostic": [
+        {
+          "rank": 0,
+          "read_only": true,
+          "providers": [
+            {
+              "error": "ContextRefused('CONTINUOUS_NO_MODEL_PROPAGATION')",
+              "session_error": "None",
+              "samples": null,
+              "events": 0,
+              "eligible": 0,
+              "applied": 0,
+              "consumed": 0,
+              "restored": 0,
+              "changed_calls": 0,
+              "partition_changed": 0,
+              "selected_changed": 0,
+              "reasons": {}
+            }
+          ]
+        },
+        {
+          "rank": 1,
+          "read_only": true,
+          "providers": [
+            {
+              "error": "None",
+              "session_error": "None",
+              "samples": 4,
+              "events": 64,
+              "eligible": 48,
+              "applied": 48,
+              "consumed": 48,
+              "restored": 48,
+              "changed_calls": 1,
+              "partition_changed": 8,
+              "selected_changed": 1,
+              "reasons": {
+                "PREFILL_NOT_PAGED_DECODE": 16
+              }
+            }
+          ]
+        }
+      ],
+      "request_seconds": [
+        1.1295902649872005,
+        2.981777128065005
+      ],
+      "recovery_action_status": "ACTION_COMPLETED",
+      "off_health_completed": false,
+      "diagnosis": "rank0 CONTINUOUS_NO_MODEL_PROPAGATION; rank1 model propagation not queried"
+    }
+  ],
+  "decision": "STOP_IDENTICAL_INPUT_PARTITION_RETRIES; keep combination closed",
+  "limitations": [
+    "No two completed scopes",
+    "No same-process OFF/health proof",
+    "Native page size unchanged; torch logical reduction partition proxy",
+    "Rank1 model propagation unknown after rank0 query failure"
+  ]
+}

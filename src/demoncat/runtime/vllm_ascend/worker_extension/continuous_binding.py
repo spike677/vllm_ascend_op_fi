@@ -9,7 +9,7 @@ import hashlib,json,os,threading
 from .serving_context import require
 
 ATTRIBUTE='_demoncat_continuous_bindings'
-SUPPORTED=('28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','18.api_half','22.wrong_row','8.restore_offset')
+SUPPORTED=('33.paged_decode','28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset')
 
 
 def digest(value):
@@ -204,14 +204,16 @@ class ContinuousRequest:
                 site_type={'18.api_half':Norm18Site,'22.wrong_row':Rope22Site,'8.restore_offset':MoE8Site}[self.binding.mechanism]
                 if self.binding.mechanism=='22.wrong_row' and type(self.model).__name__=='DeepseekV2ForCausalLM':site_type=MLARope22Site
                 self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
-            elif self.binding.mechanism=='39.output_proxy':
+            elif self.binding.mechanism in ('39.output_proxy','39.matmul_range'):
                 from fault_injection.sites.projection39 import Projection39Site
                 from fault_injection.engines.region_lease import RegionLeases
                 def complete(stream):
                     event=torch.npu.Event();event.record(stream);event.synchronize()
                 leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
                     stream=torch.npu.current_stream,complete=complete)
-                self.site=Projection39Site(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
+                from fault_injection.sites.matmul39 import Matmul39Site
+                site_type=Matmul39Site if self.binding.mechanism=='39.matmul_range' else Projection39Site
+                self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
             elif self.binding.mechanism.startswith('quant.'):
                 from fault_injection.sites.batch_quant import BatchQuantSite
                 from fault_injection.engines.region_lease import RegionLeases
@@ -230,6 +232,9 @@ class ContinuousRequest:
                 leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
                     stream=torch.npu.current_stream,complete=complete)
                 site_type=MLA28Site if type(self.model).__name__=='DeepseekV2ForCausalLM' else GQA28Site
+                if self.binding.mechanism=='33.paged_decode':
+                    from fault_injection.sites.paged33 import Paged33Site
+                    site_type=Paged33Site
                 self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
             self.site.install()
         except BaseException:
@@ -239,7 +244,7 @@ class ContinuousRequest:
         require(self.inside==0 and self.samples==4 and self.error is None,'CONTINUOUS_REQUEST_NOT_COMPLETE')
         events=self.site.events
         actual_sites={e['site'] for e in events}
-        if self.binding.mechanism in ('39.output_proxy','18.api_half','22.wrong_row','8.restore_offset'):
+        if self.binding.mechanism in ('39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset'):
             calls=self.site.forward_calls
             require(len(calls)==4 and all(calls) and sum(sum(c.values()) for c in calls)==len(events),
                     'CONTINUOUS_ACTUAL_FORWARD_COVERAGE_INCOMPLETE')
@@ -257,9 +262,11 @@ class ContinuousRequest:
                 for k in ('applied','consumed','restored','failed'):counts[k]+=int(bool(e.get(k,False)))
                 counts['changed']+=int(e.get('changed',0)>0)
                 require(e.get('before_sha256')==e.get('restored_sha256'),'CONTINUOUS_RESTORE_HASH_MISMATCH')
+                if self.binding.mechanism=='39.matmul_range':
+                    require(e.get('full_range_control_passed') is True,'CONTINUOUS_MATMUL_REFERENCE_MISSING')
                 if self.binding.mechanism.startswith('quant.'):
                     require(e.get('reference_passed') is True,'CONTINUOUS_QUANT_REFERENCE_FAILED')
-                elif self.binding.mechanism=='28.fia.denominator_replay':
+                elif self.binding.mechanism in ('28.fia.denominator_replay','33.paged_decode'):
                     require(e.get('non_target_exact') is True,'CONTINUOUS_NON_TARGET_CHANGED')
             require(counts['eligible']==counts['applied']==counts['consumed']==counts['restored']
                     and counts['changed']>0 and counts['failed']==0,'CONTINUOUS_ELIGIBLE_CALL_FAILED')
@@ -274,6 +281,12 @@ class ContinuousRequest:
             observation_complete=True,uncovered_sites=list(getattr(self.site,'uncovered',[])),
             excluded_structural_sites=list(getattr(self.site,'excluded',[])),
             inapplicable_reasons=[dict(site=e['site'],reason=e['reason']) for e in events if e.get('eligible') is False and e.get('reason')],
+            partition_effect=dict(calls=sum(bool(e.get('partition_reference')) for e in events),
+                selected_changed_elements=sum(e.get('partition_reference',{}).get('selected_changed_elements',0) for e in events),
+                pairs=[dict(site=e['site'],page_mapping=e['page_mapping'],**e['partition_reference']) for e in events if e.get('partition_reference')]),
+            matmul_effect=dict(reference_controls=sum(bool(e.get('full_range_control_passed')) for e in events),
+                rules=sorted({e['range_reference']['rule'] for e in events if e.get('range_reference')}),
+                actual_quantized_calls=sum(bool(e.get('real_qmm_inputs')) for e in events)),
             projection_effect=dict(already_positive_inf_calls=sum(bool(e.get('already_positive_inf')) for e in events),
                 upstream_nonfinite_calls=sum(bool(e.get('upstream_nonfinite')) for e in events),
                 consumer_operators=sorted({e['consumer_operator'] for e in events if e.get('consumer_operator')})),

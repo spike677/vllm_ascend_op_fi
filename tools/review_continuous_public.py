@@ -69,7 +69,7 @@ def review(report, *, require_negative_creation=False):
             clean=s['unregister']['response']['provider_state']['rank_states'][str(rank)]
             need(all(clean[k] in (False,0) for k in ('leases','inflight','owned_hooks','registered','native_registered','enabled')),
                 'FINAL_OWNED_RESOURCES_REMAIN')
-            if report['mechanism'] in ('39.output_proxy','18.api_half','22.wrong_row','8.restore_offset'):
+            if report['mechanism'] in ('39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset'):
                 calls=f.get('actual_forward_calls',[])
                 need(len(calls)==4 and all(calls) and all(isinstance(n,int) and n>0 for c in calls for n in c.values())
                     and sum(sum(c.values()) for c in calls)==f['coverage']['observed']
@@ -87,6 +87,13 @@ def review(report, *, require_negative_creation=False):
                 moe=f['moe_effect'];need(moe['actual_producer_joins']==moe['native_combine_calls']==f['coverage']['eligible']
                     and moe['request_rows_verified']>=f['coverage']['eligible'],'MOE_CURRENT_PRODUCER_CONSUMER_MAPPING_MISSING')
                 effects[rank]['moe_effect']=moe
+            if report['mechanism']=='33.paged_decode':
+                effect=f['partition_effect'];need(effect['calls']==f['coverage']['eligible'] and effect['selected_changed_elements']>0,'PAGED_PARTITION_EFFECT_MISSING')
+                need(all(p['same_legal_key_set'] and not p['denominator_replay'] and p['nonselected_exact'] and p['key_visits']==p['page_mapping']['logical_keys'] for p in effect['pairs']),'PAGED_KEY_SET_OR_CONTROL_MISMATCH')
+                effects[rank]['partition_effect']={k:v for k,v in effect.items() if k!='pairs'}
+            if report['mechanism']=='39.matmul_range':
+                effect=f['matmul_effect'];need(effect['reference_controls']==f['coverage']['eligible'] and effect['rules']==['omit_final_quarter'],'MATMUL_RANGE_REFERENCE_MISSING')
+                effects[rank]['matmul_effect']=effect
             effects[rank]['projection_effect']=f.get('projection_effect')
             if report['mechanism']=='22.wrong_row':
                 rot=f['rotary_effect'];need(rot['rows_changed']>0,'ROTARY_ROWS_UNCHANGED')

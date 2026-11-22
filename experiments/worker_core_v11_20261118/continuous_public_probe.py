@@ -26,6 +26,24 @@ def bootstrap(wrapper,action,mechanism,options=None):
         assert authority.source==source,'AUTHORITY_SOURCE_CHANGED'
         return install_deployment_acceptance_permit(worker,authority=authority,
             operator='rc3-acceptance-harness',mechanisms=[mechanism],**options)
+    if action=='diagnostic':
+        from collections import Counter
+        runtime=worker._demoncat_worker_fault_runtime;result=[]
+        for lease in runtime._leases.values():
+            provider=lease.provider;session=getattr(provider,'session',None);site=getattr(session,'site',None)
+            events=getattr(site,'events',[])
+            result.append(dict(error=str(getattr(provider,'error',None))[:500],
+                session_error=str(getattr(session,'error',None))[:500],
+                samples=getattr(session,'samples',None),events=len(events),
+                eligible=sum(bool(e.get('eligible')) for e in events),
+                applied=sum(bool(e.get('applied')) for e in events),
+                consumed=sum(bool(e.get('consumed')) for e in events),
+                restored=sum(bool(e.get('restored')) for e in events),
+                changed_calls=sum(e.get('changed',0)>0 for e in events),
+                partition_changed=sum(e.get('partition_reference',{}).get('partition_changed_elements',0) for e in events),
+                selected_changed=sum(e.get('partition_reference',{}).get('selected_changed_elements',0) for e in events),
+                reasons=dict(Counter(e.get('reason') for e in events if e.get('reason')))))
+        return dict(rank=worker.rank,read_only=True,providers=result)
     if action=='cleanup':
         remove_deployment_acceptance_permit(worker,authority=authority_for(worker),operator='rc3-acceptance-harness')
         remove_continuous_binding(worker,mechanism)
@@ -39,7 +57,7 @@ def bootstrap(wrapper,action,mechanism,options=None):
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','39','18','22','8'),required=True)
+    p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','33','39','39mr','18','22','8'),required=True)
     p.add_argument('--reference-mode',choices=('immediate','forward'),default='immediate')
     p.add_argument('--model-family',choices=('qwen35','deepseek_v2'),default='qwen35')
     p.add_argument('--arithmetic-device',choices=('input','cpu'),default='input')
@@ -47,7 +65,7 @@ def main():
     p.add_argument('--source-manifest',default='/source/source_manifest.json')
     p.add_argument('--deployment-source',choices=('BLUE_COMBINATION','YELLOW_DEDICATED_INSTANCE'),default='BLUE_COMBINATION')
     a=p.parse_args()
-    mechanism={'batch':'quant.batch_shared_scale','28':'28.fia.denominator_replay','39':'39.output_proxy','18':'18.api_half','22':'22.wrong_row','8':'8.restore_offset'}[a.mechanism]
+    mechanism={'batch':'quant.batch_shared_scale','28':'28.fia.denominator_replay','33':'33.paged_decode','39':'39.output_proxy','39mr':'39.matmul_range','18':'18.api_half','22':'22.wrong_row','8':'8.restore_offset'}[a.mechanism]
     batch=8 if a.mechanism=='batch' else 1
     report=dict(status='STARTED',mechanism=mechanism,scopes=[],warmup=[],qualification_granted=False,
         acceptance_scope='PUBLIC_WORKER_RUNTIME',arithmetic_device=a.arithmetic_device,reference_mode=a.reference_mode)
@@ -75,6 +93,7 @@ def main():
             'Explain why snow appears white in daylight.','Give one example of a simple machine.',
             'What is the sum of four and five?','Name one planet in the solar system.']
         tokens=[llm.get_tokenizer().encode(s,add_special_tokens=True) for s in seeds[:batch]]
+        if a.mechanism=='33':tokens=[(tokens[0]*64)[:768]]
         params=SamplingParams(temperature=0,max_tokens=4,min_tokens=4,ignore_eos=True)
         source_sha=hashlib.sha256(Path(a.source_manifest).read_bytes()).hexdigest()
         report['source_manifest_sha256']=source_sha
@@ -135,7 +154,10 @@ def main():
                 ids,mapping=enqueue()
                 result=client.advance_batch(ids) if batch>1 else client.advance(ids[0])
                 assert result['status']=='ACTION_COMPLETED',result
-                timing=run(mapping);result=client.query()
+                timing=run(mapping)
+                if phase=='fault':scope['fault_diagnostic']=rpc('diagnostic');save()
+                result=client.query()
+                if result['status']!='QUERY_OK':scope['failure_diagnostic']=rpc('diagnostic');save()
                 scope['requests'].append(dict(phase=phase,mapping=mapping,result=result,**timing));save()
                 assert result['status']=='QUERY_OK',result
             extra=client.advance_batch(['extra'+str(i) for i in range(batch)]) if batch>1 else client.advance('extra')

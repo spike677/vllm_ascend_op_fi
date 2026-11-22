@@ -1,0 +1,60 @@
+{
+  "schema": "demoncat.continuous.source_review.v1",
+  "mechanism": "39.matmul_range",
+  "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED",
+  "passed": true,
+  "scope": "BLUE_COMBINATION A2 CANN9.1 vLLM0.26 Qwen3.8 community W8A8 TP2; local column shards only",
+  "receipt_review_sha256": "b7930ff6dd96a8e4eaf9325b8c2199fa54f6a41fa54f3a6d715062946c88c947",
+  "source_manifest_sha256": "ebfaab29723359d6037e74dbe320681846a26f97bea61c2b226ddda834ccd11c",
+  "checks": {
+    "actual_qmm_inputs_and_return_object": true,
+    "full_k_reference_before_wrong_range": true,
+    "no_post_collective_partial_replacement": true,
+    "source_pinned_quant_scheme": true,
+    "all_rank_every_eligible_actual_call": true,
+    "same_stream_value_consumer_completion": true,
+    "lease_restoration_and_two_scopes_reviewed": true,
+    "negative_creation_and_resources_reviewed": true,
+    "unquantized_unverified_path_refused": true
+  },
+  "limitations": [
+    "One last-row local output cell per eligible call",
+    "Nonquantized branch not NPU-qualified and refused",
+    "Not an implementation of native kernel overflow",
+    "A3 and TP1 require independent acceptance"
+  ],
+  "post_run_change": "Only narrowed nonquantized eligibility after run; all 704 eligible calls per rank were W8A8, so accepted execution unchanged",
+  "files": [
+    {
+      "path": "fault_injection/engines/matmul_range.py",
+      "sha256": "b616b365535ca7820ca2d24d69a4987726e27d266623b43c6794cdd4c55d4884",
+      "git_blob_sha256": "b616b365535ca7820ca2d24d69a4987726e27d266623b43c6794cdd4c55d4884"
+    },
+    {
+      "path": "fault_injection/sites/matmul39.py",
+      "sha256": "7081cd91483f2b713ce3fef4ab1ce80fd96bc53aa0ed0b76e5cb8743fa907438",
+      "git_blob_sha256": "7081cd91483f2b713ce3fef4ab1ce80fd96bc53aa0ed0b76e5cb8743fa907438"
+    },
+    {
+      "path": "fault_injection/sites/projection39.py",
+      "sha256": "187031baa791ff1720a58e7db8bd9c37635988e62eb328b05c62918ef000e73c",
+      "git_blob_sha256": "187031baa791ff1720a58e7db8bd9c37635988e62eb328b05c62918ef000e73c"
+    },
+    {
+      "path": "fault_injection/engines/region_lease.py",
+      "sha256": "33d0f660609afd22595c665cba9cc75cb01ac83519456001b5eaf543bd283e0d",
+      "git_blob_sha256": "33d0f660609afd22595c665cba9cc75cb01ac83519456001b5eaf543bd283e0d"
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/continuous_binding.py",
+      "sha256": "bdf2ab4f089cff4230f8dfc9c63d1e0e96afc963d1a9e306d9a34c090ded6e16",
+      "git_blob_sha256": "6ffc0fa6aab67f49694e6862b2871a0942dbdb4f5af0d34e2441f88a1489367a"
+    },
+    {
+      "path": "tools/review_continuous_public.py",
+      "sha256": "61e164ea61831d8895eec2dbb6433f97be509bab37cfce01ba295e1a9e01103a",
+      "git_blob_sha256": "ddad6973d5ea9a7437be9fcab05c4165689f3731fc6427474a3e721ffed38064"
+    }
+  ],
+  "file_hash_semantics": "sha256: reviewed working bytes; git_blob_sha256: committed release source bytes after Git normalization"
+}

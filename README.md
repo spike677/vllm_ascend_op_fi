@@ -1,3 +1,9 @@
+## 2026-11-22：r3收尾与验收范围
+
+[39 matmul_range / 33报告](docs/worker_core_v1/continuous_range39_paged33_20261122.md)：A2 / 0.26 / Qwen3.8社区W8A8 / TP2，39本地列分片投影公共两作用域和源码审查通过；每rank704次eligible调用全部消费恢复。33合法重排已有实际消费和局部变化，但最终模型传播门禁未过，保持关闭，不加入r3。
+
+r3优先交付28、Batch、39 output_proxy、18、22、39 matmul_range，仍需测试门禁和无设备安装核验；尚不能发送。87的TP1、TP2各自验收登记。支持对象是eager、串行、无异步调度/prefix cache/MTP/KV connector的专用实例；现役对外服务的原样配置不在支持范围。
+
 ## 2026-11-21 晚：公共持续入口
 
 已冻结 [RC3 预览 r2](releases/RC3-PREVIEW-REPLACEMENT-20261121.md)，仅 28/Batch；标签 `demoncatpfi-rc3-preview-20261121-r2`。三个 wheel、源码包、SHA、无设备安装检查及 A3 TP2 验收步骤齐备。原预览标签发生 Git 换行归一化导致清单失配，保留失败记录，不应使用。r2 从 Git 对象复核全部发行 SHA 一致。完整 RC3 与 A3 验收尚未完成。

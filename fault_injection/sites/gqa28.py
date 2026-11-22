@@ -70,6 +70,11 @@ class GQA28Site(MLA28Site):
         require(self.sites,'NO_REAL_FULL_ATTENTION_SITE')
         return self.sites
 
+    def eligible_call(self,count,length):return True,None
+
+    def calculate(self,q,k,v,impl,backup,event):
+        return recompute_attention_row(q,k,v,scale=impl.scale,block_size=self.block_size,replay_blocks=(0,)).reshape_as(backup)
+
     def call_gqa(self,name,impl,original,args):
         require(name not in self.pending,'GQA_LEASE_OVERLAP')
         query,key,value,cache,meta,out=args
@@ -78,10 +83,11 @@ class GQA28Site(MLA28Site):
         result=original(*args)
         count=meta.actual_seq_lengths_q[-1]; length=meta.seq_lens_list[0]
         require(count in (1,length),'SINGLE_CHUNK_OR_DECODE_REQUIRED')
+        eligible,reason=self.eligible_call(count,length)
         event=dict(site=name,method='_forward_prefill' if count>1 else '_forward_decode',request_id=ids[0],
-                   observed=True,eligible=self.fault,applied=False,changed=0,consumed=False,restored=False)
+                   observed=True,eligible=self.fault and eligible,reason=reason,applied=False,changed=0,consumed=False,restored=False)
         self.events.append(event)
-        if not self.fault:return result
+        if not self.fault or not eligible:return result
         q=query.view(-1,impl.num_heads,impl.head_size)[count-1]
         if count==length:
             k=key.view(-1,impl.num_kv_heads,impl.head_size)[:length]
@@ -90,10 +96,13 @@ class GQA28Site(MLA28Site):
             kcache,vcache=impl.key_cache,impl.value_cache
             require(kcache.ndim==4 and kcache.dtype==query.dtype,'UNSUPPORTED_KV_LAYOUT')
             block=kcache.shape[1];table=meta.block_tables[0,:(length+block-1)//block].long()
+            require(table.numel()==(length+block-1)//block and len(set(table.cpu().tolist()))==table.numel()
+                and bool(((table>=0)&(table<kcache.shape[0])).all().item()),'PAGED_UNIQUE_VALID_BLOCKS_REQUIRED')
+            event['page_mapping']=dict(block_size=block,logical_keys=length,pages=table.cpu().tolist(),tail_keys=(length-1)%block+1)
             k=kcache.index_select(0,table).reshape(-1,impl.num_kv_heads,impl.head_size)[:length]
             v=vcache.index_select(0,table).reshape(-1,impl.num_kv_heads,impl.head_size)[:length]
         replacement=result.clone();row=count-1;backup=result[row].clone()
-        calculated=recompute_attention_row(q,k,v,scale=impl.scale,block_size=self.block_size,replay_blocks=(0,)).reshape_as(backup)
+        calculated=self.calculate(q,k,v,impl,backup,event)
         tokens={}
         if self.region_leases is None:replacement[row].copy_(calculated)
         else:
