@@ -26,7 +26,7 @@ def product_binding_rpc(worker, action, payload):
     require(authority is not None and authority.authorize_operator(payload.get('operator'), 'product_binding_rpc') is True,
             'PRODUCT_RPC_OPERATOR_NOT_AUTHORIZED')
     allowed = {'operator', 'profile'} | ({'group_contract', 'scope'} if action == 'attach' else
-              {'request_ids'} if action == 'canary' else set())
+              {'cursor'} if action == 'status' else set())
     require(not set(payload) - allowed, 'PRODUCT_RPC_UNKNOWN_FIELD')
     profile = getattr(worker, ATTRIBUTE, {}).get(payload.get('profile'))
     require(profile is not None, 'PRODUCT_PROFILE_UNKNOWN')
@@ -43,12 +43,32 @@ def product_binding_rpc(worker, action, payload):
         result = install_continuous_binding(worker, mechanism=mechanism, prompts=profile['canary_prompts'],
                                             group_contract=payload['group_contract'])
         b = current_binding(worker, worker.model_runner.model, mechanism)
-        b.product = dict(mode='PRODUCT_ACCEPTANCE_ONLY', scope=dict(mode=scope.mode, count=scope.count),
+        b.product = dict(mode='PRODUCT_ACCEPTANCE_ONLY', scope=dict(mode=scope.mode),
                          profile=payload['profile'])
         return dict(result, product_mode=True)
     require(b is not None and b.product is not None, 'PRODUCT_BINDING_NOT_ATTACHED')
+    if action == 'arm_canary':
+        from .product_observer import AutomaticRequests
+        require(not b.leases and b.warmup_request is None and len(b.warmups)<6, 'PRODUCT_CANARY_IDLE_BUDGET')
+        b.warmup_request=AutomaticRequests(b,canary=True)
+        b.warmup_request.install()
+        return dict(status='CANARY_OBSERVER_ARMED',rank=b.identity['rank'])
     if action == 'canary':
-        return observe_continuous_warmup(worker, mechanism, request_ids=payload.get('request_ids'))
+        require(b.warmup_request is not None and b.warmup_request.completed_canary, 'PRODUCT_CANARY_NOT_OBSERVED')
+        b.warmup_request.close();b.warmup_request=None
+        return dict(rank=b.identity['rank'],warmup_valid=b.warmup_valid,attempts=len(b.warmups),
+                    observations=deepcopy(b.warmups),qualification_granted=False)
+    if action == 'status':
+        runtime=getattr(worker,'_demoncat_worker_fault_runtime',None)
+        lease=getattr(runtime,'_leases',{}).get(mechanism)
+        observer=getattr(getattr(lease,'provider',None),'observer',None)
+        require(observer is not None,'PRODUCT_OBSERVER_NOT_ENABLED')
+        cursor=payload.get('cursor',0)
+        require(type(cursor) is int and 0<=cursor<=len(observer.records),'PRODUCT_STATUS_CURSOR_INVALID')
+        rows=deepcopy(observer.records[cursor:cursor+1])
+        return dict(rank=b.identity['rank'],requests=rows,cursor=cursor+len(rows),
+                    more=cursor+len(rows)<len(observer.records),active_request_id=observer.session.ids[0] if observer.session else None,
+                    failure=observer.error)
     if action == 'reset_canary_observer':
         require(not b.leases and b.warmup_request is None, 'PRODUCT_CANARY_REQUIRES_RELEASED_OWNER')
         b.warmups.clear()

@@ -1,8 +1,8 @@
 """Main-project facade over existing WorkerFaultClient leases.
 
-Trusted host callbacks own ordinary inference, scheduling and canaries. This
+The Worker discovers user requests; the trusted host only sends canaries. This
 module creates no Worker and imports no experiment. User input is never copied
-into a deployment profile. Scheduler hooks carry only internal request IDs.
+into a deployment profile. No host request-start or request-completion hook is required.
 """
 from copy import deepcopy
 import threading
@@ -35,7 +35,7 @@ class ProductClient:
     def from_deployment(cls, executor, path, *, operator, run_canary, drain, timeout=120):
         """Trusted host loads all deployment fields; caller supplies no user input.
 
-        run_canary receives (deployment_canary_config, before_enqueue_execution).
+        run_canary receives deployment_canary_config and sends ordinary HTTP inference.
         The existing service owns tokenization, image preprocessing and execution.
         Worker bootstrap independently checks this file against its live model.
         """
@@ -43,7 +43,7 @@ class ProductClient:
         deployment = load_product_deployment(path)
         client = cls(executor, FaultConfig.from_dict(deployment['fault']),
                      profile=deployment['profile'], operator=operator, drain=drain, timeout=timeout,
-                     run_canary=lambda before: run_canary(deepcopy(deployment['canary']), before))
+                     run_canary=lambda: run_canary(deepcopy(deployment['canary'])))
         client.deployment = deployment
         return client
 
@@ -61,7 +61,7 @@ class ProductClient:
         self.requests = []
         self.baseline = None
         self.enabled = self.bound = False
-        self.inflight = None
+        self.cursor = 0
         self.recovery = None
         self.canary_evidence = None
         self.cleanup_evidence = None
@@ -109,11 +109,8 @@ class ProductClient:
         return compact
 
     def _canary(self):
-        def before(ids):
-            if not isinstance(ids, list) or len(ids) != 1:
-                raise RuntimeError('PRODUCT_CANARY_ACTUAL_INTERNAL_ID_REQUIRED')
-            self._binding('canary', request_ids=ids)
-        self.run_canary(before)  # must wait for actual engine completion
+        self._binding('arm_canary')
+        self.run_canary()
         result = self._binding('canary')
         if len(result) != len(self.members):
             raise RuntimeError('PRODUCT_CANARY_RANK_MISSING')
@@ -128,7 +125,7 @@ class ProductClient:
                 members_sha256=digest(self.members), mechanism=self.config.mechanism,
                 tp=len(self.members), injection_policy='ALL_RANK_EVERY_ELIGIBLE_CALL')
             self.bound = True  # retain cleanup responsibility even if one rank rejects attach
-            self._binding('attach', group_contract=contract, scope=dict(mode=policy.mode, count=policy.count))
+            self._binding('attach', group_contract=contract, scope=dict(mode=policy.mode))
             for unused in range(6):
                 observations = self._canary()
                 if all(row['warmup_valid'] for row in observations):
@@ -142,47 +139,37 @@ class ProductClient:
             self.enabled = True
             return self.status()
 
-    def before_request(self, internal_request_id):
-        """Main-project scheduler hook, after enqueue and before any execution."""
-        with self._lock:
-            if not self.enabled:
-                return dict(status='FAULT_DISABLED')
-            if self.inflight is not None:
-                raise RuntimeError('PRODUCT_SERIAL_HOST_SCHEDULER_REQUIRED')
-            self.inflight = internal_request_id
-            rows = [c.advance(internal_request_id) for c in self.clients]
-            if not all(r['status'] == 'ACTION_COMPLETED' for r in rows):
-                self.enabled = False
-                raise RuntimeError('PRODUCT_REQUEST_ARM_FAILED:' + repr(rows))
-            return dict(status='REQUEST_OBSERVER_ARMED', request_id=internal_request_id)
-
-    def after_request(self, internal_request_id):
-        """Result-export hook; invoke only after the engine completed this ID."""
-        with self._lock:
-            if self.inflight != internal_request_id:
-                raise RuntimeError('PRODUCT_COMPLETION_ID_MISMATCH')
-            rows = self._all('collect_replay')
-            effects = [r['response']['provider_state']['last_request'] for r in rows]
-            if any(e['request_id'] != internal_request_id or not e['completed'] for e in effects):
-                raise RuntimeError('PRODUCT_RESULT_REQUEST_MAPPING_CHANGED')
-            record = dict(request_id=internal_request_id, ranks=effects)
-            self.requests.append(record)
-            self.inflight = None
-            return deepcopy(record)
-
     def status(self):
-        return dict(enabled=self.enabled, inflight=self.inflight, requests=deepcopy(self.requests),
+        if self.enabled:
+            self._collect_status()
+        return dict(enabled=self.enabled, requests=deepcopy(self.requests),
                     recovery=deepcopy(self.recovery), canary=deepcopy(self.canary_evidence),
                     cleanup=deepcopy(self.cleanup_evidence), product_qualified=False)
 
+    def _collect_status(self):
+        while True:
+            rows=self._binding('status',cursor=self.cursor)
+            if any(r['failure'] for r in rows):
+                raise RuntimeError('PRODUCT_WORKER_OBSERVER_FAILED:'+repr(rows))
+            counts=[len(r['requests']) for r in rows]
+            if len(set(counts))!=1 or len({r['cursor'] for r in rows})!=1:
+                raise RuntimeError('PRODUCT_RANK_REQUEST_COMPLETION_MISMATCH')
+            if counts[0]:
+                effects=[r['requests'][0] for r in rows]
+                ids={r['request_id'] for r in effects}
+                if len(ids)!=1:raise RuntimeError('PRODUCT_RANK_INTERNAL_ID_MISMATCH')
+                self.requests.append(dict(request_id=effects[0]['request_id'],ranks=effects))
+                self.cursor=rows[0]['cursor']
+            if not any(r['more'] for r in rows):break
+
     def disable(self):
         with self._lock:
-            self.enabled = False  # no new request admission while draining
+            self.enabled = False  # Worker admission ends at the disable RPC control boundary
         self.drain()
         with self._lock:
-            if self.inflight is not None:
-                raise RuntimeError('PRODUCT_DRAIN_DID_NOT_COMPLETE_RESULT_HOOK')
-            self.cleanup_evidence = {action:self._all(action) for action in ('disable','unregister','detach')}
+            stopped=self._all('disable')
+            self._collect_status()
+            self.cleanup_evidence = dict(disable=stopped,unregister=self._all('unregister'),detach=self._all('detach'))
             self._binding('reset_canary_observer')
             actual = self._canary()
             self.canary_evidence['after'] = deepcopy(actual)
@@ -198,7 +185,7 @@ class ProductClient:
             return self.status()
 
     def detach(self):
-        if self.enabled or self.inflight is not None or not self.recovery or not self.recovery['restored']:
+        if self.enabled or not self.recovery or not self.recovery['restored']:
             raise RuntimeError('PRODUCT_CONFIRMED_RECOVERY_REQUIRED')
         self._binding('detach')
         self.bound = False

@@ -1,10 +1,12 @@
-## 2026-11-22：产品请求入口与验收入口分开
+## 2026-11-22 夜：Worker 自动发现真实 HTTP 请求
 
-[产品模式接口](docs/worker_core_v1/rc3_product_usage.md)新增真实请求ID调度、all/next-N作用域、逐请求全rank效果、关闭金丝雀和三项恢复。用户输入不再与部署金丝雀逐token比对；只在声明的长度、图像和调度范围内注入。正式可信binding RPC与ProductClient供主项目接线，实验脚本只负责验收，不是服务入口。
+[产品接口](docs/worker_core_v1/rc3_product_usage.md)只支持开启期间全部请求。Worker从实际调度识别内部ID；宿主只控制attach/enable/status/disable/detach，用户直接走vLLM推理API，不再调用逐请求钩子，也没有next-N配额。
 
-[五项产品实测](docs/worker_core_v1/product_mode_acceptance_20261122.md)：18、39 output_proxy、22、28和17已在A2/0.26/Qwen3.8社区W8A8/TP2完成正式部署文件入口、不同用户输入、两个作用域及三项恢复；不依赖请求间缓存清理，范围外和next-N名额耗尽均明确不注入。其他能力仍只保留各自机制验收范围。
+[本轮HTTP验收](docs/worker_core_v1/product_http_acceptance_20261122.md)与历史宿主钩子结果分别记录。A2/0.26/Qwen3.8社区W8A8/TP2结果不代表黄区产品闭环；`product_closed=false`，未登记组合默认关闭。
 
-[r4已冻结](releases/RC3-PREVIEW-R4-HANDOFF-20261122.md)，十项机制验收内容不改。产品模式属于后续开发候选，需要单独验收；蓝区现有executor测试不能替代黄区Catalog、Controller、调度、结果及关闭五处真实接线。`product_closed=false`。下列历史“公共入口通过”指WorkerFaultRuntime机制验收，不自动代表真实用户产品入口通过。
+[黄区r4审查](docs/worker_core_v1/yellow_intake_r4_20261122.md)：五项通过是收到的文本结论，缺summary全文及逐组合参数，尚未登记。量化描述、全部权重索引SHA和三个调度参数是现役登记前提。[33方向A](docs/worker_core_v1/paged33_native_a_20261122.md)已取得实际launch key和核数，动态tiling与累加顺序仍未闭合，不扩大替换范围。[V4-0731核对](docs/worker_core_v1/dsv4_0731_adaptation_20261122.md)与V4.1历史准备分开。
+
+冻结r4及既有发行物保持不变；耗时本轮只记录，不做优化。以下为历史检查点，不扩大当前接口或验收范围。
 
 ## 2026-11-22：Native 公共持续入口增量
 

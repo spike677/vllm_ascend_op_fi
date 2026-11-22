@@ -14,12 +14,10 @@ class ProductContractTests(unittest.TestCase):
                     image_count=0, video_count=0)
         return dict(data, **changes)
 
-    def test_scope_count_includes_ineligible_arrivals(self):
-        scope = RequestScope('next', 2)
-        self.assertEqual([scope.includes(n) for n in range(3)], [True, True, False])
-        for value in (0, -1, True, 1.5):
-            with self.assertRaises(ValueError): RequestScope('next', value)
-        with self.assertRaises(ValueError): RequestScope('all', 1)
+    def test_only_all_enabled_requests_is_supported(self):
+        self.assertEqual(RequestScope().mode,'all')
+        with self.assertRaises(ValueError):RequestScope('bounded')
+        with self.assertRaises(TypeError):RequestScope(count=2)
 
     def test_arbitrary_prompt_content_is_not_a_policy_input(self):
         for length in (2, 37, 1020):
@@ -128,8 +126,8 @@ class ProductContractTests(unittest.TestCase):
             executor=Mock();executor.collective_rpc.return_value=[dict(status='WORKER_IDENTIFIED',worker={'rank':0},quarantined=False)]
             canary=Mock()
             client=ProductClient.from_deployment(executor,path,operator='trusted',run_canary=canary,drain=lambda:None)
-            callback=Mock();client.run_canary(callback)
-            canary.assert_called_once_with(config['canary'],callback)
+            client.run_canary()
+            canary.assert_called_once_with(config['canary'])
             with self.assertRaisesRegex(RuntimeError,'PRODUCT_DEPLOYMENT_WORLD_SIZE_MISMATCH'):client.attach()
             for edit in ({'mode':'PRODUCT_QUALIFIED'}, {'native_library':'/arbitrary.so'}, {'tp':True},
                          {'source_manifest_sha256':'0'*64}, {'rank':0}):

@@ -1,4 +1,6 @@
-# RC3 产品模式：蓝区真实请求验收
+# 历史记录：宿主逐请求钩子的蓝区验收
+
+本页固定记录9ec051ea的旧接口（含next3），不再是当前产品契约。新接口及真实HTTP结果见[product_http_acceptance_20261122.md](product_http_acceptance_20261122.md)。旧原件不改写为新接口通过。
 
 ## 组合和边界
 

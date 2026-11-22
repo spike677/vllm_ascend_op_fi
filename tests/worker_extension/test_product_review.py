@@ -34,7 +34,7 @@ def receipt():
         scopes.append(dict(scope=scope,requests=requests,disable=dict(canary=canary,cleanup=cleanup,
             recovery=dict(bytes_restored=True,resources_zero=True,canary_exact=True,restored=True)),
             detach=dict(status='PRODUCT_DETACHED'),cleanup=[dict(leases=0,owners=0)]*2))
-    return dict(status='PRODUCT_TWO_SCOPES_COMPLETED_PENDING_REVIEW',mechanism='18.api_half',
+    return dict(entry='VLLM_HTTP_API',host_per_request_hooks=False,status='HTTP_PRODUCT_TWO_SCOPES_PENDING_REVIEW',mechanism='18.api_half',
                 source_manifest_sha256='test-source',scopes=scopes)
 
 
@@ -68,15 +68,9 @@ class ProductReviewTests(unittest.TestCase):
         data['scopes'][1]['disable']['cleanup']['unregister'][0]['response']['provider_state']['owner']='owner-0-0'
         with self.assertRaisesRegex(ValueError,'SCOPES_REUSE_RUNTIME_OWNER'):review(data)
 
-    def test_next_n_has_an_independent_in_range_negative(self):
-        data=receipt();data['between_request_cache_reset']=False
-        with self.assertRaisesRegex(ValueError,'IN_RANGE_NEXT_N_EXPIRY_NOT_TESTED'):review(data)
-        extra=deepcopy(data['scopes'][1]['requests'][-1])
-        for rank in extra['result']['ranks']:
-            rank['reasons']=['SCOPE_REQUEST_LIMIT_REACHED']
-            rank['range_facts']=dict(max_tokens=4,prompt_length=10,single_chunk=True,fresh_cache=True,request_count=1)
-        data['scopes'][1]['requests'].append(extra)
-        self.assertEqual(review(data)['status'],'PRODUCT_BLUE_REVIEW_PASSED')
+    def test_host_marked_or_non_http_receipt_not_current_acceptance(self):
+        for edit in (dict(entry='LLM'),dict(host_per_request_hooks=True)):
+            with self.assertRaisesRegex(ValueError,'WORKER_AUTOMATIC_HTTP'):review(dict(receipt(),**edit))
 
     def test_missing_rank_and_worker_restart_fail(self):
         data=receipt();data['scopes'][0]['requests'][0]['result']['ranks'].pop()

@@ -137,7 +137,7 @@ class WorkerFaultRuntime:
                                 row.update(execution='product_scheduler_hooks_and_current_permit_required',
                                     fault_execution_ready=False,execution_mode='product',
                                     product_qualified=False,user_prompt_registry=False,
-                                    scope_modes=['all','next'],generation_limit=4,context_limit=1024)
+                                    scope_modes=['all'],generation_limit=4,context_limit=1024)
                                 continue
                             row['request_plan']=continuous_request_plan(row['mechanism'],batch_size=len(binding.prompts))
                             row['execution']='typed_continuous_torch_binding_and_current_permit_required'
@@ -535,6 +535,9 @@ class WorkerFaultRuntime:
             verified = self._quiet(state) and state['registered'] is True
         elif action in ('execute', 'enable', 'advance', 'finish', 'disable', 'abort', 'recover'):
             verified = self._quiet(state)
+        if action=='enable' and state is not None and state.get('product_mode') is True:
+            verified=(state.get('automatic_scheduler_observer') is True and state['enabled'] is True
+                and state['registered'] is True and state['inflight']==state['leases']==0)
         if state is not None and state.get('evidence_limit_error') and action not in _RESTORE:
             verified = False
         if state is not None and state.get('replay_failed', False):

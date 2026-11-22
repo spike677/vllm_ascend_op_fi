@@ -22,17 +22,14 @@ class ProductHostSafetyTests(unittest.TestCase):
             client.executor.collective_rpc.return_value=rows
             with self.assertRaisesRegex(RuntimeError,'PRODUCT_BINDING_RANK_SET_CHANGED'):client.capabilities()
 
-    def test_partial_rank_arm_does_not_allow_further_requests_or_claim_recovery(self):
+    def test_rank_completion_mismatch_never_exported_as_complete(self):
         client=self.client();client.enabled=True
-        client.clients[0].advance.return_value={'status':'ACTION_COMPLETED'}
-        client.clients[1].advance.return_value={'status':'FAILED'}
-        with self.assertRaisesRegex(RuntimeError,'PRODUCT_REQUEST_ARM_FAILED'):client.before_request('actual')
-        self.assertFalse(client.enabled)
-        self.assertEqual(client.inflight,'actual')
-        self.assertEqual(client.before_request('new'),{'status':'FAULT_DISABLED'})
-        with self.assertRaisesRegex(RuntimeError,'PRODUCT_DRAIN_DID_NOT_COMPLETE_RESULT_HOOK'):client.disable()
-        self.assertIsNone(client.recovery)
-        for worker in client.clients:worker.unregister.assert_not_called()
+        client._binding=Mock(return_value=[dict(rank=0,requests=[],cursor=0,more=False,failure=None),
+            dict(rank=1,requests=[{'request_id':'x'}],cursor=1,more=False,failure=None)])
+        with self.assertRaisesRegex(RuntimeError,'PRODUCT_RANK_REQUEST_COMPLETION_MISMATCH'):client.status()
+        self.assertFalse(client.requests)
+        self.assertFalse(hasattr(client,'before_request'))
+        self.assertFalse(hasattr(client,'after_request'))
 
     def test_unstable_canary_retains_cleanup_responsibility_without_enabling(self):
         client=self.client();client._binding=Mock();client._all=Mock()
@@ -50,7 +47,7 @@ class ProductHostSafetyTests(unittest.TestCase):
             if corrupt=='canary':record['canary']['after'][0]['observations'][-1]['output'][0]['hidden']='wrong'
             else:record['cleanup']['unregister'][0]['response']['provider_state']['leases']=1
             client._all=Mock(side_effect=lambda action:record['cleanup'][action])
-            client._binding=Mock();client._canary=Mock(return_value=record['canary']['after'])
+            client._collect_status=Mock();client._binding=Mock();client._canary=Mock(return_value=record['canary']['after'])
             with self.assertRaisesRegex(RuntimeError,'PRODUCT_RECOVERY_NOT_PROVEN'):client.disable()
             self.assertFalse(client.recovery['restored'])
             with self.assertRaisesRegex(RuntimeError,'PRODUCT_CONFIRMED_RECOVERY_REQUIRED'):client.detach()

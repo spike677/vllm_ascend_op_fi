@@ -1,7 +1,6 @@
 """Observe an actual user request; shared sites, no pre-registered user input.
 
-The host scheduler supplies only the real internal ID before dispatch and signals
-completion afterwards. Range decisions use Worker request/scheduler state before
+The Worker observer supplies real scheduler IDs and completion evidence. Range decisions use Worker request/scheduler state before
 any site is installed. No inference is started by this observer.
 """
 from .continuous_binding import ContinuousRequest, digest
@@ -16,12 +15,14 @@ class ProductRequest(ContinuousRequest):
         self.skip = [forced_skip] if forced_skip else []
         self.checked = False
         self.finished = False
+        self.inject = inject
+        self.external_request_id = None
         self.visual = binding.mechanism == "17.spatial_padding"
         self.encoder_calls = self.embedding_calls = 0
         self.encoder_output = None
         self.in_encoder = False
 
-    def install(self):
+    def install(self, *, managed=False):
         import torch
         from fault_injection.sites.mla28 import fingerprint
         self.binding.check()
@@ -78,6 +79,8 @@ class ProductRequest(ContinuousRequest):
                     image_count=sum(f.modality == 'image' for f in features) if isinstance(features, list) else None,
                     video_count=sum(f.modality == 'video' for f in features) if isinstance(features, list) else None)
                 self.range_facts = facts
+                external=getattr(req, 'external_req_id', None)
+                if type(external) is str: self.external_request_id=external
                 if self.visual and isinstance(features, list) and len(features) == 1:
                     feature = features[0]
                     try:
@@ -96,7 +99,17 @@ class ProductRequest(ContinuousRequest):
                 if not self.skip:
                     self.prompts = {rid: tuple(prompt)}  # live snapshot, never compared with a canary
                     if self.visual: self.install_visual_site(patch)
-                    else: self.install_site()
+                    elif self.inject:
+                        self.install_site()
+                        if self.binding.mechanism=='18.api_half':
+                            def logits(original,*args,**kwargs):
+                                value=original(*args,**kwargs)
+                                require(self.site.active and not self.site.pending and not self.site.parents,
+                                        'PRODUCT_NORM_FINAL_LOGITS_CONSUMER_PENDING')
+                                self.site.mode.__exit__(None,None,None)
+                                self.site.active=False
+                                return value
+                            patch(self.model,'compute_logits',logits)
             elif not self.skip:
                 require(batch.req_ids == [rid] and req.prompt_token_ids == list(self.prompts[rid])
                     and scheduler.num_scheduled_tokens == {rid: 1} and total == 1
@@ -133,9 +146,11 @@ class ProductRequest(ContinuousRequest):
             require(bool(self.skip) or self.visual and self.in_encoder, 'PRODUCT_TEXT_VISUAL_PATH_EXECUTED')
 
         try:
-            patch(self.runner, 'execute_model', execute)
+            self.managed_execute = execute
+            self.managed_sample = sample
+            if not managed: patch(self.runner, 'execute_model', execute)
             patch(self.runner, '_preprocess', preprocess)
-            patch(self.runner, 'sample_tokens', sample)
+            if not managed: patch(self.runner, 'sample_tokens', sample)
             self.hooks.extend([self.model.register_forward_pre_hook(enter, with_kwargs=True),
                                self.model.register_forward_hook(output)])
             if getattr(self.model, 'visual', None) is not None:
@@ -182,9 +197,10 @@ class ProductRequest(ContinuousRequest):
         patch(self.runner, '_execute_mm_encoder', encoder)
         patch(self.model, 'embed_input_ids', embedding)
         self.hooks.append(self.model.visual.register_forward_hook(output))
-        self.site = Vision17Site(self.model.visual, fault=True, references={}, product_mode=True,
-            request_ids=lambda:self.runner.input_batch.req_ids, stream=torch.npu.current_stream, complete=complete)
-        self.site.install()
+        if self.inject:
+            self.site = Vision17Site(self.model.visual, fault=True, references={}, product_mode=True,
+                request_ids=lambda:self.runner.input_batch.req_ids, stream=torch.npu.current_stream, complete=complete)
+            self.site.install()
 
     def collect(self):
         require(self.inside == 0 and self.finished and self.error is None and self.samples > 0,
@@ -195,12 +211,22 @@ class ProductRequest(ContinuousRequest):
         if self.site is not None:
             require(not self.site.pending and not getattr(self.site, 'uncovered', []), 'PRODUCT_UNRESTORED_OR_UNCOVERED_SITE')
             require(events, 'PRODUCT_NO_ACTUAL_SITE_CALLS')
+            calls=getattr(self.site,'forward_calls',None)
+            if calls is not None:
+                expected_forwards=self.encoder_calls if self.visual else self.samples
+                require(len(calls)==expected_forwards and all(calls)
+                    and sum(sum(c.values()) for c in calls)==len(events),'PRODUCT_ACTUAL_FORWARD_COVERAGE_INCOMPLETE')
+            elif not self.visual:
+                require(len(events)==self.samples*len(self.site.sites),'PRODUCT_ACTUAL_SITE_COVERAGE_INCOMPLETE')
         report = summarize_request(self.ids[0], self.binding.identity['rank'], events,
                                    skipped=self.skip, completed=True)
-        report.update(prompt_sha256=digest(list(self.prompts[self.ids[0]])) if self.prompts else None,
+        report.update(external_request_id=self.external_request_id,external_request_id_status='OBSERVED' if self.external_request_id is not None else 'UNKNOWN',
+                      prompt_sha256=digest(list(self.prompts[self.ids[0]])) if self.prompts else None,
                       range_facts=self.range_facts, observed_model_steps=self.samples,
                       restore_kind='CALL_ARGUMENT_ONLY_NO_STORAGE_OVERWRITE' if self.visual else 'LIVE_REGION_BYTES')
         require(report['coverage']['failed'] == 0, 'PRODUCT_ELIGIBLE_CALL_FAILED')
+        if not self.inject:
+            report.update(output=list(self.rows),all_finite=bool(self.rows) and all(r['finite'] for r in self.rows))
         self.close()
         report['resources'] = dict(leases=0, hooks=0, inflight=0)
         return report

@@ -1,0 +1,61 @@
+{
+  "runs": [
+    {
+      "run": "httptext",
+      "source_manifest_sha256": "adbe4894c4ab1da529519bdd97c22a86f922980c7257e52e457eb4ea517e6f7f",
+      "byte_identical": 328,
+      "line_endings_only": 5,
+      "reviewed_differences": [
+        {
+          "path": "fault_injection/engines/matmul_evidence.py",
+          "tested_sha256": "c349eaa2f0ee80254bf78f0c24853f30a0f393604dd7b09c2aacd0d3620b60ff",
+          "release_candidate_sha256": "58fb8a23195f301aa36662fc90579be82af82d45b9693971a9bee0d8686a9031",
+          "review": "39mr evidence-only compaction; not executed in five product candidates; separately tested on NPU."
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/continuous_binding.py",
+          "tested_sha256": "3ed4daf27876ec55f07bc1b83310f80b02a455110e686db1f7f6a8c7acb6554b",
+          "release_candidate_sha256": "050e8381c0289e60ef1d2e30ff09821d594afd2095bfe6a090852d9e856f40f1",
+          "review": "39mr collect compaction; ProductRequest overrides collect, product sites unchanged."
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_host.py",
+          "tested_sha256": "e784519bf4da7fdba84aa479f0520b9bdea2be81f22d27e9d754bf78b810f35a",
+          "release_candidate_sha256": "ab5cffd46b8299f1ba0e6f17d2f5c749ae87759b5606c5f70a6339e3fc49a9f2",
+          "review": "disable comment corrected to identify actual Worker RPC boundary; no semantic change."
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_request.py",
+          "tested_sha256": "9fccf8aa24b47f6208566afe1bbb1e911c6fc24cc8849f7d656a7c8f41a2c013",
+          "release_candidate_sha256": "1bf8621da968df0e58c21356510fba47c6585c5f397a5fc5dc7245e40a906667",
+          "review": "visual encoder coverage denominator fixed; text branch remains samples; visual fix validated in a5."
+        }
+      ],
+      "candidate_only_runtime_files": [
+        "fault_injection/sites/mc2_output8.py"
+      ]
+    },
+    {
+      "run": "http17",
+      "source_manifest_sha256": "c65101b049cc81d023da6b878d4e5a734c2d77a76869385cdd299ad3e675b6c4",
+      "byte_identical": 328,
+      "line_endings_only": 8,
+      "reviewed_differences": [
+        {
+          "path": "fault_injection/engines/matmul_evidence.py",
+          "tested_sha256": "c4e7a72afaa63a3db16dba3d04e4ba53b45c29a3dd684855ab3a843c9ab5f8e8",
+          "release_candidate_sha256": "58fb8a23195f301aa36662fc90579be82af82d45b9693971a9bee0d8686a9031",
+          "review": "39mr evidence-only compaction; not executed in five product candidates; separately tested on NPU."
+        },
+        {
+          "path": "fault_injection/sites/mc2_output8.py",
+          "tested_sha256": "c104170cc28401e11eb67c396e03c8a8f378c4c2c13838c78d97c9bde424fd16",
+          "release_candidate_sha256": "071e110a6192011cfe1d249ea318f78a442b9ae8d61b1d3b190687e58b8f8a36",
+          "review": "Unregistered MC2 candidate; not imported by these NPU product runs; CPU only."
+        }
+      ],
+      "candidate_only_runtime_files": []
+    }
+  ],
+  "qualification_granted": false
+}

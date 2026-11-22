@@ -8,7 +8,8 @@ from pathlib import Path
 def review(data):
     def need(value, code):
         if not value: raise ValueError(code)
-    need(data.get('status') == 'PRODUCT_TWO_SCOPES_COMPLETED_PENDING_REVIEW', 'PRODUCT_RUN_INCOMPLETE')
+    need(data.get('status') == 'HTTP_PRODUCT_TWO_SCOPES_PENDING_REVIEW', 'PRODUCT_RUN_INCOMPLETE')
+    need(data.get('entry')=='VLLM_HTTP_API' and data.get('host_per_request_hooks') is False, 'WORKER_AUTOMATIC_HTTP_EVIDENCE_REQUIRED')
     scopes = data.get('scopes', [])
     need(len(scopes) == 2, 'TWO_SCOPES_REQUIRED')
     workers = None
@@ -17,12 +18,6 @@ def review(data):
     for scope in scopes:
         requests = scope['requests']
         need(len(requests) >= 4, 'THREE_USER_REQUESTS_AND_NEGATIVE_REQUIRED')
-        if data.get('between_request_cache_reset') is False and scope['scope']==1:
-            need(len(requests)>=5 and all(r['reasons']==['SCOPE_REQUEST_LIMIT_REACHED']
-                 and r['range_facts']['max_tokens']==4 and 2<=r['range_facts']['prompt_length']<=1020
-                 and r['range_facts']['single_chunk'] is True and r['range_facts']['fresh_cache'] is True
-                 and r['range_facts']['request_count']==1 for r in requests[4]['result']['ranks']),
-                 'IN_RANGE_NEXT_N_EXPIRY_NOT_TESTED')
         effects = []
         hashes = []
         for index, row in enumerate(requests):

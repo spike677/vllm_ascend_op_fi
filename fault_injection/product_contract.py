@@ -9,16 +9,9 @@ PRODUCT_CANDIDATES = ('18.api_half', '39.output_proxy', '22.wrong_row', '28.fia.
 @dataclass(frozen=True)
 class RequestScope:
     mode: str = 'all'
-    count: int | None = None
-
     def __post_init__(self):
-        if self.mode not in ('all', 'next') or (self.mode == 'all' and self.count is not None):
-            raise ValueError('PRODUCT_SCOPE_INVALID')
-        if self.mode == 'next' and (type(self.count) is not int or not 1 <= self.count <= 100000):
-            raise ValueError('PRODUCT_POSITIVE_REQUEST_COUNT_REQUIRED')
-
-    def includes(self, ordinal):
-        return self.mode == 'all' or ordinal < self.count
+        if self.mode != 'all':
+            raise ValueError('PRODUCT_ONLY_ALL_REQUESTS_SUPPORTED')
 
 
 def request_range(facts, *, max_context=1024, visual=False):
