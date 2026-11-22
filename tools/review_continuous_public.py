@@ -7,8 +7,16 @@ def need(ok,reason):
     if not ok:raise ValueError(reason)
 
 
-def review(report, *, require_negative_creation=False):
-    need(report.get('acceptance_scope')=='PUBLIC_WORKER_RUNTIME','PUBLIC_RUNTIME_RECEIPT_REQUIRED')
+def review(report, *, require_negative_creation=False, reference_variant=None):
+    references={'allgather_output_row_proxy':('EXPERIMENT_REFERENCE_NOT_MC2_OR_PUBLIC_QUALIFICATION','8.restore_offset'),
+                'A2_BF16_SPLITFUSE_512_TO_256':('DIRECTION_A_EXPERIMENT_PENDING_LAUNCH_REVIEW','33.paged_decode')}
+    if reference_variant is None:
+        need(report.get('acceptance_scope')=='PUBLIC_WORKER_RUNTIME','PUBLIC_RUNTIME_RECEIPT_REQUIRED')
+    else:
+        need(reference_variant in references,'UNKNOWN_REFERENCE_VARIANT')
+        scope,mechanism=references[reference_variant]
+        need(report.get('reference_variant')==reference_variant and report.get('acceptance_scope')==scope
+            and report.get('mechanism')==mechanism,'REFERENCE_RECEIPT_IDENTITY_MISMATCH')
     scopes=report.get('scopes',[]);need(len(scopes)==2,'TWO_SCOPES_REQUIRED')
     result=[];members=None;owners=[]
     for index,s in enumerate(scopes):
@@ -117,12 +125,26 @@ def review(report, *, require_negative_creation=False):
                 logits_changed=any(a['logits']!=b['logits'] for a,b in zip(n['output'],f['output'])),
                 recovered=True,events_sha256=f['events_sha256'])
             if report['mechanism']=='8.restore_offset':
-                moe=f['moe_effect'];need(moe['actual_producer_joins']==moe['native_combine_calls']==f['coverage']['eligible']
-                    and moe['request_rows_verified']>=f['coverage']['eligible'],'MOE_CURRENT_PRODUCER_CONSUMER_MAPPING_MISSING')
+                moe=f['moe_effect']
+                if reference_variant=='allgather_output_row_proxy':
+                    need(moe['actual_producer_joins']==moe['native_combine_calls']==f['coverage']['observed']
+                        and moe['single_group_calls']==f['coverage']['observed']-f['coverage']['eligible']
+                        and bool(f.get('projection_effect',{}).get('consumer_operators')),'ALLGATHER_OUTPUT_REFERENCE_CONSUMER_MISSING')
+                else:
+                    need(moe['actual_producer_joins']==moe['native_combine_calls']==f['coverage']['eligible']
+                        and moe['request_rows_verified']>=f['coverage']['eligible'],'MOE_CURRENT_PRODUCER_CONSUMER_MAPPING_MISSING')
                 effects[rank]['moe_effect']=moe
             if report['mechanism']=='33.paged_decode':
                 effect=f['partition_effect'];need(effect['calls']==f['coverage']['eligible'] and effect['selected_changed_elements']>0,'PAGED_PARTITION_EFFECT_MISSING')
                 need(all(p['same_legal_key_set'] and not p['denominator_replay'] and p['nonselected_exact'] and p['key_visits']==p['page_mapping']['logical_keys'] for p in effect['pairs']),'PAGED_KEY_SET_OR_CONTROL_MISMATCH')
+                if reference_variant=='A2_BF16_SPLITFUSE_512_TO_256':
+                    for pair in effect['pairs']:
+                        c=pair['control_agreement']
+                        need(c['elements']>0 and c['bitwise_equal']/c['elements']>=.99
+                            and pair['replacement_policy']=='WHOLE_TARGET_ROW_NO_VALUE_SELECTION'
+                            and pair['control_block']==512 and pair['fault_block']==256,'SPLITFUSE_CONTROL_OR_POLICY_FAILED')
+                    effects[rank]['control_min_ratio']=min(p['control_agreement']['bitwise_equal']/p['control_agreement']['elements'] for p in effect['pairs'])
+                    effects[rank]['control_residual_elements']=sum(p['native_control_residual_elements'] for p in effect['pairs'])
                 effects[rank]['partition_effect']={k:v for k,v in effect.items() if k!='pairs'}
             if report['mechanism']=='39.matmul_range':
                 effect=f['matmul_effect'];need(effect['reference_controls']==f['coverage']['eligible'] and effect['rules']==['omit_final_quarter'],'MATMUL_RANGE_REFERENCE_MISSING')
@@ -197,15 +219,16 @@ def review(report, *, require_negative_creation=False):
     return dict(schema='demoncat.continuous.public_review.v1',mechanism=report['mechanism'],
         arithmetic_device=report.get('arithmetic_device'),reference_mode=report.get('reference_mode','immediate'),passed=True,scopes=result,
         negative_creation_verified=all(bool(s.get('negative_missing_permit_creation')) for s in scopes),
-        acceptance_scope='PUBLIC_RUNTIME_SOURCE_REVIEW_STILL_REQUIRED',qualification_granted=False)
+        acceptance_scope='REFERENCE_ONLY_NO_MC2_OR_DEPLOYMENT_GRANT' if reference_variant else 'PUBLIC_RUNTIME_SOURCE_REVIEW_STILL_REQUIRED',
+        reference_variant=reference_variant,qualification_granted=False)
 
 
 if __name__=='__main__':
     import argparse
     from pathlib import Path
     p=argparse.ArgumentParser();p.add_argument('receipt');p.add_argument('--output')
-    p.add_argument('--require-negative-creation',action='store_true');a=p.parse_args()
-    raw=Path(a.receipt).read_bytes();result=review(json.loads(raw),require_negative_creation=a.require_negative_creation)
+    p.add_argument('--require-negative-creation',action='store_true');p.add_argument('--reference-variant');a=p.parse_args()
+    raw=Path(a.receipt).read_bytes();result=review(json.loads(raw),require_negative_creation=a.require_negative_creation,reference_variant=a.reference_variant)
     result['source_receipt_sha256']=hashlib.sha256(raw).hexdigest()
     result['reviewer_sha256']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     text=json.dumps(result,indent=2)+'\n'
