@@ -264,6 +264,8 @@ class CpuGroupBinding:
 
 class QuantGroupC1Tests(unittest.TestCase):
     def setUp(self):
+        from research_fixture import install_research_resolver
+        install_research_resolver(self,"quant.batch_shared_scale")
         self.folder = Path(self.enterContext(tempfile.TemporaryDirectory()))
         self.binding = CpuGroupBinding()
         self.enterContext(patch.object(native.QuantGroupNative, 'tensor_view', side_effect=cpu_view))

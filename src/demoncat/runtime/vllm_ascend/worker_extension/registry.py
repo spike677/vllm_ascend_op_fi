@@ -187,6 +187,8 @@ def create_worker_provider(mechanism, version, worker, model, identity):
     from fault_injection.catalog import resolve
     from .ordinary_admission import require_ordinary_route
     resolve(mechanism)
+    if mechanism == '25.reduce_scatter':
+        require_ordinary_route(mechanism,worker,model)
     if version != '1':
         raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')
     admission=require_ordinary_route(mechanism,worker,model)

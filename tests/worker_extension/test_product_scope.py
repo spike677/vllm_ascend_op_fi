@@ -58,13 +58,9 @@ class ProductScopeTests(unittest.TestCase):
             worker = SimpleNamespace(**{module._ATTRIBUTE: binding})
             with patch.object(module, 'Fault39OutputServingProvider') as factory, \
                     patch.object(module, 'read_native_binding') as readback:
-                if stage == 'c1' and leases == 1:
-                    registry.create_worker_provider('39.output_proxy', '1', worker, 'model', {})
-                    factory.assert_called_once_with(worker, 'model', {})
-                else:
-                    with self.assertRaisesRegex(RuntimeError, 'SINGLE_REQUEST_SINGLE_TARGET_REQUIRED'):
-                        registry.create_worker_provider('39.output_proxy', '1', worker, 'model', {})
-                    factory.assert_not_called()
+                with self.assertRaisesRegex(RuntimeError,'OUTPUT39_ORDINARY_TASK_BINDING_REQUIRED'):
+                    registry.create_worker_provider('39.output_proxy','1',worker,'model',{})
+                factory.assert_not_called()
                 readback.assert_not_called()
 
     def test_paged33_group_is_not_implicitly_selected(self):
@@ -73,7 +69,7 @@ class ProductScopeTests(unittest.TestCase):
         native = object.__new__(GroupEffectsNativeCall)
         worker = SimpleNamespace(**{module.ATTRIBUTE: {'33.paged_decode': SimpleNamespace(native=native)}})
         with patch.object(module, 'resolve_paged_decode_provider') as resolve:
-            with self.assertRaisesRegex(RuntimeError, 'PAGED33_CURRENT_DELIVERY_SINGLE_SITE_REQUIRED'):
+            with self.assertRaisesRegex(RuntimeError, 'ORDINARY_TASK_ADAPTER_PENDING:33.paged_decode'):
                 registry.create_worker_provider('33.paged_decode', '1', worker, 'model', {})
             resolve.assert_not_called()
 

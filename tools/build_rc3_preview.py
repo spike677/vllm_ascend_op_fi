@@ -2,11 +2,12 @@
 import argparse,hashlib,json,os,subprocess,sys,tarfile,tempfile
 from pathlib import Path
 
-VERSIONS={'demoncatpfi':'0.4.0rc1','demoncat-worker-extension':'0.3.0rc1','demoncat-fault39-core':'0.3.0rc1'}
+VERSIONS={'demoncatpfi':'0.4.0rc2','demoncat-worker-extension':'0.3.0rc2','demoncat-fault39-core':'0.3.0rc2'}
 ROOTS=('src/','fault_injection/','fault39/src/','native_execution_strategy/','engineering_closure/',
        'tools/','tests/','docs/worker_core_v1/')
 EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',
-       'experiments/worker_core_v11_20261118/continuous_public_probe.py')
+       'experiments/worker_core_v11_20261118/continuous_public_probe.py',
+       'experiments/worker_core_v11_20261118/continuous_matmul39_source_review_20261122.json')
 SUFFIXES={'.py','.json','.toml','.md','.cpp','.h','.inc','.sh','.yaml','.yml'}
 
 
@@ -44,7 +45,7 @@ def build(repo,output):
             dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(raw)
             files.append(dict(path=name,bytes=len(raw),sha256=sha(raw)))
         review=dict(schema='demoncat.source_review.v1',source_commit=commit,files=files,
-            delivery_scope=['28.fia.denominator_replay','quant.batch_shared_scale'])
+            delivery_scope=['28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','18.api_half','22.wrong_row','39.matmul_range'])
         write_json_bytes(output/'source-review.json',review)
         archive=output/(output.name+'.tar.gz')
         with tarfile.open(archive,'w:gz') as tf:
@@ -58,7 +59,7 @@ def build(repo,output):
     if len(list(wheels.glob('*.whl')))!=3:raise RuntimeError('THREE_WHEELS_REQUIRED')
     manifest=dict(schema='demoncat.rc3_preview.release.v1',source_commit=commit,versions=VERSIONS,
         source_manifest_file='source-review.json',source_manifest_sha256=sha((output/'source-review.json').read_bytes()),
-        target='YELLOW_DEDICATED_INSTANCE / A3 / Qwen3.8 W8A8 / TP2 / acceptance pending',
+        target='YELLOW_DEDICATED_INSTANCE / A3 / Qwen3.8 W8A8 / TP1 and TP2 independently / acceptance pending',
         blue_results_are_not_a3_acceptance=True,files=[])
     for p in sorted(output.rglob('*')):
         if p.is_file():manifest['files'].append(dict(path=p.relative_to(output).as_posix(),bytes=p.stat().st_size,sha256=sha(p.read_bytes())))

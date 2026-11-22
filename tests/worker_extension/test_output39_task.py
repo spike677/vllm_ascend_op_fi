@@ -67,7 +67,7 @@ class Output39TaskTests(unittest.TestCase):
     enqueue = fixture.CoreOutput39Tests.enqueue
 
     def setUp(self):
-        fixture.CoreOutput39Tests.setUp(self)
+        fixture.CoreOutput39Tests.setUp(self, research=False)
         self.transport = ReadbackTransport()
         def bind(actual, config):
             serving39_output.install_fault39_output_serving_binding(self.worker,

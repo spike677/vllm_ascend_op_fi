@@ -100,7 +100,7 @@ class RegistryTests(unittest.TestCase):
             '33.paged_decode': 'resolve_current_paged_decode_provider'}
         for mechanism, name in constructors.items():
             with self.subTest(mechanism=mechanism), patch('importlib.import_module') as loader:
-                resolve_provider(mechanism, '1', 'worker', 'model', {'rank': 7})
+                registry.create_research_provider(mechanism, '1', 'worker', 'model', {'rank': 7})
                 getattr(loader.return_value, name).assert_called_once_with('worker', 'model', {'rank': 7})
                 expected = '.providers.paged33_s2' if mechanism == '33.paged_decode' else '.providers.attention_serving'
                 self.assertTrue(loader.call_args.args[0].endswith(expected))
@@ -131,7 +131,7 @@ class RegistryTests(unittest.TestCase):
             if bound:
                 worker._demoncat_vision17_observation_binding = object()
             with patch('importlib.import_module') as loader:
-                resolve_provider('17.spatial_padding', '1', worker, 'model', {})
+                registry.create_research_provider('17.spatial_padding', '1', worker, 'model', {})
                 if bound:
                     loader.return_value.Vision17ObservationProvider.assert_called_once_with(worker, 'model', {})
                     self.assertTrue(loader.call_args.args[0].endswith('.providers.vision17'))
@@ -150,15 +150,15 @@ class RegistryTests(unittest.TestCase):
 
     def test_existing_native_factory_and_tensor_routes_remain_exact(self):
         with patch('importlib.import_module') as loader:
-            resolve_provider('20.buffer_substitute', '1', 'worker', 'model', {'rank': 3})
+            registry.create_research_provider('20.buffer_substitute', '1', 'worker', 'model', {'rank': 3})
             loader.return_value.Fault20Provider.assert_called_once_with('worker', 'model', {'rank': 3})
             self.assertTrue(loader.call_args.args[0].endswith('.providers.fault20'))
         with patch('importlib.import_module') as loader:
-            resolve_provider('15.alias_detach', '1', 'worker', 'model', {})
+            registry.create_research_provider('15.alias_detach', '1', 'worker', 'model', {})
             loader.return_value.TensorModuleProvider.assert_called_once_with('worker', 'model', {}, '15.alias_detach')
         for mechanism in ('18.api_half', '8.restore_offset'):
             with patch('importlib.import_module') as loader:
-                resolve_provider(mechanism, '1', 'worker', 'model', {})
+                registry.create_research_provider(mechanism, '1', 'worker', 'model', {})
                 loader.return_value.TensorServingProvider.assert_called_once_with('worker', 'model', {}, mechanism)
                 self.assertTrue(loader.call_args.args[0].endswith('.providers.tensor_serving'))
 

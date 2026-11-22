@@ -69,7 +69,10 @@ class CoreOutput39Tests(unittest.TestCase):
     root = life.ServingSessionLifecycleTests.root
     forward = life.ServingSessionLifecycleTests.forward
 
-    def setUp(self):
+    def setUp(self, research=True):
+        if research:
+            from research_fixture import install_research_resolver
+            install_research_resolver(self,"39.output_proxy")
         life.ServingSessionLifecycleTests.setUp(self)
         self.worker = _extended_worker(rank=0)
         self.worker.load_model()

@@ -6,6 +6,7 @@ from demoncat.runtime.vllm_ascend.worker_extension import identity, runtime
 from demoncat.runtime.vllm_ascend.worker_extension.config import FaultConfig
 from demoncat.runtime.vllm_ascend.worker_extension.multi_rank import MultiRankTaskClient
 from fault_injection.continuous_contract import continuous_request_plan
+from fault_injection.rc3_preview_profile import next_request_phase
 from test_extension import _extended_worker
 from test_core_host import ExistingExecutor
 from test_multi_rank import ScheduledProvider
@@ -44,10 +45,15 @@ class ContinuousGroupTests(unittest.TestCase):
                         for action in ('prepare','register','check','enable'):
                             self.assertEqual(getattr(client,action)()['status'],'ACTION_COMPLETED')
                         owners.append(client.contract()['owner'])
-                        for phase in ('normal','fault','off','health'):
+                        state=client.query(); plan=state['response']['provider_state']['request_plan']; completed=[]
+                        while True:
+                            phase=next_request_phase(state,plan,completed)
+                            if phase=='complete':break
                             self.assertEqual(client.advance(f'{scope}-{phase}')['status'],'ACTION_COMPLETED')
                             for p in providers.values(): p.complete_actual()
-                            self.assertEqual(client.query()['status'],'QUERY_OK')
+                            state=client.query()
+                            self.assertEqual(state['status'],'QUERY_OK')
+                            completed.append(phase)
                         self.assertEqual(decisions[-1]['roles'],{i:'injector' for i in range(size)})
                         self.assertIsNone(decisions[-1]['selected_rank'])
                         self.assertEqual(client.unregister()['status'],'ACTION_COMPLETED')

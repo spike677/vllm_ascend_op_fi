@@ -1,4 +1,4 @@
-"""Public Runtime TP2 acceptance. Trusted bootstrap only installs inert bindings.
+"""Public Runtime TP1/TP2 acceptance. Trusted bootstrap only installs inert bindings.
 
 Inference remains llm.enqueue/wait_for_completion. No experiment injection RPC
 is used. Raw receipts remain local; this script grants no deployment record.
@@ -58,6 +58,7 @@ def bootstrap(wrapper,action,mechanism,options=None):
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','33','39','39mr','18','22','8'),required=True)
+    p.add_argument('--tp',type=int,choices=(1,2),default=2)
     p.add_argument('--reference-mode',choices=('immediate','forward'),default='immediate')
     p.add_argument('--model-family',choices=('qwen35','deepseek_v2'),default='qwen35')
     p.add_argument('--arithmetic-device',choices=('input','cpu'),default='input')
@@ -66,6 +67,9 @@ def main():
     p.add_argument('--deployment-source',choices=('BLUE_COMBINATION','YELLOW_DEDICATED_INSTANCE'),default='BLUE_COMBINATION')
     a=p.parse_args()
     mechanism={'batch':'quant.batch_shared_scale','28':'28.fia.denominator_replay','33':'33.paged_decode','39':'39.output_proxy','39mr':'39.matmul_range','18':'18.api_half','22':'22.wrong_row','8':'8.restore_offset'}[a.mechanism]
+    from fault_injection.rc3_preview_profile import TEST_CANDIDATES
+    if a.deployment_source=='YELLOW_DEDICATED_INSTANCE' and mechanism not in TEST_CANDIDATES:
+        raise RuntimeError('RC3_PREVIEW_OUTSIDE_DELIVERY_SCOPE:'+mechanism)
     batch=8 if a.mechanism=='batch' else 1
     report=dict(status='STARTED',mechanism=mechanism,scopes=[],warmup=[],qualification_granted=False,
         acceptance_scope='PUBLIC_WORKER_RUNTIME',arithmetic_device=a.arithmetic_device,reference_mode=a.reference_mode)
@@ -82,7 +86,7 @@ def main():
         from demoncat.runtime.vllm_ascend.worker_extension.continuous_binding import digest
         from demoncat.runtime.vllm_ascend.worker_extension.serving_context import actual_driver_request_map
         extra=dict(limit_mm_per_prompt={'image':0,'video':0}) if a.model_family=='qwen35' else {}
-        llm=LLM(model=a.model,dtype='bfloat16',quantization='ascend',tensor_parallel_size=2,
+        llm=LLM(model=a.model,dtype='bfloat16',quantization='ascend',tensor_parallel_size=a.tp,
             distributed_executor_backend='mp',enforce_eager=True,enable_prefix_caching=False,
             async_scheduling=False,enable_chunked_prefill=True,max_num_batched_tokens=1024,
             max_model_len=1024,max_num_seqs=batch,gpu_memory_utilization=.8,seed=42,
@@ -119,7 +123,7 @@ def main():
             return dict(seconds=elapsed,tokens=[list(o.outputs[0].token_ids) for o in outputs])
         for scope_index in range(2):
             number,variant=mechanism.split('.',1);config=FaultConfig(number if number=='quant' else int(number),variant)
-            client=MultiRankTaskClient(llm,config,prepare_binding=lambda *_:{},continuous=True,world_size=2,
+            client=MultiRankTaskClient(llm,config,prepare_binding=lambda *_:{},continuous=True,world_size=a.tp,
                 batch_size=batch,timeout=120)
             contract=client.contract()
             members=sorted([r['worker'] for r in llm.collective_rpc('demoncat_worker_identity')],key=lambda r:r['rank'])
@@ -150,7 +154,11 @@ def main():
             for action in ('prepare','register','check','enable'):
                 result=getattr(client,action)();scope[action]=result;save()
                 assert result['status']=='ACTION_COMPLETED',(action,result)
-            for phase in ('normal','fault','off','health'):
+            from fault_injection.rc3_preview_profile import next_request_phase
+            state=client.query();plan=state['response']['provider_state']['request_plan'];completed=[]
+            while True:
+                phase=next_request_phase(state,plan,completed)
+                if phase=='complete':break
                 ids,mapping=enqueue()
                 result=client.advance_batch(ids) if batch>1 else client.advance(ids[0])
                 assert result['status']=='ACTION_COMPLETED',result
@@ -160,6 +168,7 @@ def main():
                 if result['status']!='QUERY_OK':scope['failure_diagnostic']=rpc('diagnostic');save()
                 scope['requests'].append(dict(phase=phase,mapping=mapping,result=result,**timing));save()
                 assert result['status']=='QUERY_OK',result
+                completed.append(phase);state=result
             extra=client.advance_batch(['extra'+str(i) for i in range(batch)]) if batch>1 else client.advance('extra')
             assert extra['status']=='GROUP_PHASES_EXHAUSTED';scope['negative_extra_advance']=extra['status']
             for action in ('finish','unregister','detach'):
