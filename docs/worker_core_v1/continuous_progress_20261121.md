@@ -43,7 +43,7 @@ CPU 参考例：256 个等权 key、V 全 1，重放其中 128 个 key 的分母
 |39 output_proxy|公共入口两作用域通过；304真实投影×4步，每rank1216次；实际消费者与恢复通过|公共两作用域通过；observed463/eligible332，每rank332命中；131输出不适用，52结构候选无forward|待验收|待验收|
 |39 matmul_range|公共两作用域通过；704 eligible/rank/作用域全部消费恢复，512非列分片调用不适用；仅W8A8|未列为首批蓝区模型|待验收|待适配/验收|
 |Batch|公共入口CPU/NPU各两作用域通过；304投影×4步/每rank，1216次；最终交付负向检查通过|未列为首批蓝区模型|待验收|W8A8独立DynamicQuant部分待适配|
-|41|Native 最后阶段|MLA cache 待适配|待验收|待适配/验收|
+|41|Native公共两作用域通过；每rank observed64/eligible48，实际FIA消费和字节恢复、OFF/health精确恢复；1.01725×/1.04375×|MLA布局待适配|待独立构建/验收|待MLA布局适配/验收|
 |17|公共两作用域通过；每rank每作用域1次真实patch调用，全消费/恢复，原参数恢复，旧Qwen3-VL仅历史|不适用|TP1/TP2视觉验收待完成|缺图像预处理配置，不执行|
 |8|dense 不适用|公共两作用域通过；26MoE×4、104次；26次新变化、78次单组decode保持原值|不适用|M4 待完成|
 |28 denominator torch|公共入口通过：16层×4步/每rank，两作用域，完整恢复与实际创建负向通过|公共入口两作用域通过：27层×4步/每rank，108次；恢复通过|待验收|稀疏 MLA/M4 待完成|
@@ -78,3 +78,7 @@ r3 已冻结六项公共持续候选，发行提交 0a10cb2e，源提交112376ee
 ## 2026-11-22 视觉17后续更新
 
 vision17-a3公共入口通过：两rank每作用域observed/eligible/applied/changed/consumed/restored均1、failed0；hidden/logits传播和完整OFF/health精确恢复，1.05504×/1.00378×。详见[视觉报告](continuous_vision17_20261122.md)。仅开发线BLUE_COMBINATION，冻结r3不变；17与33均已有结论，Native进入可实施阶段。DeepSeek稀疏MLA新增CPU参数解析与sink参考，仍不代表实际接线或A3验收。
+
+## 2026-11-22 Native41更新
+
+41在A2/0.26/Qwen3.8社区W8A8/TP2通过公共入口两作用域，见[Native41报告](continuous_native41_20261122.md)。同stream真实KV区域改写与消费者事件恢复已验证，16次直接KV prefill/rank/作用域明确不适用；不把它记为全64次注入。冻结r3不变；Native26 FIA→residual和20输入覆盖继续，DeepSeek稀疏/EP及A3仍待接线与验收。

@@ -160,6 +160,8 @@ def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=
     from .continuous_binding import current_binding,SUPPORTED
     continuous=current_binding(worker,model,mechanism) if worker is not None and mechanism in SUPPORTED else None
     if continuous is not None:
+        if continuous.native_library is not None:
+            actual=dict(actual,native_library_sha256=continuous.native_library[1])
         accepted=False;expected=None;record=None;checks=[]
         records_path=Path(__file__).with_name('continuous_blue_records.json')
         records=json.loads(records_path.read_text(encoding='utf-8'))['records'] if records_path.is_file() else []

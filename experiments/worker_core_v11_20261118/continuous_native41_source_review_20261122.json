@@ -1,0 +1,55 @@
+{
+  "schema": "demoncat.continuous.source_review.v1",
+  "mechanism": "41.tail_column",
+  "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED",
+  "passed": true,
+  "scope": "BLUE_COMBINATION A2 CANN9.1 vLLM0.26 Qwen3.8 community W8A8 TP2 Native KV region",
+  "receipt_review_sha256": "fc5be32ed1e4f998db4d164f2a89554e41f99f4191268a621a765af11ee72c65",
+  "source_manifest_sha256": "9319113eda5ef0586cf5d72aa6aeab50610b827241c5e5eec00a67154a8dcede",
+  "checks": {
+    "actual_scatter_cache_value_and_slot_checked": true,
+    "actual_fia_cache_alias_and_page_mapping_checked": true,
+    "live_object_storage_stream_and_scope_owned": true,
+    "native_selected_columns_full_span_readback": true,
+    "consumer_same_stream_device_event_before_restore": true,
+    "intervening_legal_updates_refuse_restore": true,
+    "all_rank_every_eligible_decode_call": true,
+    "full_off_health_and_two_scopes": true,
+    "negative_creation_resources_zero": true
+  },
+  "limitations": [
+    "Only actual paged single-request decode FIA; 16 direct-KV prefill calls/rank/scope excluded with reason",
+    "BF16 base-format V current-slot tail two columns/head, same-stream read-only FIA consumer; no adjacent allocation or kernel overflow claim",
+    "Native library SHA is part of deployment identity; A3 must rebuild/review independently",
+    "Qwen community W8A8 TP2 A2 only; MLA, shared prefix, cross-stream and other layouts unqualified",
+    "Frozen r3 excludes this later development; vLLM shutdown force-process/shared-memory warning retained separately from cleared injection resources"
+  ],
+  "files": [
+    {
+      "path": "fault_injection/engines/native_regions.py",
+      "reviewed_working_sha256": "efce6d2417ef2268825cf2e8e1dbdfa643cde64d5f2ee333256b10bb19d4da32"
+    },
+    {
+      "path": "fault_injection/sites/native_kv41.py",
+      "reviewed_working_sha256": "9f9323fd10b54892aaad4eb339e445a00188cb5ab188357fd592c2de8f18e66c"
+    },
+    {
+      "path": "fault_injection/native_adapters/postwrite/postwrite.cpp",
+      "reviewed_working_sha256": "06f908d2d46c9a0ac0af290d559ff75ec1eb1b5c9d5ffb1c784c20c077698ec2"
+    },
+    {
+      "path": "fault_injection/native_adapters/postwrite/postwrite.h",
+      "reviewed_working_sha256": "d5981e69442673bd0d6b1570eb53fb2ae1a5a29e2881bbbe4eff0253ebbeb68c"
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/continuous_binding.py",
+      "reviewed_working_sha256": "769b4fcd989d4ebda6636bd06b41e888eecedc5dc43273e293bbfd74db63aa40"
+    },
+    {
+      "path": "tools/review_continuous_public.py",
+      "reviewed_working_sha256": "adac1390a21f1523a7dab4c1a3480fa63998eb22473d70e8eb37dfde6a0b3ce9"
+    }
+  ],
+  "build_receipt_sha256": "d02c37eaca65d6ff683782d84060e5812eedfaed98ef01b77ce9f480301157c8",
+  "file_hash_semantics": "Working bytes at source review; NPU identity is separately retained immutable manifest."
+}

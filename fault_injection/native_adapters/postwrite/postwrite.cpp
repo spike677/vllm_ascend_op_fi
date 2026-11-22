@@ -16,6 +16,7 @@ struct Lease {
     std::thread::id thread;
     std::vector<uint16_t> original, expected;
     bool applied = false;
+    aclrtStream stream = nullptr;
 };
 std::mutex guard;
 std::map<uint64_t, Lease> leases;
@@ -33,13 +34,13 @@ Lease *owned(uint64_t handle, uint64_t owner, uint64_t generation) {
     const auto found = leases.find(handle);
     return found != leases.end() && owns(found->second, owner, generation) ? &found->second : nullptr;
 }
-int sync(int32_t expected_device) {
+int sync(int32_t expected_device, aclrtStream stream = nullptr) {
     int32_t device = -1;
     if (aclrtGetDevice(&device) != ACL_SUCCESS || device != expected_device) return 10;
-    return aclrtSynchronizeDevice() == ACL_SUCCESS ? 0 : 11;
+    return (stream ? aclrtSynchronizeStream(stream) : aclrtSynchronizeDevice()) == ACL_SUCCESS ? 0 : 11;
 }
 int read(const Lease &l, std::vector<uint16_t> &out) {
-    const int result = sync(l.device);
+    const int result = sync(l.device, l.stream);
     if (result) return result;
     out.resize(l.original.size());
     const auto bytes = out.size() * sizeof(uint16_t);
@@ -47,12 +48,12 @@ int read(const Lease &l, std::vector<uint16_t> &out) {
         == ACL_SUCCESS ? 0 : 12;
 }
 int write(const Lease &l, const std::vector<uint16_t> &values) {
-    const int result = sync(l.device);
+    const int result = sync(l.device, l.stream);
     if (result) return result;
     const auto bytes = values.size() * sizeof(uint16_t);
     if (aclrtMemcpy(l.tensor, bytes, values.data(), bytes, ACL_MEMCPY_HOST_TO_DEVICE)
             != ACL_SUCCESS) return 13;
-    return sync(l.device);
+    return sync(l.device, l.stream);
 }
 bool finite(uint16_t bits) { return (bits & 0x7f80U) != 0x7f80U; }
 }
@@ -76,8 +77,8 @@ extern "C" int dcat_pw_read_span(const void *tensor, uint64_t bytes, int32_t dev
     if (result) return result;
     return aclrtMemcpy(host, bytes, tensor, bytes, ACL_MEMCPY_DEVICE_TO_HOST) == ACL_SUCCESS ? 0 : 12;
 }
-extern "C" int dcat_pw_open(void *tensor, uint64_t bytes, int32_t device,
-                              uint64_t owner, uint64_t generation, uint64_t *handle) {
+static int open_span(void *tensor, uint64_t bytes, int32_t device,
+                     uint64_t owner, uint64_t generation, uint64_t *handle, aclrtStream stream) {
     std::lock_guard<std::mutex> lock(guard);
     if (!tensor || !handle || !owner || !generation || device < 0 ||
         bytes == 0 || bytes > max_bytes || bytes % 2) return 1;
@@ -93,7 +94,7 @@ extern "C" int dcat_pw_open(void *tensor, uint64_t bytes, int32_t device,
         if (begin < end && start < begin + bytes) return 14;
     }
     try {
-        Lease next{tensor, owner, generation, device, std::this_thread::get_id(), {}, {}, false};
+        Lease next{tensor, owner, generation, device, std::this_thread::get_id(), {}, {}, false, stream};
         next.original.resize(bytes / 2);
         std::vector<uint16_t> observed;
         const int result = read(next, observed);
@@ -103,6 +104,38 @@ extern "C" int dcat_pw_open(void *tensor, uint64_t bytes, int32_t device,
         live_span_bytes += bytes;
         *handle = serial;
         return 0;
+    } catch (...) { return 90; }
+}
+extern "C" int dcat_pw_open(void *tensor, uint64_t bytes, int32_t device,
+                              uint64_t owner, uint64_t generation, uint64_t *handle) {
+    return open_span(tensor, bytes, device, owner, generation, handle, nullptr);
+}
+extern "C" int dcat_pw_open_stream_v2(void *tensor, uint64_t bytes, int32_t device,
+                              uint64_t owner, uint64_t generation, uint64_t stream, uint64_t *handle) {
+    if (!stream) return 1;
+    return open_span(tensor, bytes, device, owner, generation, handle,
+                     reinterpret_cast<aclrtStream>(static_cast<uintptr_t>(stream)));
+}
+/* Copy only between already-open owned live objects. Never a new raw-address input. */
+extern "C" int dcat_pw_copy_region_v2(uint64_t target, uint64_t source,
+        uint64_t owner, uint64_t generation, uint64_t *changed) {
+    std::lock_guard<std::mutex> lock(guard);
+    Lease *dst = owned(target, owner, generation);
+    Lease *src = owned(source, owner, generation);
+    if (!dst || !src || dst == src || !changed || dst->applied || src->applied ||
+        !dst->stream || dst->stream != src->stream || dst->device != src->device ||
+        dst->original.size() != src->original.size()) return 2;
+    try {
+        std::vector<uint16_t> source_now, target_now;
+        int result = read(*src, source_now); if (result) return result;
+        result = read(*dst, target_now); if (result) return result;
+        if (source_now != src->original || target_now != dst->original) return 5;
+        *changed = 0;
+        for (size_t i=0; i<source_now.size(); ++i) *changed += source_now[i] != target_now[i];
+        dst->applied = true; dst->expected = source_now;
+        result = write(*dst, source_now); if (result) return result;
+        result = read(*dst, target_now); if (result) return result;
+        return target_now == source_now ? 0 : 6;
     } catch (...) { return 90; }
 }
 extern "C" int dcat_pw_apply(uint64_t handle, uint64_t owner, uint64_t generation,

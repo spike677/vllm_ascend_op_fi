@@ -440,6 +440,49 @@
       "source_review_reference": "experiments/worker_core_v11_20261118/continuous_vision17_source_review_20261122.json",
       "source_review_sha256": "661a31281f4e8b5ebefa4d8cffd677bc3c2e110d025622325b7975f6746f0490",
       "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED"
+    },
+    {
+      "mechanism": "41.tail_column",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "native_library_sha256": "d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_native41_review_20261122.json",
+      "review_sha256": "fc5be32ed1e4f998db4d164f2a89554e41f99f4191268a621a765af11ee72c65",
+      "source_manifest_sha256": "9319113eda5ef0586cf5d72aa6aeab50610b827241c5e5eec00a67154a8dcede",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "native_same_stream_paged_value_tail_columns",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4,
+      "limitations": [
+        "Only actual paged single-request decode FIA; 16 direct-KV prefill calls/rank/scope excluded with reason",
+        "BF16 base-format V current-slot tail two columns/head, same-stream read-only FIA consumer; no adjacent allocation or kernel overflow claim",
+        "Native library SHA is part of deployment identity; A3 must rebuild/review independently",
+        "Qwen community W8A8 TP2 A2 only; MLA, shared prefix, cross-stream and other layouts unqualified",
+        "Frozen r3 excludes this later development; vLLM shutdown force-process/shared-memory warning retained separately from cleared injection resources"
+      ],
+      "source_review_reference": "experiments/worker_core_v11_20261118/continuous_native41_source_review_20261122.json",
+      "source_review_sha256": "793752ae7683750b6c5c96c063315d9248c1543765efcaca79937546d6e305bb",
+      "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED"
     }
   ]
 }

@@ -109,6 +109,18 @@ def review(report, *, require_negative_creation=False):
             if report['mechanism']=='39.matmul_range':
                 effect=f['matmul_effect'];need(effect['reference_controls']==f['coverage']['eligible'] and effect['rules']==['omit_final_quarter'],'MATMUL_RANGE_REFERENCE_MISSING')
                 effects[rank]['matmul_effect']=effect
+            if report['mechanism']=='41.tail_column':
+                effect=f['native_memory_effect'];regions=effect['regions']
+                need(effect['calls']==len(regions)==f['coverage']['eligible']>0,'KV41_NATIVE_CALL_COVERAGE')
+                need(effect['writer_operators']==['npu_scatter_pa_kv_cache']
+                    and effect['consumer_operators']==['npu_fused_infer_attention_score'],'KV41_ACTUAL_WRITER_CONSUMER')
+                need(len(effect['library_sha256'])==64 and effect['library_sha256']==actuals[rank].get('native_library_sha256'),
+                    'KV41_DEPLOYMENT_NATIVE_IDENTITY')
+                need(all(r['consumed'] and r['restored'] and r['slots'] and r['page_mapping']
+                    and r['region_elements']>0 and r['before_sha256']==r['restored_sha256'] for r in regions),'KV41_REGION_RESTORATION')
+                effects[rank]['native_memory_effect']={k:v for k,v in effect.items() if k!='regions'}
+                effects[rank]['native_memory_effect'].update(region_count=len(regions),
+                    region_evidence_sha256=hashlib.sha256(json.dumps(regions,sort_keys=True).encode()).hexdigest())
             if report['mechanism']=='17.spatial_padding':effects[rank]['vision_effect']=f['vision_effect']
             effects[rank]['projection_effect']=f.get('projection_effect')
             if report['mechanism']=='22.wrong_row':

@@ -1,0 +1,382 @@
+{
+  "schema": "demoncat.continuous.public_review.v1",
+  "mechanism": "41.tail_column",
+  "arithmetic_device": "input",
+  "reference_mode": "immediate",
+  "passed": true,
+  "scopes": [
+    {
+      "owner": "worker-group-a34e569404384ff7b5bb8053cfb3e423",
+      "rank_effects": {
+        "0": {
+          "coverage": {
+            "applied": 48,
+            "attempted": 48,
+            "changed": 48,
+            "consumed": 48,
+            "eligible": 48,
+            "failed": 0,
+            "observed": 64,
+            "restored": 48
+          },
+          "site_count": 16,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "immediate",
+            "q_sample_difference_fraction": null,
+            "q_sample_differences": 0,
+            "reference_scope": "NOT_APPLIED",
+            "sampled_elements": 0
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "0c5f6bbaf02a28b536b1aaa547d8c25eafef0af1e7994d4c4e315a2768f2769d",
+          "native_memory_effect": {
+            "calls": 48,
+            "consumer_operators": [
+              "npu_fused_infer_attention_score"
+            ],
+            "library_sha256": "d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274",
+            "writer_operators": [
+              "npu_scatter_pa_kv_cache"
+            ],
+            "region_count": 48,
+            "region_evidence_sha256": "323db3ed733f2edbfed7ac1a313cb186e02cdd51d5538ff32ecba1767508e3d3"
+          },
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [
+              "npu_fused_infer_attention_score"
+            ],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        },
+        "1": {
+          "coverage": {
+            "applied": 48,
+            "attempted": 48,
+            "changed": 48,
+            "consumed": 48,
+            "eligible": 48,
+            "failed": 0,
+            "observed": 64,
+            "restored": 48
+          },
+          "site_count": 16,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "immediate",
+            "q_sample_difference_fraction": null,
+            "q_sample_differences": 0,
+            "reference_scope": "NOT_APPLIED",
+            "sampled_elements": 0
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "e67c9dd7fb906a0d3fbe731673a374565d79c213caa36817eca420ebd0275f72",
+          "native_memory_effect": {
+            "calls": 48,
+            "consumer_operators": [
+              "npu_fused_infer_attention_score"
+            ],
+            "library_sha256": "d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274",
+            "writer_operators": [
+              "npu_scatter_pa_kv_cache"
+            ],
+            "region_count": 48,
+            "region_evidence_sha256": "b49c5cbd0c09cfee256b06ac43528318de5d39eb9fa5c14a6494a5a6e820417e"
+          },
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [
+              "npu_fused_infer_attention_score"
+            ],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        }
+      },
+      "deployment": {
+        "0": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "native_library_sha256": "d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        },
+        "1": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "native_library_sha256": "d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        }
+      },
+      "fault_time_ratio": 1.017253003020516,
+      "request_plan": {
+        "schema": "demoncat.continuous.request_plan.v1",
+        "mechanism": "41.tail_column",
+        "phases": [
+          {
+            "phase": "normal",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "fault",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "off",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "health",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          }
+        ],
+        "unit": "request",
+        "max_iterations": 4,
+        "max_requests": 4,
+        "external_health_required": false,
+        "advance_argument": "request_id",
+        "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+        "qualification_granted": false,
+        "completion": "next_phase == complete AND all rank recovery checks passed"
+      },
+      "recovered": true,
+      "resources_zero": true
+    },
+    {
+      "owner": "worker-group-52c9891a8b864a7b8b0a19194cd0fa27",
+      "rank_effects": {
+        "0": {
+          "coverage": {
+            "applied": 48,
+            "attempted": 48,
+            "changed": 48,
+            "consumed": 48,
+            "eligible": 48,
+            "failed": 0,
+            "observed": 64,
+            "restored": 48
+          },
+          "site_count": 16,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "immediate",
+            "q_sample_difference_fraction": null,
+            "q_sample_differences": 0,
+            "reference_scope": "NOT_APPLIED",
+            "sampled_elements": 0
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "6cfca5b70a1843f06ec867d52055ddf119fae5503126b43184ab9e8df0fc6c6a",
+          "native_memory_effect": {
+            "calls": 48,
+            "consumer_operators": [
+              "npu_fused_infer_attention_score"
+            ],
+            "library_sha256": "d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274",
+            "writer_operators": [
+              "npu_scatter_pa_kv_cache"
+            ],
+            "region_count": 48,
+            "region_evidence_sha256": "323db3ed733f2edbfed7ac1a313cb186e02cdd51d5538ff32ecba1767508e3d3"
+          },
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [
+              "npu_fused_infer_attention_score"
+            ],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        },
+        "1": {
+          "coverage": {
+            "applied": 48,
+            "attempted": 48,
+            "changed": 48,
+            "consumed": 48,
+            "eligible": 48,
+            "failed": 0,
+            "observed": 64,
+            "restored": 48
+          },
+          "site_count": 16,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "immediate",
+            "q_sample_difference_fraction": null,
+            "q_sample_differences": 0,
+            "reference_scope": "NOT_APPLIED",
+            "sampled_elements": 0
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "d3cf4ebc9426c37c85a3e7084a1520c453d1dca7eb8b7f2339af1e7c2683b096",
+          "native_memory_effect": {
+            "calls": 48,
+            "consumer_operators": [
+              "npu_fused_infer_attention_score"
+            ],
+            "library_sha256": "d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274",
+            "writer_operators": [
+              "npu_scatter_pa_kv_cache"
+            ],
+            "region_count": 48,
+            "region_evidence_sha256": "b49c5cbd0c09cfee256b06ac43528318de5d39eb9fa5c14a6494a5a6e820417e"
+          },
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [
+              "npu_fused_infer_attention_score"
+            ],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        }
+      },
+      "deployment": {
+        "0": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "native_library_sha256": "d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        },
+        "1": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_family": "A2",
+          "live_config_matches_file": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "native_library_sha256": "d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274",
+          "pp": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        }
+      },
+      "fault_time_ratio": 1.0437452021803677,
+      "request_plan": {
+        "schema": "demoncat.continuous.request_plan.v1",
+        "mechanism": "41.tail_column",
+        "phases": [
+          {
+            "phase": "normal",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "fault",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "off",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "health",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          }
+        ],
+        "unit": "request",
+        "max_iterations": 4,
+        "max_requests": 4,
+        "external_health_required": false,
+        "advance_argument": "request_id",
+        "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+        "qualification_granted": false,
+        "completion": "next_phase == complete AND all rank recovery checks passed"
+      },
+      "recovered": true,
+      "resources_zero": true
+    }
+  ],
+  "negative_creation_verified": true,
+  "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEW_STILL_REQUIRED",
+  "qualification_granted": false,
+  "source_receipt_sha256": "98bce2c82cc44c79ff3a5a38b8b38644450b4b6b6263282b1708699d56717328",
+  "reviewer_sha256": "adac1390a21f1523a7dab4c1a3480fa63998eb22473d70e8eb37dfde6a0b3ce9"
+}

@@ -39,3 +39,7 @@ CPU先覆盖：真实对象身份与地址复用、越界/重叠拒绝、同stre
 门槛通过后顺序41→26 FIA→20；Qwen3.8 A2/0.26/TP2，再按适用布局处理V2-Lite。每项同组Worker两作用域、四token、最多六次预热、真实consumer事件、全部eligible零失败、完整新请求恢复、资源零、性能倍数。各窗口卡2/5有界隔离，结束恢复；不开展严格邻接探索或修改第三方kernel。
 
 登记用语为“真实内存故障：KV对象区域改写 / FIA数据写入真实residual / 输入内容覆盖”。历史typed桥接和Native缓存ABI变体仅在原已登记部署可用，不让研究入口经公共配置开启。
+
+## 2026-11-22实施更新
+
+Native新增同stream对象open和owned-handle copy导出，原ABI保留；对象层拒绝裸地址、存储复用、重叠、跨stream和合法原地更新后的旧快照恢复。41的Qwen3.8 TP2公共两作用域已通过，详见continuous_native41_20261122.md。当前仅decode V slot尾两列/head，prefill直接KV未注入；26/20尚无新实机结论。A3须按native_regions_a3_build_20261122.md独立构建审查。

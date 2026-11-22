@@ -5,6 +5,7 @@
 extern "C" aclError aclrtGetDevice(int32_t*) {assert(false);return ACL_SUCCESS;}
 extern "C" aclError aclrtSynchronizeDevice() {assert(false);return ACL_SUCCESS;}
 extern "C" aclError aclrtMemcpy(void*,size_t,const void*,size_t,aclrtMemcpyKind) {assert(false);return ACL_SUCCESS;}
+extern "C" aclError aclrtSynchronizeStream(aclrtStream) { assert(false); return ACL_SUCCESS; }
 int main() {
     uint64_t address=999;
     assert(dcat_pw_linked_address_v1(0,nullptr)==1);

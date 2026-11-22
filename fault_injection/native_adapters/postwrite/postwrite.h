@@ -17,6 +17,12 @@ int dcat_pw_read_span(const void *tensor, uint64_t bytes, int32_t device, void *
 /* The caller retains the actual tensor until restore/release succeeds. */
 int dcat_pw_open(void *tensor, uint64_t bytes, int32_t device,
                  uint64_t owner, uint64_t generation, uint64_t *handle);
+/* Additive exports: current ACL stream must be retained by trusted object layer.
+ * Only handles returned by bounded open may be used as copy endpoints. */
+int dcat_pw_open_stream_v2(void *tensor, uint64_t bytes, int32_t device,
+                         uint64_t owner, uint64_t generation, uint64_t stream, uint64_t *handle);
+int dcat_pw_copy_region_v2(uint64_t target, uint64_t source,
+                         uint64_t owner, uint64_t generation, uint64_t *changed);
 /* Read-only copy of the SAME retained lease.original; no ACL call. The caller
  * owns valid writable host buffers. Payload is canonical little-endian BF16
  * bits, not a fresh device read or a float conversion. Exact capacity required.

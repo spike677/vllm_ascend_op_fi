@@ -14,6 +14,7 @@ extern "C" aclError aclrtMemcpy(void *dst, size_t capacity, const void *src,
     ++acl_calls; assert(bytes <= capacity); std::memcpy(dst, src, bytes); return ACL_SUCCESS;
 }
 
+extern "C" aclError aclrtSynchronizeStream(aclrtStream) { assert(false); return ACL_SUCCESS; }
 int main() {
     constexpr uint64_t owner = 5, generation = 7;
     uint16_t tensor[] = {0x3f80, 0x8000, 0x7f7f, 0x0001};

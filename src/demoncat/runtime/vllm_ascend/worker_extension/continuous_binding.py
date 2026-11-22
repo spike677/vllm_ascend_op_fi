@@ -6,10 +6,11 @@ and the per-request observer. The original Native research route stays closed.
 from dataclasses import dataclass,field
 from copy import deepcopy
 import hashlib,json,os,threading
+from pathlib import Path
 from .serving_context import require
 
 ATTRIBUTE='_demoncat_continuous_bindings'
-SUPPORTED=('17.spatial_padding','33.paged_decode','28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset')
+SUPPORTED=('41.tail_column','17.spatial_padding','33.paged_decode','28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset')
 
 
 def digest(value):
@@ -28,6 +29,7 @@ class ContinuousBinding:
     pid: int
     thread: int
     reference_mode: str='immediate'
+    native_library: tuple|None=None
     visual_references: dict=field(default_factory=dict)
     leases: set=field(default_factory=set)
     warmups: list=field(default_factory=list)
@@ -51,7 +53,7 @@ def current_binding(worker,model,mechanism):
     b.check();return b
 
 
-def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithmetic_device='input',reference_mode='immediate'):
+def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithmetic_device='input',reference_mode='immediate',native_library=None):
     require(mechanism in SUPPORTED,'CONTINUOUS_ADAPTER_NOT_IMPLEMENTED')
     require(arithmetic_device in ('input','cpu'),'CONTINUOUS_ARITHMETIC_UNREVIEWED')
     require(reference_mode=='immediate' or (reference_mode=='forward' and mechanism=='quant.batch_shared_scale'
@@ -70,6 +72,12 @@ def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithme
     require(family!='deepseek_v2' or mechanism in ('28.fia.denominator_replay','8.restore_offset','18.api_half','39.output_proxy','22.wrong_row'),'MLA_CONTINUOUS_SITE_NOT_ADAPTED')
     require(not model.training and not runner.vllm_config.cache_config.enable_prefix_caching
         and runner.vllm_config.kv_transfer_config is None,'CONTINUOUS_FRESH_CACHE_INFERENCE_REQUIRED')
+    if mechanism=='41.tail_column':
+        require(family=='qwen35' and type(native_library) in (list,tuple) and len(native_library)==2
+            and all(type(x) is str and x for x in native_library),'KV41_TRUSTED_NATIVE_BUILD_REQUIRED')
+        require(Path(native_library[0]).is_file() and hashlib.sha256(Path(native_library[0]).read_bytes()).hexdigest()==native_library[1],
+            'KV41_NATIVE_BUILD_IDENTITY_MISMATCH')
+    else:require(native_library is None,'NATIVE_LIBRARY_NOT_APPLICABLE')
     identity=worker.demoncat_worker_identity()['worker'];c=deepcopy(group_contract)
     require(type(c) is dict and c.get('mechanism')==mechanism and c.get('injection_policy')=='ALL_RANK_EVERY_ELIGIBLE_CALL'
         and c.get('tp')==runner.vllm_config.parallel_config.tensor_parallel_size
@@ -79,7 +87,7 @@ def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithme
     bindings=getattr(worker,ATTRIBUTE,{})
     require(type(bindings) is dict and not bindings,'CONTINUOUS_BINDING_ALREADY_INSTALLED')
     b=ContinuousBinding(worker,model,mechanism,tuple(tuple(p) for p in prompts),c,identity,
-        arithmetic_device,os.getpid(),threading.get_ident(),reference_mode=reference_mode)
+        arithmetic_device,os.getpid(),threading.get_ident(),reference_mode=reference_mode,native_library=tuple(native_library) if native_library else None)
     bindings[mechanism]=b;setattr(worker,ATTRIBUTE,bindings)
     return dict(status='CONTINUOUS_BOUND_NOT_QUALIFIED',mechanism=mechanism,qualification_granted=False)
 
@@ -215,6 +223,11 @@ class ContinuousRequest:
                 site_type={'18.api_half':Norm18Site,'22.wrong_row':Rope22Site,'8.restore_offset':MoE8Site}[self.binding.mechanism]
                 if self.binding.mechanism=='22.wrong_row' and type(self.model).__name__=='DeepseekV2ForCausalLM':site_type=MLARope22Site
                 self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
+            elif self.binding.mechanism=='41.tail_column':
+                from fault_injection.engines.native_regions import NativeRegions
+                from fault_injection.sites.native_kv41 import NativeKV41Site
+                native=NativeRegions(*self.binding.native_library,self.binding.group['owner'],self.binding.group['group_generation'])
+                self.site=NativeKV41Site(self.model,self.runner,fault=self.phase=='fault',native=native)
             elif self.binding.mechanism in ('39.output_proxy','39.matmul_range'):
                 from fault_injection.sites.projection39 import Projection39Site
                 from fault_injection.engines.region_lease import RegionLeases
@@ -309,6 +322,12 @@ class ContinuousRequest:
                 position_rows_changed=sum(e.get('position_rows_changed',0) for e in events),
                 qk_output_fingerprints=[dict(site=e['site'],q=e['q_output_sha256'],k=e['k_output_sha256'])
                     for e in events if e.get('q_output_sha256')]),
+            native_memory_effect=dict(calls=sum(e.get('applied',False) for e in events),
+                writer_operators=sorted({e['writer'] for e in events if e.get('writer')}),
+                consumer_operators=sorted({e['consumer_operator'] for e in events if e.get('consumer_operator')}),
+                library_sha256=self.binding.native_library[1] if self.binding.native_library else None,
+                regions=[{k:e[k] for k in ('site','slots','page_mapping','region_elements','changed','before_sha256','after_sha256','restored_sha256','consumed','restored')}
+                    for e in events if e.get('writer') and e.get('applied')]),
             quant_reference=dict(sampled_elements=sum(e.get('sampled_elements',0) for e in events),
                 q_sample_differences=sum(e.get('q_sample_differences',0) for e in events),
                 backend=self.binding.arithmetic_device,mode=self.binding.reference_mode))

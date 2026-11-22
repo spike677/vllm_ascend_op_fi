@@ -34,6 +34,27 @@ def fixture():
 
 
 class ReviewTests(unittest.TestCase):
+    def test_native41_requires_build_bound_regions_and_exact_restoration(self):
+        r=fixture();r['mechanism']='41.tail_column'
+        for scope in r['scopes']:
+            for host in scope['requests']:
+                for state in host['result']['response']['provider_state']['rank_states'].values():
+                    state['deployment_acceptance_use']['actual']['native_library_sha256']='a'*64
+                    for row in state['evidence']['actual_requests']:
+                        row['native_memory_effect']=dict(calls=4,library_sha256='a'*64,
+                            writer_operators=['npu_scatter_pa_kv_cache'],consumer_operators=['npu_fused_infer_attention_score'],
+                            regions=[dict(consumed=True,restored=True,slots=[1],page_mapping=[[0]],region_elements=128,
+                                before_sha256='b'*64,restored_sha256='b'*64)]*4)
+        self.assertTrue(review(r)['passed'])
+        for key,val in [('calls',3),('library_sha256','c'*64),('writer_operators',[]),('regions',[])]:
+            bad=deepcopy(r)
+            effect=bad['scopes'][1]['requests'][-1]['result']['response']['provider_state']['rank_states']['1']['evidence']['actual_requests'][1]['native_memory_effect']
+            effect[key]=val
+            with self.subTest(key=key),self.assertRaisesRegex(ValueError,'KV41_'):review(bad)
+        effect=r['scopes'][1]['requests'][-1]['result']['response']['provider_state']['rank_states']['1']['evidence']['actual_requests'][1]['native_memory_effect']
+        effect['regions'][0]['restored_sha256']='c'*64
+        with self.assertRaisesRegex(ValueError,'KV41_REGION'):review(r)
+
     def test_vision_requires_real_uncached_encoder_each_phase_and_padding(self):
         r=fixture();r['mechanism']='17.spatial_padding'
         for scope in r['scopes']:
