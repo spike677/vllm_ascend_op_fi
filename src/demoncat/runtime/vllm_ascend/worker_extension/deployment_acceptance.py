@@ -72,6 +72,11 @@ def observe_deployment(worker,model):
     for key,name in (('tp','tensor'),('pp','pipeline'),('dp','data')):
         actual[key]=_get(runner,'vllm_config.parallel_config.'+name+'_parallel_size')
     actual['eager']=getattr(config,'enforce_eager',None)
+    from .deployment_identity import model_artifact_identity
+    actual.update(model_artifact_identity(getattr(config, 'model', None)))
+    actual['max_model_len']=getattr(config, 'max_model_len', None)
+    for field in ('max_num_batched_tokens', 'max_num_seqs'):
+        actual[field]=_get(runner, 'vllm_config.scheduler_config.'+field)
     actual['model_class']=type(model).__module__+'.'+type(model).__qualname__
     actual['model_config_sha256']=None
     actual['live_config_matches_file']=False
@@ -152,7 +157,11 @@ def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=
     accepted=bool(source=='BLUE_COMBINATION' and expected and actual and mechanism not in _PENDING_REVALIDATION and all(c['status']=='matched' for c in checks))
     # Yellow records are release-reviewed constants; operator permits never append them.
     from .reviewed_deployments import YELLOW_RECORDS
+    from .deployment_identity import registration_identity_issues
     for candidate in YELLOW_RECORDS:
+        if source == 'YELLOW_DEDICATED_INSTANCE' and (
+                registration_identity_issues(actual or {}) or registration_identity_issues(candidate.get('expected', {}))):
+            continue
         if candidate['source']==source and candidate['mechanism']==mechanism and candidate['expected']==actual:
             expected=dict(candidate['expected']);accepted=mechanism not in _PENDING_REVALIDATION
             checks=[expectation('deployment_identity','accepted_combination.'+k,v,actual.get(k),'ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT') for k,v in expected.items()]
@@ -202,6 +211,7 @@ def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=
         explicit_blue_attempt=permit.attempt if blue else None,
         reviewed_combination=record[2] if record else None,
         registration_reason=('REVIEWED_COMBINATION_MATCHED' if accepted else 'NO_REVIEWED_COMBINATION_FOR_SOURCE' if source!='BLUE_COMBINATION' else 'COMBINATION_NOT_MATCHED'),
+        registration_identity_issues=registration_identity_issues(actual or {}) if source=='YELLOW_DEDICATED_INSTANCE' else [],
         pending_revalidation=_PENDING_REVALIDATION.get(mechanism),
         expected=expected,actual=actual,checks=checks,acceptance_granted=False,
         structural_compatibility='CHECKED_SEPARATELY_NOT_AN_ACCEPTANCE_CERTIFICATE',

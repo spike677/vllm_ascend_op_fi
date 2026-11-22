@@ -69,8 +69,26 @@ def review(report, *, require_negative_creation=False):
             clean=s['unregister']['response']['provider_state']['rank_states'][str(rank)]
             need(all(clean[k] in (False,0) for k in ('leases','inflight','owned_hooks','registered','native_registered','enabled')),
                 'FINAL_OWNED_RESOURCES_REMAIN')
+            inapplicable_reasons=f.get('inapplicable_reasons',[])
             if report['mechanism'] in ('39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset'):
                 calls=f.get('actual_forward_calls',[])
+                if report['mechanism']=='39.matmul_range' and 'call_proofs' in f.get('matmul_effect',{}):
+                    proof=f['matmul_effect']['call_proofs'];sites=proof['sites']
+                    need(proof['schema']=='demoncat.matmul.site_proofs.v1' and len(proof['ordered_calls_sha256'])==64
+                        and proof['ordered_calls_sha256']==f['events_sha256']
+                        and proof['call_count']==f['coverage']['observed'],'MATMUL_ORDERED_CALL_IDENTITY')
+                    need(len({s['site'] for s in sites})==len(sites) and all(
+                        s['eligible']==s['applied']==s['consumed']==s['restored']==s['reference_controls']
+                        and s['failed']==0 and len(s['forward_counts'])==4
+                        and sum(s['forward_counts'])==s['observed'] for s in sites),'MATMUL_SITE_PROOFS')
+                    for field in ('observed','eligible','applied','consumed','restored','changed','failed'):
+                        need(sum(s[field] for s in sites)==f['coverage'][field],'MATMUL_SITE_TOTAL:'+field)
+                    for site in sites:
+                        need(sum(site['reasons'].values())==site['observed']-site['eligible']
+                            and all(isinstance(k,str) and k and type(v) is int and v>0 for k,v in site['reasons'].items()),
+                            'MATMUL_INAPPLICABLE_COUNTS')
+                    inapplicable_reasons=sorted({reason for site in sites for reason in site['reasons']})
+                    calls=[{s['site']:s['forward_counts'][i] for s in sites if s['forward_counts'][i]>0} for i in range(4)]
                 need(len(calls)==4 and all(calls) and all(isinstance(n,int) and n>0 for c in calls for n in c.values())
                     and sum(sum(c.values()) for c in calls)==f['coverage']['observed']
                     and len(set().union(*(set(c) for c in calls)))==f['site_count'],'SITE_ACTUAL_CALL_COVERAGE_MISMATCH')
@@ -93,7 +111,7 @@ def review(report, *, require_negative_creation=False):
             ranks[rank]=dict(counts=f['coverage'],observation_complete=f.get('observation_complete',False),
                 same_stream_verified=f['same_stream_verified'],bytes_restored=f['bytes_restored'],
                 off_exact=True,health_exact=True,uncovered_sites=f.get('uncovered_sites'),resources=f['resources'],
-                inapplicable_reasons=f.get('inapplicable_reasons',[]))
+                inapplicable_reasons=inapplicable_reasons)
             effects[rank]=dict(coverage=f['coverage'],site_count=f['site_count'],quant_reference=f.get('quant_reference',{}),
                 hidden_changed=any(a['hidden']!=b['hidden'] for a,b in zip(n['output'],f['output'])),
                 logits_changed=any(a['logits']!=b['logits'] for a,b in zip(n['output'],f['output'])),
@@ -108,7 +126,14 @@ def review(report, *, require_negative_creation=False):
                 effects[rank]['partition_effect']={k:v for k,v in effect.items() if k!='pairs'}
             if report['mechanism']=='39.matmul_range':
                 effect=f['matmul_effect'];need(effect['reference_controls']==f['coverage']['eligible'] and effect['rules']==['omit_final_quarter'],'MATMUL_RANGE_REFERENCE_MISSING')
-                effects[rank]['matmul_effect']=effect
+                compact={k:v for k,v in effect.items() if k!='call_proofs'}
+                if 'call_proofs' in effect:
+                    proof=effect['call_proofs']
+                    compact['call_proofs_summary']={k:v for k,v in proof.items() if k!='sites'}
+                    compact['call_proofs_summary'].update(site_count=len(proof['sites']),
+                        sites_sha256=hashlib.sha256(json.dumps(proof['sites'],sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest(),
+                        failed=sum(s['failed'] for s in proof['sites']))
+                effects[rank]['matmul_effect']=compact
             if report['mechanism']=='26.fia_destination':
                 effect=f['native_memory_effect'];regions=effect['regions']
                 need(effect['calls']==len(regions)==f['coverage']['eligible']>0,'NATIVE_CONTENT_CALL_COVERAGE')

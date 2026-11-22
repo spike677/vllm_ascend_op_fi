@@ -50,6 +50,18 @@ def bootstrap(wrapper,action,mechanism,options=None):
         runtime=worker._demoncat_worker_fault_runtime
         return dict(rank=worker.rank,status='REMOVED',permit_remaining=hasattr(worker,'_demoncat_blue_acceptance_permit'),
                     runtime_leases=len(runtime._leases),runtime_tenants=len(runtime._tenants))
+    if action=='failure_cleanup':
+        from demoncat.runtime.vllm_ascend.worker_extension.continuous_binding import current_binding
+        runtime=getattr(worker,'_demoncat_worker_fault_runtime',None)
+        b=current_binding(worker,worker.model_runner.model,mechanism)
+        if b is not None and b.warmup_request is not None:
+            b.warmup_request.close();b.warmup_request=None
+        leases=len(getattr(runtime,'_leases',{}));owners=len(getattr(runtime,'_tenants',{}))
+        if leases or owners:return dict(rank=worker.rank,clean=False,leases=leases,owners=owners)
+        if hasattr(worker,'_demoncat_blue_acceptance_permit'):
+            remove_deployment_acceptance_permit(worker,authority=authority_for(worker),operator='rc3-acceptance-harness')
+        if b is not None:remove_continuous_binding(worker,mechanism)
+        return dict(rank=worker.rank,clean=True,leases=0,owners=0,permit_remaining=False)
     if action=='negative':
         from demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission import ordinary_route_report
         return ordinary_route_report(mechanism,worker,worker.model_runner.model)
@@ -124,6 +136,8 @@ def main():
         source_sha=hashlib.sha256(Path(a.source_manifest).read_bytes()).hexdigest()
         report['source_manifest_sha256']=source_sha
         report['request_seconds_limit']=120
+        report['warmup_seconds_limit']=600
+        report['warmup_max_requests']=6
         def rpc(action,options=None):
             print(json.dumps(dict(progress='rpc_begin',action=action)),flush=True)
             result=llm.collective_rpc(bootstrap,args=(action,mechanism,options),timeout=120)
@@ -145,12 +159,13 @@ def main():
             mapping=actual_driver_request_map(llm.llm_engine.output_processor)
             assert len(mapping)==len(ids)==batch and {r['internal_request_id'] for r in mapping}==set(ids)
             return ids,mapping
-        def run(mapping):
+        def run(mapping, *, warmup=False):
             start=time.monotonic();llm.wake_up(tags=['scheduling'])
             outputs=llm.wait_for_completion(use_tqdm=False)
             assert {o.request_id for o in outputs}=={r['external_request_id'] for r in mapping}
             elapsed=time.monotonic()-start
-            assert elapsed<=120,'CONTINUOUS_REQUEST_EXPERIMENT_TIME_BUDGET_EXCEEDED'
+            limit=600 if warmup else 120
+            assert elapsed<=limit,('CONTINUOUS_WARMUP_TIME_BUDGET_EXCEEDED' if warmup else 'CONTINUOUS_REQUEST_EXPERIMENT_TIME_BUDGET_EXCEEDED')
             return dict(seconds=elapsed,tokens=[list(o.outputs[0].token_ids) for o in outputs])
         if image_prompt is not None:primed=enqueue()
         for scope_index in range(2):
@@ -167,7 +182,7 @@ def main():
             for attempt in range(6):
                 if primed is not None:ids,mapping=primed;primed=None
                 else:ids,mapping=enqueue()
-                rpc('warmup',ids);run(mapping)
+                rpc('warmup',ids);run(mapping,warmup=True)
                 warm=rpc('warmup');report['warmup'].append(dict(scope=scope_index,attempt=attempt,ranks=warm));save()
                 if all(r['warmup_valid'] for r in warm):break
             else:raise RuntimeError('BASELINE_NOT_STABLE_IN_SIX')
@@ -219,6 +234,8 @@ def main():
             report['failure_snapshot']=client.snapshot()
             try:report['recovery']=client.recover()
             except Exception as cleanup:report['recovery_error']=repr(cleanup)
+        try:report['failure_cleanup']=rpc('failure_cleanup')
+        except Exception as cleanup:report['failure_cleanup_error']=repr(cleanup)
     save();print(json.dumps(dict(status=report['status'],error=report.get('error'))),flush=True)
     return 0 if report['status'].startswith('PUBLIC_TWO') else 2
 

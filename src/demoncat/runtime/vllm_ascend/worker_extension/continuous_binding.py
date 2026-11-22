@@ -348,6 +348,11 @@ class ContinuousRequest:
             quant_reference=dict(sampled_elements=sum(e.get('sampled_elements',0) for e in events),
                 q_sample_differences=sum(e.get('q_sample_differences',0) for e in events),
                 backend=self.binding.arithmetic_device,mode=self.binding.reference_mode))
+        if self.binding.mechanism=='39.matmul_range':
+            from fault_injection.engines.matmul_evidence import compact_matmul_calls
+            result['matmul_effect']['call_proofs']=compact_matmul_calls(events,self.site.forward_calls,fault=self.phase=='fault')
+            result.pop('actual_forward_calls')
+            result.pop('inapplicable_reasons')
         if self.binding.mechanism=='20.buffer_substitute':
             from fault_injection.engines.native_evidence import compact_content_regions
             effect=result['native_memory_effect']
