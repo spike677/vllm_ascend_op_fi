@@ -135,7 +135,7 @@ def review(report, *, require_negative_creation=False, reference_variant=None):
                         and moe['request_rows_verified']>=f['coverage']['eligible'],'MOE_CURRENT_PRODUCER_CONSUMER_MAPPING_MISSING')
                 effects[rank]['moe_effect']=moe
             if report['mechanism']=='33.paged_decode':
-                effect=f['partition_effect'];need(effect['calls']==f['coverage']['eligible'] and effect['selected_changed_elements']>0,'PAGED_PARTITION_EFFECT_MISSING')
+                effect=f['partition_effect'];need(effect['calls']==f['coverage']['eligible'] and len(effect['pairs'])==effect['calls'] and effect['selected_changed_elements']>0,'PAGED_PARTITION_EFFECT_MISSING')
                 need(all(p['same_legal_key_set'] and not p['denominator_replay'] and p['nonselected_exact'] and p['key_visits']==p['page_mapping']['logical_keys'] for p in effect['pairs']),'PAGED_KEY_SET_OR_CONTROL_MISMATCH')
                 if reference_variant=='A2_BF16_SPLITFUSE_512_TO_256' or report.get('paged_deployment',{}).get('control_model')=='splitfuse_a2':
                     for pair in effect['pairs']:
@@ -146,6 +146,10 @@ def review(report, *, require_negative_creation=False, reference_variant=None):
                             and pair['matmul_mode']=='bf16_out_fp32','SPLITFUSE_CONTROL_OR_POLICY_FAILED')
                     effects[rank]['control_min_ratio']=min(p['control_agreement']['bitwise_equal']/p['control_agreement']['elements'] for p in effect['pairs'])
                     effects[rank]['control_residual_elements']=sum(p['native_control_residual_elements'] for p in effect['pairs'])
+                    grouping=sum(p['partition_changed_elements'] for p in effect['pairs'])
+                    need(grouping>0,'SPLITFUSE_GROUPING_EFFECT_MISSING')
+                    effects[rank]['grouping_changed_elements']=grouping
+                    effects[rank]['grouping_changed_calls']=sum(p['partition_changed_elements']>0 for p in effect['pairs'])
                 effects[rank]['partition_effect']={k:v for k,v in effect.items() if k!='pairs'}
             if report['mechanism']=='39.matmul_range':
                 effect=f['matmul_effect'];need(effect['reference_controls']==f['coverage']['eligible'] and effect['rules']==['omit_final_quarter'],'MATMUL_RANGE_REFERENCE_MISSING')

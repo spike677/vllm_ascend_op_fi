@@ -569,6 +569,124 @@
       "source_review_reference": "experiments/worker_core_v11_20261118/continuous_native20_source_review_20261122.json",
       "source_review_sha256": "73a4bc0511f3c9e9f0b462dbb4b0337ae20ae5cf16d17bd883feb5078960e432",
       "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED"
+    },
+    {
+      "mechanism": "33.paged_decode",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_device_name": "Ascend910B4",
+        "hardware_family": "A2",
+        "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+        "hardware_logical_device": 0,
+        "live_config_matches_file": true,
+        "max_model_len": 4096,
+        "max_num_batched_tokens": 4096,
+        "max_num_seqs": 1,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "paged_reference": {
+          "arithmetic_device": "input",
+          "control_block": 512,
+          "control_kind": "BF16_INPUT_FP32_OUTPUT_SPLITFUSE",
+          "fault_block": 256
+        },
+        "pp": 1,
+        "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+        "safetensors_index_sha256": {
+          "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+        },
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "docs/worker_core_v1/paged33_direction_a_20261122/public_review.json",
+      "review_sha256": "4cb9581a5144422280f4e78a5bba0bf6a79fec6fd422cc1737156850cfce3fa5",
+      "source_manifest_sha256": "ac10df03ab77fe0f0064d457893ecadf0c958d834bdb1f5ab940e4b64f65aec5",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "torch_bf16_splitfuse_direction_a",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4,
+      "source_review_reference": "docs/worker_core_v1/paged33_direction_a_20261122/source_reconciliation.json",
+      "source_review_sha256": "58259180b40842616e2c903df0ea53cef4d8b3056dc815825afcdb029de9e255",
+      "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED",
+      "limitations": [
+        "A2/CANN9.1/Qwen3.8 community W8A8/TP2 only; 2304 prefill then KV2305-2307 decode, page128, 12 local Q heads/2 KV heads/D256",
+        "Trusted binding [512,256], BF16 operands FP32 output; not a native kernel rewrite or full instruction equivalence",
+        "Every eligible call control >=99%; minimum99.9349%; residual native-control mismatch disclosed separately from control-alternate grouping effect",
+        "Scoped trusted permit still required; no product HTTP qualification, no A3/TP1/MLA qualification",
+        "Four CRLF-only runtime exports disclosed with actual byte identities; frozen r5 unchanged",
+        "Third-party shutdown forced-worker/shared-memory warnings retained; fault owned resources restored before teardown"
+      ]
+    },
+    {
+      "mechanism": "33.paged_decode",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_device_name": "Ascend910B4",
+        "hardware_family": "A2",
+        "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+        "hardware_logical_device": 1,
+        "live_config_matches_file": true,
+        "max_model_len": 4096,
+        "max_num_batched_tokens": 4096,
+        "max_num_seqs": 1,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "paged_reference": {
+          "arithmetic_device": "input",
+          "control_block": 512,
+          "control_kind": "BF16_INPUT_FP32_OUTPUT_SPLITFUSE",
+          "fault_block": 256
+        },
+        "pp": 1,
+        "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+        "safetensors_index_sha256": {
+          "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+        },
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "docs/worker_core_v1/paged33_direction_a_20261122/public_review.json",
+      "review_sha256": "4cb9581a5144422280f4e78a5bba0bf6a79fec6fd422cc1737156850cfce3fa5",
+      "source_manifest_sha256": "ac10df03ab77fe0f0064d457893ecadf0c958d834bdb1f5ab940e4b64f65aec5",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "torch_bf16_splitfuse_direction_a",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4,
+      "source_review_reference": "docs/worker_core_v1/paged33_direction_a_20261122/source_reconciliation.json",
+      "source_review_sha256": "58259180b40842616e2c903df0ea53cef4d8b3056dc815825afcdb029de9e255",
+      "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED",
+      "limitations": [
+        "A2/CANN9.1/Qwen3.8 community W8A8/TP2 only; 2304 prefill then KV2305-2307 decode, page128, 12 local Q heads/2 KV heads/D256",
+        "Trusted binding [512,256], BF16 operands FP32 output; not a native kernel rewrite or full instruction equivalence",
+        "Every eligible call control >=99%; minimum99.9349%; residual native-control mismatch disclosed separately from control-alternate grouping effect",
+        "Scoped trusted permit still required; no product HTTP qualification, no A3/TP1/MLA qualification",
+        "Four CRLF-only runtime exports disclosed with actual byte identities; frozen r5 unchanged",
+        "Third-party shutdown forced-worker/shared-memory warnings retained; fault owned resources restored before teardown"
+      ]
     }
   ]
 }

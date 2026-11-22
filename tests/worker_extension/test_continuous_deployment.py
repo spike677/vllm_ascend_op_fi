@@ -37,3 +37,26 @@ class ContinuousDeploymentTests(unittest.TestCase):
         b.arithmetic_device='input';b.reference_mode='forward'
         with patch.object(a,'observe_deployment',return_value=expected):
             self.assertFalse(a.deployment_acceptance_report(key,w,m)['accepted'])
+
+    def test_splitfuse_registration_pins_identity_without_permit_bypass(self):
+        import hashlib
+        records=[r for r in json.loads(Path(a.__file__).with_name('continuous_blue_records.json').read_text())['records'] if r['mechanism']=='33.paged_decode']
+        self.assertEqual(len(records),2)
+        root=Path(__file__).resolve().parents[2]
+        for record in records:
+            for name in ('review','source_review'):
+                self.assertEqual(hashlib.sha256((root/record[name+'_reference']).read_bytes()).hexdigest(),record[name+'_sha256'])
+            w=_extended_worker();w.load_model();m=w.model_runner.model
+            configure_deployment_acceptance(w,source='BLUE_COMBINATION',authorize_operator=lambda *a:True)
+            b=ContinuousBinding(w,m,'33.paged_decode',((1,)*2304,),dict(members=[dict(rank=0),dict(rank=1)]),dict(rank=record['expected']['hardware_logical_device']),'input',os.getpid(),threading.get_ident(),paged_partition=(512,256))
+            setattr(w,ATTRIBUTE,{'33.paged_decode':b})
+            expected=record['expected']
+            with patch.object(a,'observe_deployment',return_value=expected):
+                result=a.deployment_acceptance_report('33.paged_decode',w,m)
+                self.assertTrue(result['accepted']);self.assertFalse(result['can_prepare'])
+            for key,value in [('hardware_family','A3'),('tp',1),('quant_model_description_sha256',None),('safetensors_index_sha256',{}),('max_num_seqs',2)]:
+                with self.subTest(key=key),patch.object(a,'observe_deployment',return_value=dict(expected,**{key:value})):
+                    self.assertFalse(a.deployment_acceptance_report('33.paged_decode',w,m)['accepted'])
+            b.paged_partition=(128,32)
+            with patch.object(a,'observe_deployment',return_value=expected):
+                self.assertFalse(a.deployment_acceptance_report('33.paged_decode',w,m)['accepted'])

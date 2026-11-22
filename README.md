@@ -1,3 +1,11 @@
+## 2026-11-22 隔夜：r5冻结与33方向A通过限定验收
+
+[r5交付单](releases/RC3-PREVIEW-R5-HANDOFF-20261122.md)：源码、三wheel、安装检查和SHA齐备；产品RPC契约、900秒正式预算及身份字段已发布。黄区回传缺身份时不登记，现有冻结物不改动。
+
+[33方向A](docs/worker_core_v1/paged33_direction_a_20261122.md)已在A2/0.26/CANN9.1/Qwen3.8社区W8A8/TP2完成正式公共入口两作用域。BF16矩阵操作数、FP32输出的控制最低一致率99.9349%；512→256分组后，每rank每作用域48次decode全部应用、消费和恢复，hidden/logits变化，OFF/health精确。仅开发线限定BLUE登记，不是历史kernel逐位复刻，不在r5，也不授予产品模式或A3资格。
+
+[隔夜汇总](docs/worker_core_v1/overnight_summary_20261122.md) · [DeepSeek噪声规则](docs/worker_core_v1/dsv4_noise_acceptance.md) · [V4只观测步骤](docs/worker_core_v1/dsv4_observe_handoff_20261122.md) · [AllGather参照](docs/worker_core_v1/allgather8_reference_20261122.md)。后续历史记录按其日期和范围理解。
+
 ## 2026-11-22 夜：Worker 自动发现真实 HTTP 请求
 
 [产品接口](docs/worker_core_v1/rc3_product_usage.md)只支持开启期间全部请求。Worker从实际调度识别内部ID；宿主只控制attach/enable/status/disable/detach，用户直接走vLLM推理API，不再调用逐请求钩子，也没有next-N配额。

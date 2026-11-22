@@ -40,10 +40,45 @@
 - 开发线新增可信binding配置 `paged_partition=[512,256]`、`arithmetic_device="input"`，直接选择 `NativeBoundarySplitFuse33Site`，无需替换Python类名。仅接受已测长度与后端；原legacy路线保留。
 - 公共宿主依旧使用 normal/fault/off/health、同组Worker两个owner作用域。每作用域每rank应观察64次full-attention调用，48次decode eligible、16次prefill不适用；不要求用户给层名。
 - 组合身份新增 `paged_reference`，区分旧控制与BF16输入/FP32输出的新控制；没有验收/可信许可时保持关闭。33未加入冻结r5候选列表。
-- 公共入口实机复验待完成，不能把实验包装器结果直接登记为公共能力。
+- 公共入口实机独立复验通过，见 [正式复核](paged33_direction_a_20261122/public_review.json)。同组Worker两作用域、每rank48/48次全部应用/消费/恢复，failed=0；实际消费者为 `AscendRowParallelLinear.forward`，hidden/logits均变化，OFF/health精确，许可/租约/钩子/在途请求清零。仅将实际两个rank身份写入开发线 BLUE_COMBINATION 登记，仍需可信作用域许可；不授予产品HTTP、A3、TP1或其他形状资格。
 
 ## A3限制及后续取证
 
 A2结论不直接沿用到A3。A3须重新记录实际镜像/驱动/CANN及模型制品身份、实际decode key/tiling/合并模板、该环境的BF16→FP32矩阵接口；固定真实QKV重新达到99%，随后按全部匹配调用、真实消费者、两作用域和三项恢复验收。模板或形状不匹配时拒绝，不套用A2的512分组。无需为此改动现役服务或冻结r5。
 
 历史与检查点摘要见 [checkpoint.json](paged33_direction_a_20261122/checkpoint.json)。完整私有QKV和host参数不上传GitHub。
+
+## 复核入口与源码身份
+
+正式验收驱动为 `experiments/worker_core_v11_20261118/continuous_public_probe.py --mechanism 33 --paged-control splitfuse_a2 --paged-length 2304 --arithmetic-device input`。实际模型、镜像、设备锁与有界窗口由部署侧提供；该选项只选择已审查的控制模型，不授予组合资格。运行时仍要有可信许可。
+
+独立复核只读原始回执及原始launch，不依赖注入器的“通过”标记：
+
+```sh
+PYTHONPATH=. python tools/review_continuous_public.py /private/continuous_public.json --require-negative-creation --output /private/review.json
+python tools/summarize_paged33_launch.py /private/launch-args --capture-limit 8192 --output /private/launch-summary.json
+```
+
+公共回执必须 `acceptance_scope=PUBLIC_WORKER_RUNTIME`。实验包装器需要显式 `--reference-variant A2_BF16_SPLITFUSE_512_TO_256`，不能冒充公共入口。控制记录条数必须等于eligible次数；每条从整数bitwise_equal/elements重算99%门槛。launch摘要还必须确认两进程、完整未截断、模板字段匹配。
+
+运行源清单SHA `ac10df03ab77fe0f0064d457893ecadf0c958d834bdb1f5ab940e4b64f65aec5`，与提交 `6dbcf6c6` 核对329文件，其中325个原始字节相同，4个只有CRLF换行符差异且AST相同。实际运行SHA逐文件固定，见 [源码审查](paged33_direction_a_20261122/source_reconciliation.json)；不宣称完整checkout字节相同。只读观察器源码SHA、编译命令、镜像digest和二进制SHA也在该文件中。
+
+控制与原生仍有少量差异，因此“完整重算后模型变化”不能百分之百归因于分组切换：逐调用单独比较control→alternate，证明分组本身产生变化；native→alternate用于实际传播验收。该区分保留，不把≥99%写成100%历史kernel复刻。
+
+## 正式公共验收结果
+
+|项|rank0（每作用域）|rank1（每作用域）|
+|---|---:|---:|
+|observed / eligible|64 / 48|64 / 48|
+|applied / changed / consumed / restored|48 / 48 / 48 / 48|48 / 48 / 48 / 48|
+|failed|0|0|
+|最低control逐位一致率|99.9348958%|99.9674479%|
+|累计control残余元素|8|2|
+|control→alternate变化元素 / 有变化调用|7262 / 48|6764 / 48|
+|native→alternate变化元素|7261|6765|
+
+两作用域以上数值相同。耗时分别1.95192×、1.74387×，仅记录，不作性能门禁。原始回执、完整QKV、host指针参数留蓝区；公开复核含原件SHA和字节数、实际量化描述/索引SHA、三个调度参数。部署参数4096/4096/1。
+
+正式窗口14:12:39.648610–14:20:23.565179 UTC，463.916598秒；10个方向A窗口共2621.496682秒（43.69分钟，包括失败、加载与清理），在7200秒限额内。13:00之前的初始census另记529.438秒，不混入新预算。所有窗口隔离已恢复，未停止外部容器；逐项时间与操作见 [windows.json](paged33_direction_a_20261122/windows.json)。
+
+测试回执内的故障资源全部清零；模型服务进程退出仍有vLLM强制结束Worker及Python shared_memory清理警告，保留为独立的第三方关闭限制，不包装成整个服务关闭无告警。

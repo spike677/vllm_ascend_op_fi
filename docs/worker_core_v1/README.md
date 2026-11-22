@@ -1,5 +1,7 @@
 # Worker Core V1 — integration checkpoint
 
+Latest: [2026-11-22 overnight summary](overnight_summary_20261122.md) and [r5 handoff](../../releases/RC3-PREVIEW-R5-HANDOFF-20261122.md). Fault33 direction A now has limited A2/0.26/Qwen3.8 W8A8/TP2 public-runtime evidence; product HTTP and A3 qualification do not follow from it. The older checkpoints below retain their original scope.
+
 Development-only TP2 coordination and remaining provider work are recorded in
 [multi-rank design](multi_rank_design.md). CPU protocol tests do not grant TP2
 deployment eligibility; frozen RC packages remain unchanged.

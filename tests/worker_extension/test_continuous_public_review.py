@@ -107,7 +107,7 @@ class ReviewTests(unittest.TestCase):
                             row['matmul_effect']=dict(reference_controls=4,rules=['omit_final_quarter'])
                             row['partition_effect']=dict(calls=4,selected_changed_elements=1,pairs=[dict(
                                 same_legal_key_set=True,denominator_replay=False,nonselected_exact=True,
-                                key_visits=259,page_mapping=dict(logical_keys=259))])
+                                key_visits=259,page_mapping=dict(logical_keys=259)) for _ in range(4)])
             self.assertTrue(review(r)['passed'])
             row=r['scopes'][1]['requests'][-1]['result']['response']['provider_state']['rank_states']['0']['evidence']['actual_requests'][1]
             if mechanism=='39.matmul_range':row['matmul_effect']['reference_controls']=3
