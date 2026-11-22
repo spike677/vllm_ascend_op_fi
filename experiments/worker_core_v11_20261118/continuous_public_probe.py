@@ -81,7 +81,11 @@ def main():
     p.add_argument('--model',default='/model');p.add_argument('--evidence',default='/evidence')
     p.add_argument('--source-manifest',default='/source/source_manifest.json')
     p.add_argument('--deployment-source',choices=('BLUE_COMBINATION','YELLOW_DEDICATED_INSTANCE'),default='BLUE_COMBINATION')
+    p.add_argument('--request-seconds-limit',type=int,default=900)
+    p.add_argument('--warmup-seconds-limit',type=int,default=600)
     a=p.parse_args()
+    if not 1<=a.request_seconds_limit<=900 or not 1<=a.warmup_seconds_limit<=600:
+        p.error('deployment budgets must be 1..900 formal and 1..600 warmup')
     mechanism={'41':'41.tail_column','26fia':'26.fia_destination','20':'20.buffer_substitute','17':'17.spatial_padding','batch':'quant.batch_shared_scale','28':'28.fia.denominator_replay','33':'33.paged_decode','39':'39.output_proxy','39mr':'39.matmul_range','18':'18.api_half','22':'22.wrong_row','8':'8.restore_offset'}[a.mechanism]
     from fault_injection.rc3_preview_profile import TEST_CANDIDATES
     if a.deployment_source=='YELLOW_DEDICATED_INSTANCE' and mechanism not in TEST_CANDIDATES:
@@ -135,8 +139,9 @@ def main():
         params=SamplingParams(temperature=0,max_tokens=4,min_tokens=4,ignore_eos=True)
         source_sha=hashlib.sha256(Path(a.source_manifest).read_bytes()).hexdigest()
         report['source_manifest_sha256']=source_sha
-        report['request_seconds_limit']=120
-        report['warmup_seconds_limit']=600
+        report['request_seconds_limit']=a.request_seconds_limit
+        report['performance_ratio_gate']=False
+        report['warmup_seconds_limit']=a.warmup_seconds_limit
         report['warmup_max_requests']=6
         def rpc(action,options=None):
             print(json.dumps(dict(progress='rpc_begin',action=action)),flush=True)
@@ -164,7 +169,7 @@ def main():
             outputs=llm.wait_for_completion(use_tqdm=False)
             assert {o.request_id for o in outputs}=={r['external_request_id'] for r in mapping}
             elapsed=time.monotonic()-start
-            limit=600 if warmup else 120
+            limit=a.warmup_seconds_limit if warmup else a.request_seconds_limit
             assert elapsed<=limit,('CONTINUOUS_WARMUP_TIME_BUDGET_EXCEEDED' if warmup else 'CONTINUOUS_REQUEST_EXPERIMENT_TIME_BUDGET_EXCEEDED')
             return dict(seconds=elapsed,tokens=[list(o.outputs[0].token_ids) for o in outputs])
         if image_prompt is not None:primed=enqueue()

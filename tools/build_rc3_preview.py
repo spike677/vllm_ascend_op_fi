@@ -2,11 +2,13 @@
 import argparse,hashlib,json,os,subprocess,sys,tarfile,tempfile
 from pathlib import Path
 
-VERSIONS={'demoncatpfi':'0.4.0rc3','demoncat-worker-extension':'0.3.0rc3','demoncat-fault39-core':'0.3.0rc3'}
+VERSIONS={'demoncatpfi':'0.4.0rc4','demoncat-worker-extension':'0.3.0rc4','demoncat-fault39-core':'0.3.0rc4'}
 ROOTS=('src/','fault_injection/','fault39/src/','native_execution_strategy/','engineering_closure/',
        'tools/','tests/','docs/worker_core_v1/')
 EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',
        'experiments/worker_core_v11_20261118/continuous_public_probe.py',
+       'experiments/worker_core_v11_20261118/product_http_probe.py',
+       'experiments/worker_core_v11_20261118/product_mode_probe.py',
        'experiments/worker_core_v11_20261118/continuous_matmul39_source_review_20261122.json')
 SUFFIXES={'.py','.json','.toml','.md','.cpp','.h','.inc','.sh','.yaml','.yml'}
 
