@@ -483,6 +483,92 @@
       "source_review_reference": "experiments/worker_core_v11_20261118/continuous_native41_source_review_20261122.json",
       "source_review_sha256": "793752ae7683750b6c5c96c063315d9248c1543765efcaca79937546d6e305bb",
       "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED"
+    },
+    {
+      "mechanism": "26.fia_destination",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "native_library_sha256": "d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_native26_review_20261122.json",
+      "review_sha256": "6a16ad761fcd9e544dfb40a8182cb069c168888d56144e168d3182656ec96594",
+      "source_manifest_sha256": "7ad3f4c43285157949a0dce1f8119df9a5551c9dd1059854b718abd73b9cacf8",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "native_fia_content_to_live_residual",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4,
+      "limitations": [
+        "Actual single-request full-attention FIA last-query first64 BF16 cells into same-request live residual last-row first64 cells",
+        "Only nonmutating add-rms actual consumer with fresh result storage and same-stream completion; legal in-place changes refuse stale recovery",
+        "Real object content overwrite, not kernel overflow or parameter pointer redirection",
+        "Qwen community W8A8 A2/0.26 TP2 only; no MLA, A3, TP1, sequence-parallel or cross-stream qualification",
+        "Frozen r3 unchanged; separate vLLM shutdown forced-process/shared-memory warning retained"
+      ],
+      "source_review_reference": "experiments/worker_core_v11_20261118/continuous_native26_source_review_20261122.json",
+      "source_review_sha256": "3eb47b76b66171a5fe7f80e5f27a73cf2cb3eb9b7b69a17a1375068df15b642f",
+      "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED"
+    },
+    {
+      "mechanism": "20.buffer_substitute",
+      "arithmetic_device": "input",
+      "expected": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_family": "A2",
+        "live_config_matches_file": true,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "native_library_sha256": "d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274",
+        "pp": 1,
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "review_reference": "experiments/worker_core_v11_20261118/continuous_public_native20_review_20261122.json",
+      "review_sha256": "b4f9bd3c403ccf953aae643ee7bb7e80e6cdf5f047a2f22e1912157adaab3ba1",
+      "source_manifest_sha256": "da8cf6e877cf8a60c2d603ba54fb3164e04b466efc5896ac7ab6f29f44fb02e5",
+      "source": "BLUE_COMBINATION",
+      "evidence_kind": "BLUE_ORIGINAL_PUBLIC_RECEIPT_REVIEW",
+      "variant": "native_live_input_content_overwrite",
+      "continuous": true,
+      "scopes": 2,
+      "request_count": 1,
+      "generated_tokens": 4,
+      "limitations": [
+        "Only actual W8A8 single-request projections within reviewed Qwen decoders; last-row first64 BF16 cells",
+        "Real input content overwrite, not executor address-slot replacement or allocator adjacency",
+        "Every call predicate is checked before bounded per-site aggregation; individual region SHA pairs are not in the public Runtime payload",
+        "Exact A2/0.26/Qwen community W8A8/TP2/native SHA only; A3, TP1, MLA, concurrent and cross-stream paths unqualified",
+        "First attempt failed evidence size gate and is not accepted; frozen r3 unchanged; third-party shutdown warnings retained"
+      ],
+      "source_review_reference": "experiments/worker_core_v11_20261118/continuous_native20_source_review_20261122.json",
+      "source_review_sha256": "73a4bc0511f3c9e9f0b462dbb4b0337ae20ae5cf16d17bd883feb5078960e432",
+      "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED"
     }
   ]
 }

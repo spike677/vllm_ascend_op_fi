@@ -47,8 +47,8 @@ CPU 参考例：256 个等权 key、V 全 1，重放其中 128 个 key 的分母
 |17|公共两作用域通过；每rank每作用域1次真实patch调用，全消费/恢复，原参数恢复，旧Qwen3-VL仅历史|不适用|TP1/TP2视觉验收待完成|缺图像预处理配置，不执行|
 |8|dense 不适用|公共两作用域通过；26MoE×4、104次；26次新变化、78次单组decode保持原值|不适用|M4 待完成|
 |28 denominator torch|公共入口通过：16层×4步/每rank，两作用域，完整恢复与实际创建负向通过|公共入口两作用域通过：27层×4步/每rank，108次；恢复通过|待验收|稀疏 MLA/M4 待完成|
-|20|Native 最后阶段|待对应 site|待验收|不在 RC3 第二批清单|
-|26 fia_destination|Native 最后阶段|待对应 site|待验收|不在 RC3 第二批清单|
+|20|Native公共两作用域通过；每rank1216次输入内容覆盖、真实DynamicQuant/QMM消费及字节恢复，OFF/health精确；2.36869×/2.39569×|待对应 site|待独立构建/验收|不在 RC3 第二批清单|
+|26 fia_destination|Native公共两作用域通过；每rank64次FIA数据写入真实residual并消费/恢复，OFF/health精确；1.11659×/1.12412×|未列为本批蓝区模型|待构建/验收|不在第二批|
 |33|公共接线已实现；48次/rank消费恢复，但rank0最终无模型传播，未完成双作用域，保持关闭|未列为首批蓝区模型|待验收|不在 RC3 第二批清单|
 
 以下为早期**实验binding**性能，不能替代下文公共入口结果：V2-Lite 28每rank108次，1.7266×/1.6460×；Qwen28每rank64次，1.2898×/1.2172×。实验Batch见[报告](continuous_batch_real_model_20261121.md)：Qwen每rank1216次，4.3012×/4.2694×；Qwen3-0.6B每rank336次，2.8584×/2.7968×。最新公共结果见总表和独立报告；旧单次通过结果不提升为持续契约通过。
@@ -82,3 +82,7 @@ vision17-a3公共入口通过：两rank每作用域observed/eligible/applied/cha
 ## 2026-11-22 Native41更新
 
 41在A2/0.26/Qwen3.8社区W8A8/TP2通过公共入口两作用域，见[Native41报告](continuous_native41_20261122.md)。同stream真实KV区域改写与消费者事件恢复已验证，16次直接KV prefill/rank/作用域明确不适用；不把它记为全64次注入。冻结r3不变；Native26 FIA→residual和20输入覆盖继续，DeepSeek稀疏/EP及A3仍待接线与验收。
+
+26 fia_destination 已通过独立复核，见[Native26报告](continuous_native26_20261122.md)。M4新增原生DispatchV2/CombineV2对象关联与CPU签名测试；实际runner分片行映射和接收端expert归属尚缺，见[MC2准备](mc2_dispatch_join_20261122.md)，不登记A3。
+
+20已完成公共两作用域独立复核，见[Native20报告](continuous_native20_20261122.md)。首轮证据容量失败后改为全量校验、逐站点计数与有序列表SHA，未放宽容量或恢复标准。Native三项均仅开发线BLUE组合；原始数据不上传，冻结r3不改。[扩展CPU回归](native_cpu_review_20261122.md)1023项、0失败/错误、2旧研究skip；不代表所有历史欠账清零。

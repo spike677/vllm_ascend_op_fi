@@ -34,6 +34,24 @@ def fixture():
 
 
 class ReviewTests(unittest.TestCase):
+    def test_native_content_proves_actual_source_and_consumer(self):
+        for mechanism in ('26.fia_destination',):
+            r=fixture();r['mechanism']=mechanism;fia=mechanism.startswith('26.')
+            for scope in r['scopes']:
+                for host in scope['requests']:
+                    for state in host['result']['response']['provider_state']['rank_states'].values():
+                        state['deployment_acceptance_use']['actual']['native_library_sha256']='a'*64
+                        for row in state['evidence']['actual_requests']:
+                            row['native_memory_effect']=dict(calls=4,library_sha256='a'*64,
+                                writer_operators=['npu_fused_infer_attention_score' if fia else 'native_owned_object_copy'],
+                                consumer_operators=['npu::npu_add_rms_norm' if fia else 'npu_dynamic_quant'],
+                                regions=[dict(consumed=True,restored=True,region_elements=64,consumer_argument='residual',qmm_calls=1,
+                                    source_sha256='s',after_sha256='s',before_sha256='b',restored_sha256='b')]*4)
+            self.assertTrue(review(r)['passed'])
+            effect=r['scopes'][1]['requests'][-1]['result']['response']['provider_state']['rank_states']['1']['evidence']['actual_requests'][1]['native_memory_effect']
+            effect['regions'][0]['after_sha256']='different'
+            with self.subTest(mechanism=mechanism),self.assertRaisesRegex(ValueError,'NATIVE_CONTENT_COPY'):review(r)
+
     def test_native41_requires_build_bound_regions_and_exact_restoration(self):
         r=fixture();r['mechanism']='41.tail_column'
         for scope in r['scopes']:

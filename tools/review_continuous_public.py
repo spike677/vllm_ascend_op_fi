@@ -109,6 +109,35 @@ def review(report, *, require_negative_creation=False):
             if report['mechanism']=='39.matmul_range':
                 effect=f['matmul_effect'];need(effect['reference_controls']==f['coverage']['eligible'] and effect['rules']==['omit_final_quarter'],'MATMUL_RANGE_REFERENCE_MISSING')
                 effects[rank]['matmul_effect']=effect
+            if report['mechanism']=='26.fia_destination':
+                effect=f['native_memory_effect'];regions=effect['regions']
+                need(effect['calls']==len(regions)==f['coverage']['eligible']>0,'NATIVE_CONTENT_CALL_COVERAGE')
+                need(effect['library_sha256']==actuals[rank].get('native_library_sha256') and len(effect['library_sha256'])==64,
+                    'NATIVE_CONTENT_DEPLOYMENT_IDENTITY')
+                need(all(r['consumed'] and r['restored'] and r['region_elements']==64
+                    and r['before_sha256']==r['restored_sha256'] and r['after_sha256']==r['source_sha256'] for r in regions),
+                    'NATIVE_CONTENT_COPY_CONSUME_RESTORE')
+                need(effect['writer_operators']==['npu_fused_infer_attention_score']
+                    and len(effect['consumer_operators'])>0 and all(op in ('npu::npu_add_rms_norm','_C_ascend::npu_add_rms_norm_bias') for op in effect['consumer_operators'])
+                    and all(r.get('consumer_argument') for r in regions),'FIA26_ACTUAL_RESIDUAL_CONSUMER')
+                effects[rank]['native_memory_effect']={k:v for k,v in effect.items() if k!='regions'}
+                effects[rank]['native_memory_effect'].update(region_count=len(regions),
+                    region_evidence_sha256=hashlib.sha256(json.dumps(regions,sort_keys=True).encode()).hexdigest())
+            if report['mechanism']=='20.buffer_substitute':
+                effect=f['native_memory_effect'];proof=effect['region_proofs'];sites=proof['sites']
+                need(proof['schema']=='demoncat.native_content.site_proofs.v1' and len(proof['ordered_regions_sha256'])==64,
+                    'INPUT20_CONTENT_PROOF_IDENTITY')
+                need(effect['calls']==proof['region_count']==f['coverage']['eligible']>0
+                    and len(sites)==f['site_count'] and len({s['site'] for s in sites})==len(sites)
+                    and sum(s['calls'] for s in sites)==proof['region_count'],'INPUT20_SITE_COVERAGE')
+                need(all(s['calls']==s['copy_exact']==s['restore_exact']==s['consumed']==s['qmm_calls']>0 for s in sites),
+                    'INPUT20_CONTENT_CONSUME_RESTORE')
+                need(effect['library_sha256']==actuals[rank].get('native_library_sha256') and len(effect['library_sha256'])==64
+                    and effect['writer_operators']==['native_owned_object_copy'] and effect['consumer_operators']==['npu_dynamic_quant'],
+                    'INPUT20_NATIVE_IDENTITY_OR_CONSUMER')
+                effects[rank]['native_memory_effect']={k:v for k,v in effect.items() if k!='region_proofs'}
+                effects[rank]['native_memory_effect'].update(region_count=proof['region_count'],site_count=len(sites),
+                    region_evidence_sha256=proof['ordered_regions_sha256'])
             if report['mechanism']=='41.tail_column':
                 effect=f['native_memory_effect'];regions=effect['regions']
                 need(effect['calls']==len(regions)==f['coverage']['eligible']>0,'KV41_NATIVE_CALL_COVERAGE')

@@ -57,7 +57,7 @@ def bootstrap(wrapper,action,mechanism,options=None):
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','33','39','39mr','18','22','8','17','41'),required=True)
+    p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','33','39','39mr','18','22','8','17','41','26fia','20'),required=True)
     p.add_argument('--native-library');p.add_argument('--native-sha256')
     p.add_argument('--tp',type=int,choices=(1,2),default=2)
     p.add_argument('--reference-mode',choices=('immediate','forward'),default='immediate')
@@ -67,7 +67,7 @@ def main():
     p.add_argument('--source-manifest',default='/source/source_manifest.json')
     p.add_argument('--deployment-source',choices=('BLUE_COMBINATION','YELLOW_DEDICATED_INSTANCE'),default='BLUE_COMBINATION')
     a=p.parse_args()
-    mechanism={'41':'41.tail_column','17':'17.spatial_padding','batch':'quant.batch_shared_scale','28':'28.fia.denominator_replay','33':'33.paged_decode','39':'39.output_proxy','39mr':'39.matmul_range','18':'18.api_half','22':'22.wrong_row','8':'8.restore_offset'}[a.mechanism]
+    mechanism={'41':'41.tail_column','26fia':'26.fia_destination','20':'20.buffer_substitute','17':'17.spatial_padding','batch':'quant.batch_shared_scale','28':'28.fia.denominator_replay','33':'33.paged_decode','39':'39.output_proxy','39mr':'39.matmul_range','18':'18.api_half','22':'22.wrong_row','8':'8.restore_offset'}[a.mechanism]
     from fault_injection.rc3_preview_profile import TEST_CANDIDATES
     if a.deployment_source=='YELLOW_DEDICATED_INSTANCE' and mechanism not in TEST_CANDIDATES:
         raise RuntimeError('RC3_PREVIEW_OUTSIDE_DELIVERY_SCOPE:'+mechanism)
@@ -149,7 +149,7 @@ def main():
             members=sorted([r['worker'] for r in llm.collective_rpc('demoncat_worker_identity')],key=lambda r:r['rank'])
             contract.update(members=members,members_sha256=digest(members))
             rpc('bind',dict(prompts=tokens,group_contract=contract,arithmetic_device=a.arithmetic_device,reference_mode=a.reference_mode,
-                **(dict(native_library=[a.native_library,a.native_sha256]) if a.mechanism=='41' else {})))
+                **(dict(native_library=[a.native_library,a.native_sha256]) if a.mechanism in ('41','26fia','20') else {})))
             negative=rpc('negative');assert all(not r['can_prepare'] for r in negative),'MISSING_PERMIT_ADMITTED'
             for attempt in range(6):
                 if primed is not None:ids,mapping=primed;primed=None

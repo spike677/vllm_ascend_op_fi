@@ -1,0 +1,56 @@
+{
+  "schema": "demoncat.continuous.source_review.v1",
+  "mechanism": "20.buffer_substitute",
+  "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED",
+  "passed": true,
+  "scope": "BLUE_COMBINATION A2 CANN9.1 vLLM0.26 Qwen3.8 community W8A8 TP2 Native input content overwrite",
+  "receipt_review_sha256": "b4f9bd3c403ccf953aae643ee7bb7e80e6cdf5f047a2f22e1912157adaab3ba1",
+  "source_manifest_sha256": "da8cf6e877cf8a60c2d603ba54fb3164e04b466efc5896ac7ab6f29f44fb02e5",
+  "checks": {
+    "actual_current_residual_source": true,
+    "distinct_live_input_storage": true,
+    "same_stream_owned_region_copy": true,
+    "actual_dynamic_quant_reads_modified_input": true,
+    "original_qmm_consumes_identical_q_scale_objects": true,
+    "restore_after_quant_device_completion_before_qmm": true,
+    "all_1216_region_predicates_before_compaction": true,
+    "evidence_limit_unchanged": true,
+    "all_rank_every_eligible_call": true,
+    "full_off_health_two_scopes": true,
+    "negative_creation_resources_zero": true
+  },
+  "limitations": [
+    "Only actual W8A8 single-request projections within reviewed Qwen decoders; last-row first64 BF16 cells",
+    "Real input content overwrite, not executor address-slot replacement or allocator adjacency",
+    "Every call predicate is checked before bounded per-site aggregation; individual region SHA pairs are not in the public Runtime payload",
+    "Exact A2/0.26/Qwen community W8A8/TP2/native SHA only; A3, TP1, MLA, concurrent and cross-stream paths unqualified",
+    "First attempt failed evidence size gate and is not accepted; frozen r3 unchanged; third-party shutdown warnings retained"
+  ],
+  "files": [
+    {
+      "path": "fault_injection/sites/native_input20.py",
+      "reviewed_working_sha256": "42ef1bd71fdb13a7d5836220a14dfd3b816634c39d1d3277f3f8a38295d6634a"
+    },
+    {
+      "path": "fault_injection/sites/native_fia26.py",
+      "reviewed_working_sha256": "25d80c030feafc849392c56c334103e02b557cb31e99d62de99f79a54666f6f2"
+    },
+    {
+      "path": "fault_injection/engines/native_regions.py",
+      "reviewed_working_sha256": "efce6d2417ef2268825cf2e8e1dbdfa643cde64d5f2ee333256b10bb19d4da32"
+    },
+    {
+      "path": "fault_injection/engines/native_evidence.py",
+      "reviewed_working_sha256": "6cb3a8fb1e5df8a0067a4532ec8f6dea07d2386e474b63b012ce55fc5c2f31bb"
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/continuous_binding.py",
+      "reviewed_working_sha256": "aafb68dad0d5964410fbdf9cfc3e3dc5b0541db2166b98b80ef93f37c6786d70"
+    },
+    {
+      "path": "tools/review_continuous_public.py",
+      "reviewed_working_sha256": "95d4a9d7fae6404c171e375505f8741aec0602896f51f9d4e4401f8df3f66a61"
+    }
+  ],
+  "file_hash_semantics": "Working review bytes; NPU snapshot identity is the separate manifest."
+}

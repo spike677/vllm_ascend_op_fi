@@ -10,7 +10,7 @@ from pathlib import Path
 from .serving_context import require
 
 ATTRIBUTE='_demoncat_continuous_bindings'
-SUPPORTED=('41.tail_column','17.spatial_padding','33.paged_decode','28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset')
+SUPPORTED=('20.buffer_substitute','26.fia_destination','41.tail_column','17.spatial_padding','33.paged_decode','28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset')
 
 
 def digest(value):
@@ -72,7 +72,7 @@ def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithme
     require(family!='deepseek_v2' or mechanism in ('28.fia.denominator_replay','8.restore_offset','18.api_half','39.output_proxy','22.wrong_row'),'MLA_CONTINUOUS_SITE_NOT_ADAPTED')
     require(not model.training and not runner.vllm_config.cache_config.enable_prefix_caching
         and runner.vllm_config.kv_transfer_config is None,'CONTINUOUS_FRESH_CACHE_INFERENCE_REQUIRED')
-    if mechanism=='41.tail_column':
+    if mechanism in ('41.tail_column','26.fia_destination','20.buffer_substitute'):
         require(family=='qwen35' and type(native_library) in (list,tuple) and len(native_library)==2
             and all(type(x) is str and x for x in native_library),'KV41_TRUSTED_NATIVE_BUILD_REQUIRED')
         require(Path(native_library[0]).is_file() and hashlib.sha256(Path(native_library[0]).read_bytes()).hexdigest()==native_library[1],
@@ -223,11 +223,14 @@ class ContinuousRequest:
                 site_type={'18.api_half':Norm18Site,'22.wrong_row':Rope22Site,'8.restore_offset':MoE8Site}[self.binding.mechanism]
                 if self.binding.mechanism=='22.wrong_row' and type(self.model).__name__=='DeepseekV2ForCausalLM':site_type=MLARope22Site
                 self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
-            elif self.binding.mechanism=='41.tail_column':
+            elif self.binding.mechanism in ('41.tail_column','26.fia_destination','20.buffer_substitute'):
                 from fault_injection.engines.native_regions import NativeRegions
                 from fault_injection.sites.native_kv41 import NativeKV41Site
+                from fault_injection.sites.native_fia26 import NativeFIA26Site
+                from fault_injection.sites.native_input20 import NativeInput20Site
                 native=NativeRegions(*self.binding.native_library,self.binding.group['owner'],self.binding.group['group_generation'])
-                self.site=NativeKV41Site(self.model,self.runner,fault=self.phase=='fault',native=native)
+                site_type={'41.tail_column':NativeKV41Site,'26.fia_destination':NativeFIA26Site,'20.buffer_substitute':NativeInput20Site}[self.binding.mechanism]
+                self.site=site_type(self.model,self.runner,fault=self.phase=='fault',native=native)
             elif self.binding.mechanism in ('39.output_proxy','39.matmul_range'):
                 from fault_injection.sites.projection39 import Projection39Site
                 from fault_injection.engines.region_lease import RegionLeases
@@ -326,11 +329,15 @@ class ContinuousRequest:
                 writer_operators=sorted({e['writer'] for e in events if e.get('writer')}),
                 consumer_operators=sorted({e['consumer_operator'] for e in events if e.get('consumer_operator')}),
                 library_sha256=self.binding.native_library[1] if self.binding.native_library else None,
-                regions=[{k:e[k] for k in ('site','slots','page_mapping','region_elements','changed','before_sha256','after_sha256','restored_sha256','consumed','restored')}
+                regions=[{k:e[k] for k in ('site','slots','page_mapping','region_elements','changed','before_sha256','after_sha256','restored_sha256','consumed','restored','source_sha256','consumer_argument','qmm_calls') if k in e}
                     for e in events if e.get('writer') and e.get('applied')]),
             quant_reference=dict(sampled_elements=sum(e.get('sampled_elements',0) for e in events),
                 q_sample_differences=sum(e.get('q_sample_differences',0) for e in events),
                 backend=self.binding.arithmetic_device,mode=self.binding.reference_mode))
+        if self.binding.mechanism=='20.buffer_substitute':
+            from fault_injection.engines.native_evidence import compact_content_regions
+            effect=result['native_memory_effect']
+            effect['region_proofs']=compact_content_regions(effect.pop('regions'))
         ref=result['quant_reference']
         ref['q_sample_difference_fraction']=(ref['q_sample_differences']/ref['sampled_elements']
                                             if ref['sampled_elements'] else None)

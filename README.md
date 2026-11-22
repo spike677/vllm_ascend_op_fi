@@ -1,3 +1,9 @@
+## 2026-11-22：Native 公共持续入口增量
+
+A2／CANN9.1／vLLM0.26／Qwen3.8社区W8A8／TP2 上，[41 KV区域](docs/worker_core_v1/continuous_native41_20261122.md)、[26 FIA写入residual](docs/worker_core_v1/continuous_native26_20261122.md)、[20输入内容覆盖](docs/worker_core_v1/continuous_native20_20261122.md)均已完成公共入口同组Worker两个作用域，全部eligible调用消费与字节恢复、完整OFF/health精确恢复及资源清零。每rank每作用域分别为48、64、1216次；41的16次直接KV prefill调用不适用。17视觉公共验收也已通过，33因模型传播未达标保持关闭。
+
+新增项仅在开发线，冻结r3仍为原六项；A3须独立构建和验收，不代表现役对外服务原样配置可用。[1023项CPU子集](docs/worker_core_v1/native_cpu_review_20261122.md)无失败或错误，2项旧研究入口跳过；[MC2接线准备](docs/worker_core_v1/mc2_dispatch_join_20261122.md)仍缺runner分片行与接收端expert归属，不登记DeepSeek。
+
 ## 2026-11-22：r3收尾与验收范围
 
 [39 matmul_range / 33报告](docs/worker_core_v1/continuous_range39_paged33_20261122.md)：A2 / 0.26 / Qwen3.8社区W8A8 / TP2，39本地列分片投影公共两作用域和源码审查通过；每rank704次eligible调用全部消费恢复。33合法重排已有实际消费和局部变化，但最终模型传播门禁未过，保持关闭，不加入r3。

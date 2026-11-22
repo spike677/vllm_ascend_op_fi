@@ -1,0 +1,46 @@
+{
+  "schema": "demoncat.continuous.source_review.v1",
+  "mechanism": "26.fia_destination",
+  "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEWED",
+  "passed": true,
+  "scope": "BLUE_COMBINATION A2 CANN9.1 vLLM0.26 Qwen3.8 community W8A8 TP2 Native FIA to residual",
+  "receipt_review_sha256": "6a16ad761fcd9e544dfb40a8182cb069c168888d56144e168d3182656ec96594",
+  "source_manifest_sha256": "7ad3f4c43285157949a0dce1f8119df9a5551c9dd1059854b718abd73b9cacf8",
+  "checks": {
+    "actual_fia_output_object": true,
+    "current_decoder_residual_identity": true,
+    "source_unchanged_before_copy": true,
+    "copy_destination_equals_source": true,
+    "actual_add_rms_readonly_input_and_new_output_storage": true,
+    "same_stream_event_before_restore": true,
+    "all_rank_every_eligible_call": true,
+    "full_off_health_two_scopes": true,
+    "negative_creation_resources_zero": true
+  },
+  "limitations": [
+    "Actual single-request full-attention FIA last-query first64 BF16 cells into same-request live residual last-row first64 cells",
+    "Only nonmutating add-rms actual consumer with fresh result storage and same-stream completion; legal in-place changes refuse stale recovery",
+    "Real object content overwrite, not kernel overflow or parameter pointer redirection",
+    "Qwen community W8A8 A2/0.26 TP2 only; no MLA, A3, TP1, sequence-parallel or cross-stream qualification",
+    "Frozen r3 unchanged; separate vLLM shutdown forced-process/shared-memory warning retained"
+  ],
+  "files": [
+    {
+      "path": "fault_injection/sites/native_fia26.py",
+      "reviewed_working_sha256": "25d80c030feafc849392c56c334103e02b557cb31e99d62de99f79a54666f6f2"
+    },
+    {
+      "path": "fault_injection/engines/native_regions.py",
+      "reviewed_working_sha256": "efce6d2417ef2268825cf2e8e1dbdfa643cde64d5f2ee333256b10bb19d4da32"
+    },
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/continuous_binding.py",
+      "reviewed_working_sha256": "aafb68dad0d5964410fbdf9cfc3e3dc5b0541db2166b98b80ef93f37c6786d70"
+    },
+    {
+      "path": "tools/review_continuous_public.py",
+      "reviewed_working_sha256": "95d4a9d7fae6404c171e375505f8741aec0602896f51f9d4e4401f8df3f66a61"
+    }
+  ],
+  "file_hash_semantics": "Working review bytes; NPU snapshot identity is the separate manifest."
+}

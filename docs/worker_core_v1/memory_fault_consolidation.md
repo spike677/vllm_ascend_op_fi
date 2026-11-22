@@ -43,3 +43,5 @@ CPU先覆盖：真实对象身份与地址复用、越界/重叠拒绝、同stre
 ## 2026-11-22实施更新
 
 Native新增同stream对象open和owned-handle copy导出，原ABI保留；对象层拒绝裸地址、存储复用、重叠、跨stream和合法原地更新后的旧快照恢复。41的Qwen3.8 TP2公共两作用域已通过，详见continuous_native41_20261122.md。当前仅decode V slot尾两列/head，prefill直接KV未注入；26/20尚无新实机结论。A3须按native_regions_a3_build_20261122.md独立构建审查。
+
+后续更新：26与20也已完成A2/0.26/Qwen3.8社区W8A8/TP2公共两作用域，分别见[26报告](continuous_native26_20261122.md)、[20报告](continuous_native20_20261122.md)。26在真实add-rms只读消费前改写residual、消费者事件后恢复；20在真实DynamicQuant读取前覆盖输入、读取结束恢复，原QMM继续消费实际Q/scale。不是参数指针替换或原kernel越界复刻。冻结包未修改，A3与MLA仍无资格。
