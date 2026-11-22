@@ -70,3 +70,7 @@ V2-Lite public-a16：27层108次/rank/作用域，全部applied/changed/consumed
 V2-Lite public-a20：8的当前AllGather路由/反排列链已通过公共两作用域，26个site、104应用/消费/恢复，changed26，单组decode78次仍执行但无新变化；failed0，1.58518×/1.49855×。当前请求producer→专家输出→A2 abs→原生unpermute关联完整；EP/多请求未验收。见[MoE报告](continuous_moe8_public_20261121.md)。
 
 Batch public-a17：可选forward延迟核对模式通过公共两作用域，样本数和精度标准不变，耗时5.93327×/5.97488×，默认immediate及r2不变。见[性能记录](continuous_batch_performance_20261121.md)。本轮35项持续框架/consumer/恢复/模式准入CPU测试通过，不代替历史测试欠账修复。
+
+## 2026-11-22 r3 交付更新
+
+r3 已冻结六项公共持续候选，发行提交 0a10cb2e，源提交112376ee；新标签 demoncatpfi-rc3-preview-20261122-r3。971项范围测试、33项补充检查及124无设备358文件字节核验通过。A3 TP1/TP2分别待验收，未外推登记。上文r2与未冻结描述保留历史时间范围；最新交付见 releases/RC3-PREVIEW-R3-HANDOFF-20261122.md。33维持未通过，17视觉塔下一项，Native门禁尚未满足。

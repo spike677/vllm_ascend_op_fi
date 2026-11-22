@@ -2,7 +2,7 @@
 
 [39 matmul_range / 33报告](docs/worker_core_v1/continuous_range39_paged33_20261122.md)：A2 / 0.26 / Qwen3.8社区W8A8 / TP2，39本地列分片投影公共两作用域和源码审查通过；每rank704次eligible调用全部消费恢复。33合法重排已有实际消费和局部变化，但最终模型传播门禁未过，保持关闭，不加入r3。
 
-r3优先交付28、Batch、39 output_proxy、18、22、39 matmul_range，仍需测试门禁和无设备安装核验；尚不能发送。87的TP1、TP2各自验收登记。支持对象是eager、串行、无异步调度/prefix cache/MTP/KV connector的专用实例；现役对外服务的原样配置不在支持范围。
+[RC3预览r3交付](releases/RC3-PREVIEW-R3-HANDOFF-20261122.md)已冻结六项：28、Batch、39 output_proxy、18、22、39 matmul_range。971项范围门禁及33项补充检查通过；124无设备安装核对358个源文件一致，Git发行字节已复核。由负责人转交，未直接向黄区发送。87的TP1、TP2各自验收登记。支持对象是eager、串行、无异步调度/prefix cache/MTP/KV connector的专用实例；现役对外服务的原样配置不在支持范围。
 
 ## 2026-11-21 晚：公共持续入口
 
