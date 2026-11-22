@@ -30,6 +30,8 @@ class ContinuousBinding:
     thread: int
     reference_mode: str='immediate'
     native_library: tuple|None=None
+    paged_partition: tuple|None=None
+    product: object=None
     visual_references: dict=field(default_factory=dict)
     leases: set=field(default_factory=set)
     warmups: list=field(default_factory=list)
@@ -53,14 +55,18 @@ def current_binding(worker,model,mechanism):
     b.check();return b
 
 
-def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithmetic_device='input',reference_mode='immediate',native_library=None):
+def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithmetic_device='input',reference_mode='immediate',native_library=None,paged_partition=None):
     require(mechanism in SUPPORTED,'CONTINUOUS_ADAPTER_NOT_IMPLEMENTED')
     require(arithmetic_device in ('input','cpu'),'CONTINUOUS_ARITHMETIC_UNREVIEWED')
     require(reference_mode=='immediate' or (reference_mode=='forward' and mechanism=='quant.batch_shared_scale'
         and arithmetic_device=='input'),'CONTINUOUS_REFERENCE_MODE_UNREVIEWED')
     require(type(prompts) is list and (2<=len(prompts)<=8 if mechanism.startswith('quant.') else len(prompts)==1)
-        and all(type(p) is list and 2<=len(p)<=1024 and all(type(t) is int and t>=0 for t in p) for p in prompts),
+        and all(type(p) is list and 2<=len(p)<=(4096 if mechanism=='33.paged_decode' else 1024) and all(type(t) is int and t>=0 for t in p) for p in prompts),
         'CONTINUOUS_BOUNDED_TOKEN_PROMPTS_REQUIRED')
+    if paged_partition is not None:
+        require(mechanism=='33.paged_decode' and type(paged_partition) in (list,tuple)
+            and len(paged_partition)==2 and paged_partition[0]==128 and paged_partition[1] in (8,16,32)
+            and all(type(n) is int for n in paged_partition),'PAGED_TRUSTED_PARTITION_UNREVIEWED')
     runner=worker.model_runner;model=runner.model
     from .continuous_model import validate_continuous_model
     # Validate exact pinned execute/preprocess/sample/model sources and real
@@ -87,7 +93,8 @@ def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithme
     bindings=getattr(worker,ATTRIBUTE,{})
     require(type(bindings) is dict and not bindings,'CONTINUOUS_BINDING_ALREADY_INSTALLED')
     b=ContinuousBinding(worker,model,mechanism,tuple(tuple(p) for p in prompts),c,identity,
-        arithmetic_device,os.getpid(),threading.get_ident(),reference_mode=reference_mode,native_library=tuple(native_library) if native_library else None)
+        arithmetic_device,os.getpid(),threading.get_ident(),reference_mode=reference_mode,native_library=tuple(native_library) if native_library else None,
+        paged_partition=tuple(paged_partition) if paged_partition else None)
     bindings[mechanism]=b;setattr(worker,ATTRIBUTE,bindings)
     return dict(status='CONTINUOUS_BOUND_NOT_QUALIFIED',mechanism=mechanism,qualification_granted=False)
 
@@ -210,62 +217,69 @@ class ContinuousRequest:
             self.hooks.append(self.model.register_forward_hook(model_output))
             visual_module=getattr(self.model,'visual',None)
             if visual_module is not None:self.hooks.append(visual_module.register_forward_pre_hook(visual))
-            if self.binding.mechanism in ('18.api_half','22.wrong_row','8.restore_offset'):
-                from fault_injection.sites.norm18 import Norm18Site
-                from fault_injection.sites.rope22 import Rope22Site
-                from fault_injection.sites.mla_rope22 import MLARope22Site
-                from fault_injection.sites.moe8 import MoE8Site
-                from fault_injection.engines.region_lease import RegionLeases
-                def complete(stream):
-                    event=torch.npu.Event();event.record(stream);event.synchronize()
-                leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
-                    stream=torch.npu.current_stream,complete=complete)
-                site_type={'18.api_half':Norm18Site,'22.wrong_row':Rope22Site,'8.restore_offset':MoE8Site}[self.binding.mechanism]
-                if self.binding.mechanism=='22.wrong_row' and type(self.model).__name__=='DeepseekV2ForCausalLM':site_type=MLARope22Site
-                self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
-            elif self.binding.mechanism in ('41.tail_column','26.fia_destination','20.buffer_substitute'):
-                from fault_injection.engines.native_regions import NativeRegions
-                from fault_injection.sites.native_kv41 import NativeKV41Site
-                from fault_injection.sites.native_fia26 import NativeFIA26Site
-                from fault_injection.sites.native_input20 import NativeInput20Site
-                native=NativeRegions(*self.binding.native_library,self.binding.group['owner'],self.binding.group['group_generation'])
-                site_type={'41.tail_column':NativeKV41Site,'26.fia_destination':NativeFIA26Site,'20.buffer_substitute':NativeInput20Site}[self.binding.mechanism]
-                self.site=site_type(self.model,self.runner,fault=self.phase=='fault',native=native)
-            elif self.binding.mechanism in ('39.output_proxy','39.matmul_range'):
-                from fault_injection.sites.projection39 import Projection39Site
-                from fault_injection.engines.region_lease import RegionLeases
-                def complete(stream):
-                    event=torch.npu.Event();event.record(stream);event.synchronize()
-                leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
-                    stream=torch.npu.current_stream,complete=complete)
-                from fault_injection.sites.matmul39 import Matmul39Site
-                site_type=Matmul39Site if self.binding.mechanism=='39.matmul_range' else Projection39Site
-                self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
-            elif self.binding.mechanism.startswith('quant.'):
-                from fault_injection.sites.batch_quant import BatchQuantSite
-                from fault_injection.engines.region_lease import RegionLeases
-                def complete(stream):
-                    event=torch.npu.Event();event.record(stream);event.synchronize()
-                leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
-                    stream=torch.npu.current_stream,complete=complete)
-                self.site=BatchQuantSite(self.model,self.runner,fault=self.phase=='fault',
-                    arithmetic_device=self.binding.arithmetic_device,region_leases=leases,reference_mode=self.binding.reference_mode)
-            else:
-                from fault_injection.sites.gqa28 import GQA28Site
-                from fault_injection.sites.mla28 import MLA28Site
-                from fault_injection.engines.region_lease import RegionLeases
-                def complete(stream):
-                    event=torch.npu.Event();event.record(stream);event.synchronize()
-                leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
-                    stream=torch.npu.current_stream,complete=complete)
-                site_type=MLA28Site if type(self.model).__name__=='DeepseekV2ForCausalLM' else GQA28Site
-                if self.binding.mechanism=='33.paged_decode':
-                    from fault_injection.sites.paged33 import Paged33Site
-                    site_type=Paged33Site
-                self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
-            self.site.install()
+            self.install_site()
         except BaseException:
             self.close();raise
+
+    def install_site(self):
+        """Shared source-bound sites; request selection belongs to the observer."""
+        import torch
+        if self.binding.mechanism in ('18.api_half','22.wrong_row','8.restore_offset'):
+            from fault_injection.sites.norm18 import Norm18Site
+            from fault_injection.sites.rope22 import Rope22Site
+            from fault_injection.sites.mla_rope22 import MLARope22Site
+            from fault_injection.sites.moe8 import MoE8Site
+            from fault_injection.engines.region_lease import RegionLeases
+            def complete(stream):
+                event=torch.npu.Event();event.record(stream);event.synchronize()
+            leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
+                stream=torch.npu.current_stream,complete=complete)
+            site_type={'18.api_half':Norm18Site,'22.wrong_row':Rope22Site,'8.restore_offset':MoE8Site}[self.binding.mechanism]
+            if self.binding.mechanism=='22.wrong_row' and type(self.model).__name__=='DeepseekV2ForCausalLM':site_type=MLARope22Site
+            self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
+        elif self.binding.mechanism in ('41.tail_column','26.fia_destination','20.buffer_substitute'):
+            from fault_injection.engines.native_regions import NativeRegions
+            from fault_injection.sites.native_kv41 import NativeKV41Site
+            from fault_injection.sites.native_fia26 import NativeFIA26Site
+            from fault_injection.sites.native_input20 import NativeInput20Site
+            native=NativeRegions(*self.binding.native_library,self.binding.group['owner'],self.binding.group['group_generation'])
+            site_type={'41.tail_column':NativeKV41Site,'26.fia_destination':NativeFIA26Site,'20.buffer_substitute':NativeInput20Site}[self.binding.mechanism]
+            self.site=site_type(self.model,self.runner,fault=self.phase=='fault',native=native)
+        elif self.binding.mechanism in ('39.output_proxy','39.matmul_range'):
+            from fault_injection.sites.projection39 import Projection39Site
+            from fault_injection.engines.region_lease import RegionLeases
+            def complete(stream):
+                event=torch.npu.Event();event.record(stream);event.synchronize()
+            leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
+                stream=torch.npu.current_stream,complete=complete)
+            from fault_injection.sites.matmul39 import Matmul39Site
+            site_type=Matmul39Site if self.binding.mechanism=='39.matmul_range' else Projection39Site
+            self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
+        elif self.binding.mechanism.startswith('quant.'):
+            from fault_injection.sites.batch_quant import BatchQuantSite
+            from fault_injection.engines.region_lease import RegionLeases
+            def complete(stream):
+                event=torch.npu.Event();event.record(stream);event.synchronize()
+            leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
+                stream=torch.npu.current_stream,complete=complete)
+            self.site=BatchQuantSite(self.model,self.runner,fault=self.phase=='fault',
+                arithmetic_device=self.binding.arithmetic_device,region_leases=leases,reference_mode=self.binding.reference_mode)
+        else:
+            from fault_injection.sites.gqa28 import GQA28Site
+            from fault_injection.sites.mla28 import MLA28Site
+            from fault_injection.engines.region_lease import RegionLeases
+            def complete(stream):
+                event=torch.npu.Event();event.record(stream);event.synchronize()
+            leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
+                stream=torch.npu.current_stream,complete=complete)
+            site_type=MLA28Site if type(self.model).__name__=='DeepseekV2ForCausalLM' else GQA28Site
+            if self.binding.mechanism=='33.paged_decode':
+                from fault_injection.sites.paged33 import Paged33Site
+                site_type=Paged33Site
+            self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
+            if self.binding.mechanism=='33.paged_decode':
+                self.site.control_block,self.site.fault_block=self.binding.paged_partition or (128,32)
+        self.site.install()
 
     def collect(self):
         require(self.inside==0 and self.samples==4 and self.error is None,'CONTINUOUS_REQUEST_NOT_COMPLETE')

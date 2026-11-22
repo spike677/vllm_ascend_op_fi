@@ -1,3 +1,11 @@
+## 2026-11-22：产品请求入口与验收入口分开
+
+[产品模式接口](docs/worker_core_v1/rc3_product_usage.md)新增真实请求ID调度、all/next-N作用域、逐请求全rank效果、关闭金丝雀和三项恢复。用户输入不再与部署金丝雀逐token比对；只在声明的长度、图像和调度范围内注入。正式可信binding RPC与ProductClient供主项目接线，实验脚本只负责验收，不是服务入口。
+
+[五项产品实测](docs/worker_core_v1/product_mode_acceptance_20261122.md)：18、39 output_proxy、22、28和17已在A2/0.26/Qwen3.8社区W8A8/TP2完成正式部署文件入口、不同用户输入、两个作用域及三项恢复；不依赖请求间缓存清理，范围外和next-N名额耗尽均明确不注入。其他能力仍只保留各自机制验收范围。
+
+[r4已冻结](releases/RC3-PREVIEW-R4-HANDOFF-20261122.md)，十项机制验收内容不改。产品模式属于后续开发候选，需要单独验收；蓝区现有executor测试不能替代黄区Catalog、Controller、调度、结果及关闭五处真实接线。`product_closed=false`。下列历史“公共入口通过”指WorkerFaultRuntime机制验收，不自动代表真实用户产品入口通过。
+
 ## 2026-11-22：Native 公共持续入口增量
 
 A2／CANN9.1／vLLM0.26／Qwen3.8社区W8A8／TP2 上，[41 KV区域](docs/worker_core_v1/continuous_native41_20261122.md)、[26 FIA写入residual](docs/worker_core_v1/continuous_native26_20261122.md)、[20输入内容覆盖](docs/worker_core_v1/continuous_native20_20261122.md)均已完成公共入口同组Worker两个作用域，全部eligible调用消费与字节恢复、完整OFF/health精确恢复及资源清零。每rank每作用域分别为48、64、1216次；41的16次直接KV prefill调用不适用。17视觉公共验收也已通过，33因模型传播未达标保持关闭。

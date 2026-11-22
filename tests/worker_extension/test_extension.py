@@ -118,12 +118,14 @@ class WorkerExtensionTest(unittest.TestCase):
         self.assertEqual(
             sorted(name for name in vars(DemoncatWorkerExtension) if not name.startswith('__')),
             ['demoncat_attach', 'demoncat_capabilities', 'demoncat_census', 'demoncat_detach', 'demoncat_discover', 'demoncat_fault_query',
-             'demoncat_fault_rpc', 'demoncat_inspect_readonly', 'demoncat_worker_identity'],
+             'demoncat_fault_rpc', 'demoncat_inspect_readonly', 'demoncat_product_binding', 'demoncat_worker_identity'],
         )
         before = self.worker.demoncat_worker_identity()
         self.assertEqual(before['status'], 'WORKER_CONTEXT_NOT_READY')
         self.current.assert_not_called()
         self.worker.load_model()
+        with self.assertRaisesRegex(RuntimeError,'PRODUCT_RPC_OPERATOR_NOT_AUTHORIZED'):
+            self.worker.demoncat_product_binding('attach',{'profile':'user-supplied','operator':'user'})
         with patch.dict(os.environ, {'ASCEND_RT_VISIBLE_DEVICES': '5,2'}):
             actual = self.worker.demoncat_worker_identity()
             self.assertEqual(actual['status'], 'WORKER_IDENTIFIED')

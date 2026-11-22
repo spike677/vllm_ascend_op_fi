@@ -57,6 +57,7 @@ class ProjectionConsumerMode(TorchDispatchMode):
             event.update(before_sha256=fingerprint(region),already_positive_inf=bool(torch.isposinf(region).all().item()),
                          upstream_nonfinite=bool((~torch.isfinite(region)).any().item()))
             value=torch.full_like(region,torch.inf) if replacement is None else replacement(region)
+            event.update(nonfinite_before=int((~torch.isfinite(region)).sum().item()), nonfinite_after=int((~torch.isfinite(value)).sum().item()))
             changed=not exact(region,value)
             self.leases.write(token,value)
             event.update(applied=True,changed=int(changed),after_sha256=fingerprint(region))

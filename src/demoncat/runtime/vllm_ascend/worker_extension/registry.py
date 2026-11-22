@@ -195,7 +195,10 @@ def create_worker_provider(mechanism, version, worker, model, identity):
     from .continuous_binding import current_binding
     if current_binding(worker,model,mechanism) is not None:
         from .providers.continuous import ContinuousProvider
-        provider=ContinuousProvider(worker,model,identity,mechanism)
+        if current_binding(worker,model,mechanism).product is not None:
+            from .providers.product import ProductProvider
+            provider=ProductProvider(worker,model,identity,mechanism)
+        else:provider=ContinuousProvider(worker,model,identity,mechanism)
         provider._deployment_admission=(worker,model,admission['deployment_acceptance'])
         return provider
     tensor_binding=getattr(worker,'_demoncat_natural_tensor_serving_bindings',{}).get(mechanism)

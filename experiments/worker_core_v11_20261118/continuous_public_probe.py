@@ -60,6 +60,8 @@ def main():
     p=argparse.ArgumentParser();p.add_argument('--mechanism',choices=('28','batch','33','39','39mr','18','22','8','17','41','26fia','20'),required=True)
     p.add_argument('--native-library');p.add_argument('--native-sha256')
     p.add_argument('--image');p.add_argument('--image-sha256')
+    p.add_argument('--paged-length',type=int,choices=(768,2304),default=768)
+    p.add_argument('--paged-fault-block',type=int,choices=(8,16,32),default=32)
     p.add_argument('--tp',type=int,choices=(1,2),default=2)
     p.add_argument('--reference-mode',choices=('immediate','forward'),default='immediate')
     p.add_argument('--model-family',choices=('qwen35','deepseek_v2'),default='qwen35')
@@ -93,8 +95,8 @@ def main():
                 mm_processor_kwargs={'min_pixels':4096,'max_pixels':16384})
         llm=LLM(model=a.model,dtype='bfloat16',quantization='ascend',tensor_parallel_size=a.tp,
             distributed_executor_backend='mp',enforce_eager=True,enable_prefix_caching=False,
-            async_scheduling=False,enable_chunked_prefill=True,max_num_batched_tokens=1024,
-            max_model_len=1024,max_num_seqs=batch,gpu_memory_utilization=.8,seed=42,
+            async_scheduling=False,enable_chunked_prefill=True,max_num_batched_tokens=4096 if a.mechanism=='33' and a.paged_length>1024 else 1024,
+            max_model_len=4096 if a.mechanism=='33' and a.paged_length>1024 else 1024,max_num_seqs=batch,gpu_memory_utilization=.8,seed=42,
             speculative_config=None,kv_transfer_config=None,trust_remote_code=True,
             worker_extension_cls='demoncat.runtime.vllm_ascend.controller.DemoncatWorkerExtension',**extra)
         seeds=['Explain in one sentence why the sky appears blue.','Explain in one sentence why the grass appears green.',
@@ -102,7 +104,9 @@ def main():
             'Explain why snow appears white in daylight.','Give one example of a simple machine.',
             'What is the sum of four and five?','Name one planet in the solar system.']
         tokens=[llm.get_tokenizer().encode(s,add_special_tokens=True) for s in seeds[:batch]]
-        if a.mechanism=='33':tokens=[(tokens[0]*64)[:768]]
+        if a.mechanism=='33':
+            tokens=[(tokens[0]*((a.paged_length+len(tokens[0])-1)//len(tokens[0])))[:a.paged_length]]
+            report['paged_deployment']=dict(prompt_tokens=a.paged_length,control_block=128,fault_block=a.paged_fault_block,accumulation='FP32')
         image_prompt=None;serial=0;primed=None
         if a.mechanism=='17':
             from PIL import Image
@@ -157,6 +161,7 @@ def main():
             members=sorted([r['worker'] for r in llm.collective_rpc('demoncat_worker_identity')],key=lambda r:r['rank'])
             contract.update(members=members,members_sha256=digest(members))
             rpc('bind',dict(prompts=tokens,group_contract=contract,arithmetic_device=a.arithmetic_device,reference_mode=a.reference_mode,
+                **(dict(paged_partition=[128,a.paged_fault_block]) if a.mechanism=='33' else {}),
                 **(dict(native_library=[a.native_library,a.native_sha256]) if a.mechanism in ('41','26fia','20') else {})))
             negative=rpc('negative');assert all(not r['can_prepare'] for r in negative),'MISSING_PERMIT_ADMITTED'
             for attempt in range(6):

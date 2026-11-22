@@ -132,6 +132,13 @@ class WorkerFaultRuntime:
                     for row in providers+core_manifest['mechanisms']:
                         binding=current_binding(worker,context.model,row['mechanism'])
                         if binding is not None:
+                            if binding.product is not None:
+                                row.pop('request_plan',None)
+                                row.update(execution='product_scheduler_hooks_and_current_permit_required',
+                                    fault_execution_ready=False,execution_mode='product',
+                                    product_qualified=False,user_prompt_registry=False,
+                                    scope_modes=['all','next'],generation_limit=4,context_limit=1024)
+                                continue
                             row['request_plan']=continuous_request_plan(row['mechanism'],batch_size=len(binding.prompts))
                             row['execution']='typed_continuous_torch_binding_and_current_permit_required'
                             row['fault_execution_ready']=False

@@ -34,7 +34,8 @@ class RopeMode(TorchDispatchMode):
                 shifted=(positions+1).remainder(cache.shape[0])
                 wrong=cache[shifted].to(device=cos.device,dtype=cos.dtype)
                 token=site.region_leases.acquire(cos)
-                e.update(before_sha256=fingerprint(cos),changed=int((cos!=wrong).sum().item()),
+                e.update(nonfinite_before=int((~torch.isfinite(cos)).sum().item()),nonfinite_after=int((~torch.isfinite(wrong)).sum().item()),
+                    before_sha256=fingerprint(cos),changed=int((cos!=wrong).sum().item()),
                     rotary_rows_changed=int((cos!=wrong).reshape(-1,cos.shape[-1]).any(-1).sum().item()),
                     position_rows_changed=int((positions!=shifted).sum().item()))
                 site.region_leases.write(token,wrong);e['applied']=True

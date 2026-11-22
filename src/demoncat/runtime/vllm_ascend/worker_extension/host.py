@@ -157,8 +157,8 @@ class WorkerFaultClient:
     """
 
     def __init__(self, host, config, *, receipt_mode='full', _group_identity=None):
-        if type(receipt_mode) is not str or receipt_mode not in ('full', 'cursor'):
-            raise ValueError('receipt_mode must be full or cursor')
+        if type(receipt_mode) is not str or receipt_mode not in ('full', 'cursor', 'latest'):
+            raise ValueError('receipt_mode must be full, cursor or latest')
         if getattr(host, 'api', None) != HOST_API or not all(
                 callable(getattr(host, name, None))
                 for name in ('route', 'capabilities', 'prepare_binding', 'invoke')):
@@ -196,7 +196,10 @@ class WorkerFaultClient:
 
     def _record(self, action, reply):
         self._receipt_idle()
-        self._history.append({'action': action, 'response': _copy(reply)})
+        if self._receipt_mode == 'latest':
+            self._history[:] = [{'action': action, 'response': _copy(reply)}]
+        else:
+            self._history.append({'action': action, 'response': _copy(reply)})
         return self._action_snapshot()
 
     def _accepted_record(self, action, reply, *, uncertain=True):
@@ -210,7 +213,7 @@ class WorkerFaultClient:
             return self._failure(action, error, uncertain=uncertain, response=reply)
 
     def _action_snapshot(self):
-        if self._receipt_mode == 'full':
+        if self._receipt_mode != 'cursor':
             return self._snapshot()
         try:
             ledger = self._receipt_index()

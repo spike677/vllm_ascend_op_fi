@@ -33,6 +33,11 @@ def _call(worker, action, payload=None):
 
 
 class DemoncatWorkerExtension:
+    def demoncat_product_binding(self, action, payload):
+        from .product_binding import product_binding_rpc
+        result=product_binding_rpc(self, action, payload)
+        return dict(result,rank=self.demoncat_worker_identity()['worker']['rank'])
+
     def demoncat_inspect_readonly(self, offset=0, limit=128):
         from .readonly_inspect import inspect_worker
         try:return inspect_worker(self,offset=offset,limit=limit)

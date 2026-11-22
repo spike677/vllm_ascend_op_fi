@@ -23,6 +23,11 @@ class ContinuousDeploymentTests(unittest.TestCase):
             a.install_blue_acceptance_permit(w,mechanisms=[key],attempt='cpu-scope',source_manifest_sha256='a'*64)
             self.assertTrue(a.deployment_acceptance_report(key,w,m)['can_prepare'])
             a.remove_blue_acceptance_permit(w)
+            b.product=dict(mode='PRODUCT_ACCEPTANCE_ONLY')
+            product=a.deployment_acceptance_report(key,w,m)
+            self.assertFalse(product['accepted']);self.assertFalse(product['can_prepare'])
+            self.assertEqual(product['actual']['execution_mode'],'product')
+            b.product=None
         for changes in ({'hardware_family':'A3'},{'tp':1},{'vllm':'0.27.0'}):
             with patch.object(a,'observe_deployment',return_value=dict(expected,**changes)):
                 self.assertFalse(a.deployment_acceptance_report(key,w,m)['accepted'])

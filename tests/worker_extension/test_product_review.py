@@ -1,0 +1,85 @@
+import unittest
+from copy import deepcopy
+from tools.review_product_mode import review
+
+
+def receipt():
+    workers=[dict(rank=i, pid=100+i) for i in range(2)]
+    output=[dict(hidden='h'+str(i),logits='l'+str(i),finite=True) for i in range(4)]
+    observation=dict(output=output,all_finite=True)
+    scopes=[]
+    for scope in range(2):
+        requests=[]
+        for index in range(4):
+            rid=f'{scope}-{index}';ranks=[]
+            for rank in range(2):
+                active=index<3
+                counts=dict(observed=int(active),eligible=int(active),attempted=int(active),applied=int(active),
+                            changed=int(active),consumed=int(active),restored=int(active),failed=0)
+                site=dict(eligible=True,consumer_operator='aten::add',consumed=True,restored=True,
+                          before_sha256='b',restored_sha256='b')
+                ranks.append(dict(rank=rank,request_id=rid,completed=True,coverage=counts,bytes_restored=True,
+                    resources=dict(leases=0,hooks=0,inflight=0),status='OBSERVED' if active else 'NOT_INJECTED',
+                    reasons=[] if active else ['GENERATION_OUTSIDE_VALIDATED_1_TO_4'],sites=[site] if active else [],
+                    prompt_sha256=str(index),observed_model_steps=4,changed_elements=int(active)))
+            requests.append(dict(result=dict(request_id=rid,ranks=ranks)))
+        cleanup={a:[dict(status='DETACHED' if a=='detach' else 'ACTION_COMPLETED',worker=w) for w in workers]
+                 for a in ('disable','unregister','detach')}
+        for row in cleanup['unregister']:
+            row['response']=dict(provider_state=dict(leases=0,owned_hooks=0,inflight=0,registered=False,
+                replay_pending=False,recovery=dict(resources_zero=True),owner='owner-'+str(scope)+'-'+str(row['worker']['rank'])))
+        for row in cleanup['detach']:row['ownership_retained']=False
+        canary=dict(before=[dict(rank=r,observations=[deepcopy(observation),deepcopy(observation)]) for r in range(2)],
+                    after=[dict(rank=r,observations=[deepcopy(observation)]) for r in range(2)])
+        scopes.append(dict(scope=scope,requests=requests,disable=dict(canary=canary,cleanup=cleanup,
+            recovery=dict(bytes_restored=True,resources_zero=True,canary_exact=True,restored=True)),
+            detach=dict(status='PRODUCT_DETACHED'),cleanup=[dict(leases=0,owners=0)]*2))
+    return dict(status='PRODUCT_TWO_SCOPES_COMPLETED_PENDING_REVIEW',mechanism='18.api_half',
+                source_manifest_sha256='test-source',scopes=scopes)
+
+
+class ProductReviewTests(unittest.TestCase):
+    def test_complete_contract_does_not_grant_yellow_or_product_closure(self):
+        result=review(receipt())
+        self.assertFalse(result['product_closed']);self.assertFalse(result['qualification_granted'])
+
+    def test_canary_summary_true_cannot_hide_tensor_mismatch(self):
+        data=receipt();data['scopes'][0]['disable']['canary']['after'][0]['observations'][0]['output'][2]['logits']='different'
+        with self.assertRaisesRegex(ValueError,'CANARY_FULL_OUTPUT_NOT_EXACT'):review(data)
+
+    def test_missing_consumer_and_nonrestored_region_fail(self):
+        for field,value in (('consumer_operator',None),('restored_sha256','wrong')):
+            data=receipt();data['scopes'][0]['requests'][0]['result']['ranks'][0]['sites'][0][field]=value
+            with self.assertRaisesRegex(ValueError,'ACTUAL_CONSUMER_OR_BYTE_PROOF_MISSING'):review(data)
+
+    def test_same_prompt_does_not_meet_product_acceptance(self):
+        data=receipt()
+        for row in data['scopes'][0]['requests'][:3]:
+            for rank in row['result']['ranks']:rank['prompt_sha256']='same'
+        with self.assertRaisesRegex(ValueError,'DISTINCT_USER_PROMPTS_REQUIRED'):review(data)
+
+    def test_resource_summary_true_does_not_hide_runtime_leak(self):
+        data=receipt()
+        data['scopes'][0]['disable']['cleanup']['unregister'][0]['response']['provider_state']['owned_hooks']=1
+        with self.assertRaisesRegex(ValueError,'RUNTIME_RESOURCE_COUNTERS_NOT_ZERO'):review(data)
+
+    def test_two_receipts_cannot_reuse_one_scope_owner(self):
+        data=receipt()
+        data['scopes'][1]['disable']['cleanup']['unregister'][0]['response']['provider_state']['owner']='owner-0-0'
+        with self.assertRaisesRegex(ValueError,'SCOPES_REUSE_RUNTIME_OWNER'):review(data)
+
+    def test_next_n_has_an_independent_in_range_negative(self):
+        data=receipt();data['between_request_cache_reset']=False
+        with self.assertRaisesRegex(ValueError,'IN_RANGE_NEXT_N_EXPIRY_NOT_TESTED'):review(data)
+        extra=deepcopy(data['scopes'][1]['requests'][-1])
+        for rank in extra['result']['ranks']:
+            rank['reasons']=['SCOPE_REQUEST_LIMIT_REACHED']
+            rank['range_facts']=dict(max_tokens=4,prompt_length=10,single_chunk=True,fresh_cache=True,request_count=1)
+        data['scopes'][1]['requests'].append(extra)
+        self.assertEqual(review(data)['status'],'PRODUCT_BLUE_REVIEW_PASSED')
+
+    def test_missing_rank_and_worker_restart_fail(self):
+        data=receipt();data['scopes'][0]['requests'][0]['result']['ranks'].pop()
+        with self.assertRaisesRegex(ValueError,'EXACT_TP2_RANK_SET_REQUIRED'):review(data)
+        data=receipt();data['scopes'][1]['disable']['cleanup']['unregister'][0]['worker']={'rank':0,'pid':999}
+        with self.assertRaisesRegex(ValueError,'WORKERS_CHANGED_BETWEEN_SCOPES'):review(data)

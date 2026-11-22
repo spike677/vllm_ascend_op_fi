@@ -47,7 +47,7 @@ class VisionConsumerMode(ProjectionConsumerMode):
             key=(name,site.forward_calls[-1][name])
             inputs=(x,w,b);identity=site.inputs_identity(inputs)
             reference=site.references.get(key)
-            require(not site.fault or reference is not None,'VISION17_NORMAL_REFERENCE_REQUIRED')
+            require(site.product_mode or not site.fault or reference is not None,'VISION17_NORMAL_REFERENCE_REQUIRED')
             if reference is not None:require(reference['inputs']==identity,'VISION17_ACTUAL_IMAGE_OR_WEIGHTS_CHANGED')
             before=fingerprint(torch.tensor(values['padding'],dtype=torch.int64))
             event=dict(site=name,request_ids=list(site.request_ids()),eligible=True,
@@ -57,6 +57,11 @@ class VisionConsumerMode(ProjectionConsumerMode):
                 parameter_only=True,storage_mutated=False)
             site.events.append(event)
             call=dict(values,padding=event['actual_padding'])
+        reference_output=None
+        if site.product_mode and site.fault:
+            # Same live input, original call arguments; a local operator control,
+            # never a claimed normal user-request/model baseline.
+            reference_output=func(**values)
         output=func(**call)
         with _disable_current_modes():
             require(tuple(output.shape)==(x.shape[0],w.shape[0],1,1,1),'VISION17_OUTPUT_GEOMETRY_CHANGED')
@@ -64,7 +69,11 @@ class VisionConsumerMode(ProjectionConsumerMode):
             actual=fingerprint(output)
             if not site.fault and reference is None:site.references[key]=dict(inputs=identity,output=actual)
             event.update(output_sha256=actual,applied=site.fault,
-                changed=int(site.fault and actual!=reference['output']),native_calls=1)
+                changed=int((output!=reference_output).sum().item()) if reference_output is not None else int(site.fault and actual!=reference['output']),
+                native_calls=2 if reference_output is not None else 1,
+                effect_reference='SAME_INPUT_LOCAL_NATIVE_CONTROL' if site.product_mode else 'ACCEPTANCE_NORMAL_REQUEST',
+                nonfinite_before=int((~torch.isfinite(reference_output)).sum().item()) if reference_output is not None else None,
+                nonfinite_after=int((~torch.isfinite(output)).sum().item()))
             self.watch(projection_region(output),event,inject=False)
             self.pending[-1]['inputs']=inputs
             self.pending[-1]['stream']=site.stream()
@@ -72,7 +81,8 @@ class VisionConsumerMode(ProjectionConsumerMode):
 
 
 class Vision17Site:
-    def __init__(self,visual,*,fault,references,request_ids,stream,complete):
+    def __init__(self,visual,*,fault,references,request_ids,stream,complete,product_mode=False):
+        self.product_mode=product_mode
         self.visual=visual;self.fault=fault;self.references=references;self.request_ids=request_ids
         self.stream=stream;self.complete=complete;self.hooks=[];self.parents=[];self.active=False
         self.events=[];self.forward_calls=[];self.sites=[];self.uncovered=[];self.excluded=[]

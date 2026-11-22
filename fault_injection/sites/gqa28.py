@@ -47,7 +47,8 @@ class GQA28Site(MLA28Site):
                         require(torch.equal(actual,lease['replacement'][lease['row']]),'GQA_ACTUAL_BUFFER_UNEXPECTED_WRITE')
                         copied=lease['replacement'][lease['row']]
                     self.region_leases.observe_output_copy(lease['actual_token'],copied)
-                lease['event']['consumed']=True
+                lease['event'].update(consumed=True, consumer_operator=type(mod).__module__+'.'+type(mod).__qualname__+'.forward',
+                    consumer_kind='LIVE_MODULE_VALUE_AND_SAME_STREAM',consumer_module=_name.rsplit('.',1)[0]+'.o_proj')
             def post(mod,args,out,_name=name):
                 lease=self.pending.get(_name)
                 self.gates.pop(_name,None)
@@ -111,7 +112,8 @@ class GQA28Site(MLA28Site):
             self.region_leases.write(tokens['replacement_token'],calculated)
         require(torch.isfinite(replacement).all().item(),'GQA_NONFINITE_RECOMPUTE')
         require(torch.equal(result[:row],replacement[:row]) and torch.equal(result[row+1:],replacement[row+1:]),'GQA_NON_TARGET_CHANGED')
-        event.update(applied=True,changed=int((replacement[row]!=backup).sum().item()),non_target_exact=True,
+        event.update(nonfinite_before=int((~torch.isfinite(backup)).sum().item()),nonfinite_after=int((~torch.isfinite(replacement[row])).sum().item()),
+                     applied=True,changed=int((replacement[row]!=backup).sum().item()),non_target_exact=True,
                      key_count=length,before_sha256=fingerprint(backup),after_sha256=fingerprint(replacement[row]))
         self.pending[name]=dict(replacement=replacement,actual_output=result,backup=backup,row=row,event=event,stream=torch.npu.current_stream(),**tokens)
         return replacement

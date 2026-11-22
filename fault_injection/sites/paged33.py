@@ -25,6 +25,8 @@ def partition_pair(q,k,v,*,scale,native,control_block=128,fault_block=32):
 
 
 class Paged33Site(GQA28Site):
+    control_block=128
+    fault_block=32
     def eligible_call(self,count,length):
         if count!=1 or length<=1:return False,'PREFILL_NOT_PAGED_DECODE'
         if length<=128:return False,'MULTIPLE_REDUCTION_BLOCKS_REQUIRED'
@@ -32,7 +34,7 @@ class Paged33Site(GQA28Site):
 
     def calculate(self,q,k,v,impl,backup,event):
         require(event.get('page_mapping',{}).get('logical_keys')==len(k),'PAGED_ACTUAL_CACHE_MAPPING_MISSING')
-        value,report=partition_pair(q,k,v,scale=impl.scale,native=backup)
+        value,report=partition_pair(q,k,v,scale=impl.scale,native=backup,control_block=self.control_block,fault_block=self.fault_block)
         require(report['nonselected_exact'],'PAGED_NONSELECTED_CHANGED')
         event['partition_reference']=report
         return value

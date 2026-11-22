@@ -163,6 +163,8 @@ def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=
     from .continuous_binding import current_binding,SUPPORTED
     continuous=current_binding(worker,model,mechanism) if worker is not None and mechanism in SUPPORTED else None
     if continuous is not None:
+        if continuous.product is not None:
+            actual=dict(actual,execution_mode='product')
         if continuous.native_library is not None:
             actual=dict(actual,native_library_sha256=continuous.native_library[1])
         accepted=False;expected=None;record=None;checks=[]
@@ -170,6 +172,7 @@ def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=
         records=json.loads(records_path.read_text(encoding='utf-8'))['records'] if records_path.is_file() else []
         for candidate in records:
             if (source=='BLUE_COMBINATION' and candidate['mechanism']==mechanism
+                    and continuous.product is None
                     and candidate['arithmetic_device']==continuous.arithmetic_device
                     and candidate.get('reference_mode','immediate')==continuous.reference_mode
                     and candidate['request_count']==len(continuous.prompts)
