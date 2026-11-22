@@ -73,6 +73,7 @@ def main():
     p.add_argument('--native-library');p.add_argument('--native-sha256')
     p.add_argument('--image');p.add_argument('--image-sha256')
     p.add_argument('--paged-length',type=int,choices=(768,2304),default=768)
+    p.add_argument('--paged-control',choices=('legacy','splitfuse_a2'),default='legacy')
     p.add_argument('--paged-fault-block',type=int,choices=(8,16,32),default=32)
     p.add_argument('--tp',type=int,choices=(1,2),default=2)
     p.add_argument('--reference-mode',choices=('immediate','forward'),default='immediate')
@@ -122,7 +123,7 @@ def main():
         tokens=[llm.get_tokenizer().encode(s,add_special_tokens=True) for s in seeds[:batch]]
         if a.mechanism=='33':
             tokens=[(tokens[0]*((a.paged_length+len(tokens[0])-1)//len(tokens[0])))[:a.paged_length]]
-            report['paged_deployment']=dict(prompt_tokens=a.paged_length,control_block=128,fault_block=a.paged_fault_block,accumulation='FP32')
+            report['paged_deployment']=dict(prompt_tokens=a.paged_length,control_block=512 if a.paged_control=='splitfuse_a2' else 128,fault_block=256 if a.paged_control=='splitfuse_a2' else a.paged_fault_block,accumulation='FP32',control_model=a.paged_control)
         image_prompt=None;serial=0;primed=None
         if a.mechanism=='17':
             from PIL import Image
@@ -181,7 +182,7 @@ def main():
             members=sorted([r['worker'] for r in llm.collective_rpc('demoncat_worker_identity')],key=lambda r:r['rank'])
             contract.update(members=members,members_sha256=digest(members))
             rpc('bind',dict(prompts=tokens,group_contract=contract,arithmetic_device=a.arithmetic_device,reference_mode=a.reference_mode,
-                **(dict(paged_partition=[128,a.paged_fault_block]) if a.mechanism=='33' else {}),
+                **(dict(paged_partition=[512,256] if a.paged_control=='splitfuse_a2' else [128,a.paged_fault_block]) if a.mechanism=='33' else {}),
                 **(dict(native_library=[a.native_library,a.native_sha256]) if a.mechanism in ('41','26fia','20') else {})))
             negative=rpc('negative');assert all(not r['can_prepare'] for r in negative),'MISSING_PERMIT_ADMITTED'
             for attempt in range(6):

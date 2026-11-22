@@ -40,6 +40,20 @@ def census(wrapper,action):
         real=torch_npu.npu_fused_infer_attention_score
         def attention(*args,**kwargs):
             out=real(*args,**kwargs)
+            query=args[0] if args else kwargs.get('query')
+            if os.environ.get('DCAT_CAPTURE_PRIVATE_QKV')=='1' and query is not None and query.shape[0]==1 and not getattr(worker,'_paged33_qkv_saved',False):
+                q=query;keys=args[1] if len(args)>1 else kwargs['key'];values=args[2] if len(args)>2 else kwargs['value']
+                key=keys if isinstance(keys,torch.Tensor) else keys[0]
+                value=values if isinstance(values,torch.Tensor) else values[0]
+                length=int(kwargs['actual_seq_lengths_kv'][0]);block=int(kwargs['block_size'])
+                table=kwargs['block_table'][0,:((length+block-1)//block)].long()
+                k=key.index_select(0,table).reshape(-1,kwargs['num_key_value_heads'],q.shape[-1])[:length]
+                v=value.index_select(0,table).reshape(-1,kwargs['num_key_value_heads'],q.shape[-1])[:length]
+                assert k.shape[0]==v.shape[0]==length, 'PRIVATE_QKV_LOGICAL_KEY_COUNT_MISMATCH'
+                torch.save(dict(q=q.detach().cpu(),k=k.detach().cpu(),v=v.detach().cpu(),output=out[0].detach().cpu(),
+                    metadata=dict(length=length,heads=kwargs['num_heads'],kv_heads=kwargs['num_key_value_heads'],scale=kwargs['scale'],request_ids=list(r.input_batch.req_ids))),
+                    '/evidence/private-qkv-rank'+str(worker.rank)+'.pt')
+                worker._paged33_qkv_saved=True
             rows.append(dict(op='DIRECT_npu_fused_infer_attention_score',args=meta(args),kwargs=meta(kwargs),output=meta(out),request_ids=list(r.input_batch.req_ids)))
             return out
         torch_npu.npu_fused_infer_attention_score=attention

@@ -176,6 +176,11 @@ def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=
             actual=dict(actual,execution_mode='product')
         if continuous.native_library is not None:
             actual=dict(actual,native_library_sha256=continuous.native_library[1])
+        if mechanism=='33.paged_decode':
+            pair=continuous.paged_partition or (128,32)
+            actual=dict(actual,paged_reference=dict(control_block=pair[0],fault_block=pair[1],
+                control_kind='BF16_INPUT_FP32_OUTPUT_SPLITFUSE' if pair==(512,256) else 'LEGACY_FP32_ONLINE',
+                arithmetic_device=continuous.arithmetic_device))
         accepted=False;expected=None;record=None;checks=[]
         records_path=Path(__file__).with_name('continuous_blue_records.json')
         records=json.loads(records_path.read_text(encoding='utf-8'))['records'] if records_path.is_file() else []

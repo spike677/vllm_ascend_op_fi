@@ -55,6 +55,27 @@ def current_binding(worker,model,mechanism):
     b.check();return b
 
 
+def validate_paged_partition(mechanism,partition,arithmetic_device,prompts):
+    if partition is None:return
+    require(mechanism=='33.paged_decode' and type(partition) in (list,tuple)
+        and len(partition)==2 and all(type(n) is int for n in partition),
+        'PAGED_TRUSTED_PARTITION_UNREVIEWED')
+    legacy=partition[0]==128 and partition[1] in (8,16,32)
+    splitfuse=tuple(partition)==(512,256)
+    require(legacy or splitfuse,'PAGED_TRUSTED_PARTITION_UNREVIEWED')
+    if splitfuse:
+        require(arithmetic_device=='input' and len(prompts)==1 and len(prompts[0])==2304,
+            'SPLITFUSE33_MEASURED_INPUT_BACKEND_AND_LENGTH_REQUIRED')
+
+
+def paged_site_type(partition):
+    if partition==(512,256):
+        from fault_injection.sites.paged33_splitfuse import NativeBoundarySplitFuse33Site
+        return NativeBoundarySplitFuse33Site
+    from fault_injection.sites.paged33 import Paged33Site
+    return Paged33Site
+
+
 def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithmetic_device='input',reference_mode='immediate',native_library=None,paged_partition=None):
     require(mechanism in SUPPORTED,'CONTINUOUS_ADAPTER_NOT_IMPLEMENTED')
     require(arithmetic_device in ('input','cpu'),'CONTINUOUS_ARITHMETIC_UNREVIEWED')
@@ -63,10 +84,7 @@ def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithme
     require(type(prompts) is list and (2<=len(prompts)<=8 if mechanism.startswith('quant.') else len(prompts)==1)
         and all(type(p) is list and 2<=len(p)<=(4096 if mechanism=='33.paged_decode' else 1024) and all(type(t) is int and t>=0 for t in p) for p in prompts),
         'CONTINUOUS_BOUNDED_TOKEN_PROMPTS_REQUIRED')
-    if paged_partition is not None:
-        require(mechanism=='33.paged_decode' and type(paged_partition) in (list,tuple)
-            and len(paged_partition)==2 and paged_partition[0]==128 and paged_partition[1] in (8,16,32)
-            and all(type(n) is int for n in paged_partition),'PAGED_TRUSTED_PARTITION_UNREVIEWED')
+    validate_paged_partition(mechanism,paged_partition,arithmetic_device,prompts)
     runner=worker.model_runner;model=runner.model
     from .continuous_model import validate_continuous_model
     # Validate exact pinned execute/preprocess/sample/model sources and real
@@ -274,8 +292,7 @@ class ContinuousRequest:
                 stream=torch.npu.current_stream,complete=complete)
             site_type=MLA28Site if type(self.model).__name__=='DeepseekV2ForCausalLM' else GQA28Site
             if self.binding.mechanism=='33.paged_decode':
-                from fault_injection.sites.paged33 import Paged33Site
-                site_type=Paged33Site
+                site_type=paged_site_type(self.binding.paged_partition)
             self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
             if self.binding.mechanism=='33.paged_decode':
                 self.site.control_block,self.site.fault_block=self.binding.paged_partition or (128,32)

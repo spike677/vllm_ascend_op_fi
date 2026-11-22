@@ -12,7 +12,7 @@ class ReferenceReviewTests(unittest.TestCase):
             for request in scope['requests']:
                 for state in request['result']['response']['provider_state']['rank_states'].values():
                     for row in state['evidence']['actual_requests']:
-                        pair=dict(same_legal_key_set=True,denominator_replay=False,nonselected_exact=True,key_visits=2305,page_mapping={'logical_keys':2305},control_agreement={'elements':3072,'bitwise_equal':3068},replacement_policy='WHOLE_TARGET_ROW_NO_VALUE_SELECTION',control_block=512,fault_block=256,native_control_residual_elements=4)
+                        pair=dict(same_legal_key_set=True,denominator_replay=False,nonselected_exact=True,key_visits=2305,page_mapping={'logical_keys':2305},control_agreement={'elements':3072,'bitwise_equal':3068},replacement_policy='WHOLE_TARGET_ROW_NO_VALUE_SELECTION',control_block=512,fault_block=256,matmul_mode='bf16_out_fp32',native_control_residual_elements=4)
                         row['partition_effect']=dict(calls=4,selected_changed_elements=8,pairs=[pair]*4)
         good=review(r,reference_variant=r['reference_variant']);self.assertTrue(good['passed']);self.assertFalse(good['qualification_granted'])
         f=r['scopes'][1]['requests'][-1]['result']['response']['provider_state']['rank_states']['1']['evidence']['actual_requests'][1]

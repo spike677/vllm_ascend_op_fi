@@ -137,12 +137,13 @@ def review(report, *, require_negative_creation=False, reference_variant=None):
             if report['mechanism']=='33.paged_decode':
                 effect=f['partition_effect'];need(effect['calls']==f['coverage']['eligible'] and effect['selected_changed_elements']>0,'PAGED_PARTITION_EFFECT_MISSING')
                 need(all(p['same_legal_key_set'] and not p['denominator_replay'] and p['nonselected_exact'] and p['key_visits']==p['page_mapping']['logical_keys'] for p in effect['pairs']),'PAGED_KEY_SET_OR_CONTROL_MISMATCH')
-                if reference_variant=='A2_BF16_SPLITFUSE_512_TO_256':
+                if reference_variant=='A2_BF16_SPLITFUSE_512_TO_256' or report.get('paged_deployment',{}).get('control_model')=='splitfuse_a2':
                     for pair in effect['pairs']:
                         c=pair['control_agreement']
                         need(c['elements']>0 and c['bitwise_equal']/c['elements']>=.99
                             and pair['replacement_policy']=='WHOLE_TARGET_ROW_NO_VALUE_SELECTION'
-                            and pair['control_block']==512 and pair['fault_block']==256,'SPLITFUSE_CONTROL_OR_POLICY_FAILED')
+                            and pair['control_block']==512 and pair['fault_block']==256
+                            and pair['matmul_mode']=='bf16_out_fp32','SPLITFUSE_CONTROL_OR_POLICY_FAILED')
                     effects[rank]['control_min_ratio']=min(p['control_agreement']['bitwise_equal']/p['control_agreement']['elements'] for p in effect['pairs'])
                     effects[rank]['control_residual_elements']=sum(p['native_control_residual_elements'] for p in effect['pairs'])
                 effects[rank]['partition_effect']={k:v for k,v in effect.items() if k!='pairs'}
