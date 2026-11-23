@@ -2,7 +2,7 @@
 import argparse,hashlib,json,os,subprocess,sys,tarfile,tempfile
 from pathlib import Path
 
-VERSIONS={'demoncatpfi':'0.4.0rc5','demoncat-worker-extension':'0.3.0rc5','demoncat-fault39-core':'0.3.0rc5'}
+VERSIONS={'demoncatpfi':'0.4.0rc6','demoncat-worker-extension':'0.3.0rc6','demoncat-fault39-core':'0.3.0rc6'}
 ROOTS=('src/','fault_injection/','fault39/src/','native_execution_strategy/','engineering_closure/',
        'tools/','tests/','docs/worker_core_v1/')
 EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',
@@ -51,10 +51,10 @@ def build(repo,output):
             files.append(dict(path=name,bytes=len(raw),sha256=sha(raw)))
         review=dict(schema='demoncat.source_review.v1',source_commit=commit,files=files,
             delivery_scope=['28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','18.api_half','22.wrong_row','39.matmul_range','17.spatial_padding','41.tail_column','26.fia_destination','20.buffer_substitute','33.paged_decode'],
-            product_candidates=['28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','18.api_half','22.wrong_row','39.matmul_range','17.spatial_padding','33.paged_decode'],
+            product_candidates=['28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','18.api_half','22.wrong_row','39.matmul_range','17.spatial_padding','33.paged_decode','41.tail_column','26.fia_destination','20.buffer_substitute'],
             restrictions={'33.paged_decode':'A2 measured range only; A3 launch/control review pending',
-                          '41/26fia/20':'Acceptance requires reviewed Native build; product adapter closed',
-                          '8/DeepSeek':'New deployment and product acceptance pending'},qualification_granted=False)
+                          '41/26fia/20':'A2 TP2 product passed; A3 TP1/TP2 acceptance candidate requires reviewed library and verified mapped CANN 9.1; no grant',
+                          '8/DeepSeek':'New deployment and product acceptance pending','15.alias_detach':'B tier approved; natural ND write/consumer observed; separate development branch, product closed in r7'},qualification_granted=False)
         write_json_bytes(output/'source-review.json',review)
         archive=output/(output.name+'.tar.gz')
         with tarfile.open(archive,'w:gz') as tf:

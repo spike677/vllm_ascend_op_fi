@@ -64,4 +64,7 @@ python tools/extract_product_record.py "$RECEIPT" --runtime-identity "$RUNTIME_I
 
 runtime-identity文件按工具DEPLOYMENT字段填写实际值，缺失填null；源代码清单SHA使用r7许可清单。提取页包含运行时ACL身份、库SHA、计数、消费者和三项恢复；≤4096字节硬上限，原样分页回传。额外提交缺许可、未知profile、用户库路径注入拒绝结果及对应owner/rank；审查器未通过须保留失败文本。原件留黄区，构建提取的反斜线转义修复只限已记录的传输解析，运行回执不修改。
 
-安装r7到独立环境；先按交付清单核验三wheel、源码包、source-review和安装源码，绝不覆盖r6。A3新组合仅候选，product_closed仍为false。无r6.1：TP1 Batch根因未定，本包不宣称修复其失败。
+安装r7到独立环境；先按交付清单核验三wheel、源码包、source-review和安装源码，绝不覆盖r6。A3新组合仅候选，product_closed仍为false。r7已同步r6.1串行B1金丝雀修正；旧TP1 Batch失败原因未唯一归因。新协议A2 TP2通过，黄区TP1/TP2仍分别复测。
+
+
+正式发行使用标签 demoncatpfi-rc3-preview-20261123-r7；完整包SHA和许可source-review SHA以 releases/RC3-PREVIEW-R7-HANDOFF-20261123.md 为准。本文虽保留历史draft文件名，执行内容已定稿；必须与r7同包使用。
