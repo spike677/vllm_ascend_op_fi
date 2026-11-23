@@ -30,3 +30,5 @@ fault/off/health的区域字节恢复必须严格成立，leases/hooks/inflight�
 故障阶段允许显式记录 `+inf`、`-inf`、`nan` 字符串（JSON 不含非标准 NaN）。这些是超出有限标定范围的现象，不能解释为噪声；normal/off/health 与所有校准仍必须有限。capture 的 start 通过可信驱动指定 `phase="fault"`，其他阶段默认拒绝非有限值。若某 rank 没有可观测的 compute_logits 返回值，当前采集器明确拒绝；不得复制 driver 的数组伪装该 rank 的观测。需按实际模型边界补齐观测后再验收。
 
 2026-11-23补充：上述capture及observe漏打包，已通过独立B组工具补充件补交，不改r5/r6标签。先验证采集→组装→review→extract链路再开始正式标定；不能用未知旧脚本的摘要替代完整数组。
+
+11-23下午补充：新“logprob约1e-5”摘要没有定义top1/同token/排名指标，不能与旧记录其他候选的0.5～1.0直接比较。旧首选token本来就只有约1e-6～1e-5的变化。实际prompt token SHA、进程和确定性配置尚未对齐，不缩窄上界，不调整1.5系数。详见[yellow_intake_20261123_afternoon.md](yellow_intake_20261123_afternoon.md)。源码比对采用新Git原始字节清单，不用旧Windows CRLF工作树哈希；原始黄区文件与回传hash始终不改。

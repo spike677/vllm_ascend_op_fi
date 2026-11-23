@@ -80,7 +80,7 @@ PYTHONPATH="$TOOLS" python -m tools.extract_product_record /private/product-rece
 
 ## A5 33只取证
 
-按[r6 33步骤](rc3_r6_paged33_a3_acceptance.md)做原生只观测、实际key/核数/S2解析、固定真实QKV控制检查≥99%。A3注入保持关闭，不能复用A2分组或修改设备名。当前只观测probe固定TP2，TP1需按实际几何适配并单独审查，不能拿TP2证据登记TP1；阶段结果不阻塞上述七项。
+按[r6 33步骤](rc3_r6_paged33_a3_acceptance.md)做原生只观测、实际key/核数/S2解析、固定真实QKV控制检查≥99%。A3注入保持关闭，不能复用A2分组或修改设备名。11-23下午明确：本轮33只做TP2取证和控制；TP1适配列入r7依赖，不要求本轮执行。不能拿TP2证据登记TP1；阶段结果不阻塞上述七项。
 
 ## A6 CANN路线不可混用
 

@@ -86,6 +86,8 @@ finally:
 
 actual_source_paths从包内`docs/worker_core_v1/dsv4_0731_source_review_20261122.json`的files条目取路径，读取的是已import包，不是把候选SHA复制为实测SHA。缺失为null。只观测后确认observer_removed=true、injected_calls=0。
 
+11-23下午更正：r1 ZIP保持原字节；下一轮从开发线的`dsv4_0731_source_review_20261123.json`取files路径。新清单修正了旧候选SHA使用Windows CRLF字节的问题，改用同提交Git blob字节，并追加注册表/图相关核对路径。source动作本身无需更新；仍读取黄区实际文件原字节，不归一化黄区数据。使用原九路径已采到的正式source结果仍可按新候选SHA复核，不因蓝区清单错误要求重采同一份未变化文件。
+
 ```bash
 PYTHONPATH="$TOOLS" python -m tools.extract_dsv4_record observe /private/observe-reports.json
 PYTHONPATH="$TOOLS" python -m tools.extract_dsv4_record observe /private/source-reports.json
