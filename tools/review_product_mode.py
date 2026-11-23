@@ -23,6 +23,13 @@ def review_batch_requests(requests,need,expected_tp=2):
                 c=f['coverage'];ids=f['request_ids'];scheduled=f['scheduled_counts']
                 need(r['request_id'] in ids and set(ids)==set(scheduled),'BATCH_FRAME_REQUEST_MAPPING')
                 need(c['failed']==0 and 0<=c['changed']<=c['applied']<=c['observed'],'BATCH_FRAME_COUNTER_INVALID')
+                if 'site_coverage' in f:
+                    census=f['site_coverage'];calls=census['actual_apply_calls']
+                    need(calls and all(type(n) is int and n>0 for n in calls.values())
+                         and sum(calls.values())==c['observed'],'BATCH_ACTUAL_APPLY_CENSUS_MISMATCH')
+                    need(all(x['site'] not in calls and x['reason']=='NOT_CALLED_IN_ACTUAL_FORWARD'
+                             for x in census['not_called']),'BATCH_DORMANT_SITE_CONTRADICTION')
+                    need(type(census.get('uncovered_calls')) is list,'BATCH_UNCOVERED_CALLS_UNREPORTED')
                 if f['eligible']:
                     need(2<=len(ids)<=8 and all(v==1 for v in scheduled.values()) and f['reason'] is None,'BATCH_NOT_REAL_MULTI_REQUEST_DECODE')
                     need(c['eligible']>0 and c['eligible']==c['attempted']==c['applied']==c['consumed']==c['restored'],'ELIGIBLE_COVERAGE_INCOMPLETE')
@@ -97,6 +104,20 @@ def review(data, *, expected_tp=2, hardware_scope="A2/0.26/Qwen3.8-community-W8A
                          'ACTUAL_CONSUMER_OR_BYTE_PROOF_MISSING')
                 else:
                     need(rank['status']=='NOT_INJECTED' and c['applied']==0 and rank['reasons'], 'RANGE_NEGATIVE_FAILED')
+                if index<3 and data['mechanism']=='8.allgather_output_row':
+                    for site in rank['sites']:
+                        need(site.get('actual_producer_join') is True and site.get('native_calls')==1
+                            and site.get('metadata_unchanged') is True
+                            and site.get('reference_variant')=='allgather_output_row_proxy', 'ALLGATHER_PRODUCT_ROUTING_JOIN_UNPROVEN')
+                        need(site.get('row_request_ids') and set(site['row_request_ids'])=={rank['request_id']},'ALLGATHER_PRODUCT_REQUEST_ROWS_UNPROVEN')
+                if index<3 and data['mechanism']=='28.fia.denominator_replay' and any(s.get('representation') for s in rank['sites']):
+                    need({s.get('representation') for s in rank['sites']} == {'expanded_prefill_qkv','absorbed_decode_latent'},
+                         'MLA_PREFILL_DECODE_REPRESENTATIONS_MISSING')
+                    for site in rank['sites']:
+                        need(site.get('consumer_storage_verified') is True and site.get('consumer_site')
+                             and site.get('copy_operator')=='aten::copy_' and site.get('copy_exact') is True
+                             and site.get('consumer_device_completion')=='SAME_STREAM_EVENT_SYNCHRONIZED',
+                             'MLA_REAL_CONSUMER_PROOF_MISSING')
                 if index<3 and data['mechanism']=='39.matmul_range':
                     for site in rank['sites']:
                         if site['eligible']:

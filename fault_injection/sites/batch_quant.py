@@ -35,6 +35,7 @@ class BatchQuantSite:
         self.model=model;self.runner=runner;self.fault=fault
         self.events=[];self.methods=[];self.sites=[];self.uncovered=[]
         self.local=threading.local();self.forward_index=-1;self.hooks=[];self.pending=0
+        self.forward_calls=[]
 
     def install(self):
         import torch_npu
@@ -55,6 +56,8 @@ class BatchQuantSite:
             require('apply' not in vars(scheme),'SCHEME_ALREADY_WRAPPED')
             original=scheme.apply
             def wrapped(layer,x,*args,_name=name,_original=original,**kwargs):
+                require(self.forward_calls,'QUANT_APPLY_OUTSIDE_REAL_FORWARD')
+                self.forward_calls[-1].append(_name)
                 return self.call(_name,_original,layer,x,args,kwargs)
             scheme.apply=wrapped;self.methods.append((scheme,wrapped));self.sites.append(name)
         require(self.sites,'NO_SEPARATE_W8A8_LINEAR_SITE')
@@ -112,7 +115,9 @@ class BatchQuantSite:
         quant._dcat_site=True
         self.quant_wrapper=quant;self.qmm_wrapper=qmm
         torch_npu.npu_dynamic_quant=quant;torch_npu.npu_quant_matmul=qmm
-        def pre(*unused):self.forward_index+=1
+        def pre(*unused):
+            self.forward_index+=1
+            self.forward_calls.append([])
         self.hooks.append(self.model.register_forward_pre_hook(pre))
         if self.reference_queue is not None:
             def post(*unused):self.flush_reference()

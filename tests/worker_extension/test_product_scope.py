@@ -18,7 +18,7 @@ class ProductScopeTests(unittest.TestCase):
     def test_pure_catalog_and_fresh_status_do_not_claim_live_admission(self):
         root = Path(__file__).resolve().parents[2]
         code = ('import sys,json;from fault_injection.catalog import list_faults;'
-                'rows=list_faults();assert len(rows)==17;'
+                'rows=list_faults();assert len(rows)==18;'
                 'assert "torch" not in sys.modules;assert "torch_npu" not in sys.modules;'
                 'print(json.dumps(rows))')
         result = subprocess.run([sys.executable, '-B', '-c', code], cwd=root,

@@ -9,6 +9,7 @@ import hashlib
 import inspect
 from pathlib import Path
 import torch
+from torch.utils._python_dispatch import TorchDispatchMode, _disable_current_modes
 from fault_injection.engines.attention import recompute_attention_row
 
 SOURCE_SHA = '67b4479cca16fd164b33b91b2fa4f48e95f2474720e484abdf3b3897a8ea1545'
@@ -21,6 +22,39 @@ def require(ok, reason):
 def fingerprint(t):
     t=t.detach().contiguous().cpu()
     return hashlib.sha256(t.view(torch.uint8).numpy().tobytes()).hexdigest()
+
+
+def verify_consumer_row(actual, replacement, row):
+    """The real projection must read the leased row, not an equal copy."""
+    require(actual.shape == replacement.shape and actual.dtype == replacement.dtype
+            and actual.device == replacement.device, 'REAL_OPROJ_INPUT_LAYOUT_MISMATCH')
+    a, b = actual[row], replacement[row]
+    require(a.untyped_storage()._cdata == b.untyped_storage()._cdata
+            and a.storage_offset() == b.storage_offset() and a.stride() == b.stride(),
+            'REAL_OPROJ_STORAGE_NOT_LEASED')
+    require(torch.equal(a, b), 'REAL_OPROJ_INPUT_MISMATCH')
+
+
+class MLACopyMode(TorchDispatchMode):
+    """Observe the source's real copy into o_proj_input, never create a copy."""
+    def __init__(self,site):super().__init__();self.site=site
+    def __torch_dispatch__(self,func,types,args=(),kwargs=None):
+        matched=[]
+        if func._schema.name=='aten::copy_' and len(args)>=2:
+            dst,src=args[:2]
+            for lease in self.site.pending.values():
+                value=lease['replacement']
+                if (isinstance(src,torch.Tensor) and src.untyped_storage()._cdata==value.untyped_storage()._cdata
+                    and src.storage_offset()==value.storage_offset() and src.shape==value.shape and src.stride()==value.stride()):
+                    require('consumer_input' not in lease,'MLA_REPLACEMENT_MULTIPLE_COPIES')
+                    matched.append(lease)
+        result=func(*args,**(kwargs or {}))
+        with _disable_current_modes():
+            for lease in matched:
+                require(dst.shape==src.shape and dst.dtype==src.dtype and torch.equal(dst,src),'MLA_REAL_COPY_NOT_EXACT')
+                lease['consumer_input']=dst
+                lease['event'].update(copy_operator=func._schema.name,copy_exact=True)
+        return result
 
 
 class MLA28Site:
@@ -39,6 +73,11 @@ class MLA28Site:
                     'UNREVIEWED_MLA_SOURCE')
             require(not impl.fa_quant_layer and not impl.use_output_gate and impl.speculative_config is None,
                     'MLA_VARIANT_NOT_SUPPORTED')
+            require('forward' not in vars(impl),'MLA_ALREADY_WRAPPED')
+            original_forward=impl.forward
+            def forward(*args,_original=original_forward,**kwargs):
+                with MLACopyMode(self):return _original(*args,**kwargs)
+            impl.forward=forward;self.methods.append((impl,'forward',forward))
             for method in ('_forward_prefill','_forward_decode'):
                 require(method not in vars(impl),'MLA_ALREADY_WRAPPED')
                 original=getattr(impl,method)
@@ -50,14 +89,20 @@ class MLA28Site:
                 lease=self.pending.get(_name)
                 if lease is None:return
                 x=args[0]; idx=lease['row']
+                require('consumer_input' in lease,'MLA_NATIVE_COPY_NOT_OBSERVED')
+                verify_consumer_row(x,lease['consumer_input'],idx)
                 require(torch.equal(x[idx],lease['replacement'][idx]),'REAL_OPROJ_INPUT_MISMATCH')
                 require(torch.npu.current_stream()==lease['stream'],'CONSUMER_STREAM_CHANGED')
-                lease['event']['consumed']=True
+                lease['event']['consumer_entered']=True
+                lease['event']['consumer_module_type']=type(mod).__name__
             def post(mod,args,out,_name=name):
                 lease=self.pending.get(_name)
                 if lease is None:return
-                require(lease['event']['consumed'],'OPROJ_CONSUMPTION_NOT_OBSERVED')
+                require(lease['event'].get('consumer_entered'),'OPROJ_CONSUMPTION_NOT_OBSERVED')
                 completion=torch.npu.Event();completion.record(lease['stream']);completion.synchronize()
+                lease['event'].update(consumed=True,consumer_operator='module::'+type(mod).__name__+'.forward',
+                    consumer_site=_name+'.impl.o_proj',consumer_storage_verified=True,
+                    consumer_device_completion='SAME_STREAM_EVENT_SYNCHRONIZED')
                 if self.region_leases is None:lease['replacement'][lease['row']].copy_(lease['backup'])
                 else:
                     self.region_leases.consumed(lease['token']);self.region_leases.restore(lease['token'])
@@ -117,7 +162,8 @@ class MLA28Site:
             token=self.region_leases.acquire(replacement[row]);self.region_leases.write(token,value)
         require(torch.equal(replacement[:row],result[:row]) and torch.equal(replacement[row+1:],result[row+1:]),
                 'NON_TARGET_ROWS_CHANGED')
-        event.update(applied=True,changed=int((replacement[row]!=backup).sum().item()),row=row,
+        changed_elements=int((replacement[row]!=backup).sum().item())
+        event.update(applied=True,changed=int(changed_elements>0),changed_elements=changed_elements,row=row,
                      non_target_exact=True,stream=str(torch.npu.current_stream()),
                      before_sha256=fingerprint(backup),after_sha256=fingerprint(value))
         self.pending[name]=dict(replacement=replacement,backup=backup,row=row,event=event,stream=torch.npu.current_stream(),token=token)

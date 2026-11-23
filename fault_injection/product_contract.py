@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 COUNTERS = ('observed', 'eligible', 'attempted', 'applied', 'changed', 'consumed', 'restored', 'failed')
 # Native entries remain BLUE A2/TP2-only through product_config/product_binding.
-PRODUCT_CANDIDATES = ('15.alias_detach','18.api_half', '39.output_proxy', '22.wrong_row', '28.fia.denominator_replay', '17.spatial_padding', 'quant.batch_shared_scale', '39.matmul_range', '33.paged_decode', '41.tail_column', '26.fia_destination', '20.buffer_substitute')
+PRODUCT_CANDIDATES = ('8.allgather_output_row','15.alias_detach','18.api_half', '39.output_proxy', '22.wrong_row', '28.fia.denominator_replay', '17.spatial_padding', 'quant.batch_shared_scale', '39.matmul_range', '33.paged_decode', '41.tail_column', '26.fia_destination', '20.buffer_substitute')
 
 
 @dataclass(frozen=True)
@@ -55,7 +55,10 @@ def summarize_request(request_id, rank, events, *, skipped=(), completed=False):
         site={key: event.get(key) for key in (
             'site', 'eligible', 'reason', 'changed', 'changed_elements', 'nonfinite_before', 'nonfinite_after',
             'consumer_operator', 'consumed', 'restored', 'before_sha256', 'restored_sha256')}
-        for key in ('full_range_control_passed','range_reference','non_target_exact','partition_reference'):
+        for key in ('full_range_control_passed','range_reference','non_target_exact','partition_reference',
+                    'actual_producer_join','row_request_ids','native_calls','metadata_unchanged','reference_variant',
+                    'representation','key_count','consumer_site','consumer_storage_verified','consumer_device_completion',
+                    'copy_operator','copy_exact'):
             if key in event:site[key]=event[key]
         sites.append(site)
     return dict(request_id=request_id, rank=rank, status='NOT_INJECTED' if skipped else 'OBSERVED',

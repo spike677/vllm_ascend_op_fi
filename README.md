@@ -1,3 +1,9 @@
+## 2026-11-23 晚：V2-Lite 产品预演与关闭的 V4 D2 适配
+
+[V2-Lite产品预演](docs/worker_core_v1/v2_product_rehearsal_20261123/README.md)：A2 / 0.26 / CANN9.1 / W8A8 / TP2 / EP关闭，8 AllGather行错位、18、39op、39mr、Batch及28 MLA在各自声明范围完成同组Worker两个owner、负例、真实消费者和恢复。Batch按实际quant apply核对，未调用候选和融合路径外的量化单独列出；28观察上游原有copy到o_proj_input，未添加写入链。结果仅为BLUE_COMBINATION预演，不授予V4/MC2或免许可资格。
+
+[V4 D2](docs/worker_core_v1/r8_dsv4_and_paged33_preparation_20261123.md)已有18/22/39op/39mr/28的真实张量调用适配和CPU夹具；公共factory仍关闭，待D1实测关联。r8 CPU门禁1223项：1221通过、2项已废弃研究入口有理由跳过。r8今晚不下发，既有冻结标签和包不改。
+
 ## 2026-11-22 隔夜：r5冻结与33方向A通过限定验收
 
 [r5交付单](releases/RC3-PREVIEW-R5-HANDOFF-20261122.md)：源码、三wheel、安装检查和SHA齐备；产品RPC契约、900秒正式预算及身份字段已发布。黄区回传缺身份时不登记，现有冻结物不改动。

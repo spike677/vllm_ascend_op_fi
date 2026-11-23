@@ -33,6 +33,8 @@ class Capability:
 
 
 CAPABILITIES = (
+    Capability('8.allgather_output_row', 'Actual AllGather unpermute output -> value consumer', 'native_provider_bridge', 'BLUE TP2 rehearsal pending', 'EP disabled; not MC2/V4 qualification',
+        'fault_injection.sites.allgather_output8', None, None, ('PRODUCT_REHEARSAL_PENDING',), None),
     Capability('8.restore_offset', 'MoE restore indices/top-k mapping', 'evidence_only', 'historical fixed experiment', 'No complete reusable local source',
         None, None,
         None,

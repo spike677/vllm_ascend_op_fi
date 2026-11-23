@@ -10,7 +10,7 @@ from pathlib import Path
 from .serving_context import require
 
 ATTRIBUTE='_demoncat_continuous_bindings'
-SUPPORTED=('15.alias_detach','20.buffer_substitute','26.fia_destination','41.tail_column','17.spatial_padding','33.paged_decode','28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset')
+SUPPORTED=('8.allgather_output_row','15.alias_detach','20.buffer_substitute','26.fia_destination','41.tail_column','17.spatial_padding','33.paged_decode','28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset')
 
 
 def digest(value):
@@ -93,7 +93,15 @@ def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithme
         from .continuous_vision17 import validate_visual_model
         family=validate_visual_model(runner)
     else:family=validate_continuous_model(runner,{'pending-'+str(i):p for i,p in enumerate(prompts)})
-    require(family!='deepseek_v2' or mechanism in ('28.fia.denominator_replay','8.restore_offset','18.api_half','39.output_proxy','22.wrong_row'),'MLA_CONTINUOUS_SITE_NOT_ADAPTED')
+    require(family!='deepseek_v2' or mechanism in ('28.fia.denominator_replay','8.restore_offset','8.allgather_output_row','18.api_half','39.output_proxy','39.matmul_range','quant.batch_shared_scale','22.wrong_row'),'MLA_CONTINUOUS_SITE_NOT_ADAPTED')
+    if mechanism=='8.allgather_output_row':
+        from .deployment_authorization import authority_for
+        from fault_injection.environment import _live_soc
+        authority=authority_for(worker);soc,_=_live_soc()
+        from fault_injection.sites.allgather_output8 import validate_product_scope
+        validate_product_scope(family=family,source=authority.source if authority else None,
+            tp=runner.vllm_config.parallel_config.tensor_parallel_size,
+            ep=runner.vllm_config.parallel_config.enable_expert_parallel,soc=soc)
     require(not model.training and not runner.vllm_config.cache_config.enable_prefix_caching
         and runner.vllm_config.kv_transfer_config is None,'CONTINUOUS_FRESH_CACHE_INFERENCE_REQUIRED')
     if mechanism in ('41.tail_column','26.fia_destination','20.buffer_substitute'):
@@ -249,17 +257,18 @@ class ContinuousRequest:
                 event=torch.npu.Event();event.record(stream);event.synchronize()
             leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],stream=torch.npu.current_stream,complete=complete)
             self.site=Alias15Site(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
-        elif self.binding.mechanism in ('18.api_half','22.wrong_row','8.restore_offset'):
+        elif self.binding.mechanism in ('18.api_half','22.wrong_row','8.restore_offset','8.allgather_output_row'):
             from fault_injection.sites.norm18 import Norm18Site
             from fault_injection.sites.rope22 import Rope22Site
             from fault_injection.sites.mla_rope22 import MLARope22Site
             from fault_injection.sites.moe8 import MoE8Site
+            from fault_injection.sites.allgather_output8 import AllGatherOutput8Site
             from fault_injection.engines.region_lease import RegionLeases
             def complete(stream):
                 event=torch.npu.Event();event.record(stream);event.synchronize()
             leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
                 stream=torch.npu.current_stream,complete=complete)
-            site_type={'18.api_half':Norm18Site,'22.wrong_row':Rope22Site,'8.restore_offset':MoE8Site}[self.binding.mechanism]
+            site_type={'18.api_half':Norm18Site,'22.wrong_row':Rope22Site,'8.restore_offset':MoE8Site,'8.allgather_output_row':AllGatherOutput8Site}[self.binding.mechanism]
             if self.binding.mechanism=='22.wrong_row' and type(self.model).__name__=='DeepseekV2ForCausalLM':site_type=MLARope22Site
             self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
         elif self.binding.mechanism in ('41.tail_column','26.fia_destination','20.buffer_substitute'):
@@ -309,7 +318,7 @@ class ContinuousRequest:
         require(self.inside==0 and self.samples==4 and self.error is None,'CONTINUOUS_REQUEST_NOT_COMPLETE')
         events=self.site.events
         actual_sites={e['site'] for e in events}
-        if self.binding.mechanism in ('39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset'):
+        if self.binding.mechanism in ('39.output_proxy','39.matmul_range','18.api_half','22.wrong_row','8.restore_offset','8.allgather_output_row'):
             calls=self.site.forward_calls
             require(len(calls)==4 and all(calls) and sum(sum(c.values()) for c in calls)==len(events),
                     'CONTINUOUS_ACTUAL_FORWARD_COVERAGE_INCOMPLETE')

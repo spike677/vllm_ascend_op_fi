@@ -1,0 +1,1651 @@
+{
+  "schema": "dcat.blue.v2.product.rehearsal.v1",
+  "combinations": [
+    {
+      "mechanism": "8.allgather_output_row",
+      "status": "PRODUCT_BLUE_REVIEW_PASSED",
+      "source": "BLUE_COMBINATION",
+      "qualification": "REHEARSAL_ONLY",
+      "product_registered": false,
+      "v4_or_mc2_qualification": false,
+      "receipt_sha256": "c4c5369a99d44a9e169526fcb706de514e15ea624a75f0be543f5bf09820899d",
+      "source_manifest_sha256": "469bb15cf1d227b20f5ab8a7728513054dbeb44b471d8a729ad6f0cecb714505",
+      "identity": [
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "quant_model_description_sha256": "f798a018107d9c2e05ee6a488733d9d28157cf6bcbc8b6ea4bf7842b0bf819b9",
+          "safetensors_index_sha256": {
+            "quant_model_weight_w8a8_dynamic.safetensors.index.json": "ab50a385d7c88bad1810a635ee9b6cde9c2af361e9772f3be3c1a28bde5eadff"
+          },
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1
+        },
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "quant_model_description_sha256": "f798a018107d9c2e05ee6a488733d9d28157cf6bcbc8b6ea4bf7842b0bf819b9",
+          "safetensors_index_sha256": {
+            "quant_model_weight_w8a8_dynamic.safetensors.index.json": "ab50a385d7c88bad1810a635ee9b6cde9c2af361e9772f3be3c1a28bde5eadff"
+          },
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1
+        }
+      ],
+      "scopes": [
+        {
+          "scope": 0,
+          "owners_by_rank": [
+            "987b1ad0ff9a1aa2b004dc4d1eb777e2",
+            "a80019043310e79a1999e2d06b5ec857"
+          ],
+          "worker_group_sha256": "461bf15d066868d745424aaafe4dcd92b3aee4da2644d0cdf8aef1166fe38ba1",
+          "coverage_by_rank": {
+            "0": {
+              "observed": 312,
+              "eligible": 78,
+              "attempted": 78,
+              "applied": 78,
+              "changed": 78,
+              "consumed": 78,
+              "restored": 78,
+              "failed": 0
+            },
+            "1": {
+              "observed": 312,
+              "eligible": 78,
+              "attempted": 78,
+              "applied": 78,
+              "changed": 78,
+              "consumed": 78,
+              "restored": 78,
+              "failed": 0
+            }
+          },
+          "negative_checks": [
+            {
+              "rank": 0,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "ORDINARY_TASK_ADAPTER_PENDING:8.allgather_output_row",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            },
+            {
+              "rank": 1,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "ORDINARY_TASK_ADAPTER_PENDING:8.allgather_output_row",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            }
+          ],
+          "recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "actual_batch_sizes": null,
+          "noneligible_reasons": {
+            "NO_MULTI_ROW_REQUEST_GROUP": 468
+          },
+          "mla_representations": {},
+          "batch_actual_apply_sites": [],
+          "batch_not_called_candidates": [],
+          "batch_uncovered_call_counts": {},
+          "user_request_seconds": {
+            "min": 0.702671614009887,
+            "max": 0.8096226782072335
+          },
+          "performance_multiplier": null
+        },
+        {
+          "scope": 1,
+          "owners_by_rank": [
+            "f83fd7f9da7e1b7253733a3804096194",
+            "efb2ca07335111e78438224b80f3f907"
+          ],
+          "worker_group_sha256": "461bf15d066868d745424aaafe4dcd92b3aee4da2644d0cdf8aef1166fe38ba1",
+          "coverage_by_rank": {
+            "0": {
+              "observed": 312,
+              "eligible": 78,
+              "attempted": 78,
+              "applied": 78,
+              "changed": 78,
+              "consumed": 78,
+              "restored": 78,
+              "failed": 0
+            },
+            "1": {
+              "observed": 312,
+              "eligible": 78,
+              "attempted": 78,
+              "applied": 78,
+              "changed": 78,
+              "consumed": 78,
+              "restored": 78,
+              "failed": 0
+            }
+          },
+          "negative_checks": [
+            {
+              "rank": 0,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "ORDINARY_TASK_ADAPTER_PENDING:8.allgather_output_row",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            },
+            {
+              "rank": 1,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "ORDINARY_TASK_ADAPTER_PENDING:8.allgather_output_row",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            }
+          ],
+          "recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "actual_batch_sizes": null,
+          "noneligible_reasons": {
+            "NO_MULTI_ROW_REQUEST_GROUP": 468
+          },
+          "mla_representations": {},
+          "batch_actual_apply_sites": [],
+          "batch_not_called_candidates": [],
+          "batch_uncovered_call_counts": {},
+          "user_request_seconds": {
+            "min": 0.6787603311240673,
+            "max": 0.7673035277985036
+          },
+          "performance_multiplier": null
+        }
+      ]
+    },
+    {
+      "mechanism": "18.api_half",
+      "status": "PRODUCT_BLUE_REVIEW_PASSED",
+      "source": "BLUE_COMBINATION",
+      "qualification": "REHEARSAL_ONLY",
+      "product_registered": false,
+      "v4_or_mc2_qualification": false,
+      "receipt_sha256": "8891f4162101293138210795dc69ec6039d474c9fcdf4b22d35bfc64477ba097",
+      "source_manifest_sha256": "cf1bf0df316927c82ab0c721681ff66a96bb06135004b2e9e29fc46efdc16663",
+      "identity": [
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "quant_model_description_sha256": "f798a018107d9c2e05ee6a488733d9d28157cf6bcbc8b6ea4bf7842b0bf819b9",
+          "safetensors_index_sha256": {
+            "quant_model_weight_w8a8_dynamic.safetensors.index.json": "ab50a385d7c88bad1810a635ee9b6cde9c2af361e9772f3be3c1a28bde5eadff"
+          },
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1
+        },
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "quant_model_description_sha256": "f798a018107d9c2e05ee6a488733d9d28157cf6bcbc8b6ea4bf7842b0bf819b9",
+          "safetensors_index_sha256": {
+            "quant_model_weight_w8a8_dynamic.safetensors.index.json": "ab50a385d7c88bad1810a635ee9b6cde9c2af361e9772f3be3c1a28bde5eadff"
+          },
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1
+        }
+      ],
+      "scopes": [
+        {
+          "scope": 0,
+          "owners_by_rank": [
+            "1a9b5adefe78807385d2bcd35d475bc7",
+            "5f88903532462f0b28c2e47034ba9a0c"
+          ],
+          "worker_group_sha256": "3550e84b92bb8f3ae4b2a8dfd7406a001d3606df822a6a41e0d191fae6d8a5f6",
+          "coverage_by_rank": {
+            "0": {
+              "observed": 660,
+              "eligible": 660,
+              "attempted": 660,
+              "applied": 660,
+              "changed": 660,
+              "consumed": 660,
+              "restored": 660,
+              "failed": 0
+            },
+            "1": {
+              "observed": 660,
+              "eligible": 660,
+              "attempted": 660,
+              "applied": 660,
+              "changed": 660,
+              "consumed": 660,
+              "restored": 660,
+              "failed": 0
+            }
+          },
+          "negative_checks": [
+            {
+              "rank": 0,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "RMS18_ORDINARY_BINDING_REQUIRED",
+                "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            },
+            {
+              "rank": 1,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "RMS18_ORDINARY_BINDING_REQUIRED",
+                "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            }
+          ],
+          "recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "actual_batch_sizes": null,
+          "noneligible_reasons": {},
+          "mla_representations": {},
+          "batch_actual_apply_sites": [],
+          "batch_not_called_candidates": [],
+          "batch_uncovered_call_counts": {},
+          "user_request_seconds": {
+            "min": 0.6693162880837917,
+            "max": 1.300400533946231
+          },
+          "performance_multiplier": null
+        },
+        {
+          "scope": 1,
+          "owners_by_rank": [
+            "b011efc8d28f738280b32fef47489024",
+            "f4f624095d53066ead4b29735249ef62"
+          ],
+          "worker_group_sha256": "3550e84b92bb8f3ae4b2a8dfd7406a001d3606df822a6a41e0d191fae6d8a5f6",
+          "coverage_by_rank": {
+            "0": {
+              "observed": 660,
+              "eligible": 660,
+              "attempted": 660,
+              "applied": 660,
+              "changed": 660,
+              "consumed": 660,
+              "restored": 660,
+              "failed": 0
+            },
+            "1": {
+              "observed": 660,
+              "eligible": 660,
+              "attempted": 660,
+              "applied": 660,
+              "changed": 660,
+              "consumed": 660,
+              "restored": 660,
+              "failed": 0
+            }
+          },
+          "negative_checks": [
+            {
+              "rank": 0,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "RMS18_ORDINARY_BINDING_REQUIRED",
+                "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            },
+            {
+              "rank": 1,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "RMS18_ORDINARY_BINDING_REQUIRED",
+                "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            }
+          ],
+          "recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "actual_batch_sizes": null,
+          "noneligible_reasons": {},
+          "mla_representations": {},
+          "batch_actual_apply_sites": [],
+          "batch_not_called_candidates": [],
+          "batch_uncovered_call_counts": {},
+          "user_request_seconds": {
+            "min": 0.6624181440565735,
+            "max": 1.226095664082095
+          },
+          "performance_multiplier": null
+        }
+      ]
+    },
+    {
+      "mechanism": "39.output_proxy",
+      "status": "PRODUCT_BLUE_REVIEW_PASSED",
+      "source": "BLUE_COMBINATION",
+      "qualification": "REHEARSAL_ONLY",
+      "product_registered": false,
+      "v4_or_mc2_qualification": false,
+      "receipt_sha256": "90934a6bf7dc0522d0c328591fa4b0ab2a2c969d1f0ab14b4fce02651abb9d52",
+      "source_manifest_sha256": "cf1bf0df316927c82ab0c721681ff66a96bb06135004b2e9e29fc46efdc16663",
+      "identity": [
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "quant_model_description_sha256": "f798a018107d9c2e05ee6a488733d9d28157cf6bcbc8b6ea4bf7842b0bf819b9",
+          "safetensors_index_sha256": {
+            "quant_model_weight_w8a8_dynamic.safetensors.index.json": "ab50a385d7c88bad1810a635ee9b6cde9c2af361e9772f3be3c1a28bde5eadff"
+          },
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1
+        },
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "quant_model_description_sha256": "f798a018107d9c2e05ee6a488733d9d28157cf6bcbc8b6ea4bf7842b0bf819b9",
+          "safetensors_index_sha256": {
+            "quant_model_weight_w8a8_dynamic.safetensors.index.json": "ab50a385d7c88bad1810a635ee9b6cde9c2af361e9772f3be3c1a28bde5eadff"
+          },
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1
+        }
+      ],
+      "scopes": [
+        {
+          "scope": 0,
+          "owners_by_rank": [
+            "58fe046b75ed6975252c62550a33a194",
+            "731909e5dc07871916de6a9d34902adc"
+          ],
+          "worker_group_sha256": "3550e84b92bb8f3ae4b2a8dfd7406a001d3606df822a6a41e0d191fae6d8a5f6",
+          "coverage_by_rank": {
+            "0": {
+              "observed": 1389,
+              "eligible": 996,
+              "attempted": 996,
+              "applied": 996,
+              "changed": 996,
+              "consumed": 996,
+              "restored": 996,
+              "failed": 0
+            },
+            "1": {
+              "observed": 1389,
+              "eligible": 996,
+              "attempted": 996,
+              "applied": 996,
+              "changed": 996,
+              "consumed": 996,
+              "restored": 996,
+              "failed": 0
+            }
+          },
+          "negative_checks": [
+            {
+              "rank": 0,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "OUTPUT39_ORDINARY_TASK_BINDING_REQUIRED",
+                "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            },
+            {
+              "rank": 1,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "OUTPUT39_ORDINARY_TASK_BINDING_REQUIRED",
+                "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            }
+          ],
+          "recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "actual_batch_sizes": null,
+          "noneligible_reasons": {
+            "OUTPUT_NOT_BF16_ND": 786
+          },
+          "mla_representations": {},
+          "batch_actual_apply_sites": [],
+          "batch_not_called_candidates": [],
+          "batch_uncovered_call_counts": {},
+          "user_request_seconds": {
+            "min": 0.6762616820633411,
+            "max": 1.8522994457744062
+          },
+          "performance_multiplier": null
+        },
+        {
+          "scope": 1,
+          "owners_by_rank": [
+            "6657b9ea44cb8d89ea613d387b5e90c4",
+            "932180fa56b946ccb2f8cb6e06530dd0"
+          ],
+          "worker_group_sha256": "3550e84b92bb8f3ae4b2a8dfd7406a001d3606df822a6a41e0d191fae6d8a5f6",
+          "coverage_by_rank": {
+            "0": {
+              "observed": 1389,
+              "eligible": 996,
+              "attempted": 996,
+              "applied": 996,
+              "changed": 996,
+              "consumed": 996,
+              "restored": 996,
+              "failed": 0
+            },
+            "1": {
+              "observed": 1389,
+              "eligible": 996,
+              "attempted": 996,
+              "applied": 996,
+              "changed": 996,
+              "consumed": 996,
+              "restored": 996,
+              "failed": 0
+            }
+          },
+          "negative_checks": [
+            {
+              "rank": 0,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "OUTPUT39_ORDINARY_TASK_BINDING_REQUIRED",
+                "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            },
+            {
+              "rank": 1,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "OUTPUT39_ORDINARY_TASK_BINDING_REQUIRED",
+                "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            }
+          ],
+          "recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "actual_batch_sizes": null,
+          "noneligible_reasons": {
+            "OUTPUT_NOT_BF16_ND": 786
+          },
+          "mla_representations": {},
+          "batch_actual_apply_sites": [],
+          "batch_not_called_candidates": [],
+          "batch_uncovered_call_counts": {},
+          "user_request_seconds": {
+            "min": 0.6611337698996067,
+            "max": 1.8594352940563112
+          },
+          "performance_multiplier": null
+        }
+      ]
+    },
+    {
+      "mechanism": "39.matmul_range",
+      "status": "PRODUCT_BLUE_REVIEW_PASSED",
+      "source": "BLUE_COMBINATION",
+      "qualification": "REHEARSAL_ONLY",
+      "product_registered": false,
+      "v4_or_mc2_qualification": false,
+      "receipt_sha256": "885db777fa995d4894c7be805a66e0d76607489a4d36232ec28a320ea93c0181",
+      "source_manifest_sha256": "cf1bf0df316927c82ab0c721681ff66a96bb06135004b2e9e29fc46efdc16663",
+      "identity": [
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "quant_model_description_sha256": "f798a018107d9c2e05ee6a488733d9d28157cf6bcbc8b6ea4bf7842b0bf819b9",
+          "safetensors_index_sha256": {
+            "quant_model_weight_w8a8_dynamic.safetensors.index.json": "ab50a385d7c88bad1810a635ee9b6cde9c2af361e9772f3be3c1a28bde5eadff"
+          },
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1
+        },
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "quant_model_description_sha256": "f798a018107d9c2e05ee6a488733d9d28157cf6bcbc8b6ea4bf7842b0bf819b9",
+          "safetensors_index_sha256": {
+            "quant_model_weight_w8a8_dynamic.safetensors.index.json": "ab50a385d7c88bad1810a635ee9b6cde9c2af361e9772f3be3c1a28bde5eadff"
+          },
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1
+        }
+      ],
+      "scopes": [
+        {
+          "scope": 0,
+          "owners_by_rank": [
+            "17d0be72efca51f24292ef95f8d9aaf7",
+            "fd77b81ff8959d79870a9c6f36b8108d"
+          ],
+          "worker_group_sha256": "3550e84b92bb8f3ae4b2a8dfd7406a001d3606df822a6a41e0d191fae6d8a5f6",
+          "coverage_by_rank": {
+            "0": {
+              "observed": 1389,
+              "eligible": 336,
+              "attempted": 336,
+              "applied": 336,
+              "changed": 336,
+              "consumed": 336,
+              "restored": 336,
+              "failed": 0
+            },
+            "1": {
+              "observed": 1389,
+              "eligible": 336,
+              "attempted": 336,
+              "applied": 336,
+              "changed": 336,
+              "consumed": 336,
+              "restored": 336,
+              "failed": 0
+            }
+          },
+          "negative_checks": [
+            {
+              "rank": 0,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "ORDINARY_TASK_ADAPTER_PENDING:39.matmul_range",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            },
+            {
+              "rank": 1,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "ORDINARY_TASK_ADAPTER_PENDING:39.matmul_range",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            }
+          ],
+          "recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "actual_batch_sizes": null,
+          "noneligible_reasons": {
+            "ONLY_LOCAL_COLUMN_SHARDS_NO_COLLECTIVE": 1320,
+            "OUTPUT_NOT_BF16_ND": 786
+          },
+          "mla_representations": {},
+          "batch_actual_apply_sites": [],
+          "batch_not_called_candidates": [],
+          "batch_uncovered_call_counts": {},
+          "user_request_seconds": {
+            "min": 0.6609941970091313,
+            "max": 1.6209507598541677
+          },
+          "performance_multiplier": null
+        },
+        {
+          "scope": 1,
+          "owners_by_rank": [
+            "eb795465f9ed935050774997aae6b020",
+            "05fec30be48f0856a4c848ca2c37f44b"
+          ],
+          "worker_group_sha256": "3550e84b92bb8f3ae4b2a8dfd7406a001d3606df822a6a41e0d191fae6d8a5f6",
+          "coverage_by_rank": {
+            "0": {
+              "observed": 1389,
+              "eligible": 336,
+              "attempted": 336,
+              "applied": 336,
+              "changed": 336,
+              "consumed": 336,
+              "restored": 336,
+              "failed": 0
+            },
+            "1": {
+              "observed": 1389,
+              "eligible": 336,
+              "attempted": 336,
+              "applied": 336,
+              "changed": 336,
+              "consumed": 336,
+              "restored": 336,
+              "failed": 0
+            }
+          },
+          "negative_checks": [
+            {
+              "rank": 0,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "ORDINARY_TASK_ADAPTER_PENDING:39.matmul_range",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            },
+            {
+              "rank": 1,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "ORDINARY_TASK_ADAPTER_PENDING:39.matmul_range",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            }
+          ],
+          "recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "actual_batch_sizes": null,
+          "noneligible_reasons": {
+            "ONLY_LOCAL_COLUMN_SHARDS_NO_COLLECTIVE": 1320,
+            "OUTPUT_NOT_BF16_ND": 786
+          },
+          "mla_representations": {},
+          "batch_actual_apply_sites": [],
+          "batch_not_called_candidates": [],
+          "batch_uncovered_call_counts": {},
+          "user_request_seconds": {
+            "min": 0.6677925179246813,
+            "max": 1.4012527300510556
+          },
+          "performance_multiplier": null
+        }
+      ]
+    },
+    {
+      "mechanism": "quant.batch_shared_scale",
+      "status": "PRODUCT_BLUE_REVIEW_PASSED",
+      "source": "BLUE_COMBINATION",
+      "qualification": "REHEARSAL_ONLY",
+      "product_registered": false,
+      "v4_or_mc2_qualification": false,
+      "receipt_sha256": "3037dcd7a27bf48607b13cc7d6308e4b3c7fd541ac187900d9d5076fe844ebf1",
+      "source_manifest_sha256": "132e988b2a002bf1b34d1a411642026b886e7a415771008637b6828403f8ad13",
+      "identity": [
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "quant_model_description_sha256": "f798a018107d9c2e05ee6a488733d9d28157cf6bcbc8b6ea4bf7842b0bf819b9",
+          "safetensors_index_sha256": {
+            "quant_model_weight_w8a8_dynamic.safetensors.index.json": "ab50a385d7c88bad1810a635ee9b6cde9c2af361e9772f3be3c1a28bde5eadff"
+          },
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 8192,
+          "max_num_seqs": 8
+        },
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "quant_model_description_sha256": "f798a018107d9c2e05ee6a488733d9d28157cf6bcbc8b6ea4bf7842b0bf819b9",
+          "safetensors_index_sha256": {
+            "quant_model_weight_w8a8_dynamic.safetensors.index.json": "ab50a385d7c88bad1810a635ee9b6cde9c2af361e9772f3be3c1a28bde5eadff"
+          },
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 8192,
+          "max_num_seqs": 8
+        }
+      ],
+      "scopes": [
+        {
+          "scope": 0,
+          "owners_by_rank": [
+            "b7798136461a119c743002518f72ab3b",
+            "c0af4920f2ca57051010a724828ae401"
+          ],
+          "worker_group_sha256": "eb09594c0085560b6dfe9bb6cff72989da06bee24b23bb6aa5c57e38db23db20",
+          "coverage_by_rank": {
+            "0": {
+              "observed": 2073,
+              "eligible": 664,
+              "attempted": 664,
+              "applied": 664,
+              "changed": 651,
+              "consumed": 664,
+              "restored": 664,
+              "failed": 0
+            },
+            "1": {
+              "observed": 2073,
+              "eligible": 664,
+              "attempted": 664,
+              "applied": 664,
+              "changed": 651,
+              "consumed": 664,
+              "restored": 664,
+              "failed": 0
+            }
+          },
+          "negative_checks": [
+            {
+              "rank": 0,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "QUANT_ORDINARY_PROJECTION_BINDING_REQUIRED",
+                "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            },
+            {
+              "rank": 1,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "QUANT_ORDINARY_PROJECTION_BINDING_REQUIRED",
+                "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            }
+          ],
+          "recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "actual_batch_sizes": [
+            2,
+            3,
+            4,
+            7,
+            8
+          ],
+          "noneligible_reasons": {},
+          "mla_representations": {},
+          "batch_actual_apply_sites": [
+            "model.layers.0.mlp.down_proj",
+            "model.layers.0.mlp.gate_up_proj",
+            "model.layers.0.self_attn.kv_a_proj_with_mqa",
+            "model.layers.0.self_attn.o_proj",
+            "model.layers.0.self_attn.q_proj",
+            "model.layers.1.self_attn.kv_a_proj_with_mqa",
+            "model.layers.1.self_attn.o_proj",
+            "model.layers.1.self_attn.q_proj",
+            "model.layers.10.self_attn.kv_a_proj_with_mqa",
+            "model.layers.10.self_attn.o_proj",
+            "model.layers.10.self_attn.q_proj",
+            "model.layers.11.self_attn.kv_a_proj_with_mqa",
+            "model.layers.11.self_attn.o_proj",
+            "model.layers.11.self_attn.q_proj",
+            "model.layers.12.self_attn.kv_a_proj_with_mqa",
+            "model.layers.12.self_attn.o_proj",
+            "model.layers.12.self_attn.q_proj",
+            "model.layers.13.self_attn.kv_a_proj_with_mqa",
+            "model.layers.13.self_attn.o_proj",
+            "model.layers.13.self_attn.q_proj",
+            "model.layers.14.self_attn.kv_a_proj_with_mqa",
+            "model.layers.14.self_attn.o_proj",
+            "model.layers.14.self_attn.q_proj",
+            "model.layers.15.self_attn.kv_a_proj_with_mqa",
+            "model.layers.15.self_attn.o_proj",
+            "model.layers.15.self_attn.q_proj",
+            "model.layers.16.self_attn.kv_a_proj_with_mqa",
+            "model.layers.16.self_attn.o_proj",
+            "model.layers.16.self_attn.q_proj",
+            "model.layers.17.self_attn.kv_a_proj_with_mqa",
+            "model.layers.17.self_attn.o_proj",
+            "model.layers.17.self_attn.q_proj",
+            "model.layers.18.self_attn.kv_a_proj_with_mqa",
+            "model.layers.18.self_attn.o_proj",
+            "model.layers.18.self_attn.q_proj",
+            "model.layers.19.self_attn.kv_a_proj_with_mqa",
+            "model.layers.19.self_attn.o_proj",
+            "model.layers.19.self_attn.q_proj",
+            "model.layers.2.self_attn.kv_a_proj_with_mqa",
+            "model.layers.2.self_attn.o_proj",
+            "model.layers.2.self_attn.q_proj",
+            "model.layers.20.self_attn.kv_a_proj_with_mqa",
+            "model.layers.20.self_attn.o_proj",
+            "model.layers.20.self_attn.q_proj",
+            "model.layers.21.self_attn.kv_a_proj_with_mqa",
+            "model.layers.21.self_attn.o_proj",
+            "model.layers.21.self_attn.q_proj",
+            "model.layers.22.self_attn.kv_a_proj_with_mqa",
+            "model.layers.22.self_attn.o_proj",
+            "model.layers.22.self_attn.q_proj",
+            "model.layers.23.self_attn.kv_a_proj_with_mqa",
+            "model.layers.23.self_attn.o_proj",
+            "model.layers.23.self_attn.q_proj",
+            "model.layers.24.self_attn.kv_a_proj_with_mqa",
+            "model.layers.24.self_attn.o_proj",
+            "model.layers.24.self_attn.q_proj",
+            "model.layers.25.self_attn.kv_a_proj_with_mqa",
+            "model.layers.25.self_attn.o_proj",
+            "model.layers.25.self_attn.q_proj",
+            "model.layers.26.self_attn.kv_a_proj_with_mqa",
+            "model.layers.26.self_attn.o_proj",
+            "model.layers.26.self_attn.q_proj",
+            "model.layers.3.self_attn.kv_a_proj_with_mqa",
+            "model.layers.3.self_attn.o_proj",
+            "model.layers.3.self_attn.q_proj",
+            "model.layers.4.self_attn.kv_a_proj_with_mqa",
+            "model.layers.4.self_attn.o_proj",
+            "model.layers.4.self_attn.q_proj",
+            "model.layers.5.self_attn.kv_a_proj_with_mqa",
+            "model.layers.5.self_attn.o_proj",
+            "model.layers.5.self_attn.q_proj",
+            "model.layers.6.self_attn.kv_a_proj_with_mqa",
+            "model.layers.6.self_attn.o_proj",
+            "model.layers.6.self_attn.q_proj",
+            "model.layers.7.self_attn.kv_a_proj_with_mqa",
+            "model.layers.7.self_attn.o_proj",
+            "model.layers.7.self_attn.q_proj",
+            "model.layers.8.self_attn.kv_a_proj_with_mqa",
+            "model.layers.8.self_attn.o_proj",
+            "model.layers.8.self_attn.q_proj",
+            "model.layers.9.self_attn.kv_a_proj_with_mqa",
+            "model.layers.9.self_attn.o_proj",
+            "model.layers.9.self_attn.q_proj"
+          ],
+          "batch_not_called_candidates": [
+            "model.layers.1.mlp.shared_experts.down_proj",
+            "model.layers.1.mlp.shared_experts.gate_up_proj",
+            "model.layers.10.mlp.shared_experts.down_proj",
+            "model.layers.10.mlp.shared_experts.gate_up_proj",
+            "model.layers.11.mlp.shared_experts.down_proj",
+            "model.layers.11.mlp.shared_experts.gate_up_proj",
+            "model.layers.12.mlp.shared_experts.down_proj",
+            "model.layers.12.mlp.shared_experts.gate_up_proj",
+            "model.layers.13.mlp.shared_experts.down_proj",
+            "model.layers.13.mlp.shared_experts.gate_up_proj",
+            "model.layers.14.mlp.shared_experts.down_proj",
+            "model.layers.14.mlp.shared_experts.gate_up_proj",
+            "model.layers.15.mlp.shared_experts.down_proj",
+            "model.layers.15.mlp.shared_experts.gate_up_proj",
+            "model.layers.16.mlp.shared_experts.down_proj",
+            "model.layers.16.mlp.shared_experts.gate_up_proj",
+            "model.layers.17.mlp.shared_experts.down_proj",
+            "model.layers.17.mlp.shared_experts.gate_up_proj",
+            "model.layers.18.mlp.shared_experts.down_proj",
+            "model.layers.18.mlp.shared_experts.gate_up_proj",
+            "model.layers.19.mlp.shared_experts.down_proj",
+            "model.layers.19.mlp.shared_experts.gate_up_proj",
+            "model.layers.2.mlp.shared_experts.down_proj",
+            "model.layers.2.mlp.shared_experts.gate_up_proj",
+            "model.layers.20.mlp.shared_experts.down_proj",
+            "model.layers.20.mlp.shared_experts.gate_up_proj",
+            "model.layers.21.mlp.shared_experts.down_proj",
+            "model.layers.21.mlp.shared_experts.gate_up_proj",
+            "model.layers.22.mlp.shared_experts.down_proj",
+            "model.layers.22.mlp.shared_experts.gate_up_proj",
+            "model.layers.23.mlp.shared_experts.down_proj",
+            "model.layers.23.mlp.shared_experts.gate_up_proj",
+            "model.layers.24.mlp.shared_experts.down_proj",
+            "model.layers.24.mlp.shared_experts.gate_up_proj",
+            "model.layers.25.mlp.shared_experts.down_proj",
+            "model.layers.25.mlp.shared_experts.gate_up_proj",
+            "model.layers.26.mlp.shared_experts.down_proj",
+            "model.layers.26.mlp.shared_experts.gate_up_proj",
+            "model.layers.3.mlp.shared_experts.down_proj",
+            "model.layers.3.mlp.shared_experts.gate_up_proj",
+            "model.layers.4.mlp.shared_experts.down_proj",
+            "model.layers.4.mlp.shared_experts.gate_up_proj",
+            "model.layers.5.mlp.shared_experts.down_proj",
+            "model.layers.5.mlp.shared_experts.gate_up_proj",
+            "model.layers.6.mlp.shared_experts.down_proj",
+            "model.layers.6.mlp.shared_experts.gate_up_proj",
+            "model.layers.7.mlp.shared_experts.down_proj",
+            "model.layers.7.mlp.shared_experts.gate_up_proj",
+            "model.layers.8.mlp.shared_experts.down_proj",
+            "model.layers.8.mlp.shared_experts.gate_up_proj",
+            "model.layers.9.mlp.shared_experts.down_proj",
+            "model.layers.9.mlp.shared_experts.gate_up_proj"
+          ],
+          "batch_uncovered_call_counts": {
+            "OUTSIDE_DISCOVERED_LINEAR_SCHEME": 1248
+          },
+          "user_request_seconds": {
+            "min": 0.6525774621404707,
+            "max": 0.8461783609818667
+          },
+          "performance_multiplier": null
+        },
+        {
+          "scope": 1,
+          "owners_by_rank": [
+            "d5dcf774816dfb045783469c3f4c6d9d",
+            "10f9a543cc474b40d97c5418ce16e5ee"
+          ],
+          "worker_group_sha256": "eb09594c0085560b6dfe9bb6cff72989da06bee24b23bb6aa5c57e38db23db20",
+          "coverage_by_rank": {
+            "0": {
+              "observed": 2073,
+              "eligible": 664,
+              "attempted": 664,
+              "applied": 664,
+              "changed": 654,
+              "consumed": 664,
+              "restored": 664,
+              "failed": 0
+            },
+            "1": {
+              "observed": 2073,
+              "eligible": 664,
+              "attempted": 664,
+              "applied": 664,
+              "changed": 654,
+              "consumed": 664,
+              "restored": 664,
+              "failed": 0
+            }
+          },
+          "negative_checks": [
+            {
+              "rank": 0,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "QUANT_ORDINARY_PROJECTION_BINDING_REQUIRED",
+                "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            },
+            {
+              "rank": 1,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "QUANT_ORDINARY_PROJECTION_BINDING_REQUIRED",
+                "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            }
+          ],
+          "recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "actual_batch_sizes": [
+            2,
+            3,
+            4,
+            7,
+            8
+          ],
+          "noneligible_reasons": {},
+          "mla_representations": {},
+          "batch_actual_apply_sites": [
+            "model.layers.0.mlp.down_proj",
+            "model.layers.0.mlp.gate_up_proj",
+            "model.layers.0.self_attn.kv_a_proj_with_mqa",
+            "model.layers.0.self_attn.o_proj",
+            "model.layers.0.self_attn.q_proj",
+            "model.layers.1.self_attn.kv_a_proj_with_mqa",
+            "model.layers.1.self_attn.o_proj",
+            "model.layers.1.self_attn.q_proj",
+            "model.layers.10.self_attn.kv_a_proj_with_mqa",
+            "model.layers.10.self_attn.o_proj",
+            "model.layers.10.self_attn.q_proj",
+            "model.layers.11.self_attn.kv_a_proj_with_mqa",
+            "model.layers.11.self_attn.o_proj",
+            "model.layers.11.self_attn.q_proj",
+            "model.layers.12.self_attn.kv_a_proj_with_mqa",
+            "model.layers.12.self_attn.o_proj",
+            "model.layers.12.self_attn.q_proj",
+            "model.layers.13.self_attn.kv_a_proj_with_mqa",
+            "model.layers.13.self_attn.o_proj",
+            "model.layers.13.self_attn.q_proj",
+            "model.layers.14.self_attn.kv_a_proj_with_mqa",
+            "model.layers.14.self_attn.o_proj",
+            "model.layers.14.self_attn.q_proj",
+            "model.layers.15.self_attn.kv_a_proj_with_mqa",
+            "model.layers.15.self_attn.o_proj",
+            "model.layers.15.self_attn.q_proj",
+            "model.layers.16.self_attn.kv_a_proj_with_mqa",
+            "model.layers.16.self_attn.o_proj",
+            "model.layers.16.self_attn.q_proj",
+            "model.layers.17.self_attn.kv_a_proj_with_mqa",
+            "model.layers.17.self_attn.o_proj",
+            "model.layers.17.self_attn.q_proj",
+            "model.layers.18.self_attn.kv_a_proj_with_mqa",
+            "model.layers.18.self_attn.o_proj",
+            "model.layers.18.self_attn.q_proj",
+            "model.layers.19.self_attn.kv_a_proj_with_mqa",
+            "model.layers.19.self_attn.o_proj",
+            "model.layers.19.self_attn.q_proj",
+            "model.layers.2.self_attn.kv_a_proj_with_mqa",
+            "model.layers.2.self_attn.o_proj",
+            "model.layers.2.self_attn.q_proj",
+            "model.layers.20.self_attn.kv_a_proj_with_mqa",
+            "model.layers.20.self_attn.o_proj",
+            "model.layers.20.self_attn.q_proj",
+            "model.layers.21.self_attn.kv_a_proj_with_mqa",
+            "model.layers.21.self_attn.o_proj",
+            "model.layers.21.self_attn.q_proj",
+            "model.layers.22.self_attn.kv_a_proj_with_mqa",
+            "model.layers.22.self_attn.o_proj",
+            "model.layers.22.self_attn.q_proj",
+            "model.layers.23.self_attn.kv_a_proj_with_mqa",
+            "model.layers.23.self_attn.o_proj",
+            "model.layers.23.self_attn.q_proj",
+            "model.layers.24.self_attn.kv_a_proj_with_mqa",
+            "model.layers.24.self_attn.o_proj",
+            "model.layers.24.self_attn.q_proj",
+            "model.layers.25.self_attn.kv_a_proj_with_mqa",
+            "model.layers.25.self_attn.o_proj",
+            "model.layers.25.self_attn.q_proj",
+            "model.layers.26.self_attn.kv_a_proj_with_mqa",
+            "model.layers.26.self_attn.o_proj",
+            "model.layers.26.self_attn.q_proj",
+            "model.layers.3.self_attn.kv_a_proj_with_mqa",
+            "model.layers.3.self_attn.o_proj",
+            "model.layers.3.self_attn.q_proj",
+            "model.layers.4.self_attn.kv_a_proj_with_mqa",
+            "model.layers.4.self_attn.o_proj",
+            "model.layers.4.self_attn.q_proj",
+            "model.layers.5.self_attn.kv_a_proj_with_mqa",
+            "model.layers.5.self_attn.o_proj",
+            "model.layers.5.self_attn.q_proj",
+            "model.layers.6.self_attn.kv_a_proj_with_mqa",
+            "model.layers.6.self_attn.o_proj",
+            "model.layers.6.self_attn.q_proj",
+            "model.layers.7.self_attn.kv_a_proj_with_mqa",
+            "model.layers.7.self_attn.o_proj",
+            "model.layers.7.self_attn.q_proj",
+            "model.layers.8.self_attn.kv_a_proj_with_mqa",
+            "model.layers.8.self_attn.o_proj",
+            "model.layers.8.self_attn.q_proj",
+            "model.layers.9.self_attn.kv_a_proj_with_mqa",
+            "model.layers.9.self_attn.o_proj",
+            "model.layers.9.self_attn.q_proj"
+          ],
+          "batch_not_called_candidates": [
+            "model.layers.1.mlp.shared_experts.down_proj",
+            "model.layers.1.mlp.shared_experts.gate_up_proj",
+            "model.layers.10.mlp.shared_experts.down_proj",
+            "model.layers.10.mlp.shared_experts.gate_up_proj",
+            "model.layers.11.mlp.shared_experts.down_proj",
+            "model.layers.11.mlp.shared_experts.gate_up_proj",
+            "model.layers.12.mlp.shared_experts.down_proj",
+            "model.layers.12.mlp.shared_experts.gate_up_proj",
+            "model.layers.13.mlp.shared_experts.down_proj",
+            "model.layers.13.mlp.shared_experts.gate_up_proj",
+            "model.layers.14.mlp.shared_experts.down_proj",
+            "model.layers.14.mlp.shared_experts.gate_up_proj",
+            "model.layers.15.mlp.shared_experts.down_proj",
+            "model.layers.15.mlp.shared_experts.gate_up_proj",
+            "model.layers.16.mlp.shared_experts.down_proj",
+            "model.layers.16.mlp.shared_experts.gate_up_proj",
+            "model.layers.17.mlp.shared_experts.down_proj",
+            "model.layers.17.mlp.shared_experts.gate_up_proj",
+            "model.layers.18.mlp.shared_experts.down_proj",
+            "model.layers.18.mlp.shared_experts.gate_up_proj",
+            "model.layers.19.mlp.shared_experts.down_proj",
+            "model.layers.19.mlp.shared_experts.gate_up_proj",
+            "model.layers.2.mlp.shared_experts.down_proj",
+            "model.layers.2.mlp.shared_experts.gate_up_proj",
+            "model.layers.20.mlp.shared_experts.down_proj",
+            "model.layers.20.mlp.shared_experts.gate_up_proj",
+            "model.layers.21.mlp.shared_experts.down_proj",
+            "model.layers.21.mlp.shared_experts.gate_up_proj",
+            "model.layers.22.mlp.shared_experts.down_proj",
+            "model.layers.22.mlp.shared_experts.gate_up_proj",
+            "model.layers.23.mlp.shared_experts.down_proj",
+            "model.layers.23.mlp.shared_experts.gate_up_proj",
+            "model.layers.24.mlp.shared_experts.down_proj",
+            "model.layers.24.mlp.shared_experts.gate_up_proj",
+            "model.layers.25.mlp.shared_experts.down_proj",
+            "model.layers.25.mlp.shared_experts.gate_up_proj",
+            "model.layers.26.mlp.shared_experts.down_proj",
+            "model.layers.26.mlp.shared_experts.gate_up_proj",
+            "model.layers.3.mlp.shared_experts.down_proj",
+            "model.layers.3.mlp.shared_experts.gate_up_proj",
+            "model.layers.4.mlp.shared_experts.down_proj",
+            "model.layers.4.mlp.shared_experts.gate_up_proj",
+            "model.layers.5.mlp.shared_experts.down_proj",
+            "model.layers.5.mlp.shared_experts.gate_up_proj",
+            "model.layers.6.mlp.shared_experts.down_proj",
+            "model.layers.6.mlp.shared_experts.gate_up_proj",
+            "model.layers.7.mlp.shared_experts.down_proj",
+            "model.layers.7.mlp.shared_experts.gate_up_proj",
+            "model.layers.8.mlp.shared_experts.down_proj",
+            "model.layers.8.mlp.shared_experts.gate_up_proj",
+            "model.layers.9.mlp.shared_experts.down_proj",
+            "model.layers.9.mlp.shared_experts.gate_up_proj"
+          ],
+          "batch_uncovered_call_counts": {
+            "OUTSIDE_DISCOVERED_LINEAR_SCHEME": 1248
+          },
+          "user_request_seconds": {
+            "min": 0.6550645888783038,
+            "max": 0.8171083491761237
+          },
+          "performance_multiplier": null
+        }
+      ]
+    },
+    {
+      "mechanism": "28.fia.denominator_replay",
+      "status": "PRODUCT_BLUE_REVIEW_PASSED",
+      "source": "BLUE_COMBINATION",
+      "qualification": "REHEARSAL_ONLY",
+      "product_registered": false,
+      "v4_or_mc2_qualification": false,
+      "receipt_sha256": "a6cbc0946fb1ead0283b6edb569048af21de415f4451fced9fdc79b8448b309b",
+      "source_manifest_sha256": "58704d045189251dc99e25bb12d6244809d353232e91530a5ccdd38cc120540a",
+      "identity": [
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "quant_model_description_sha256": "f798a018107d9c2e05ee6a488733d9d28157cf6bcbc8b6ea4bf7842b0bf819b9",
+          "safetensors_index_sha256": {
+            "quant_model_weight_w8a8_dynamic.safetensors.index.json": "ab50a385d7c88bad1810a635ee9b6cde9c2af361e9772f3be3c1a28bde5eadff"
+          },
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1
+        },
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "model_class": "vllm.model_executor.models.deepseek_v2.DeepseekV2ForCausalLM",
+          "model_config_sha256": "229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",
+          "quant_model_description_sha256": "f798a018107d9c2e05ee6a488733d9d28157cf6bcbc8b6ea4bf7842b0bf819b9",
+          "safetensors_index_sha256": {
+            "quant_model_weight_w8a8_dynamic.safetensors.index.json": "ab50a385d7c88bad1810a635ee9b6cde9c2af361e9772f3be3c1a28bde5eadff"
+          },
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1
+        }
+      ],
+      "scopes": [
+        {
+          "scope": 0,
+          "owners_by_rank": [
+            "7cd59413892a97fba56da02b1df248aa",
+            "d3d9f001a05a302e92a6edbeab57e150"
+          ],
+          "worker_group_sha256": "fa910783f2a31e8a866f38c5dccc7b44e3b9419ae7d5aa7db6e6f6994dc6aca6",
+          "coverage_by_rank": {
+            "0": {
+              "observed": 324,
+              "eligible": 324,
+              "attempted": 324,
+              "applied": 324,
+              "changed": 324,
+              "consumed": 324,
+              "restored": 324,
+              "failed": 0
+            },
+            "1": {
+              "observed": 324,
+              "eligible": 324,
+              "attempted": 324,
+              "applied": 324,
+              "changed": 324,
+              "consumed": 324,
+              "restored": 324,
+              "failed": 0
+            }
+          },
+          "negative_checks": [
+            {
+              "rank": 0,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "TND28_FAULT_OFF_RECOVERY_NOT_ACCEPTED",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            },
+            {
+              "rank": 1,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "TND28_FAULT_OFF_RECOVERY_NOT_ACCEPTED",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            }
+          ],
+          "recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "actual_batch_sizes": null,
+          "noneligible_reasons": {},
+          "mla_representations": {
+            "expanded_prefill_qkv": 162,
+            "absorbed_decode_latent": 486
+          },
+          "batch_actual_apply_sites": [],
+          "batch_not_called_candidates": [],
+          "batch_uncovered_call_counts": {},
+          "user_request_seconds": {
+            "min": 0.7021666669752449,
+            "max": 1.9925502059049904
+          },
+          "performance_multiplier": null
+        },
+        {
+          "scope": 1,
+          "owners_by_rank": [
+            "7b6d7b7ea153d01fb3a25a4a33fa176e",
+            "5e03dfb5748ad18b3fde8b930675e1c7"
+          ],
+          "worker_group_sha256": "fa910783f2a31e8a866f38c5dccc7b44e3b9419ae7d5aa7db6e6f6994dc6aca6",
+          "coverage_by_rank": {
+            "0": {
+              "observed": 324,
+              "eligible": 324,
+              "attempted": 324,
+              "applied": 324,
+              "changed": 324,
+              "consumed": 324,
+              "restored": 324,
+              "failed": 0
+            },
+            "1": {
+              "observed": 324,
+              "eligible": 324,
+              "attempted": 324,
+              "applied": 324,
+              "changed": 324,
+              "consumed": 324,
+              "restored": 324,
+              "failed": 0
+            }
+          },
+          "negative_checks": [
+            {
+              "rank": 0,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "TND28_FAULT_OFF_RECOVERY_NOT_ACCEPTED",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            },
+            {
+              "rank": 1,
+              "unknown_profile_rejected": true,
+              "unknown_mechanism_rejected": true,
+              "user_native_path_rejected": true,
+              "unbound_without_permit_rejected": true,
+              "unbound_refusal_codes": [
+                "TND28_FAULT_OFF_RECOVERY_NOT_ACCEPTED",
+                "ACTUAL_CALL_NOT_YET_OBSERVED"
+              ],
+              "resources_zero": true
+            }
+          ],
+          "recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "actual_batch_sizes": null,
+          "noneligible_reasons": {},
+          "mla_representations": {
+            "expanded_prefill_qkv": 162,
+            "absorbed_decode_latent": 486
+          },
+          "batch_actual_apply_sites": [],
+          "batch_not_called_candidates": [],
+          "batch_uncovered_call_counts": {},
+          "user_request_seconds": {
+            "min": 0.7056152408476919,
+            "max": 1.876555394148454
+          },
+          "performance_multiplier": null
+        }
+      ]
+    }
+  ],
+  "public_permit_free_registration": false,
+  "v4_qualified": false,
+  "mc2_qualified": false,
+  "performance_gate": false
+}

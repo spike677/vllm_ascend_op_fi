@@ -3,6 +3,7 @@ from copy import deepcopy
 import importlib
 
 _TENSOR = (
+    ('8.allgather_output_row', ['torch_npu.npu_moe_token_unpermute.output']),
     ('8.restore_offset', ['torch_npu.npu_moe_token_unpermute']),
     ('15.alias_detach', ['aten.as_strided', 'aten.copy_', 'base_consumer']),
     ('17.spatial_padding', ['torch.nn.Conv3d']),
@@ -133,6 +134,8 @@ def create_research_provider(mechanism, version, worker, model, identity):
         raise RuntimeError('FAULT25_UNSUPPORTED_NO_SUBSTITUTE')
     if version != '1':
         raise RuntimeError('WORKER_PROVIDER_NOT_ADAPTED')
+    if mechanism == '8.allgather_output_row':
+        raise RuntimeError('ALLGATHER8_REQUIRES_TYPED_BLUE_PRODUCT_BINDING')
     if (mechanism == '17.spatial_padding'
             and hasattr(worker, '_demoncat_vision17_group_binding')):
         if hasattr(worker, '_demoncat_vision17_observation_binding'):

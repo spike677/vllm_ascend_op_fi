@@ -9,6 +9,17 @@ from .continuous_binding import ContinuousRequest,digest
 from fault_injection.product_contract import COUNTERS,request_range
 
 
+def actual_forward_coverage(events, calls, candidates):
+    """Compare actual apply entries, not a census of dormant module objects."""
+    from collections import Counter
+    require(calls and len(candidates)==len(set(candidates)) and set(calls)<=set(candidates),
+            'PRODUCT_BATCH_ACTUAL_APPLY_CENSUS_INVALID')
+    require(Counter(e['site'] for e in events)==Counter(calls),
+            'PRODUCT_BATCH_SITE_FORWARD_COVERAGE')
+    return dict(actual_apply_calls=dict(Counter(calls)),
+        not_called=[dict(site=s,reason='NOT_CALLED_IN_ACTUAL_FORWARD') for s in candidates if s not in calls])
+
+
 def classify_batch(rows,scheduled):
     """Rows come from the live runner after preprocessing state update."""
     if not rows or set(scheduled)!={r['id'] for r in rows}:return False,'ACTUAL_BATCH_MAPPING_UNPROVEN'
@@ -79,10 +90,13 @@ class AutomaticBatches:
         require(not self.completed_canary,'PRODUCT_CANARY_EXTRA_REQUEST_BEFORE_DISARM')
         self.scheduler=scheduler;self.new_ids={r.req_id for r in scheduler.scheduled_new_reqs}
         self.preprocessed=None;self.model_output=None;begin=len(self.site.events)
+        forward_begin=len(self.site.forward_calls);uncovered_begin=len(self.site.uncovered)
         result=original(scheduler,intermediate_tensors)
         require(self.frame is not None,'PRODUCT_BATCH_PREPROCESS_NOT_OBSERVED')
         events=self.site.events[begin:];proof=summarize_events(events)
-        require(events and len(events)==len(self.site.sites),'PRODUCT_BATCH_SITE_FORWARD_COVERAGE')
+        require(len(self.site.forward_calls)==forward_begin+1,'PRODUCT_BATCH_MODEL_FORWARD_COUNT')
+        site_coverage=actual_forward_coverage(events,self.site.forward_calls[-1],self.site.sites)
+        site_coverage['uncovered_calls']=deepcopy(self.site.uncovered[uncovered_begin:])
         state=self.runner.execute_model_state;ids=self.frame['ids']
         require(result is None and state is not None and state.scheduler_output is scheduler
             and state.hidden_states is self.model_output and state.logits.shape[0]==len(ids),'PRODUCT_BATCH_RESULT_MAPPING')
@@ -94,7 +108,7 @@ class AutomaticBatches:
             count=scheduler.num_scheduled_tokens[rid];row=self.states[rid]
             row['events'].extend(events)
             row['frames'].append(dict(index=self.frame['index'],request_ids=list(ids),scheduled_counts=dict(scheduler.num_scheduled_tokens),
-                eligible=self.frame['eligible'],reason=self.frame['reason'],**deepcopy(proof)))
+                eligible=self.frame['eligible'],reason=self.frame['reason'],site_coverage=deepcopy(site_coverage),**deepcopy(proof)))
             if self.canary:
                 hidden=state.hidden_states[offset:offset+count];logits=state.logits[i]
                 row['output'].append(dict(hidden=fingerprint(hidden),logits=fingerprint(logits),finite=bool(torch.isfinite(hidden).all().item() and torch.isfinite(logits).all().item())))

@@ -11,6 +11,7 @@ INTEGRATION_STATUS = 'INNER_FRAMEWORK_INTEGRATION_PENDING'
 # State, declared deployment, next concrete step. Historical evidence stays in
 # the existing catalog/reports; these decisions never rewrite C2/C3 results.
 _SCOPES = {
+    '8.allgather_output_row': ('BLUE_PRODUCT_REHEARSAL', ['DeepSeek-V2-Lite', '0.26 TP2 EP disabled', 'actual routing and value consumer'], 'Two owners and negative controls; does not qualify MC2 or V4.'),
     '8.restore_offset': ('ACCEPTED_SCOPE_RETAINED',
         ['actual MoE restore indices, routing weights and consumer'],
         'Wire the existing accepted serving mapping into the actual host.'),

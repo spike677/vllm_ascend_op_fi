@@ -1,4 +1,4 @@
-"""V2-Lite AllGather reference for MC2 output-row proxy. Unregistered.
+"""V2-Lite AllGather output-row proxy. BLUE product rehearsal only.
 
 This preserves producer metadata and original unpermute. It is not MC2/EP
 qualification, nor the historical restore-index mutation variant.
@@ -45,3 +45,8 @@ class AllGatherOutput8Site(MoE8Site):
     def close(self):
         if getattr(self,'mode_entered',False):self.output_mode.__exit__(None,None,None);self.mode_entered=False
         self.output_mode.close();super().close()
+
+
+def validate_product_scope(*, family, source, tp, ep, soc):
+    require(family=='deepseek_v2' and source=='BLUE_COMBINATION' and tp==2 and ep is False
+            and soc is not None and soc['family']=='A2','ALLGATHER8_BLUE_A2_TP2_EP_OFF_ONLY')
