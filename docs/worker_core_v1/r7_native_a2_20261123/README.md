@@ -30,3 +30,29 @@ N 批的 A2 产品通过及原有八项回归通过后，才加入对应 A2 候�
 ## N 批正式结果
 
 三项在 `r7-native-all-a2` 窗口全部通过；窗口335.58秒，已解除隔离。每项同组 Worker 两个owner、六个正例用户请求、两个范围外请求；缺许可/未知profile/用户Native路径均拒绝。每rank六个正例总计：41 288次合格消费，26fia 384次，20 7296次；applied=consumed=restored，failed=0。完整摘要见 `native_summary.json`。三项现已加入限定蓝区A2/TP2的候选，A3未放行。
+
+## 八项共享回归完成
+
+以下均使用真实 HTTP 产品入口、同组 Worker 两个 owner，全 rank 持续触发；独立审查确认消费者、关闭后完整 hidden/logits 金丝雀精确恢复、故障资源清零。资格仅覆盖首段所列 A2 组合，不是黄区主项目接线验收。
+
+|窗口|能力|控制器用时（秒）|结论|
+|---|---|---:|---|
+|r7-regression-text-a1|18、39op、22、28|373.96|四项通过|
+|r7-regression-17-a1|17|347.06|通过，内置金丝雀图与两张用户图|
+|r7-regression-batch-a1|Batch|330.69|通过，实际合格 decode 批大小2/3/4/7/8；单请求不注入|
+|r7-regression-39mr-a1|39mr|288.64|通过，changed 小于 applied 如实保留|
+|r7-regression-33-a2|33|293.38|通过，仅2304-token prompt、4-token生成的已绑定分组范围|
+
+Batch 每 owner、每 rank 的独立合格调用2432次，applied=consumed=restored=2432、failed=0；不能按每个请求重复累计同批事件。33 不将 A2 TP2 的分组外推 A3 或 TP1。
+
+最终以同一份提交字节的 `tools/review_product_mode.py` 重新审查全部11项原始回执，全部通过；审查器 SHA `26c78c647f685951ed01f4f6c955413e3824540092f4514f5e7b3ce08ccb7cee`。此前记录的审查器 CRLF 字节 SHA 被本次 LF 原文重审替代，回执原件未修改。相关 CPU 测试101/101通过，无跳过；构建时另有3项 C++ CPU 测试通过。详见 `completion_summary.json`、`cpu_review.json`。
+
+`source_reconciliation.json` 对六个正式窗口各333个已跟踪运行文件核对 manifest，记录行尾/注释差异和正式 Native 验收后的候选登记变化；不冒称整个测试快照与 Git 提交逐字节相同。Native C++ 五文件单独与冻结 r6 核对，保持逐字节相同。`build_context.json` 补充本次 A2 构建镜像、工具和原始收据身份。
+
+## 抢占、隔离与限制
+
+共9个窗口（2个接线预检、6个正式窗口、1个设备冲突），控制器累计2490.02秒，约41.50分钟；这是加载、执行和清理的墙钟时间，不是纯 kernel 时间。原有八项回归期间外部 ATK 反复派发，本轮按授权共记录58次 `docker stop` 完成，返回码均为0。逐次容器名、镜像、绝对时间在私有 `isolation.jsonl`，公开窗口记录保留其 SHA 和次数。没有删除外部容器、数据或队列，没有修改 Docker 入口。
+
+33 的 a1 窗口在运行模型前被新设备预留阻断，记录为设备冲突；a2 新窗口重试通过，不计机制失败。全部窗口已停止并 join 有界清理线程，派发不再被本任务拦截。`final_host_state.json` 确认本轮控制器和测试容器均退出。vLLM 退出仍有第三方 resource_tracker 警告；故障自有资源清零不代表整个软件栈没有退出警告。
+
+目前可独立完成的 N 批 A2 与八项回归已完成。A3 Native 完整提取全文仍未到齐，r7 **未冻结**；A3 草稿未发出，D/P 的实际证据继续等待，不以本次 A2 结果授予资格。
