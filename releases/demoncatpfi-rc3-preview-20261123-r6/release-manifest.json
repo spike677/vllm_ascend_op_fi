@@ -1,0 +1,79 @@
+{
+  "schema": "demoncat.rc3_preview.release.v1",
+  "source_commit": "0e5d3e34650df2c165509fe2d3180c8c3e53a8e7",
+  "versions": {
+    "demoncatpfi": "0.4.0rc5",
+    "demoncat-worker-extension": "0.3.0rc5",
+    "demoncat-fault39-core": "0.3.0rc5"
+  },
+  "source_manifest_file": "source-review.json",
+  "source_manifest_sha256": "7a411ce29de51a0fecc6dbfe850aeea765f948c6414708360c873dfe22f38bf4",
+  "target": "YELLOW_DEDICATED_INSTANCE / A3 / Qwen3.8 W8A8 / TP1 and TP2 independently / acceptance pending",
+  "blue_results_are_not_a3_acceptance": true,
+  "files": [
+    {
+      "path": "artifact-review.json",
+      "bytes": 327,
+      "sha256": "891c7b964a39521c613201b4ed20172127ec4e7ce0fc70e9ca7a9a536a6138c0"
+    },
+    {
+      "path": "demoncatpfi-rc3-preview-20261123-r6.tar.gz",
+      "bytes": 2996225,
+      "sha256": "5d3a173df1737278e3eb20a6c846397ce3646d1ed4e888eb96fe1aec3dfd39a6"
+    },
+    {
+      "path": "install-check.json",
+      "bytes": 440,
+      "sha256": "26a0dab33c44f0b192d74692a70a49b4c48a10ae771207a9b6ca662f697bb1e8"
+    },
+    {
+      "path": "install-execution.json",
+      "bytes": 306,
+      "sha256": "44d547e0432dffb82417e3e4efa1b2d8daee272e7481cf9171b30e948b983923"
+    },
+    {
+      "path": "regression-review.json",
+      "bytes": 4171,
+      "sha256": "9742c8589f8e75e27debc80a6500c16266f75c9d92d44ea0a43e640836021a65"
+    },
+    {
+      "path": "source-review.json",
+      "bytes": 218881,
+      "sha256": "7a411ce29de51a0fecc6dbfe850aeea765f948c6414708360c873dfe22f38bf4"
+    },
+    {
+      "path": "wheels/demoncat_fault39_core-0.3.0rc5-py3-none-any.whl",
+      "bytes": 49128,
+      "sha256": "38542d0f07bac48e643696ec8007a6da2a1933e749695a5d501b659c400a23a7"
+    },
+    {
+      "path": "wheels/demoncat_worker_extension-0.3.0rc5-py3-none-any.whl",
+      "bytes": 603297,
+      "sha256": "862dd536317fd36bdc7a307f64f0e86e22f178e67fe89724a7388530e8e83e4e"
+    },
+    {
+      "path": "wheels/demoncatpfi-0.4.0rc5-py3-none-any.whl",
+      "bytes": 1040594,
+      "sha256": "8bcfa9af2b8e79a68a3fd5055605790510d5e1be99382fe7565c6c7630b97ca5"
+    }
+  ],
+  "tag": "demoncatpfi-rc3-preview-20261123-r6",
+  "qualification_granted": false,
+  "product_closed": false,
+  "release_status": "FROZEN_CANDIDATE_NOT_YELLOW_REGISTRATION",
+  "restrictions": {
+    "33.paged_decode": "A2 measured range only; A3 launch/control review pending",
+    "41/26fia/20": "Acceptance requires reviewed Native build; product adapter closed",
+    "8/DeepSeek": "New deployment and product acceptance pending"
+  },
+  "product_candidates": [
+    "28.fia.denominator_replay",
+    "quant.batch_shared_scale",
+    "39.output_proxy",
+    "18.api_half",
+    "22.wrong_row",
+    "39.matmul_range",
+    "17.spatial_padding",
+    "33.paged_decode"
+  ]
+}
