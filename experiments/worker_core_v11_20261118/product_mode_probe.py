@@ -15,12 +15,18 @@ def trusted_bootstrap(wrapper, action, options):
         remove_deployment_acceptance_permit)
     authority = authority_for(worker)
     if action == 'configure':
-        if authority is None:
-            authority = configure_deployment_acceptance(worker, source='BLUE_COMBINATION',
-                authorize_operator=lambda principal, operation: principal == 'product-acceptance')
-        from demoncat.runtime.vllm_ascend.worker_extension.product_config import configure_product_deployments
-        configure_product_deployments(worker, authority=authority, operator='product-acceptance', **options)
-        return dict(status='TRUSTED_PROFILES_CONFIGURED')
+        from demoncat.runtime.vllm_ascend.worker_extension.product_bootstrap import configure_product_bootstrap, product_bootstrap_rpc
+        # Isolated acceptance only. Production supplies its own authenticated callback.
+        authorize = authority.authorize_operator if authority else lambda principal, operation: principal == 'product-acceptance'
+        configure_product_bootstrap(worker, source='BLUE_COMBINATION', authorize_operator=authorize, **options)
+        return product_bootstrap_rpc(worker, 'configure', {'operator':'product-acceptance'})
+    if action == 'registration_identity':
+        from demoncat.runtime.vllm_ascend.worker_extension.product_registration import observe_identity
+        return observe_identity(worker, options['mechanism'])
+    if action == 'registered_cleanup':
+        assert not hasattr(worker,'_demoncat_blue_acceptance_permit')
+        runtime=worker._demoncat_worker_fault_runtime
+        return dict(status='NO_PERMIT_USED',permit_remaining=False,leases=len(runtime._leases),owners=len(runtime._tenants))
     if action == 'negative':
         from demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission import ordinary_route_report
         from demoncat.runtime.vllm_ascend.worker_extension.product_binding import product_binding_rpc

@@ -32,7 +32,7 @@ class ProductHostSafetyTests(unittest.TestCase):
         self.assertFalse(hasattr(client,'after_request'))
 
     def test_unstable_canary_retains_cleanup_responsibility_without_enabling(self):
-        client=self.client();client._binding=Mock();client._all=Mock()
+        client=self.client();client._binding=Mock(return_value=[dict(rank=0),dict(rank=1)]);client._all=Mock()
         client._canary=Mock(return_value=[dict(warmup_valid=False),dict(warmup_valid=True)])
         with self.assertRaisesRegex(RuntimeError,'PRODUCT_CANARY_UNSTABLE_IN_SIX'):client.enable()
         self.assertEqual(client._canary.call_count,6)

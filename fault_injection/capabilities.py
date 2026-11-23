@@ -1,4 +1,7 @@
-"""Machine-readable integration scope, separate from execution acceptance.
+"""LEGACY RESEARCH CATALOG: never use this module for product eligibility.
+
+Product discovery uses ProductClient.capabilities and product_contract.
+Machine-readable integration scope, separate from execution acceptance.
 
 This registry does not arm hooks, load vendor libraries or initialize a device.
 Fault39 has its own delivered native package and is deliberately excluded from

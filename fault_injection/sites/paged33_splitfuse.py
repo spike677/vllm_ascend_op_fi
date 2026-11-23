@@ -33,12 +33,18 @@ class SplitFuse33Site(GQA28Site):
         require(2305<=length<=2307,'SPLITFUSE33_UNMEASURED_LENGTH')
         return True,None
 
-    def calculate(self,q,k,v,impl,backup,event):
+    def geometry_and_spans(self,q,k,v,impl,event):
         require(tuple(q.shape)==(12,256) and tuple(k.shape[1:])==(2,256)
             and k.shape==v.shape and q.dtype==torch.bfloat16 and impl.scale==.0625,
             'SPLITFUSE33_UNMEASURED_GEOMETRY')
         require(event.get('page_mapping',{}).get('block_size')==128
             and event['page_mapping']['logical_keys']==len(k),'SPLITFUSE33_PAGE_MAPPING')
+        return ([(i,min(i+512,len(k))) for i in range(0,len(k),512)],
+                [(i,min(i+256,len(k))) for i in range(0,len(k),256)])
+
+    def calculate(self,q,k,v,impl,backup,event):
+        require(q.dtype==torch.bfloat16 and k.dtype==q.dtype and v.dtype==q.dtype,'SPLITFUSE33_DTYPE_UNADAPTED')
+        control_spans,fault_spans=self.geometry_and_spans(q,k,v,impl,event)
         if self.reference_device=='cpu':
             rq,rk,rv=q.detach().cpu(),k.detach().cpu(),v.detach().cpu()
             native=backup.detach().cpu()
@@ -46,8 +52,6 @@ class SplitFuse33Site(GQA28Site):
             require(self.reference_device=='input','SPLITFUSE33_REFERENCE_DEVICE')
             if q.device.type=='npu':require(not torch.npu.matmul.allow_hf32,'SPLITFUSE33_HF32_NOT_ALLOWED')
             rq,rk,rv,native=q,k,v,backup
-        control_spans=[(i,min(i+512,len(k))) for i in range(0,len(k),512)]
-        fault_spans=[(i,min(i+256,len(k))) for i in range(0,len(k),256)]
         control=split_fuse_control(rq.unsqueeze(0),rk,rv,scale=impl.scale,split_spans=control_spans,matmul_mode=self.matmul_mode).reshape_as(backup)
         check=agreement(control,native)
         if not check['checkpoint_99pct_passed'] and os.environ.get('DCAT_PRIVATE_FAILED_CONTROL')=='1':
@@ -60,7 +64,7 @@ class SplitFuse33Site(GQA28Site):
             event['control_rejection']=check
             raise ControlMismatch('SPLITFUSE33_CONTROL_BELOW_99:'+event['site']+':'+str(check))
         alternate=split_fuse_control(rq.unsqueeze(0),rk,rv,scale=impl.scale,split_spans=fault_spans,matmul_mode=self.matmul_mode).reshape_as(backup)
-        event['partition_reference']=dict(control_block=512,fault_block=256,same_legal_key_set=True,
+        event['partition_reference']=dict(control_block=control_spans[0][1]-control_spans[0][0],fault_block=fault_spans[0][1]-fault_spans[0][0],same_legal_key_set=True,
             key_visits=len(k),denominator_replay=False,native_equal_control_elements=check['bitwise_equal'],
             control_agreement=check,control_spans=control_spans,fault_spans=fault_spans,
             partition_changed_elements=int((control!=alternate).sum().item()),

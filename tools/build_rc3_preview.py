@@ -4,7 +4,7 @@ from pathlib import Path
 
 VERSIONS={'demoncatpfi':'0.4.0rc6.post1','demoncat-worker-extension':'0.3.0rc6.post1','demoncat-fault39-core':'0.3.0rc6.post1'}
 ROOTS=('src/','fault_injection/','fault39/src/','native_execution_strategy/','engineering_closure/',
-       'tools/','tests/','docs/worker_core_v1/')
+       'tools/','tests/','docs/')
 EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',
        'releases/RC3-PREVIEW-R5-EXTRACT-TOOL-20261123.md',
        'experiments/worker_core_v11_20261118/continuous_public_probe.py',
@@ -57,6 +57,11 @@ def build(repo,output):
             restrictions={'33.paged_decode':'A2 measured range only; A3 launch/control review pending',
                           '41/26fia/20':'A2 TP2 product passed; A3 TP1/TP2 acceptance candidate requires reviewed library and verified mapped CANN 9.1; no grant',
                           '8/DeepSeek':'New deployment and product acceptance pending','15.alias_detach':'ND alias detach only; A2 TP2 product reviewed; A3 TP2 trusted acceptance candidate, runtime CANN/source/consumer checks required; no private-format claim'},qualification_granted=False)
+        # Documentation is directly visible in the delivery, not just inside the tarball.
+        for row in files:
+            if row['path'].startswith('docs/'):
+                dest=output/row['path'];dest.parent.mkdir(parents=True,exist_ok=True)
+                dest.write_bytes((stage/row['path']).read_bytes())
         write_json_bytes(output/'source-review.json',review)
         archive=output/(output.name+'.tar.gz')
         with tarfile.open(archive,'w:gz') as tf:

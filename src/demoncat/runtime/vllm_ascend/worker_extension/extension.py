@@ -33,6 +33,10 @@ def _call(worker, action, payload=None):
 
 
 class DemoncatWorkerExtension:
+    def demoncat_product_bootstrap(self, action, payload):
+        from .product_bootstrap import product_bootstrap_rpc
+        return product_bootstrap_rpc(self, action, payload)
+
     def demoncat_product_binding(self, action, payload):
         from .product_binding import product_binding_rpc
         result=product_binding_rpc(self, action, payload)

@@ -66,6 +66,7 @@ class ProductClient:
         self.canary_evidence = None
         self.cleanup_evidence = None
         self.deployment = None
+        self.registration = None
         self._lock = threading.RLock()
 
     def _binding(self, action, **settings):
@@ -125,7 +126,12 @@ class ProductClient:
                 members_sha256=digest(self.members), mechanism=self.config.mechanism,
                 tp=len(self.members), injection_policy='ALL_RANK_EVERY_ELIGIBLE_CALL')
             self.bound = True  # retain cleanup responsibility even if one rank rejects attach
-            self._binding('attach', group_contract=contract, scope=dict(mode=policy.mode))
+            attached=self._binding('attach', group_contract=contract, scope=dict(mode=policy.mode))
+            if any(r.get('mode')=='PRODUCT_REGISTERED' for r in attached):
+                ids={r.get('registration_sha256') for r in attached}
+                if any(r.get('mode')!='PRODUCT_REGISTERED' for r in attached) or len(ids)!=1 or None in ids:
+                    raise RuntimeError('PRODUCT_REGISTRATION_RANK_GROUP_MISMATCH')
+                self.registration=ids.pop()
             for unused in range(6):
                 observations = self._canary()
                 from .batch_canary import stable
@@ -146,7 +152,8 @@ class ProductClient:
             self._collect_status()
         return dict(enabled=self.enabled, requests=deepcopy(self.requests),
                     recovery=deepcopy(self.recovery), canary=deepcopy(self.canary_evidence),
-                    cleanup=deepcopy(self.cleanup_evidence), product_qualified=False)
+                    cleanup=deepcopy(self.cleanup_evidence), product_qualified=self.registration is not None,
+                    registration_sha256=self.registration)
 
     def _collect_status(self):
         while True:

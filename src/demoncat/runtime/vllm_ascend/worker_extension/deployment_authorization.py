@@ -68,7 +68,17 @@ def acceptance_use(provider,action,*,enforce=False):
     data=deepcopy(report)
     permit=data.get('acceptance_permit')
     valid=True
-    if permit:
+    if data.get('mode')=='PRODUCT_REGISTERED':
+        from .continuous_binding import current_binding
+        from .product_registration import registered_for
+        registration=data.get('product_registration') or {}
+        try:
+            b=current_binding(worker,model,provider.mechanism)
+            if b is None:raise ValueError('PRODUCT_BINDING_NOT_ATTACHED')
+            profile=getattr(worker,'_demoncat_product_profiles',{}).get(b.product['profile'])
+            registered_for(worker,b.mechanism,profile,expected_sha=registration.get('record_sha256'))
+        except (ValueError,RuntimeError,AttributeError):valid=False
+    elif permit:
         from .deployment_acceptance import BlueAcceptancePermit,_BLUE
         live=getattr(worker,_BLUE,None)
         valid=(type(live) is BlueAcceptancePermit and live.permit_id==permit['permit_id']
