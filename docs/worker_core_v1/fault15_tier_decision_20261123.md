@@ -36,6 +36,16 @@ a2每rank有10个execute迭代，其中8个有调度token（两次prefill及各3
 
 两窗口合计501.523秒（含启动/清理），不是纯kernel时间；卡2/5有界隔离已解除。日志及回执身份见[普查证据](alias15_census_20261123/alias15-readonly-a2.json)。控制器复用了旧产品窗口模板，`worker/recovery_plan`中的fault阶段字样仅是模板标签，真实执行入口为只读alias15_readonly_probe，没有任何注入。退出时Python resource_tracker有信号量/共享内存清理警告；这是进程退出警告，不能据此将其称为Fault15资源恢复证明。
 
+## 阶段2边界复核：真实输出链已观察，注入验收仍待完成
+
+`alias15-output-a2` 在同一 A2/0.26/CANN9.1/Qwen3.8 W8A8/TP2 组合完成只读检查：每rank16个full-attention层、128次实际写入，全部为BF16、format2（ND）。每次均确认原生`torch.empty → output.view → impl.forward(output)`写后base/view逐字节相同；真实gate乘法读取该base，o_proj读取gate结果，设备事件确认消费者完成。没有增加写入算子，没有重定向或注入。详细计数见[输出边界证据](alias15_census_20261123/output_boundary_a2.json)。
+
+必须修正原候选的简写：当前模型不是o_proj直接读取base，而是`base → attn_output * sigmoid(gate) → o_proj`。第一轮观察器因错误要求直接共享存储而拒绝；第二轮记录了实际gate，不绕过存储检查。两轮都不是故障注入验收。
+
+第二轮窗口243.702秒，两个rank的hook和方法包装器均为0，隔离已解除。返回文本前中后一致；未证明完整hidden/logits无扰动，不能据此授予产品准入。预分配base来自`torch.empty`，其旧字节没有初始化语义，本轮128次/rank均为有限值；未来故障回执必须保留旧值是否有限，不能人为清零以制造稳定错误。
+
+下一步只在实际写入边界给impl传入保持初值的独立存储视图，原base继续由真实gate消费。必须证明视图写入和base更新丢失、消费者读取、租约清零及新请求金丝雀精确恢复；否则产品入口继续关闭。交付名称保持“别名断开语义（ND视图），不含私有格式触发条件”。
+
 ## 推荐的B档验证边界与恢复语义
 
 优先验证Attention.forward预分配输出→实际impl的output写入→o_proj输入：在自然调用边界确认实际输出对象/存储区间以及设备消费，保留每请求生命周期。**不通过人为增加copy_或把调度索引当激活来凑出链。** 若融合实现完全没有可重定向的真实视图写入，则该点不适用，另选自然候选；本次不绕过此条件。
