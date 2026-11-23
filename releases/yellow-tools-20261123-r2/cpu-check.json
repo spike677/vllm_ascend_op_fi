@@ -1,0 +1,186 @@
+{
+  "schema": "demoncat.yellow_tools.cpu_check.v1",
+  "standalone_zip": true,
+  "command": [
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "-q",
+    "test_yellow_supplement",
+    "test_registration_extract.RegistrationTests",
+    "test_registration_extract.DeepSeekExtractTests",
+    "test_dsv4_noise",
+    "test_continuous_public_review",
+    "test_product_review",
+    "test_alias_chain_census",
+    "test_alias_census_extract",
+    "test_alias_output_census"
+  ],
+  "exit_code": 0,
+  "seconds": 4.389929533004761,
+  "fixture_not_npu": true,
+  "registration_cli": [
+    {
+      "extract_sha256": "f4d0a0d618fde7421cca4be256b0b93bca82852843fa79895011608576a7e70e",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    },
+    {
+      "extract_sha256": "93e092a7a7e46c3c144b8bfd1a3490bf406ea286d9ff2e627aa2ee259b89b163",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    },
+    {
+      "extract_sha256": "94748ca3a7c4e70d7db53cfbec13d999c2dbc330a776cd2216b52b1639f3ce38",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    },
+    {
+      "extract_sha256": "364a2f01e430fcf9b4ad2f3a167cdd2cdd2b9e7786abdd255018d79042fa1461",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    },
+    {
+      "extract_sha256": "1c8054cd84c233b44f574d8b942a77211f13d27530e1ab78cf5c7b806cf6a53a",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    },
+    {
+      "extract_sha256": "a4fb8dcccc434a43b48427eaedecc964ca0e7518dd7f663af3be33926d5a03a9",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    },
+    {
+      "extract_sha256": "90386419a9345dafdb642c40ed320a3766f5838890725c772ca6ff194e79b273",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    },
+    {
+      "extract_sha256": "ae359e5c2e9f6c62e469d66acaac733b2235d809a61595f15f9eecae8ac81383",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    },
+    {
+      "extract_sha256": "5ad5161433dd25248a7af09abe4e0e8104bebb68789d4a855424eb23cb53e04c",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    },
+    {
+      "extract_sha256": "33bab251d7475fbd226ae4526a629a4055618b492577a2d6f88c3d2295d6645a",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    },
+    {
+      "extract_sha256": "40db48e0bef34c96874d45b20e17d8cfee7da9badc8ff243d84e2590f708ac57",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    },
+    {
+      "extract_sha256": "387b8d016f836472653e43eaee08befdcc070805015d1bdf1c7ec38067cf4b45",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    },
+    {
+      "extract_sha256": "cbe29c97c6c3cd97a9c50448a65e1aa59bda9b7a0329fb508583060bf37b867b",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    },
+    {
+      "extract_sha256": "688fa003445b18255fd10870daa9b00b2e18a296776404000a06e85822e954b2",
+      "verify": {
+        "consistent": true,
+        "issues": [],
+        "registration_issues": [],
+        "registration_ready": true,
+        "registration_written": false
+      },
+      "repeat_byte_identical": true
+    }
+  ],
+  "chains": [
+    "actual CPU capture -> 8 ranks x4 steps x10 samples -> review CLI -> bounded text CLI",
+    "actual CPU observe -> bounded text CLI",
+    "existing library/receipt -> Native extraction; corrupt library rejects",
+    "product TP1 review -> bounded text; corrupt canary rejects"
+  ],
+  "npu_calls": 0
+}
