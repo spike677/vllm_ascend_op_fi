@@ -3,9 +3,9 @@ from pathlib import Path
 
 class DocumentationTests(unittest.TestCase):
     def test_six_documents_exact_bytes(self):
-        root=Path('releases/r71-docs-20261123-v2-r1');m=json.loads((root/'manifest.json').read_bytes())
+        root=Path('releases/r71-docs-20261123-v2-r2');m=json.loads((root/'manifest.json').read_bytes())
         self.assertEqual(len(m['files']),6);self.assertFalse(m['runtime_modified'])
-        z=root/'r71-docs-20261123-v2-r1.zip'
+        z=root/'r71-docs-20261123-v2-r2.zip'
         expected=(root/'SHA256SUMS').read_text().splitlines()[0].split()[0]
         self.assertEqual(hashlib.sha256(z.read_bytes()).hexdigest(),expected)
         with zipfile.ZipFile(z) as f:

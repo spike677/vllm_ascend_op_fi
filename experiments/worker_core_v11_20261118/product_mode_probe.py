@@ -37,8 +37,17 @@ def trusted_bootstrap(wrapper, action, options):
             try:product_binding_rpc(worker,'capabilities',payload)
             except RuntimeError as error:rejected[label]=str(error)
             else:raise AssertionError('PRODUCT_NEGATIVE_WAS_ACCEPTED:'+label)
+        # Real Worker-side public configuration rejection; this does not claim a
+        # yellow CLI/daemon integration test.
+        from demoncat.runtime.vllm_ascend.worker_extension.config import FaultConfig
+        try: FaultConfig(99, 'unknown')
+        except (ValueError, RuntimeError) as error: rejected['unknown_mechanism'] = str(error)
+        else: raise AssertionError('PRODUCT_UNKNOWN_MECHANISM_ACCEPTED')
+        runtime = worker._demoncat_worker_fault_runtime
         assert not route['can_prepare'] and not hasattr(worker,'_demoncat_blue_acceptance_permit')
-        return dict(rank=worker.rank,missing_permit=route,permit_remaining=False,**rejected)
+        assert len(runtime._leases) == len(runtime._tenants) == 0
+        return dict(rank=worker.rank,missing_permit=route,permit_remaining=False,
+                    resources=dict(leases=0,owners=0),**rejected)
     if action == 'permit':
         return install_deployment_acceptance_permit(worker, authority=authority, operator='product-acceptance', **options)
     if action == 'remove_permit':

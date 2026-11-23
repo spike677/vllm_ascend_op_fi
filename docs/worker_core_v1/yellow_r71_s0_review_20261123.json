@@ -1,0 +1,126 @@
+{
+  "source_bytes": 18420,
+  "source_sha256": "d748401376cfc8f13309e7fc8c2a4fe5d2b708a8ee99272249341dfc401bdaff",
+  "evidence": "YELLOW_TEXT_ATTESTED",
+  "mechanism": "18.api_half",
+  "identity": {
+    "cann": [
+      "9.1.0"
+    ],
+    "dp": 1,
+    "dtype": "torch.bfloat16",
+    "eager": true,
+    "hardware_device_name": "Ascend910_9382",
+    "hardware_family": "A3",
+    "image_digest": null,
+    "live_config_matches_file": true,
+    "max_model_len": 1024,
+    "max_num_batched_tokens": 1024,
+    "max_num_seqs": 1,
+    "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+    "pp": 1,
+    "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+    "safetensors_index_sha256": {
+      "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+    },
+    "torch": "2.10.0+cpu",
+    "torch_npu": "2.10.0.post4",
+    "tp": 2,
+    "vllm": "0.26.0",
+    "vllm_ascend": "0.26.0rc1"
+  },
+  "pages": [
+    {
+      "scope": 0,
+      "rank": 0,
+      "extract_sha256": "4693f6ccbfd3887fdaa1d266ef78feab13467fb49ea50cc2397e3a6b962116a7",
+      "sha_valid": true,
+      "bytes": 1764,
+      "reviewer_matches_r71": true,
+      "counts": {
+        "applied": 1932,
+        "attempted": 1932,
+        "changed": 1931,
+        "consumed": 1932,
+        "eligible": 1932,
+        "failed": 0,
+        "observed": 1932,
+        "restored": 1932
+      },
+      "review_passed": true,
+      "canary_exact": true,
+      "resources_zero": true
+    },
+    {
+      "scope": 0,
+      "rank": 1,
+      "extract_sha256": "5fc3c030eb8cf384c57c637108edf8e4bd11f1937c7965a2a1daf1c46b6e374b",
+      "sha_valid": true,
+      "bytes": 1764,
+      "reviewer_matches_r71": true,
+      "counts": {
+        "applied": 1932,
+        "attempted": 1932,
+        "changed": 1931,
+        "consumed": 1932,
+        "eligible": 1932,
+        "failed": 0,
+        "observed": 1932,
+        "restored": 1932
+      },
+      "review_passed": true,
+      "canary_exact": true,
+      "resources_zero": true
+    },
+    {
+      "scope": 1,
+      "rank": 0,
+      "extract_sha256": "59753630a1dc44e73d8a09557454cd66805eb60ebb9b5892d311f089ff62560f",
+      "sha_valid": true,
+      "bytes": 1764,
+      "reviewer_matches_r71": true,
+      "counts": {
+        "applied": 1932,
+        "attempted": 1932,
+        "changed": 1931,
+        "consumed": 1932,
+        "eligible": 1932,
+        "failed": 0,
+        "observed": 1932,
+        "restored": 1932
+      },
+      "review_passed": true,
+      "canary_exact": true,
+      "resources_zero": true
+    },
+    {
+      "scope": 1,
+      "rank": 1,
+      "extract_sha256": "99c328ba32971f04b0c5bdc650341695544acd3693d42d1fab4789b8a1a99dab",
+      "sha_valid": true,
+      "bytes": 1764,
+      "reviewer_matches_r71": true,
+      "counts": {
+        "applied": 1932,
+        "attempted": 1932,
+        "changed": 1931,
+        "consumed": 1932,
+        "eligible": 1932,
+        "failed": 0,
+        "observed": 1932,
+        "restored": 1932
+      },
+      "review_passed": true,
+      "canary_exact": true,
+      "resources_zero": true
+    }
+  ],
+  "decision": "NEEDS_SUPPLEMENT_FOR_REGISTRATION",
+  "functional_review": "Four pages pass canonical SHA, reviewer, coverage, consumer and recovery consistency; initial trusted RPC import blocker subsequently resolved.",
+  "missing": [
+    "Actual product owner-to-scope/receipt mapping; permit IDs are not owner IDs",
+    "Negative control outcomes and valid positive controls; supplied text says negative=null",
+    "Complete rank-specific Worker identities, rather than one process identity labelled rank0/1"
+  ],
+  "qualification_granted": false
+}

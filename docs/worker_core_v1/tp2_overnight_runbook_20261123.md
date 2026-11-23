@@ -24,6 +24,21 @@ python -m pip install --no-index --no-deps --target "$PREVIEW_SITE" wheels/*.whl
 python "$SOURCE/tools/check_rc3_preview_install.py" --site "$PREVIEW_SITE" --release "$RELEASE"
 ```
 
+### S0 导入路径勘误（v2-r2）
+
+黄区S0已证明：Worker同时加载旧/新源码路径可能让可信RPC导入错误的worker_extension。Worker进程使用 **已检查的r7.1 site + 黄区host**，不加入`$SOURCE/src`或黄区CLI源码；CLI在独立进程使用黄区自身源码。不要删`__init__.py`、改包名或复制缺失模块到旧源码树。工具审查进程与Worker启动环境分开设置。
+
+```sh
+# 仅用于启动/重启专用Worker实例的环境；保留该镜像必需的CANN Python路径。
+export PYTHONPATH="$PREVIEW_SITE:$YELLOW_HOST:$CANN_PYTHONPATH"
+# CLI单独调用，由黄区launcher设置其CLI_SRC；不要回灌到Worker的PYTHONPATH。
+PYTHONPATH="$CLI_SRC:$PREVIEW_SITE" python -m demoncat.cli fault list --socket "$SOCKET"
+```
+
+`YELLOW_HOST`、`CLI_SRC`、`CANN_PYTHONPATH`均取黄区实际已核验路径。在实际Worker中只读打印product_config/product_binding/product_host的`__file__`并核对安装清单；独立Python解释器import成功不能代替Worker内来源核对。
+
+有效操作顺序为 **list → enable → 真实HTTP → status → disable**。list已完成census attach，enable不重复attach；disable之后的HTTP只能作为恢复对照，不能算故障请求。两个scope回传实际owner与rank Worker的对应关系；permit ID不是owner。负向检查未执行时保留null、登记待补，不补true。
+
 具名Worker扩展沿用黄区`host/yellow_worker_ext.py`的公共binding包装；不得用蓝区实验bootstrap替换授权。安装输出/文件SHA留存。r7.1许可清单是source-review.json，SHA **77e30525212d2d1e8f46313452bacdd46c81ecb751ce2e052e4d72dabbf6f7e2**；核对 r7.1 交接单。
 
 |机制/profile（建议直接同名）|FaultConfig编号、variant|max_model_len / max_num_batched_tokens / max_num_seqs|请求与效果|
