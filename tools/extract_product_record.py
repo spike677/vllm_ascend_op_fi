@@ -12,7 +12,8 @@ def pages(receipt,identity):
     missing=[k for k in DEPLOYMENT if k!='image_digest' and actual.get(k) is None]
     if missing:issues.append('IDENTITY_MISSING:'+','.join(missing))
     error=None;result=None
-    try:result=review(d,expected_tp=actual.get('tp'),hardware_scope='DECLARED_RUNTIME_IDENTITY_REQUIRES_BLUE_REVIEW')
+    try:result=review(d,expected_tp=actual.get('tp'),hardware_scope='DECLARED_RUNTIME_IDENTITY_REQUIRES_BLUE_REVIEW',
+                      require_native_runtime=actual.get('hardware_family')=='A3')
     except Exception as e:error=type(e).__name__+':'+str(e)
     common=dict(schema='dcat.product.extract.v1',mechanism=d.get('mechanism'),source_manifest_sha256=d.get('source_manifest_sha256'),
         identity={k:actual.get(k) for k in DEPLOYMENT},identity_source='YELLOW_RUNTIME_IDENTITY_TEXT',identity_issues=issues,
@@ -27,6 +28,13 @@ def pages(receipt,identity):
                 else:
                     rows=[e for e in scope['effects'] if e['rank']==rank];counts={k:sum(e['coverage'][k] for e in rows) for k in rows[0]['coverage']}
                     details=dict(consumers=sorted({c for e in rows for c in e['consumers']}),changed_elements=sum(e['changed_elements'] for e in rows),counter_unit='REAL_CALLS')
+                    if d['mechanism'] in ('41.tail_column','26.fia_destination','20.buffer_substitute'):
+                        native=[e for e in rows if e['coverage']['eligible']]
+                        identities=[e.get('native_runtime') for e in native]
+                        # Extraction preserves missing identity rather than claiming runtime proof.
+                        details['native_library_sha256']=sorted({e.get('native_library_sha256') for e in native if e.get('native_library_sha256')})
+                        details['native_runtime']=identities[0] if identities and all(x==identities[0] for x in identities) else None
+                        details['native_runtime_complete']=bool(identities and all(x and x==identities[0] for x in identities))
                 output.append(dict(common,scope=scope['scope'],rank=rank,counts=counts,details=details,canary_exact=scope['canary_exact'],all_resources_zero=scope['all_resources_zero']))
     else:output=[common]
     for page in output:

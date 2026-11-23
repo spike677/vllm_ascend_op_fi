@@ -1,10 +1,10 @@
-# r7 Native A3 产品验收草稿（暂不发出）
+# r7 Native A3 产品候选验收执行单（负责人转交，A组收尾后执行）
 
-本稿供负责人留存。当前代码只允许蓝区 Ascend910B4 / TP2 / CANN 9.1 的 Native 产品验收，不允许把设备名、来源或 TP 改为 A3 后直接运行。黄区现有构建 ff19425f / d9aa0d94 的完整提取全文、源码、编译器及收据/库身份审查通过后，才新增对应 A3 受信组合并发布执行版。没有要求黄区现在操作或重新构建。
+黄区完整Native提取已通过文本身份审查，见 yellow_intake_20261123_r6_followup.md。现有库可用于候选验收，不要求重新构建。A3 TP2先行，再TP1；各组合独立许可/回执，未验收默认不登记。由负责人转交，不直接要求黄区执行。
 
 ## 库与源码
 
-r7 保持 `fault_injection/native_adapters/postwrite` 的 C++ 原样；A2 新构建输出 SHA 为 `d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274`。它与现有记录相同不代替黄区构建审查。审查通过后直接复用黄区现有 r5 来源产物，不能用 A2 receipt 替代 A3 的 receipt，也不能借用 CANN 9.2.1 的库。若后续不得不改 C++，本稿作废并明确要求重新构建。
+r7 保持 `fault_injection/native_adapters/postwrite` 的 C++ 原样；A2 新构建输出 SHA 为 `d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274`。它与现有记录相同不代替黄区构建审查。本次审查通过，直接复用黄区现有 r5 来源产物，不能用 A2 receipt 替代 A3 的 receipt，也不能借用 CANN 9.2.1 的库。若后续不得不改 C++，本稿作废并明确要求重新构建。
 
 ## 受信配置如何进入 binding
 
@@ -49,3 +49,19 @@ client.detach()
 完整原件留黄区，采用 `review_product_mode.py` + 产品提取工具的分页文本协议；记录 Native 库 SHA、region/source/before/after/restored、真实消费者、每 rank 计数和三项恢复。执行版必须附相同源码的审查器及提取工具 SHA。A2 通过不能登记 A3。
 
 N 批 A2 产品验收及八项产品回归通过、黄区 Native 身份审查通过后，才冻结 r7 预览；不等待 D/P。D 的 V4 噪声/全 rank 只观测和 P 的 A3 TP2/TP1 分组材料分别后续处理。
+
+## r7新增运行时门禁与回传命令
+
+可信Native配置只接受库SHA `d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274`、A3芯片原名Ascend910_9382、TP1/2及9.1.0 toolkit。attach时还读取当前Worker已映射的libascendcl.so/libruntime.so，核验ELF文件SHA及其唯一安装元数据归属9.1.0；仅版本文件或构建时cann_runtime=null不算运行时证据。无法归属时拒绝并回传，不修改准入或CANN。库仅用于Qwen0.26/CANN9.1，DeepSeek0.32/CANN9.2.1不可混用。
+
+以下使用黄区CLI实际产品回执和部署身份，TP2先行；三机制各两个owner，同组Worker，不用蓝区实验脚本代替黄区CLI：
+
+```bash
+# TP2：分别对41、26fia、20实际保存的回执执行；TP1重复，--tp 1。
+python tools/review_product_mode.py "$RECEIPT" --tp 2 --a3-native --output "$REVIEW"
+python tools/extract_product_record.py "$RECEIPT" --runtime-identity "$RUNTIME_IDENTITY" > "$TEXT"
+```
+
+runtime-identity文件按工具DEPLOYMENT字段填写实际值，缺失填null；源代码清单SHA使用r7许可清单。提取页包含运行时ACL身份、库SHA、计数、消费者和三项恢复；≤4096字节硬上限，原样分页回传。额外提交缺许可、未知profile、用户库路径注入拒绝结果及对应owner/rank；审查器未通过须保留失败文本。原件留黄区，构建提取的反斜线转义修复只限已记录的传输解析，运行回执不修改。
+
+安装r7到独立环境；先按交付清单核验三wheel、源码包、source-review和安装源码，绝不覆盖r6。A3新组合仅候选，product_closed仍为false。无r6.1：TP1 Batch根因未定，本包不宣称修复其失败。

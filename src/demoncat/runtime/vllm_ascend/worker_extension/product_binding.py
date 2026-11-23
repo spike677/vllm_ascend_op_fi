@@ -47,6 +47,7 @@ def product_binding_rpc(worker, action, payload):
                     user_prompt_registry=False, named_variant=mechanism)
     b = current_binding(worker, worker.model_runner.model, mechanism)
     if action == 'attach':
+        native_identity=None
         scope = RequestScope(**payload['scope'])
         if mechanism=='33.paged_decode':
             from fault_injection.environment import _live_soc
@@ -54,12 +55,13 @@ def product_binding_rpc(worker, action, payload):
             require(soc is not None and soc['family']=='A2' and soc['observed_name']=='Ascend910B4',
                 'PRODUCT33_REQUIRES_REVIEWED_A2_LAUNCH_A3_NOT_ADMITTED')
         if mechanism in NATIVE_TRIALS:
-            validate_blue_native_worker(worker, authority.source)
+            native_identity=validate_blue_native_worker(worker, authority.source)
             require(profile['native_source'] == authority.source, 'PRODUCT_NATIVE_SOURCE_MISMATCH')
         result = install_continuous_binding(worker, mechanism=mechanism, prompts=profile['canary_prompts'],
                                             group_contract=payload['group_contract'], native_library=profile.get('native_library'),
                                             paged_partition=(512,256) if mechanism=='33.paged_decode' else None)
         b = current_binding(worker, worker.model_runner.model, mechanism)
+        if mechanism in NATIVE_TRIALS:b.native_runtime_identity=native_identity
         b.product = dict(mode='PRODUCT_ACCEPTANCE_ONLY', scope=dict(mode=scope.mode),
                          profile=payload['profile'])
         return dict(result, product_mode=True)

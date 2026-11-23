@@ -16,7 +16,10 @@ class NativeProductDeploymentTests(unittest.TestCase):
             file=root/'deployment.json'
             with patch.object(pn,'BLUE_NATIVE_LIBRARY_SHA256',sha):
                 file.write_text(json.dumps(cfg));self.assertEqual(load_product_deployment(file)['native_sha256'],sha)
-                for edit in ({'source':'YELLOW_DEDICATED_INSTANCE'},{'tp':1},{'native_sha256':'0'*64},{'native_library':None},{'fault':{'fault_id':18,'variant':'api_half','implementation_version':'1'}}):
+                for tp in (1,2):
+                    file.write_text(json.dumps(dict(cfg,source='YELLOW_DEDICATED_INSTANCE',tp=tp)))
+                    self.assertEqual(load_product_deployment(file)['tp'],tp)
+                for edit in ({'source':'UNKNOWN'},{'tp':1},{'native_sha256':'0'*64},{'native_library':None},{'fault':{'fault_id':18,'variant':'api_half','implementation_version':'1'}}):
                     file.write_text(json.dumps(dict(cfg,**edit)))
                     with self.assertRaises((ValueError,RuntimeError)):load_product_deployment(file)
                 lib.write_bytes(b'changed')
@@ -44,6 +47,20 @@ class NativeProductDeploymentTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,'UNKNOWN_FIELD'):
                 pb.product_binding_rpc(worker,'attach',dict(operator='trusted',profile='native',scope={'mode':'all'},group_contract={},native_library='/attacker.so'))
 
+    def test_yellow_needs_actual_mapped_cann_not_just_toolkit(self):
+        from copy import deepcopy
+        worker=NS(model_runner=NS(vllm_config=NS(parallel_config=NS(tensor_parallel_size=1))))
+        tk=dict(status='FOUND',installations=[dict(fields={'version':'9.1.0'})])
+        names=('libascendcl.so','libruntime.so')
+        env=dict(maps_status='OBSERVED',loaded_libraries=[dict(name=n,status='MAPPED_FILE_VERIFIED',sha256='a'*64) for n in names],
+                 loaded_toolkit_links=dict(libraries=[dict(name=n,status='PATH_LINKED_TO_INSTALLATION',matches=[dict(version='9.1.0',metadata_sha256='b'*64)]) for n in names]))
+        with patch('fault_injection.environment._live_soc',return_value=({'family':'A3','observed_name':'Ascend910_9382'},'live')),patch('fault_injection.environment._toolkit',return_value=tk),patch('fault_injection.environment.inspect_environment',return_value=env):
+            self.assertEqual(len(pn.validate_blue_native_worker(worker,'YELLOW_DEDICATED_INSTANCE')['loaded_runtime']),2)
+            worker.model_runner.vllm_config.parallel_config.tensor_parallel_size=2
+            pn.validate_blue_native_worker(worker,'YELLOW_DEDICATED_INSTANCE')
+            env['loaded_toolkit_links']['libraries'][0]['matches'][0]['version']='9.2.1'
+            with self.assertRaisesRegex(RuntimeError,'LOADED_CANN91'):pn.validate_blue_native_worker(worker,'YELLOW_DEDICATED_INSTANCE')
+
 class NativeProductReviewTests(unittest.TestCase):
     def test_native_proof_and_negative_controls_cannot_be_omitted(self):
         from test_product_review import receipt
@@ -57,6 +74,10 @@ class NativeProductReviewTests(unittest.TestCase):
                     rank['native_memory_effect']=dict(leases=0,request_ids=[rank['request_id']],library_sha256='a'*64,
                         regions=[dict(region_elements=4,consumer_operator='aten::add',before_sha256='b'*64,restored_sha256='b'*64,source_sha256='c'*64,after_sha256='c'*64)])
         self.assertFalse(review(data)['qualification_granted'])
+        with self.assertRaisesRegex(ValueError,'A3_RUNTIME_MISSING'):review(data,require_native_runtime=True)
+        bad=deepcopy(data)
+        bad['scopes'][0]['requests'][0]['result']['ranks'][0]['native_memory_effect']['runtime_identity']={'source':'YELLOW_DEDICATED_INSTANCE'}
+        with self.assertRaisesRegex(ValueError,'A3_RUNTIME_UNPROVEN'):review(bad)
         for field,value in [('negative_controls',[]),('negative_controls',[dict(rank=r,permit_remaining=True,missing_permit={'can_prepare':False}) for r in range(2)])]:
             bad=deepcopy(data);bad['scopes'][0][field]=value
             with self.assertRaises(ValueError):review(bad)

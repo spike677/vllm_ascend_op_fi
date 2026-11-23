@@ -54,7 +54,7 @@ def review_batch_requests(requests,need,expected_tp=2):
     return dict(request_participation=effects,unique_batch_calls_by_rank=totals,actual_eligible_batch_sizes=sorted(sizes))
 
 
-def review(data, *, expected_tp=2, hardware_scope="A2/0.26/Qwen3.8-community-W8A8/TP2"):
+def review(data, *, expected_tp=2, hardware_scope="A2/0.26/Qwen3.8-community-W8A8/TP2", require_native_runtime=False):
     if type(expected_tp) is not int or expected_tp not in (1,2):raise ValueError("PRODUCT_REVIEW_TP_UNSUPPORTED")
     def need(value, code):
         if not value: raise ValueError(code)
@@ -110,6 +110,17 @@ def review(data, *, expected_tp=2, hardware_scope="A2/0.26/Qwen3.8-community-W8A
                     proof=rank.get('native_memory_effect',{})
                     need(proof.get('leases')==0 and proof.get('request_ids')==[rank['request_id']]
                          and len(proof.get('regions',[]))==c['eligible'] and proof.get('library_sha256'), 'PRODUCT_NATIVE_REGION_EVIDENCE_MISSING')
+                    identity=proof.get('runtime_identity') or {}
+                    if require_native_runtime:
+                        need(identity.get('source')=='YELLOW_DEDICATED_INSTANCE','PRODUCT_NATIVE_A3_RUNTIME_MISSING')
+                    if identity.get('source')=='YELLOW_DEDICATED_INSTANCE':
+                        runtime=identity.get('loaded_runtime',[])
+                        need(identity.get('tp')==expected_tp and identity.get('soc',{}).get('family')=='A3'
+                             and identity.get('soc',{}).get('observed_name')=='Ascend910_9382'
+                             and identity.get('cann_observation_source')=='VERIFIED_MAPPED_ELF_LINKED_TO_INSTALLED_VERSION_METADATA'
+                             and sorted(r.get('name','') for r in runtime)==['libascendcl.so','libruntime.so']
+                             and all(r.get('version')=='9.1.0' and r.get('sha256') and r.get('metadata_sha256') for r in runtime),
+                             'PRODUCT_NATIVE_A3_RUNTIME_UNPROVEN')
                     for region in proof['regions']:
                         need(region.get('region_elements',0)>0 and region.get('consumer_operator')
                              and region.get('before_sha256') and region['before_sha256']==region.get('restored_sha256'), 'PRODUCT_NATIVE_RESTORE_PROOF_MISSING')
@@ -121,6 +132,8 @@ def review(data, *, expected_tp=2, hardware_scope="A2/0.26/Qwen3.8-community-W8A
                 effects.append(dict(rank=rank['rank'], request_index=index, coverage=c,
                                     changed_elements=rank['changed_elements'], reasons=rank['reasons'],
                                     consumers=sorted({s['consumer_operator'] for s in sites if s.get('consumer_operator')}),
+                                    native_runtime=rank.get('native_memory_effect',{}).get('runtime_identity'),
+                                    native_library_sha256=rank.get('native_memory_effect',{}).get('library_sha256'),
                                     **nonfinite))
             if index < 3:
                 need(all(r['prompt_sha256']==ranks[0]['prompt_sha256'] for r in ranks), 'RANK_USER_INPUTS_DIFFER')
@@ -165,8 +178,12 @@ def review(data, *, expected_tp=2, hardware_scope="A2/0.26/Qwen3.8-community-W8A
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('receipt');parser.add_argument('--output')
+    parser.add_argument('--tp',type=int,choices=(1,2),default=2)
+    parser.add_argument('--a3-native',action='store_true')
     args=parser.parse_args();raw=Path(args.receipt).read_bytes()
-    result=review(json.loads(raw));result['receipt_sha256']=hashlib.sha256(raw).hexdigest()
+    result=review(json.loads(raw),expected_tp=args.tp,require_native_runtime=args.a3_native,
+        hardware_scope='A3 declared; runtime proof required' if args.a3_native else 'Caller must independently verify hardware identity')
+    result['receipt_sha256']=hashlib.sha256(raw).hexdigest()
     result['reviewer_sha256']=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     text=json.dumps(result,indent=2)+'\n'
     if args.output:Path(args.output).write_text(text)

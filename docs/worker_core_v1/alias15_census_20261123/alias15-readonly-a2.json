@@ -1,0 +1,236 @@
+{
+  "attempt": "alias15-readonly-a2",
+  "status": "READONLY_CENSUS_COMPLETED",
+  "start": "2026-11-23T10:25:40.596914+00:00",
+  "elapsed_seconds": 246.15852299006656,
+  "isolation_removed": true,
+  "isolation": [
+    {
+      "time": "2026-11-23T10:25:40.597043+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "maximum_seconds": 2100,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-23T10:29:46.755504+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ],
+  "source_manifest_sha256": "6e34909142a66c38de9f10a507e2e877440e6ca14fdebea86881f5d69ed872e2",
+  "receipt_sha256": "46719a1868c6a77f26ce2a396ee037c2683d4bb007c370e13d5b8ae0aa52a724",
+  "receipt_bytes": 219304,
+  "token_text_equal": true,
+  "full_hidden_logits_equality_proven": false,
+  "injection_enabled": false,
+  "qualification_granted": false,
+  "ranks": [
+    {
+      "rank": 0,
+      "forwards": 10,
+      "scheduled": [
+        [
+          10
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [],
+        [
+          10
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        []
+      ],
+      "counts": {
+        "dispatch_calls": 19428,
+        "shared_storage_views": 6284,
+        "view_writes": 558,
+        "base_read_after_view_write": 48
+      },
+      "formats": {
+        "ND": 5822,
+        "None": 462
+      },
+      "sample_groups": [
+        {
+          "dtype": "torch.int32",
+          "device": "cpu",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.add.out",
+          "consumer": "aten.gt.Scalar",
+          "count": 8
+        },
+        {
+          "dtype": "torch.int32",
+          "device": "npu:0",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.copy_.default",
+          "consumer": "aten.add.Tensor",
+          "count": 8
+        },
+        {
+          "dtype": "torch.int32",
+          "device": "npu:0",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.copy_.default",
+          "consumer": "aten.index.Tensor",
+          "count": 8
+        },
+        {
+          "dtype": "torch.int32",
+          "device": "npu:0",
+          "writer_module": "",
+          "consumer_module": "language_model.model.embed_tokens",
+          "writer": "aten.copy_.default",
+          "consumer": "aten.ge.Scalar",
+          "count": 8
+        },
+        {
+          "dtype": "torch.int64",
+          "device": "npu:0",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.copy_.default",
+          "consumer": "aten.add.Tensor",
+          "count": 8
+        },
+        {
+          "dtype": "torch.int64",
+          "device": "npu:0",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.copy_.default",
+          "consumer": "aten.index.Tensor",
+          "count": 8
+        }
+      ],
+      "hooks_remaining": 0,
+      "execute_wrapper_removed": true
+    },
+    {
+      "rank": 1,
+      "forwards": 10,
+      "scheduled": [
+        [
+          10
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [],
+        [
+          10
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        []
+      ],
+      "counts": {
+        "dispatch_calls": 19428,
+        "shared_storage_views": 6284,
+        "view_writes": 558,
+        "base_read_after_view_write": 48
+      },
+      "formats": {
+        "ND": 5822,
+        "None": 462
+      },
+      "sample_groups": [
+        {
+          "dtype": "torch.int32",
+          "device": "cpu",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.add.out",
+          "consumer": "aten.gt.Scalar",
+          "count": 8
+        },
+        {
+          "dtype": "torch.int32",
+          "device": "npu:1",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.copy_.default",
+          "consumer": "aten.add.Tensor",
+          "count": 8
+        },
+        {
+          "dtype": "torch.int32",
+          "device": "npu:1",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.copy_.default",
+          "consumer": "aten.index.Tensor",
+          "count": 8
+        },
+        {
+          "dtype": "torch.int32",
+          "device": "npu:1",
+          "writer_module": "",
+          "consumer_module": "language_model.model.embed_tokens",
+          "writer": "aten.copy_.default",
+          "consumer": "aten.ge.Scalar",
+          "count": 8
+        },
+        {
+          "dtype": "torch.int64",
+          "device": "npu:1",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.copy_.default",
+          "consumer": "aten.add.Tensor",
+          "count": 8
+        },
+        {
+          "dtype": "torch.int64",
+          "device": "npu:1",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.copy_.default",
+          "consumer": "aten.index.Tensor",
+          "count": 8
+        }
+      ],
+      "hooks_remaining": 0,
+      "execute_wrapper_removed": true
+    }
+  ]
+}

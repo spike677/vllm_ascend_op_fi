@@ -38,17 +38,20 @@ def request_evidence(binding, site, events, request_ids):
             'source_sha256', 'before_sha256', 'after_sha256', 'restored_sha256',
             'slots', 'page_mapping', 'changed')})
     return dict(library_sha256=library[1], regions=regions, leases=0,
-                request_ids=list(request_ids), qualification_granted=False)
+                request_ids=list(request_ids), runtime_identity=getattr(binding,'native_runtime_identity',None),
+                qualification_granted=False)
 
 
-# Reviewed BLUE A2/TP2 acceptance only; never an A3 or product-closed grant.
+# A2 TP2 measured; A3 TP1/TP2 acceptance candidate after yellow build text review.
+# Legacy function names retained for existing trusted bootstrap imports.
 BLUE_NATIVE_LIBRARY_SHA256 = 'd9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274'
 
 
 def validate_blue_native_library(path, sha, source, tp):
     from pathlib import Path
     import hashlib
-    require(source == 'BLUE_COMBINATION' and type(tp) is int and tp == 2,
+    require(type(tp) is int and ((source == 'BLUE_COMBINATION' and tp == 2)
+            or (source == 'YELLOW_DEDICATED_INSTANCE' and tp in (1,2))),
             'PRODUCT_NATIVE_A3_OR_TP1_NOT_ADMITTED')
     require(type(path) is str and Path(path).is_absolute() and sha == BLUE_NATIVE_LIBRARY_SHA256,
             'PRODUCT_NATIVE_REVIEWED_LIBRARY_REQUIRED')
@@ -60,11 +63,32 @@ def validate_blue_native_library(path, sha, source, tp):
 def validate_blue_native_worker(worker, source):
     from fault_injection.environment import _live_soc, _toolkit
     soc, _ = _live_soc()
-    require(source == 'BLUE_COMBINATION' and soc is not None
-            and soc['family'] == 'A2' and soc['observed_name'] == 'Ascend910B4'
-            and worker.model_runner.vllm_config.parallel_config.tensor_parallel_size == 2,
-            'PRODUCT_NATIVE_REQUIRES_A2_TP2')
+    tp=worker.model_runner.vllm_config.parallel_config.tensor_parallel_size
+    blue=source=='BLUE_COMBINATION'
+    yellow=source=='YELLOW_DEDICATED_INSTANCE'
+    require(soc is not None and ((blue and soc['family']=='A2' and soc['observed_name']=='Ascend910B4' and tp==2)
+            or (yellow and soc['family']=='A3' and soc['observed_name']=='Ascend910_9382' and tp in (1,2))),
+            'PRODUCT_NATIVE_REQUIRES_A2_TP2_OR_REVIEWED_A3_ACCEPTANCE')
     toolkit = _toolkit()
     require(toolkit['status'] == 'FOUND' and len(toolkit['installations']) == 1
             and toolkit['installations'][0]['fields'].get('version') == '9.1.0',
             'PRODUCT_NATIVE_REQUIRES_CANN91_TOOLKIT')
+    identity=dict(source=source,tp=tp,soc=soc,toolkit_version='9.1.0',qualification_granted=False)
+    if yellow:
+        from fault_injection.environment import inspect_environment
+        actual=inspect_environment(additional_libraries=('libascendcl.so','libruntime.so'))
+        require(actual['maps_status']=='OBSERVED','PRODUCT_NATIVE_RUNTIME_MAPPING_UNOBSERVED')
+        linked=actual['loaded_toolkit_links']['libraries']
+        verified=[]
+        for name in ('libascendcl.so','libruntime.so'):
+            rows=[r for r in actual['loaded_libraries'] if r['name']==name]
+            links=[r for r in linked if r['name']==name]
+            require(len(rows)==1 and rows[0]['status']=='MAPPED_FILE_VERIFIED'
+                and len(links)==1 and links[0]['status']=='PATH_LINKED_TO_INSTALLATION'
+                and len(links[0]['matches'])==1 and links[0]['matches'][0]['version']=='9.1.0',
+                'PRODUCT_NATIVE_LOADED_CANN91_UNPROVEN:'+name)
+            verified.append(dict(name=name,sha256=rows[0]['sha256'],elf_build_id=rows[0].get('elf_build_id'),
+                                 version='9.1.0',metadata_sha256=links[0]['matches'][0]['metadata_sha256']))
+        identity['loaded_runtime']=verified
+        identity['cann_observation_source']='VERIFIED_MAPPED_ELF_LINKED_TO_INSTALLED_VERSION_METADATA'
+    return identity
