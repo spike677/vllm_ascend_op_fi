@@ -10,11 +10,11 @@
 
 ```sh
 SOCKET=/absolute/path/to/l5-alias15-session.sock
-dcatpfi fault list --socket "$SOCKET"
-dcatpfi fault enable --socket "$SOCKET" --fault-id 15.alias_detach
-dcatpfi fault status --socket "$SOCKET"
+python -m demoncat.cli fault list --socket "$SOCKET"
+python -m demoncat.cli fault enable --socket "$SOCKET" --fault-id 15.alias_detach
+python -m demoncat.cli fault status --socket "$SOCKET"
 # 按总单发送三条不同真实纯文本请求，每条4token，再发5token范围负例。
-dcatpfi fault disable --socket "$SOCKET"
+python -m demoncat.cli fault disable --socket "$SOCKET"
 ```
 
 ## 执行前的自然链检查

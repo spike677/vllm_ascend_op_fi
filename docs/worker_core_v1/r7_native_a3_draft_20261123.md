@@ -1,3 +1,7 @@
+# r7.1 文档补充 v2
+
+今晚统一使用 r7.1、只做 TP2；下面历史 r7/TP1 描述仅保留溯源，不安排今晚执行。实际命令、bootstrap 和完整 Native JSON 以 [总单 v2](tp2_overnight_runbook_20261123.md) 为准。许可使用 r7.1 source-review SHA `77e30525212d2d1e8f46313452bacdd46c81ecb751ce2e052e4d72dabbf6f7e2`。Native C++/库未变，不重新构建；不修改冻结 r7/r7.1 发行包。
+
 # r7 Native A3 产品候选验收执行单（负责人转交，A组收尾后执行）
 
 黄区完整Native提取已通过文本身份审查，见 yellow_intake_20261123_r6_followup.md。现有库可用于候选验收，不要求重新构建。A3 TP2先行，再TP1；各组合独立许可/回执，未验收默认不登记。由负责人转交，不直接要求黄区执行。

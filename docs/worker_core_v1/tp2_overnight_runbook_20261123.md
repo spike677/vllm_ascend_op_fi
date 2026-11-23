@@ -1,16 +1,16 @@
-# Qwen A3 TP2隔夜执行总单（r7；15单独等r7.1）
+# Qwen A3 TP2隔夜执行总单 v2（统一 r7.1）
 
-交负责人转交；协调者统一接收结果，每次≤4KiB。今晚不做TP1、DeepSeek、旧r6登记、免许可登记实现。各线只操作自己的卡、端口、实例和目录。尚未执行的检查不得填true。
+交负责人转交；协调者统一接收结果，每次≤4KiB。今晚黄区不做TP1、DeepSeek、旧r6登记、免许可登记；蓝区 r8 开发不下发。各线只操作自己的卡、端口、实例和目录。尚未执行的检查不得填true。
 
 ## 1. 分工、安装、部署参数
 
 |线/物理卡|依次执行|发布版本/条件|
 |---|---|---|
-|L1 / 0,1|18、22、39op，三项负例|r7|
-|L2 / 2,3|39mr、28、17|r7；17必须spawn|
-|L3 / 4,5|Batch|r7串行金丝雀；故障用户请求并发|
-|L4 / 6,7|41、26fia、20|r7；实际CANN9.1和已审查库|
-|L5 / 8,9|33只观测/控制；15|33等取证审查；15等r7.1|
+|L1 / 0,1|18、22、39op，三项负例|r7.1|
+|L2 / 2,3|39mr、28、17|r7.1；17必须spawn|
+|L3 / 4,5|Batch|r7.1串行金丝雀；故障用户请求并发|
+|L4 / 6,7|41、26fia、20|r7.1；实际CANN9.1和已审查库|
+|L5 / 8,9|33只观测/控制；15|33等取证审查；15使用r7.1|
 |L6 / 10,11；L7 / 12,13；L8 / 14,15|黄区自有量化、数值/算子、KV/通信|由黄区改造/验收，公共故障生效时互斥|
 
 统一现役Qwen3.8 W8A8、A3 Ascend910_9382、v0.26.0rc1-a3、CANN9.1.0、TP2、eager/mp、同步调度、无prefix cache/MTP/KV connector、固定seed42。纯文本实例image/video上限0；17实例image上限1、video0，其他参数相同。每线独立API端口、HCCL master端口及端口段，错峰加载。原host启动器负责其已验证的端口参数，不能依赖不同实例共享默认端口。
@@ -18,13 +18,13 @@
 ```sh
 export ASCEND_RT_VISIBLE_DEVICES=0,1  # 每线替换为自己一对卡，容器内逻辑rank仍0/1
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
-cd "$RELEASE" # r7完整发行目录，源码和wheel来自同一发行
+cd "$RELEASE" # r7.1完整发行目录，源码和wheel来自同一发行
 sha256sum -c SHA256SUMS
 python -m pip install --no-index --no-deps --target "$PREVIEW_SITE" wheels/*.whl
 python "$SOURCE/tools/check_rc3_preview_install.py" --site "$PREVIEW_SITE" --release "$RELEASE"
 ```
 
-具名Worker扩展沿用黄区`host/yellow_worker_ext.py`的公共binding包装；不得用蓝区实验bootstrap替换授权。安装输出/文件SHA留存。r7许可清单是source-review.json，SHA **31eee2d6a36e269daf8005a0627d70cd6e85a9c5495a48ec08b1ea1b1cbe4071**；r7.1用自身交接单的值。
+具名Worker扩展沿用黄区`host/yellow_worker_ext.py`的公共binding包装；不得用蓝区实验bootstrap替换授权。安装输出/文件SHA留存。r7.1许可清单是source-review.json，SHA **77e30525212d2d1e8f46313452bacdd46c81ecb751ce2e052e4d72dabbf6f7e2**；核对 r7.1 交接单。
 
 |机制/profile（建议直接同名）|FaultConfig编号、variant|max_model_len / max_num_batched_tokens / max_num_seqs|请求与效果|
 |---|---|---|---|
@@ -48,7 +48,7 @@ Batch的FaultConfig编号采用字符串`quant`，其他编号为整数。8在Qw
 每个profile一个JSON，完整字段如下。canary.prompt：普通文本为固定字符串，Batch为2～8条不同固定字符串组成的有序列表；17用固定图文文本、image=null。
 
 ```json
-{"schema":"demoncat.product.deployment.v1","profile":"18.api_half","fault":{"fault_id":18,"variant":"api_half","implementation_version":"1"},"model":"<实际模型绝对路径>","tp":2,"mode":"PRODUCT_ACCEPTANCE_ONLY","source":"YELLOW_DEDICATED_INSTANCE","source_manifest":"<SOURCE_REVIEW绝对路径>","source_manifest_sha256":"31eee2d6a36e269daf8005a0627d70cd6e85a9c5495a48ec08b1ea1b1cbe4071","native_library":null,"native_sha256":null,"canary":{"prompt":"Explain briefly why the sky appears blue.","image":null,"max_tokens":4},"evidence_directory":"<本线私有回执绝对目录>"}
+{"schema":"demoncat.product.deployment.v1","profile":"18.api_half","fault":{"fault_id":18,"variant":"api_half","implementation_version":"1"},"model":"<实际模型绝对路径>","tp":2,"mode":"PRODUCT_ACCEPTANCE_ONLY","source":"YELLOW_DEDICATED_INSTANCE","source_manifest":"<SOURCE_REVIEW绝对路径>","source_manifest_sha256":"77e30525212d2d1e8f46313452bacdd46c81ecb751ce2e052e4d72dabbf6f7e2","native_library":null,"native_sha256":null,"canary":{"prompt":"Explain briefly why the sky appears blue.","image":null,"max_tokens":4},"evidence_directory":"<本线私有回执绝对目录>"}
 ```
 
 N批三项的native_library填本容器现有只读库路径，native_sha256填 `d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274`。无需重建。attach还检查当前Worker映射的libascendcl/libruntime及安装元数据归属9.1；不能拿构建时版本替代，更不能使用9.2.1库。
@@ -72,17 +72,62 @@ install_deployment_acceptance_permit(worker, authority=authority, operator=opera
 
 真实token列表由服务tokenizer/processor取得；17须包含实际图像展开tokens。用户不填层、rank、内部request ID或数值扰动参数。许可自动安装属于可信部署功能，不代表正式产品已登记为免许可。
 
+### r7.1 bootstrap 的归属与完整顺序
+
+**bootstrap 是黄区自己的可信 Worker RPC，即 r6 A 组已经使用的包装层；r7.1 没有发行官方 bootstrap RPC。** 不导入蓝区 `product_mode_probe.trusted_bootstrap`，不把 localhost 实验端点暴露给用户。黄区现有 RPC 方法名及鉴权主体沿用原部署；下面 `BOOTSTRAP_RPC` 是其真实方法名变量，不是假定包内存在的新方法。
+
+Worker 包装层的 action→公开函数映射如下（每个 rank 的 Worker 线程执行）：
+
+| action | options 完整字段 | 内部公开调用 |
+|---|---|---|
+| configure | paths: list[str], canary_tokens: dict[profile, token列表] | authority 不存在时 configure_deployment_acceptance(worker, source="YELLOW_DEDICATED_INSTANCE", authorize_operator=部署认证回调)，随后 configure_product_deployments(worker, authority=authority, operator=已认证主体, **options) |
+| permit | mechanisms: list[str], attempt: str, source_manifest_sha256: str | install_deployment_acceptance_permit(worker, authority=authority, operator=已认证主体, **options) |
+| remove_permit | 空对象 {} | remove_deployment_acceptance_permit(worker, authority=authority, operator=已认证主体) |
+
+每次调用先校验部署控制面的身份/操作权限。operator 不能由未认证用户自报，认证回调不能来自 JSON。configure 不创建 Worker、不直接启用故障。配置文件必须在所有 Worker 内同路径只读可见，令牌映射来自当前服务 tokenizer/processor，不能复制下面的虚构 token ID。
+
+Native profile 完整 JSON（41；26fia 和20按表替换 fault_id/variant/profile）：
+
+```json
+{"schema":"demoncat.product.deployment.v1","profile":"41.tail_column","fault":{"fault_id":41,"variant":"tail_column","implementation_version":"1"},"model":"<容器内实际模型路径>","tp":2,"mode":"PRODUCT_ACCEPTANCE_ONLY","source":"YELLOW_DEDICATED_INSTANCE","source_manifest":"<r7.1/source-review.json绝对路径>","source_manifest_sha256":"77e30525212d2d1e8f46313452bacdd46c81ecb751ce2e052e4d72dabbf6f7e2","native_library":"<只读库目录>/libdcat_postwrite.so","native_sha256":"d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274","canary":{"prompt":"Explain briefly why the sky appears blue.","image":null,"max_tokens":4},"evidence_directory":"<本线私有回执目录>"}
+```
+
+```python
+# 可信宿主；各变量由现有部署提供。所有 rank 返回成功才继续。
+executor.collective_rpc(BOOTSTRAP_RPC, args=("configure", {
+    "paths": profile_paths, "canary_tokens": actual_processor_token_lists_by_profile}))
+for owner_index in range(2):
+    executor.collective_rpc(BOOTSTRAP_RPC, args=("permit", {
+        "mechanisms": [mechanism], "attempt": unique_attempts[owner_index],
+        "source_manifest_sha256": "77e30525212d2d1e8f46313452bacdd46c81ecb751ce2e052e4d72dabbf6f7e2"}))
+    # session daemon 用下面的 ProductClient 契约服务 CLI；每 owner 建新 client。
+    client = ProductClient.from_deployment(executor, deployment_json,
+        operator=authenticated_operator, run_canary=run_canary, drain=wait_requests_complete)
+    candidates = client.capabilities()  # 内部做 census attach，不安装故障 binding
+    # capabilities 已完成 census attach，不能再显式 client.attach()。
+    client.enable()
+    send_real_user_requests_and_wait()
+    receipt = client.status()
+    recovery = client.disable()
+    client.detach()
+    executor.collective_rpc(BOOTSTRAP_RPC, args=("remove_permit", {}))
+```
+
+异常走原 session 的 recover/清理，不绕过资源检查移除许可；不能创建新 owner 掩盖残留。若没有先调用 capabilities，则执行 client.attach()→client.enable()；两种入口择一，避免重复 attach。
+
+**可执行性依据：** `ProductClient.capabilities()` 返回当前可信 profile 的候选范围，`fault_injection.product_contract` 定义产品契约，实际 enable 还须通过部署、调用、许可及恢复门禁。`fault_injection/capabilities.py` 是旧研究/结构目录，不能据此禁用已经接线的 Native profile，也不能据此开放候选。PRODUCT_CANDIDATE / product_qualified=false 不表示已登记；更不能把静态目录当运行时资格。
+
 ## 3. CLI四动作与两个owner
 
-入口是 `dcatpfi`（`demoncat`为Python包名），等价入口 `python -m demoncat.cli`。以下语法按负责人回传的实际帮助文本，不增加rank/layer/value参数。SOCKET由可信宿主session daemon创建，每个能力使用绑定相应profile的session；CLI不创建daemon。
+入口统一为黄区的 `python -m demoncat.cli`。以下语法按负责人回传的实际帮助文本，不增加rank/layer/value参数。SOCKET由可信宿主session daemon创建，每个能力使用绑定相应profile的session；CLI不创建daemon。
 
 ```sh
 SOCKET=/absolute/path/to/this-line-session.sock
 MECHANISM=18.api_half  # 按第1节选择；15需先做下述适配，33不启用
-dcatpfi fault list --socket "$SOCKET"
-dcatpfi fault enable --socket "$SOCKET" --fault-id "$MECHANISM"
-dcatpfi fault status --socket "$SOCKET"
-dcatpfi fault disable --socket "$SOCKET"
+python -m demoncat.cli fault list --socket "$SOCKET"
+python -m demoncat.cli fault enable --socket "$SOCKET" --fault-id "$MECHANISM"
+python -m demoncat.cli fault status --socket "$SOCKET"
+python -m demoncat.cli fault disable --socket "$SOCKET"
 ```
 
 enable内部先attach再enable；list只是只读候选检查，不能替代attach。disable没有fault-id，处理当前session，执行drain→disable→unregister→detach。退出码0成功、4契约/参数拒绝、5服务端异常。两个owner逐次重复完整循环，daemon保留同组Worker。
@@ -96,7 +141,7 @@ from demoncat.runtime.vllm_ascend.worker_extension.product_host import ProductCl
 client = ProductClient.from_deployment(executor, deployment_json, operator=operator,
                                       run_canary=run_canary, drain=wait_requests_complete)
 client.capabilities()                # CLI list：只读，不授权
-client.attach(); client.enable()     # CLI enable，同一session保留client/owner
+client.enable()                      # 前面的 capabilities 已 census attach
 # 此时用户通过正常HTTP推理，无before/after RPC。
 status = client.status()            # CLI status，自动发现真实请求
 recovery = client.disable(); client.detach()  # CLI disable，先drain，再恢复
@@ -141,7 +186,7 @@ executor.collective_rpc('demoncat_product_binding', args=('capabilities',
 ```
 
 应PRODUCT_PROFILE_UNKNOWN；不通过非法机制代替此项。
-3. **未知机制99：**执行`dcatpfi fault enable --socket "$SOCKET" --fault-id 99`，应退出4并提示`Choose an explicit mechanism variant`，不能退出5。CLI参数本来是TEXT，shell传入的是字符串，不能宣称CLI已测试Python整数类型；若还需整数99的FaultConfig负例，单独用API构造并记录。相同session先用合法18.api_half作正对照。保存命令、退出码、原始错误与owner/session。
+3. **未知机制99：**执行`python -m demoncat.cli fault enable --socket "$SOCKET" --fault-id 99`，应退出4并提示`Choose an explicit mechanism variant`，不能退出5。CLI参数本来是TEXT，shell传入的是字符串，不能宣称CLI已测试Python整数类型；若还需整数99的FaultConfig负例，单独用API构造并记录。相同session先用合法18.api_half作正对照。保存命令、退出码、原始错误与owner/session。
 
 ## 6. 审查、提取、回传
 
