@@ -8,7 +8,7 @@
 python -B -m tools.extract_registration_record /path/summary.json /path/continuous_public.json --release-manifest /path/r5/release-manifest.json
 ```
 
-`--release-manifest`可选：仅当该文件source_manifest_sha256与回执**各rank实际使用的许可**一致，才提取源码提交和包名。缺失字段输出null，不从镜像标签、历史脚本或蓝区补值。镜像digest必须存在于运行记录的actual.image_digest；没有就保留null，登记前须补只读观测证明。不能把本次提取工具的源码SHA当作r5包源码SHA。
+`--release-manifest`可选：仅当该文件source_manifest_sha256与回执**各rank实际使用的许可**一致，才提取源码提交和包名。缺失字段输出null，不从镜像标签、历史脚本或蓝区补值。负责人11-23最终决定方案B：image_digest不是4.9必需字段，没有就保留null，不阻止登记，也不再索取镜像补充声明；其余必需身份字段缺失仍拒绝。原提取文本及其hash不改。不能把本次提取工具的源码SHA当作r5包源码SHA。
 
 工具在黄区重新运行附带的review_continuous_public.py，启用require_negative_creation；核对summary每个原审查字段与重跑结果，核对source_receipt_sha256。失败时review第一位false、第二位错误原因，仍可回传；不会自动登记。
 
@@ -29,7 +29,7 @@ python -B -m tools.extract_registration_record /path/summary.json /path/continuo
 python -B -m tools.extract_registration_record --verify saved-extract.json
 ```
 
-最终仍要按r5身份范围核对现役量化描述及全部权重索引SHA、镜像digest、安装检查。提取hash证明传输一致，不是原件独立可验证的数字签名。证据等级为“黄区文本提取证明”；r5.1仅登记，不改机制。当前未收到14段提取文本，不能提前发行r5.1。
+最终仍要按r5身份范围核对现役量化描述及全部权重索引SHA、部署参数、硬件原名、软件版本、安装检查。image_digest记录为“未观测（4.9 非必需）”；补充镜像标签/Id仅作备注，不进入身份匹配。提取hash证明传输一致，不是原件独立可验证的数字签名。证据等级为“黄区文本提取证明”；r5.1仅登记，不改机制。14段提取文本已按方案B复核通过，逐份结果见yellow_intake_20261123_r5.md及r5_policy_b_cli_verify_20261123.json。
 
 ## DeepSeek噪声和只观测
 

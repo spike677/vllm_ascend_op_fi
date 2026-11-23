@@ -107,8 +107,10 @@ def verify(value):
             if r[2] is not True or r[3]!=[True,True,True]:issues.append(f'CONSUMER_RECOVERY:{i}:{r[0]}')
         if s[2]!=[True,True]:issues.append(f'NEGATIVE:{i}')
     registration_issues=[]
-    if any(v is None for v in value['p']+value['d']) or any(v[1] is None for v in value['devices']):registration_issues.append('IDENTITY_MISSING')
     actual=dict(zip(DEPLOYMENT,value['d']))
+    # 2026-11-23 owner decision B: image digest is not a 4.9 prerequisite.
+    # Keep the original null and extract hash; never substitute a tag/default.
+    if any(v is None for v in value['p']) or any(v is None for k,v in actual.items() if k!='image_digest') or any(v[1] is None for v in value['devices']):registration_issues.append('IDENTITY_MISSING')
     from demoncat.runtime.vllm_ascend.worker_extension.deployment_identity import registration_identity_issues
     registration_issues+=registration_identity_issues(actual)
     tp=actual.get('tp')

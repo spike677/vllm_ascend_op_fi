@@ -29,7 +29,7 @@ def _sha(value):
 
 
 def registration_identity_issues(actual):
-    """Prerequisites for new dedicated quantized deployments, not a grant."""
+    """4.9 prerequisites; image_digest is optional metadata, never a grant."""
     issues = []
     if not _sha(actual.get('quant_model_description_sha256')):
         issues.append('quant_model_description_sha256: MISSING_OR_INVALID')

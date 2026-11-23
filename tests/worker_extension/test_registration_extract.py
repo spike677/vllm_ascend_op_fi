@@ -32,7 +32,7 @@ class RegistrationTests(unittest.TestCase):
         for s in d['scopes']:
             for h in s['requests']:
                 for state in h['result']['response']['provider_state']['rank_states'].values():state['deployment_acceptance_use']['actual'].pop('image_digest')
-        r=self.run_extract(d);self.assertIsNone(r['d'][7]);self.assertIn('IDENTITY_MISSING',verify(r)['registration_issues'])
+        r=self.run_extract(d);self.assertIsNone(r['d'][7]);self.assertTrue(verify(r)['registration_ready'])
     def test_summary_cannot_claim_different_coverage(self):
         r=self.run_extract(filled(),lambda s:s.update(passed=False));self.assertFalse(r['review'][2]);self.assertFalse(verify(r)['consistent'])
     def test_invalid_raw_local_review_not_hidden(self):
