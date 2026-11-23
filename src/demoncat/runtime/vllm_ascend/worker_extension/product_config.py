@@ -33,7 +33,7 @@ def load_product_deployment(path):
     canary = config['canary']
     if type(canary) is not dict or set(canary) != {'prompt','image','max_tokens'} or type(canary['prompt']) is not str or not canary['prompt'] or type(canary['max_tokens']) is not int or canary['max_tokens'] != 4:
         raise ValueError('PRODUCT_CANARY_CONFIG_INVALID')
-    if (fault.mechanism == '17.spatial_padding' and not (type(canary['image']) is str and canary['image'])) or (fault.mechanism != '17.spatial_padding' and canary['image'] is not None):
+    if (fault.mechanism == '17.spatial_padding' and not (canary['image'] is None or type(canary['image']) is str and canary['image'])) or (fault.mechanism != '17.spatial_padding' and canary['image'] is not None):
         raise ValueError('PRODUCT_CANARY_IMAGE_POLICY_INVALID')
     if canary['image'] is not None:
         from fault_injection.vision_input import load_fixed_image
@@ -75,3 +75,9 @@ def configure_product_deployments(worker, paths, *, authority, operator, canary_
     configure_product_profiles(worker, profiles=profiles, authority=authority, operator=operator)
     return dict(status='PRODUCT_DEPLOYMENT_FILES_CONFIGURED', required_permits=permits,
                 qualification_granted=False)
+
+
+def product_canary_image(spec):
+    """Host canary only; never substitute for images in user requests."""
+    from fault_injection.vision_input import deterministic_image,load_fixed_image
+    return load_fixed_image(spec['image']) if spec.get('image') else deterministic_image()

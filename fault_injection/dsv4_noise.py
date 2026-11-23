@@ -79,7 +79,7 @@ def calibrate(combination,runs):
     for steps in bounds.values():
         for step in steps:
             for m in step:step[m]*=SAFETY_FACTOR
-    return dict(schema=RULE,safety_factor=SAFETY_FACTOR,combination=deepcopy(combination),calibration_sha256=digest(runs),
+    return dict(schema=RULE,all_finite=True,tokens_stable=True,safety_factor=SAFETY_FACTOR,combination=deepcopy(combination),calibration_sha256=digest(runs),
         prompt_sha256=runs[0]['prompt_sha256'],prompt_tokens=runs[0]['prompt_tokens'],tokens=runs[0]['tokens'],
         runs=len(runs),process_counts={p:len(g) for p,g in groups.items()},observed_maxima=maxima,bounds=bounds,qualification_granted=False)
 

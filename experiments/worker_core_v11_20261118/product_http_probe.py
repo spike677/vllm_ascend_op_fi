@@ -37,6 +37,7 @@ class HTTPExecutor:
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--mechanism',nargs='+',choices=['18','39','22','28','17'],required=True)
+    p.add_argument('--image')
     a=p.parse_args();visual=a.mechanism==['17'];root=Path('/evidence')
     report=dict(status='STARTED',entry='VLLM_HTTP_API',host_per_request_hooks=False,scopes=[])
     target=root/'product_http.json'
@@ -53,7 +54,7 @@ def main():
             '--limit-mm-per-prompt',json.dumps(dict(image=1 if visual else 0,video=0))]
         if visual:cmd += ['--mm-processor-cache-gb','0','--mm-encoder-tp-mode','weights',
             '--mm-processor-kwargs',json.dumps(dict(min_pixels=4096,max_pixels=16384))]
-        server=subprocess.Popen(cmd,stdout=(root/'http-server.log').open('w'),stderr=subprocess.STDOUT)
+        server=subprocess.Popen(cmd,env=dict(os.environ,VLLM_WORKER_MULTIPROC_METHOD='spawn'),stdout=(root/'http-server.log').open('w'),stderr=subprocess.STDOUT)
         ex=HTTPExecutor('http://127.0.0.1:18937')
         for _ in range(360):
             if server.poll() is not None:raise RuntimeError('HTTP_SERVER_START_FAILED')
@@ -68,6 +69,9 @@ def main():
             from PIL import Image
             for shift in (0,23,47):
                 image=Image.new('RGB',(64,64));image.putdata([((x*4+shift)%256,(y*4+shift)%256,((x+y)*3+shift)%256) for y in range(64) for x in range(64)])
+                if shift==0:
+                    from fault_injection.vision_input import deterministic_image,load_fixed_image
+                    image,visual_identity=load_fixed_image(a.image) if a.image else deterministic_image()
                 buf=io.BytesIO();image.save(buf,format='PNG');images.append('data:image/png;base64,'+base64.b64encode(buf.getvalue()).decode())
                 if shift==0:image.save(root/'canary.png')
         def inference(text,*,image=0,max_tokens=4):
@@ -91,13 +95,14 @@ def main():
                 fault=dict(fault_id=int(number),variant=variant,implementation_version='1'),model='/model',tp=2,
                 mode='PRODUCT_ACCEPTANCE_ONLY',source='BLUE_COMBINATION',source_manifest='/source/source_manifest.json',
                 source_manifest_sha256=source_sha,native_library=None,native_sha256=None,
-                canary=dict(prompt=canary_text,image=str(root/'canary.png') if visual else None,max_tokens=4),evidence_directory='/evidence')
+                canary=dict(prompt=canary_text,image=a.image if visual else None,max_tokens=4),evidence_directory='/evidence')
             path=root/('deployment-'+key+'.json');path.write_text(json.dumps(config));paths[key]=str(path)
         ex.collective_rpc('demoncat_acceptance_bootstrap',args=('configure',dict(paths=list(paths.values()),canary_tokens={mechanisms[k]:canary for k in a.mechanism})))
         for key in a.mechanism:
             mechanism=mechanisms[key];target=root/('product_http_'+key+'.json')
             report=dict(status='STARTED',entry='VLLM_HTTP_API',host_per_request_hooks=False,mechanism=mechanism,scopes=[],source_manifest_sha256=source_sha)
             if visual:
+                report['visual_input']=visual_identity
                 report['image_pixel_sha256']=[hashlib.sha256(Image.open(io.BytesIO(base64.b64decode(data.split(',',1)[1]))).convert('RGB').tobytes()).hexdigest() for data in images]
             for index in range(2):
                 ex.collective_rpc('demoncat_acceptance_bootstrap',args=('permit',dict(mechanisms=[mechanism],attempt='http-'+str(index),source_manifest_sha256=source_sha)))

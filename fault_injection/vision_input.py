@@ -19,3 +19,13 @@ def load_fixed_image(path, expected_sha256=None):
     return image,dict(source='DEPLOYMENT_FIXED_FILE',file_sha256=actual,
         expected_sha256_check=expected_sha256 is not None,
         bytes=len(raw),size=[64,64],pixel_sha256=hashlib.sha256(image.tobytes()).hexdigest())
+
+
+def deterministic_image():
+    """Shared blue/yellow fixture: RGB(x,y)=(4*x,4*y,4*((x+y)%64))."""
+    from PIL import Image
+    image=Image.new('RGB',(64,64))
+    image.putdata([(4*x,4*y,4*((x+y)%64)) for y in range(64) for x in range(64)])
+    return image,dict(source='BUILTIN_DETERMINISTIC_RGB_V1',size=[64,64],
+        pixel_rule='R=4*x;G=4*y;B=4*((x+y)%64);0<=x,y<64',
+        pixel_sha256=hashlib.sha256(image.tobytes()).hexdigest())

@@ -42,3 +42,13 @@ client.detach()
 现役量化描述与全部 safetensors 索引 SHA，以及 max_model_len/max_num_batched_tokens/max_num_seqs 是登记前提。配置 SHA 相同不足以证明相同权重。CPU 测试或持有测试许可不产生验收登记；A2 不代表 A3。
 
 实机入口为 `experiments/worker_core_v11_20261118/product_http_probe.py`，在隔离 localhost vLLM 服务上验收，同组Worker两个作用域、三个不同用户prompt、一个范围外请求；17使用两张不同用户图片。该脚本的专用可信 bootstrap 仅用于隔离验收，不应作为对外不可信 RPC 部署。
+
+## 2026-11-23 黄区17启动补充
+
+2026-11-23调整：17验收默认使用内置64×64 RGB图片，像素为 `(4*x,4*y,4*((x+y)%64))`。`--image` 是可选覆盖；产品配置 `canary.image=null` 使用同一内置图，回执记录像素SHA。用户图片仍来自 `/v1/chat/completions` 请求并由实际processor处理，不用金丝雀图替换用户图。r5已通过的黄区固定图片结果仍有效。A3 TP2启动17服务前设置：
+
+```sh
+export VLLM_WORKER_MULTIPROC_METHOD=spawn
+```
+
+未设置时黄区观测到 `Invalid thread pool`，属于启动环境问题。此补充不修改已冻结r5包；TP1/TP2仍各自验收。完整图像SHA门禁维持原决定，不擅自恢复。

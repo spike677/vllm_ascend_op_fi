@@ -131,9 +131,8 @@ def main():
             if a.image:
                 image,identity=load_fixed_image(a.image,a.image_sha256)
             else:
-                if a.deployment_source=='YELLOW_DEDICATED_INSTANCE':raise RuntimeError('YELLOW_FIXED_IMAGE_REQUIRED')
-                image=Image.new('RGB',(64,64));image.putdata([(x*4,y*4,((x+y)%64)*4) for y in range(64) for x in range(64)])
-                identity=dict(source='BLUE_GENERATED_FIXTURE',size=[64,64],pixel_sha256=hashlib.sha256(image.tobytes()).hexdigest())
+                from fault_injection.vision_input import deterministic_image
+                image,identity=deterministic_image()
             report['visual_input']=identity
             image_prompt='<|im_start|>user\n<|vision_start|><|image_pad|><|vision_end|>Describe this image in one sentence.<|im_end|>\n<|im_start|>assistant\n'
             tokens=[]

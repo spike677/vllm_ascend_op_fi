@@ -55,3 +55,13 @@ done
 入口执行缺许可创建拒绝、阶段耗尽advance拒绝、最终资源清零；两个作用域共用Worker。summary由 `tools/review_continuous_public.py <receipt> --require-negative-creation` 输出，原始回执留黄区。回传安装检查全文、summary全文、文件名/字节数/SHA、各rank八项计数、性能倍数、真实硬件原值、异常/完整错误码；17附完整visual_input字段，Native附构建收据身份。
 
 20按调用逐项核对复制/恢复，然后输出站点聚合计数与完整序列SHA，以满足回执容量；不丢弃失败、不把聚合SHA冒充可从空缺原始列表重算。第三方关闭警告与注入资源零分开记录。登记仅为审查后的 `YELLOW_DEDICATED_INSTANCE`（A3、实际软件/权重、实际TP1或TP2），未验收默认关闭。
+
+## 2026-11-23 黄区17启动补充
+
+2026-11-23调整：17验收默认使用内置64×64 RGB图片，像素为 `(4*x,4*y,4*((x+y)%64))`。`--image` 是可选覆盖；产品配置 `canary.image=null` 使用同一内置图，回执记录像素SHA。用户图片仍来自 `/v1/chat/completions` 请求并由实际processor处理，不用金丝雀图替换用户图。r5已通过的黄区固定图片结果仍有效。A3 TP2启动17服务前设置：
+
+```sh
+export VLLM_WORKER_MULTIPROC_METHOD=spawn
+```
+
+未设置时黄区观测到 `Invalid thread pool`，属于启动环境问题。此补充不修改已冻结r5包；TP1/TP2仍各自验收。完整图像SHA门禁维持原决定，不擅自恢复。

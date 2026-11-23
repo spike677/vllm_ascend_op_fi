@@ -36,3 +36,13 @@ CLI主进程须保存一个可信`ProductClient`会话及owner/generation；不�
 ## Native构建（验收模式41/26fia/20）
 
 只在v0.26.0rc1-a3/CANN9.1.0隔离容器构建当前`fault_injection/native_adapters/postwrite`（以发行源码清单实际路径为准），使用`tools/build_native_regions.py --source <postwrite-source> --sdk <actual-cann-sdk> --output <new-owned-output>`；记录library SHA、receipt和编译源SHA。机制名41.tail_column、26.fia_destination、20.buffer_substitute。旧fault26.fia.abi0.v1/fault20.qmm.abi0.v1 recipe不适用，不能用9.2.1构建物替代9.1组合。本命令仅构建和CPU替身测试，不代表A3注入通过。
+
+## 2026-11-23 黄区17启动补充
+
+2026-11-23调整：17验收默认使用内置64×64 RGB图片，像素为 `(4*x,4*y,4*((x+y)%64))`。`--image` 是可选覆盖；产品配置 `canary.image=null` 使用同一内置图，回执记录像素SHA。用户图片仍来自 `/v1/chat/completions` 请求并由实际processor处理，不用金丝雀图替换用户图。r5已通过的黄区固定图片结果仍有效。A3 TP2启动17服务前设置：
+
+```sh
+export VLLM_WORKER_MULTIPROC_METHOD=spawn
+```
+
+未设置时黄区观测到 `Invalid thread pool`，属于启动环境问题。此补充不修改已冻结r5包；TP1/TP2仍各自验收。完整图像SHA门禁维持原决定，不擅自恢复。
