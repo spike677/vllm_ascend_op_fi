@@ -72,6 +72,8 @@ def describe_mechanism(name):
         raise ValueError('Fault39 is provided separately by demoncat_fault39; not in the remaining-mechanisms contract')
     status, mechanism, restriction, observable = _DETAILS[name]
     return dict(schema='demoncat.mechanism.capability.v1', name=name,
+        catalog_scope='LEGACY_RESEARCH_NOT_PRODUCT', product_eligibility_authoritative=False,
+        product_discovery='ProductClient.capabilities + fault_injection.product_contract',
         mechanism=mechanism, boundary=capability.boundary,
         integration_status=INTEGRATION_STATUS, implementation_status=status,
         current_delivery=describe_delivery(name),
@@ -132,6 +134,7 @@ def inspect_support(model, name):
     else:
         status = 'STATIC_CANDIDATE_FOUND' if candidates else 'NO_SUPPORTED_CANDIDATE'
     result = dict(schema='demoncat.mechanism.support.v1', capability=spec, status=status,
+        catalog_scope='LEGACY_RESEARCH_NOT_PRODUCT', product_eligibility_authoritative=False,
         candidates=deepcopy(candidates), runtime_factory_registered=factory,
         provider_loaded_or_called=False, hooks_installed=False, native_calls_observed=0,
         runtime_call_validation_required=True, current_model_npu_accepted=False)

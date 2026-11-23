@@ -94,6 +94,7 @@ Native profile 完整 JSON（41；26fia 和20按表替换 fault_id/variant/profi
 
 ```python
 # 可信宿主；各变量由现有部署提供。所有 rank 返回成功才继续。
+from demoncat.runtime.vllm_ascend.worker_extension.product_host import ProductClient
 executor.collective_rpc(BOOTSTRAP_RPC, args=("configure", {
     "paths": profile_paths, "canary_tokens": actual_processor_token_lists_by_profile}))
 for owner_index in range(2):
@@ -130,7 +131,7 @@ python -m demoncat.cli fault status --socket "$SOCKET"
 python -m demoncat.cli fault disable --socket "$SOCKET"
 ```
 
-enable内部先attach再enable；list只是只读候选检查，不能替代attach。disable没有fault-id，处理当前session，执行drain→disable→unregister→detach。退出码0成功、4契约/参数拒绝、5服务端异常。两个owner逐次重复完整循环，daemon保留同组Worker。
+enable须先确保同一session已做census attach，再调用enable；若先前capabilities/list已完成census attach，不能重复attach。list不安装故障binding、不授权。disable没有fault-id，处理当前session，执行drain→disable→unregister→detach。退出码0成功、4契约/参数拒绝、5服务端异常。两个owner逐次重复完整循环，daemon保留同组Worker。
 
 **黄区接线增量：**当前CLI白名单只有原12项，未含15。使用r7.1验收15前，宿主把`15.alias_detach`加入显式候选映射并指向同名可信profile；不修改许可、硬件/TP、源码或范围门禁。不能仅换wheel就声称CLI15可用。33静态list即使列出候选也不意味着A3准入；实际范围由Worker返回，不能把静态1024覆盖33的4096限制。Batch的含义是当前DynamicQuant真实调用行共享尺度，不限定专家模块。
 
@@ -204,3 +205,116 @@ PYTHONPATH="$PREVIEW_SITE:$SOURCE" python tools/extract_product_record.py "$RECE
 每项4页（2scope×2rank）原样回传，页≤4096字节；另附owner—回执文件名/字节/SHA表、三个负例及正对照。summary/完整张量留黄区；null不可补值。15另用r7.1独立机理审查；33未经r7.2候选不得注入。
 
 协调者P0报安装/实例；P1逐项提取；P2报15/33；P3列公共13项和黄区自有的完整状态；P4由黄区自行合master并冒烟；P5手工指南。蓝区只审查与交付，不操作黄区master。未通过能力不合入注入代码。今晚旧A组r6登记被r7重跑替代。
+
+## 附录：r7.1 A2 Native capabilities 实测（v2-r1 补充）
+
+组合：124，Ascend910B4/A2，0.26/CANN9.1.0，社区Qwen3.8 W8A8，TP2；使用冻结r7.1运行时，三个Native profile共用已审查库d9aa0d94…ce274。取证只增加ProductClient.capabilities读取，未改运行时或用旧静态目录代替。
+
+原始返回如下，两个rank分别列出；原始JSON SHA256 `bc8693f4d2c934c8f276fcfb0feaf17d6f9e8895a969c94598605eaac470733f`。候选范围不是A3资格，product_qualified=false不表示未实现；enable仍须正确许可、实际调用与全部门禁。本输出本身不宣称两owner已验收，通过结果另附回归报告。
+
+```json
+{
+  "41.tail_column": [
+    {
+      "status": "PRODUCT_CANDIDATE",
+      "mechanism": "41.tail_column",
+      "mode": "PRODUCT_ACCEPTANCE_ONLY",
+      "product_qualified": false,
+      "range": {
+        "max_context": 1024,
+        "max_tokens": 4,
+        "max_num_seqs": 1,
+        "single_chunk": true,
+        "image_grid": null
+      },
+      "user_prompt_registry": false,
+      "named_variant": "41.tail_column",
+      "rank": 0
+    },
+    {
+      "status": "PRODUCT_CANDIDATE",
+      "mechanism": "41.tail_column",
+      "mode": "PRODUCT_ACCEPTANCE_ONLY",
+      "product_qualified": false,
+      "range": {
+        "max_context": 1024,
+        "max_tokens": 4,
+        "max_num_seqs": 1,
+        "single_chunk": true,
+        "image_grid": null
+      },
+      "user_prompt_registry": false,
+      "named_variant": "41.tail_column",
+      "rank": 1
+    }
+  ],
+  "26.fia_destination": [
+    {
+      "status": "PRODUCT_CANDIDATE",
+      "mechanism": "26.fia_destination",
+      "mode": "PRODUCT_ACCEPTANCE_ONLY",
+      "product_qualified": false,
+      "range": {
+        "max_context": 1024,
+        "max_tokens": 4,
+        "max_num_seqs": 1,
+        "single_chunk": true,
+        "image_grid": null
+      },
+      "user_prompt_registry": false,
+      "named_variant": "26.fia_destination",
+      "rank": 0
+    },
+    {
+      "status": "PRODUCT_CANDIDATE",
+      "mechanism": "26.fia_destination",
+      "mode": "PRODUCT_ACCEPTANCE_ONLY",
+      "product_qualified": false,
+      "range": {
+        "max_context": 1024,
+        "max_tokens": 4,
+        "max_num_seqs": 1,
+        "single_chunk": true,
+        "image_grid": null
+      },
+      "user_prompt_registry": false,
+      "named_variant": "26.fia_destination",
+      "rank": 1
+    }
+  ],
+  "20.buffer_substitute": [
+    {
+      "status": "PRODUCT_CANDIDATE",
+      "mechanism": "20.buffer_substitute",
+      "mode": "PRODUCT_ACCEPTANCE_ONLY",
+      "product_qualified": false,
+      "range": {
+        "max_context": 1024,
+        "max_tokens": 4,
+        "max_num_seqs": 1,
+        "single_chunk": true,
+        "image_grid": null
+      },
+      "user_prompt_registry": false,
+      "named_variant": "20.buffer_substitute",
+      "rank": 0
+    },
+    {
+      "status": "PRODUCT_CANDIDATE",
+      "mechanism": "20.buffer_substitute",
+      "mode": "PRODUCT_ACCEPTANCE_ONLY",
+      "product_qualified": false,
+      "range": {
+        "max_context": 1024,
+        "max_tokens": 4,
+        "max_num_seqs": 1,
+        "single_chunk": true,
+        "image_grid": null
+      },
+      "user_prompt_registry": false,
+      "named_variant": "20.buffer_substitute",
+      "rank": 1
+    }
+  ]
+}
+```

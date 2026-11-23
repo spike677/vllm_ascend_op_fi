@@ -16,7 +16,7 @@ worker wheel 新 console script 为 `dcatpfi-product`，等价 `python -m demonc
 
 CLI 参考传输是 Unix socket、单行 UTF-8 JSON，schema=demoncat.product.cli.v1，最多1MiB响应，退出0/4/5。这不是对黄区已有 socket 协议的假设，不能直接替换黄区 CLI。部署自己的 daemon 可调用 TrustedProductSession.dispatch(request, principal=已认证身份)；daemon 负责 socket 权限、peer 认证、服务生命周期和全局互斥。授权回调不可从请求传入。
 
-候选由 ProductClient.capabilities 动态获取，helper 不维护机制白名单。未知机制99拒绝4；跨 rank 候选不一致拒绝；失败 enable 保留 active client 以便恢复。capabilities 已完成 census attach，helper 不重复 attach。旧 fault_injection/capabilities.py 标注为研究目录，产品路径无对它的导入。
+候选由 ProductClient.capabilities 动态获取，helper 不维护机制白名单。未知机制99拒绝4；跨 rank 候选不一致拒绝；失败 enable 保留 active client 以便恢复。capabilities 已完成 census attach，helper 不重复 attach。旧 fault_injection/capabilities.py 的返回值新增 catalog_scope=LEGACY_RESEARCH_NOT_PRODUCT、product_eligibility_authoritative=false；产品路径无对它的导入。
 
 ## PRODUCT_REGISTERED
 

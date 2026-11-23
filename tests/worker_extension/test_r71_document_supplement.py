@@ -3,9 +3,9 @@ from pathlib import Path
 
 class DocumentationTests(unittest.TestCase):
     def test_six_documents_exact_bytes(self):
-        root=Path('releases/r71-docs-20261123-v2');m=json.loads((root/'manifest.json').read_bytes())
+        root=Path('releases/r71-docs-20261123-v2-r1');m=json.loads((root/'manifest.json').read_bytes())
         self.assertEqual(len(m['files']),6);self.assertFalse(m['runtime_modified'])
-        z=root/'r71-docs-20261123-v2.zip'
+        z=root/'r71-docs-20261123-v2-r1.zip'
         expected=(root/'SHA256SUMS').read_text().splitlines()[0].split()[0]
         self.assertEqual(hashlib.sha256(z.read_bytes()).hexdigest(),expected)
         with zipfile.ZipFile(z) as f:
@@ -16,7 +16,7 @@ class DocumentationTests(unittest.TestCase):
         s=Path('docs/worker_core_v1/tp2_overnight_runbook_20261123.md').read_text(encoding='utf-8')
         self.assertNotIn('dcatpfi',s);self.assertIn('python -m demoncat.cli fault enable',s)
         rows=[json.loads(b) for b in re.findall(r'```json\n(.*?)\n```',s,re.S)]
-        native=[r for r in rows if r['profile']=='41.tail_column'][0]
+        native=[r for r in rows if r.get('profile')=='41.tail_column'][0]
         self.assertEqual(native['fault']['fault_id'],41);self.assertEqual(native['tp'],2)
         self.assertEqual(native['source_manifest_sha256'],'77e30525212d2d1e8f46313452bacdd46c81ecb751ce2e052e4d72dabbf6f7e2')
         self.assertEqual(native['native_sha256'],'d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274')

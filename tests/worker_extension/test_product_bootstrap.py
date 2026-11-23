@@ -38,6 +38,12 @@ class BootstrapTests(unittest.TestCase):
         with patch.object(cli,'invoke',return_value=dict(schema=cli.SCHEMA,exit_code=4)) as call:
             self.assertEqual(cli.main(['fault','enable','--socket','/trusted.sock','--fault-id','99']),4)
             call.assert_called_once_with('/trusted.sock','enable','99')
+    def test_legacy_catalog_labels_machine_readable_non_authority(self):
+        from fault_injection.capabilities import describe_mechanism
+        row=describe_mechanism('41.tail_column')
+        self.assertEqual(row['catalog_scope'],'LEGACY_RESEARCH_NOT_PRODUCT')
+        self.assertFalse(row['product_eligibility_authoritative'])
+
     def test_legacy_catalog_not_imported_by_product_path(self):
         from pathlib import Path
         root=Path('src/demoncat/runtime/vllm_ascend/worker_extension')
