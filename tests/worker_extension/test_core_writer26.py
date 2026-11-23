@@ -94,6 +94,8 @@ class CoreWriter26Tests(unittest.TestCase):
     forward = life.ServingSessionLifecycleTests.forward
 
     def setUp(self):
+        from research_native_fixture import install
+        install(self)  # explicit research factory; public ordinary admission stays closed
         life.ServingSessionLifecycleTests.setUp(self)
         self.worker = _extended_worker(rank=0)
         self.worker.load_model()

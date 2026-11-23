@@ -22,6 +22,8 @@ from kv41_fixture import CpuSpanTransport, CpuWorkerModel, DeviceOperator, provi
 
 class CoreKV41Tests(unittest.TestCase):
     def setUp(self):
+        from research_native_fixture import install
+        install(self)  # explicit research factory; public ordinary admission stays closed
         self.assertIsNone(postwrite41._ACTIVE)
         self.worker = _extended_worker(rank=0)
         self.worker.load_model()
