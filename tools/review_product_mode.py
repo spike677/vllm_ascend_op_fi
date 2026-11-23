@@ -143,6 +143,9 @@ def review(data, *, expected_tp=2, hardware_scope="A2/0.26/Qwen3.8-community-W8A
         before, after = stopped['canary']['before'], stopped['canary']['after']
         need([r['rank'] for r in before]==list(range(expected_tp)) and [r['rank'] for r in after]==list(range(expected_tp)), 'CANARY_ALL_RANK_REQUIRED')
         for b,a in zip(before,after):
+            if data['mechanism']=='quant.batch_shared_scale':
+                from demoncat.runtime.vllm_ascend.worker_extension.batch_canary import stable
+                need(stable(b['observations'],3) and stable(a['observations'],2,b['observations'][-1]),'BATCH_SERIAL_CANARY_3_BEFORE_2_AFTER_REQUIRED')
             bs, az = b['observations'], a['observations'][-1]
             need(len(bs)>=2 and all(x['all_finite'] for x in bs[-2:]), 'FINITE_STABLE_CANARY_REQUIRED')
             need(bs[-1]['output']==bs[-2]['output']==az['output'] and az['all_finite'], 'CANARY_FULL_OUTPUT_NOT_EXACT')
