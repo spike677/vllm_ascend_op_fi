@@ -19,8 +19,9 @@ extern "C" aclError aclrtBinaryGetFunctionByEntry(aclrtBinHandle b,uint64_t e,ac
  static Fn real=reinterpret_cast<Fn>(dlsym(RTLD_NEXT,"aclrtBinaryGetFunctionByEntry"));
  if(!real)std::abort();
  auto rc=real(b,e,f);
- if(rc==ACL_SUCCESS && f && (e==5100000000010200203ULL || e==5000000000000200203ULL)){
-  std::lock_guard<std::mutex> lock(guard);entries[*f]=e;
+ const char* all=std::getenv("DCAT_LAUNCH_CAPTURE_ALL");
+ if(rc==ACL_SUCCESS && f && ((all && std::strcmp(all,"1")==0) || e==5100000000010200203ULL || e==5000000000000200203ULL)){
+  std::lock_guard<std::mutex> lock(guard);if(entries.size()<8192)entries[*f]=e;
  }
  return rc;
 }

@@ -2,13 +2,16 @@
 import argparse,hashlib,json,os,subprocess,sys,tarfile,tempfile
 from pathlib import Path
 
-VERSIONS={'demoncatpfi':'0.4.0rc4','demoncat-worker-extension':'0.3.0rc4','demoncat-fault39-core':'0.3.0rc4'}
+VERSIONS={'demoncatpfi':'0.4.0rc5','demoncat-worker-extension':'0.3.0rc5','demoncat-fault39-core':'0.3.0rc5'}
 ROOTS=('src/','fault_injection/','fault39/src/','native_execution_strategy/','engineering_closure/',
        'tools/','tests/','docs/worker_core_v1/')
 EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',
+       'releases/RC3-PREVIEW-R5-EXTRACT-TOOL-20261123.md',
        'experiments/worker_core_v11_20261118/continuous_public_probe.py',
        'experiments/worker_core_v11_20261118/product_http_probe.py',
        'experiments/worker_core_v11_20261118/product_mode_probe.py',
+       'experiments/worker_core_v11_20261118/paged33_launch_capture.cpp',
+       'experiments/worker_core_v11_20261118/paged33_native_probe.py',
        'experiments/worker_core_v11_20261118/continuous_matmul39_source_review_20261122.json')
 SUFFIXES={'.py','.json','.toml','.md','.cpp','.h','.inc','.sh','.yaml','.yml'}
 
@@ -47,7 +50,11 @@ def build(repo,output):
             dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(raw)
             files.append(dict(path=name,bytes=len(raw),sha256=sha(raw)))
         review=dict(schema='demoncat.source_review.v1',source_commit=commit,files=files,
-            delivery_scope=['28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','18.api_half','22.wrong_row','39.matmul_range','17.spatial_padding','41.tail_column','26.fia_destination','20.buffer_substitute'])
+            delivery_scope=['28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','18.api_half','22.wrong_row','39.matmul_range','17.spatial_padding','41.tail_column','26.fia_destination','20.buffer_substitute','33.paged_decode'],
+            product_candidates=['28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','18.api_half','22.wrong_row','39.matmul_range','17.spatial_padding','33.paged_decode'],
+            restrictions={'33.paged_decode':'A2 measured range only; A3 launch/control review pending',
+                          '41/26fia/20':'Acceptance requires reviewed Native build; product adapter closed',
+                          '8/DeepSeek':'New deployment and product acceptance pending'},qualification_granted=False)
         write_json_bytes(output/'source-review.json',review)
         archive=output/(output.name+'.tar.gz')
         with tarfile.open(archive,'w:gz') as tf:

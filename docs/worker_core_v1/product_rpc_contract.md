@@ -1,6 +1,6 @@
-# 产品 RPC 契约（r5）
+# 产品 RPC 契约（r6候选，继承r5）
 
-Qwen验收组合：v0.26.0rc1-a3 / CANN9.1.0 / Qwen3.8现役W8A8，TP1与TP2分别登记。蓝区A2/TP2结果不授予A3资格。只支持开启期间全部请求，产品候选五项为18、39 output_proxy、22、28、17。
+Qwen目标组合：v0.26.0rc1-a3 / CANN9.1.0 / Qwen3.8现役W8A8，TP1与TP2分别登记。蓝区A2/TP2结果不授予A3资格。只支持开启期间全部请求。r6候选为18、39 output_proxy、22、28、17、Batch、39mr及仅限已测A2的33；41/26fia/20产品迁移、8及DeepSeek新部署仍关闭。完整范围见[r6候选说明](rc3_r6_candidate.md)。
 
 ## CLI与控制通道
 
@@ -31,7 +31,13 @@ CLI主进程须保存一个可信`ProductClient`会话及owner/generation；不�
 2. 可信部署固定canary文本与真实服务tokenizer得到的tokens。部署主机通过`/v1/completions`发送文本canary，采样temperature=0、max_tokens=4、min_tokens=4、ignore_eos=true；Worker只在已arm的观察阶段匹配真实token序列。17须用真实processor展开的图文tokens，通过`/v1/chat/completions`发送固定图像canary，不能用未展开文本tokens替代。
 3. 开启前最多6次canary、每次600秒，连续两次完整hidden/logits有限且精确稳定。enable完成后发送三个不同用户prompt（17两张不同图片），不调用逐请求RPC；各请求生成4token。再发max_tokens=5的范围负例：推理正常、不注入、记录原因。
 4. status读取每请求所有rank覆盖及实际消费者，eligible失败必须0；disable后新canary完整指纹与开启前精确相同，区域恢复和资源零均通过。detach后同组Worker换owner再做独立第二作用域，不重启Worker。
-5. 回传产品review summary全文及原回执文件名/字节/SHA、五个身份字段、安装检查；许可不是登记。性能倍数只记录，不作为门禁。正式推理部署预算900秒，预热600秒；HTTP客户端超时应覆盖预算与传输，控制RPC另设超时。验收模式仍用normal/fault/off/health，勿与产品模式混用。
+5. 完整summary与原回执留黄区，回传本地提取文本、文件名/字节/SHA、身份与安装检查结论，不要求summary全文；r5登记用冻结r5专用提取器，不能将r6产品回执当r5登记。许可不是登记。性能倍数只记录，不作为门禁。正式推理部署预算900秒，预热600秒；HTTP客户端超时应覆盖预算与传输，控制RPC另设超时。验收模式仍用normal/fault/off/health，勿与产品模式混用。
+
+### r6新增调度范围
+
+Batch部署max_num_seqs=8、max_num_batched_tokens=8192、max_model_len=1024，canary.prompt为2～8条不同文本列表，bootstrap传入各自真实token列表。只有全部为受支持请求的实际decode批次B2～8注入；B1、prefill、混合批与越界请求均保留不注入原因。status覆盖计数表示请求参与，审查器按rank/frame去重后核对唯一真实调用，不能重复累计为命中数。
+
+39mr沿用串行1024范围及1～4token限制，增加完整K控制、错误范围规则和非目标区域证据。33在A2仅支持2304-token prompt/4生成token、4096预算、max_num_seqs=1，控制分组512、替代256。A3拒绝attach并进入[只观测与控制流程](rc3_r6_paged33_a3_acceptance.md)，不能从客户端覆盖分组或设备身份。r6不放宽未验证长度。
 
 ## Native构建（验收模式41/26fia/20）
 
