@@ -63,14 +63,14 @@ CPU：50项通过，0失败/0错误，其中test_registration_extract为11项。
 
 | 机制 | 原回执窗口 | UTF-8含末尾换行 | 重复输出逐字节相同 | --verify |
 |---|---|---:|---|---|
-| 28 | a16 | 1193 | 是 | consistent=true；登记资格=false |
+| 28 | a5 | 1172 | 是 | consistent=true；登记资格=false |
 | Batch | a17 | 1223 | 是 | consistent=true；登记资格=false |
 | 17 | vision17-a3 | 1132 | 是 | consistent=true；登记资格=false |
 
 全部小于2048字节。目标上限2048，硬限4096：超过目标提示原因/长度，超过硬限拒绝输出，不删字段。以下为真实28样例（null即缺失，不是默认值）：
 
 ```json
-{"conflicts":[],"d":["A2",null,"0.26.0","0.26.0rc1","2.10.0+cpu","2.10.0.post4",["9.1.0"],null,"229913ea2a346ccdb571bb3cb23414ca3a0ee1a9455fe88a15a5788bc837cb75",null,null,null,null,null,2,1,1,true,"torch.bfloat16",true],"devices":[[0,null],[1,null]],"extract_sha256":"0ff4126ce5bcea93b8546b93a70fc9e596958437f946842e3284d31b6b830d1d","files":[["local-summary-28.json",6550,"45c5389ed436b3a7f189c884fb18e5d9c46af8471afd8b875ee71aa0195d1f10"],["continuous_public.json",116117416,"ac9607545628daf13de20da54bc2a6df0aa0db37f720fd9fc9ecdb2f21ec2349"]],"m":"28.fia.denominator_replay","p":[null,null,"6d1610b620d447ab5fa1f42c4eba3107c94601634cba3af21172c69ee6898266"],"review":[true,null,true,true,"deb3c5c0d600f7bcae7d0997cfd883591ece87231ed8128e486edb5d823ffadc"],"s":[["worker-group-d50d7758bfe64cd7be11fb804aa9583d",[[0,[108,108,108,108,108,108,108,0],true,[true,true,true]],[1,[108,108,108,108,108,108,108,0],true,[true,true,true]]],[true,true],2.0268501643652486],["worker-group-228e68707b9b4333970c483a4fca9c42",[[0,[108,108,108,108,108,108,108,0],true,[true,true,true]],[1,[108,108,108,108,108,108,108,0],true,[true,true,true]]],[true,true],1.8232931532832]],"schema":"dcat.reg.extract.v1"}
+{"conflicts":[],"d":["A2",null,"0.26.0","0.26.0rc1","2.10.0+cpu","2.10.0.post4",["9.1.0"],null,"191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",null,null,null,null,null,2,1,1,true,"torch.bfloat16",true],"devices":[[0,null],[1,null]],"extract_sha256":"14287f29763bfd908f8f0e32bd3d7ff211e3ad9ffcd303fbc5eeaaa9cf45ef26","files":[["local-summary-28-qwen.json",6224,"7935937b4facf1a17c12521cff0ce0ff874aa1909d0132ce10d5a8b00d8c91e5"],["continuous_public.json",114025689,"b0e626fb3afce62c0876ad28b795490c8049bd26f7a1da06ac32b4c81941d10e"]],"m":"28.fia.denominator_replay","p":[null,null,"44d766c31a2d8e57436445008779f34268b62f85afe515447b5a0c3d6d30723e"],"review":[true,null,true,true,"deb3c5c0d600f7bcae7d0997cfd883591ece87231ed8128e486edb5d823ffadc"],"s":[["worker-group-03cbbd5b98f940a69682af28aaffbcbc",[[0,[64,64,64,64,64,64,64,0],true,[true,true,true]],[1,[64,64,64,64,64,64,64,0],true,[true,true,true]]],[true,true],1.426533834776699],["worker-group-35ab95fb2b2c4ba3953385bbcbc69ee3",[[0,[64,64,64,64,64,64,64,0],true,[true,true,true]],[1,[64,64,64,64,64,64,64,0],true,[true,true,true]]],[true,true],1.3415848069907654]],"schema":"dcat.reg.extract.v1"}
 ```
 
 ## DeepSeek回传
