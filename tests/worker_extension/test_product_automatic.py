@@ -61,7 +61,7 @@ class ProductCoverageTests(unittest.TestCase):
         from demoncat.runtime.vllm_ascend.worker_extension.product_request import ProductRequest
         s=ProductRequest.__new__(ProductRequest)
         s.inside=0;s.finished=True;s.error=None;s.samples=4;s.visual=visual;s.skip=[]
-        s.encoder_calls=1;s.embedding_calls=1;s.ids=['r'];s.binding=NS(identity={'rank':0})
+        s.encoder_calls=1;s.embedding_calls=1;s.ids=['r'];s.binding=NS(identity={'rank':0},mechanism='17.spatial_padding' if visual else '28.fia.denominator_replay')
         s.external_request_id=None;s.prompts={'r':(1,2)};s.range_facts={};s.inject=True
         e=dict(site='patch',eligible=True,applied=True,consumed=True,restored=True,changed=1,before_sha256='a',restored_sha256='a')
         s.site=NS(events=[e],pending=0,uncovered=[],forward_calls=[{'patch':1}]);s.close=Mock()

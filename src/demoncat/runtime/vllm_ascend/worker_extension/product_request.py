@@ -227,6 +227,9 @@ class ProductRequest(ContinuousRequest):
                       range_facts=self.range_facts, observed_model_steps=self.samples,
                       restore_kind='CALL_ARGUMENT_ONLY_NO_STORAGE_OVERWRITE' if self.visual else 'LIVE_REGION_BYTES')
         require(report['coverage']['failed'] == 0, 'PRODUCT_ELIGIBLE_CALL_FAILED')
+        from .product_native import MECHANISMS, request_evidence
+        if self.inject and not self.skip and self.binding.mechanism in MECHANISMS:
+            report['native_memory_effect'] = request_evidence(self.binding, self.site, events, self.ids)
         if not self.inject:
             report.update(output=list(self.rows),all_finite=bool(self.rows) and all(r['finite'] for r in self.rows))
         self.close()

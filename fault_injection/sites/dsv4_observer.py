@@ -42,6 +42,7 @@ def reason(mechanism,args,out,requests):
         if outputs[0].ndim!=2 or not outputs[0].is_contiguous():return 'OUTPUT_NOT_CONTIGUOUS_2D'
     if mechanism=='batch' and not any(t.dtype==torch.int8 for t in outputs):return 'NO_INT8_QUANT_OUTPUT'
     if mechanism=='8' and (outputs[0].ndim!=2 or outputs[0].shape[0]<2):return 'NO_MULTI_ROW_OUTPUT'
+    if mechanism=='8':return 'COMBINE_OUTPUT_ROW_JOIN_UNPROVEN'
     if mechanism in ('28','41'):return 'SPARSE_COMPRESSED_LAYOUT_ADAPTER_REQUIRES_RUNTIME_JOIN'
     if not inputs:return 'NO_TENSOR_INPUT'
     return None
