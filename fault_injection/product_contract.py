@@ -3,7 +3,8 @@ from dataclasses import dataclass
 
 
 COUNTERS = ('observed', 'eligible', 'attempted', 'applied', 'changed', 'consumed', 'restored', 'failed')
-PRODUCT_CANDIDATES = ('18.api_half', '39.output_proxy', '22.wrong_row', '28.fia.denominator_replay', '17.spatial_padding', 'quant.batch_shared_scale', '39.matmul_range', '33.paged_decode')
+# Native entries remain BLUE A2/TP2-only through product_config/product_binding.
+PRODUCT_CANDIDATES = ('18.api_half', '39.output_proxy', '22.wrong_row', '28.fia.denominator_replay', '17.spatial_padding', 'quant.batch_shared_scale', '39.matmul_range', '33.paged_decode', '41.tail_column', '26.fia_destination', '20.buffer_substitute')
 
 
 @dataclass(frozen=True)

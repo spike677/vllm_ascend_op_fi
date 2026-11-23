@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from .config import FaultConfig
 from fault_injection.product_contract import PRODUCT_CANDIDATES
+from .product_native import MECHANISMS as NATIVE_TRIALS, validate_blue_native_library, validate_blue_native_worker
 
 
 def load_product_deployment(path):
@@ -16,7 +17,7 @@ def load_product_deployment(path):
     if type(config) is not dict or set(config) != fields or config['schema'] != 'demoncat.product.deployment.v1':
         raise ValueError('PRODUCT_DEPLOYMENT_SCHEMA_INVALID')
     fault = FaultConfig.from_dict(config['fault'])
-    if fault.mechanism not in PRODUCT_CANDIDATES or fault.implementation_version != '1':
+    if fault.mechanism not in PRODUCT_CANDIDATES + NATIVE_TRIALS or fault.implementation_version != '1':
         raise ValueError('PRODUCT_VARIANT_NOT_ADAPTED')
     if config['mode'] != 'PRODUCT_ACCEPTANCE_ONLY' or config['source'] not in ('BLUE_COMBINATION','YELLOW_DEDICATED_INSTANCE'):
         raise ValueError('PRODUCT_COMBINATION_NOT_REGISTERED')
@@ -28,8 +29,10 @@ def load_product_deployment(path):
     sha = config['source_manifest_sha256']
     if type(sha) is not str or len(sha) != 64 or hashlib.sha256(Path(config['source_manifest']).read_bytes()).hexdigest() != sha:
         raise ValueError('PRODUCT_SOURCE_MANIFEST_MISMATCH')
-    if config['native_library'] is not None or config['native_sha256'] is not None:
-        raise ValueError('PRODUCT_NATIVE_ADAPTER_PENDING')
+    if fault.mechanism in NATIVE_TRIALS:
+        validate_blue_native_library(config['native_library'], config['native_sha256'], config['source'], config['tp'])
+    elif config['native_library'] is not None or config['native_sha256'] is not None:
+        raise ValueError('PRODUCT_NATIVE_LIBRARY_NOT_APPLICABLE')
     canary = config['canary']
     batch=fault.mechanism=='quant.batch_shared_scale'
     valid_prompt=(type(canary.get('prompt')) is list and 2<=len(canary['prompt'])<=8 and all(type(t) is str and t for t in canary['prompt']) and len(set(canary['prompt']))==len(canary['prompt'])) if type(canary) is dict and batch else type(canary) is dict and type(canary.get('prompt')) is str and bool(canary['prompt'])
@@ -75,6 +78,9 @@ def configure_product_deployments(worker, paths, *, authority, operator, canary_
         if batch and (not 2<=len(prompts)<=8 or len({tuple(p) for p in prompts})!=len(prompts) or live.scheduler_config.max_num_seqs!=8):
             raise ValueError('PRODUCT_BATCH_CANARY_OR_SCHEDULER_RANGE')
         profiles[name] = dict(mechanism=mechanism, canary_prompts=prompts, mode=deployment['mode'])
+        if mechanism in NATIVE_TRIALS:
+            validate_blue_native_worker(worker, authority.source)
+            profiles[name].update(native_library=(deployment['native_library'], deployment['native_sha256']), native_source=authority.source)
         permits.append(dict(profile=name, mechanisms=[mechanism], source=deployment['source'],
                             source_manifest_sha256=deployment['source_manifest_sha256']))
     if set(canary_tokens) != set(profiles):

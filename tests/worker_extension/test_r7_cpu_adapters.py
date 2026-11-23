@@ -127,9 +127,9 @@ class NativeProductTests(unittest.TestCase):
                 request_evidence(b,site,[dict(event,**{field:value})],['r'])
         site.native.count=lambda: 1
         with self.assertRaisesRegex(RuntimeError,'LEASES_REMAIN'):request_evidence(b,site,[event],['r'])
-    def test_public_native_product_candidates_remain_closed(self):
+    def test_native_candidates_are_present_only_after_blue_review(self):
         from fault_injection.product_contract import PRODUCT_CANDIDATES
-        self.assertFalse(set(MECHANISMS) & set(PRODUCT_CANDIDATES))
+        self.assertTrue(set(MECHANISMS).issubset(PRODUCT_CANDIDATES))
 
 
 class Dsv4RowsTests(unittest.TestCase):

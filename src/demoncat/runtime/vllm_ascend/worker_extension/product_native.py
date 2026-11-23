@@ -39,3 +39,32 @@ def request_evidence(binding, site, events, request_ids):
             'slots', 'page_mapping', 'changed')})
     return dict(library_sha256=library[1], regions=regions, leases=0,
                 request_ids=list(request_ids), qualification_granted=False)
+
+
+# Reviewed BLUE A2/TP2 acceptance only; never an A3 or product-closed grant.
+BLUE_NATIVE_LIBRARY_SHA256 = 'd9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274'
+
+
+def validate_blue_native_library(path, sha, source, tp):
+    from pathlib import Path
+    import hashlib
+    require(source == 'BLUE_COMBINATION' and type(tp) is int and tp == 2,
+            'PRODUCT_NATIVE_A3_OR_TP1_NOT_ADMITTED')
+    require(type(path) is str and Path(path).is_absolute() and sha == BLUE_NATIVE_LIBRARY_SHA256,
+            'PRODUCT_NATIVE_REVIEWED_LIBRARY_REQUIRED')
+    require(Path(path).is_file() and hashlib.sha256(Path(path).read_bytes()).hexdigest() == sha,
+            'PRODUCT_NATIVE_LIBRARY_HASH_MISMATCH')
+    return (path, sha)
+
+
+def validate_blue_native_worker(worker, source):
+    from fault_injection.environment import _live_soc, _toolkit
+    soc, _ = _live_soc()
+    require(source == 'BLUE_COMBINATION' and soc is not None
+            and soc['family'] == 'A2' and soc['observed_name'] == 'Ascend910B4'
+            and worker.model_runner.vllm_config.parallel_config.tensor_parallel_size == 2,
+            'PRODUCT_NATIVE_REQUIRES_A2_TP2')
+    toolkit = _toolkit()
+    require(toolkit['status'] == 'FOUND' and len(toolkit['installations']) == 1
+            and toolkit['installations'][0]['fields'].get('version') == '9.1.0',
+            'PRODUCT_NATIVE_REQUIRES_CANN91_TOOLKIT')

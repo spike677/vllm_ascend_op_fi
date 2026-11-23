@@ -66,6 +66,13 @@ def review(data, *, expected_tp=2, hardware_scope="A2/0.26/Qwen3.8-community-W8A
     previous_owners = set()
     summaries = []
     for scope in scopes:
+        if data['mechanism'] in ('41.tail_column','26.fia_destination','20.buffer_substitute'):
+            negatives=scope.get('negative_controls',[])
+            need(len(negatives)==expected_tp and sorted(r.get('rank') for r in negatives)==list(range(expected_tp)), 'PRODUCT_NATIVE_NEGATIVE_RANKS_REQUIRED')
+            for negative in negatives:
+                need(negative.get('permit_remaining') is False and negative.get('missing_permit',{}).get('can_prepare') is False
+                     and 'PRODUCT_PROFILE_UNKNOWN' in negative.get('unknown_profile','')
+                     and 'PRODUCT_RPC_UNKNOWN_FIELD' in negative.get('user_native_path',''), 'PRODUCT_NATIVE_NEGATIVE_ACCEPTED')
         requests = scope['requests']
         need(len(requests) >= 4, 'THREE_USER_REQUESTS_AND_NEGATIVE_REQUIRED')
         effects = []
@@ -99,6 +106,15 @@ def review(data, *, expected_tp=2, hardware_scope="A2/0.26/Qwen3.8-community-W8A
                         if site['eligible']:
                             ref=site.get('partition_reference',{});agreement=ref.get('control_agreement',{})
                             need(agreement.get('elements',0)>0 and agreement.get('bitwise_equal',0)/agreement['elements']>=.99 and ref.get('same_legal_key_set') is True and ref.get('denominator_replay') is False and ref.get('replacement_policy')=='WHOLE_TARGET_ROW_NO_VALUE_SELECTION','PRODUCT_PAGED_CONTROL_MISSING')
+                if index<3 and data['mechanism'] in ('41.tail_column','26.fia_destination','20.buffer_substitute'):
+                    proof=rank.get('native_memory_effect',{})
+                    need(proof.get('leases')==0 and proof.get('request_ids')==[rank['request_id']]
+                         and len(proof.get('regions',[]))==c['eligible'] and proof.get('library_sha256'), 'PRODUCT_NATIVE_REGION_EVIDENCE_MISSING')
+                    for region in proof['regions']:
+                        need(region.get('region_elements',0)>0 and region.get('consumer_operator')
+                             and region.get('before_sha256') and region['before_sha256']==region.get('restored_sha256'), 'PRODUCT_NATIVE_RESTORE_PROOF_MISSING')
+                        if data['mechanism']!='41.tail_column':
+                            need(region.get('source_sha256') and region['source_sha256']==region.get('after_sha256'), 'PRODUCT_NATIVE_SOURCE_PROOF_MISSING')
                 sites=rank['sites']
                 nonfinite={field:(sum(s[field] for s in sites) if sites and all(type(s.get(field)) is int for s in sites) else None)
                            for field in ('nonfinite_before','nonfinite_after')}

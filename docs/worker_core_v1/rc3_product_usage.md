@@ -52,3 +52,7 @@ export VLLM_WORKER_MULTIPROC_METHOD=spawn
 ```
 
 未设置时黄区观测到 `Invalid thread pool`，属于启动环境问题。此补充不修改已冻结r5包；TP1/TP2仍各自验收。完整图像SHA门禁维持原决定，不擅自恢复。
+
+## r7 Native 蓝区候选
+
+41、26fia、20 已通过 A2/0.26/CANN9.1/社区 Qwen3.8 W8A8/TP2 真实 HTTP 产品验收。受信部署文件指定已审查 `native_library` 和 `native_sha256`；用户 payload 不能传库路径、地址或 rank。Native 当前只接受 BLUE_COMBINATION、实际 Ascend910B4 和 TP2，A3/TP1 未开放。41 仅在真实 paged decode KV 消费窗口合格，prefill 保留不适用原因；26fia/20 各自依据真实消费者和安全恢复点。详见 [r7 报告](r7_native_a2_20261123/README.md)。

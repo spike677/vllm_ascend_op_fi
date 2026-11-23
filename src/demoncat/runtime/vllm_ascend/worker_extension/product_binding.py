@@ -6,6 +6,8 @@ from .continuous_binding import (install_continuous_binding, remove_continuous_b
                                  current_binding, observe_continuous_warmup)
 from fault_injection.product_contract import PRODUCT_CANDIDATES, RequestScope
 
+from .product_native import MECHANISMS as NATIVE_TRIALS, validate_blue_native_library, validate_blue_native_worker
+
 ATTRIBUTE = '_demoncat_product_profiles'
 
 
@@ -14,9 +16,15 @@ def configure_product_profiles(worker, *, profiles, authority, operator):
             'TRUSTED_PRODUCT_DEPLOYMENT_AUTHORITY_REQUIRED')
     require(type(profiles) is dict and profiles and not hasattr(worker, ATTRIBUTE), 'PRODUCT_PROFILES_ALREADY_SET_OR_EMPTY')
     for name, profile in profiles.items():
-        require(type(name) is str and name and set(profile) == {'mechanism', 'canary_prompts', 'mode'}
-            and profile['mechanism'] in PRODUCT_CANDIDATES
+        native = profile.get('mechanism') in NATIVE_TRIALS
+        fields = {'mechanism', 'canary_prompts', 'mode'} | ({'native_library', 'native_source'} if native else set())
+        require(type(name) is str and name and set(profile) == fields
+            and profile['mechanism'] in PRODUCT_CANDIDATES + NATIVE_TRIALS
             and profile['mode'] == 'PRODUCT_ACCEPTANCE_ONLY', 'PRODUCT_PROFILE_NOT_REVIEWED')
+        if native:
+            validate_blue_native_worker(worker, authority.source)
+            require(profile['native_source'] == authority.source, 'PRODUCT_NATIVE_SOURCE_MISMATCH')
+            validate_blue_native_library(*profile['native_library'], authority.source, worker.model_runner.vllm_config.parallel_config.tensor_parallel_size)
     setattr(worker, ATTRIBUTE, deepcopy(profiles))
 
 
@@ -45,8 +53,11 @@ def product_binding_rpc(worker, action, payload):
             soc,source=_live_soc()
             require(soc is not None and soc['family']=='A2' and soc['observed_name']=='Ascend910B4',
                 'PRODUCT33_REQUIRES_REVIEWED_A2_LAUNCH_A3_NOT_ADMITTED')
+        if mechanism in NATIVE_TRIALS:
+            validate_blue_native_worker(worker, authority.source)
+            require(profile['native_source'] == authority.source, 'PRODUCT_NATIVE_SOURCE_MISMATCH')
         result = install_continuous_binding(worker, mechanism=mechanism, prompts=profile['canary_prompts'],
-                                            group_contract=payload['group_contract'],
+                                            group_contract=payload['group_contract'], native_library=profile.get('native_library'),
                                             paged_partition=(512,256) if mechanism=='33.paged_decode' else None)
         b = current_binding(worker, worker.model_runner.model, mechanism)
         b.product = dict(mode='PRODUCT_ACCEPTANCE_ONLY', scope=dict(mode=scope.mode),
