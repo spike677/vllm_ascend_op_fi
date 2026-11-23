@@ -98,6 +98,8 @@ class AutomaticBatches:
             if self.canary:
                 hidden=state.hidden_states[offset:offset+count];logits=state.logits[i]
                 row['output'].append(dict(hidden=fingerprint(hidden),logits=fingerprint(logits),finite=bool(torch.isfinite(hidden).all().item() and torch.isfinite(logits).all().item())))
+                pos=self.runner.input_batch.req_id_to_index[rid]
+                row.setdefault('canary_schedule',[]).append(dict(batch_size=len(ids),prompt_index=len(self.canary_rows),prompt_sha256=digest(list(row['prompt'])),prompt_length=len(row['prompt']),computed=int(self.runner.input_batch.num_computed_tokens_cpu[pos]),scheduled=count))
             offset+=count
         return result
 
@@ -128,6 +130,9 @@ class AutomaticBatches:
             if row['samples'] and not row['reasons']:
                 require(computed==len(prompt)+row['samples']-1,'PRODUCT_BATCH_COMPUTED_TOKEN_MAPPING_CHANGED')
             rows.append(dict(id=rid,reasons=row['reasons'],computed=computed,prompt_length=len(prompt)))
+        if self.canary:
+            require(len(ids)==1 and len(self.states)==1,'PRODUCT_BATCH_CANARY_REQUIRES_SERIAL_B1')
+            require(self.states[ids[0]]['prompt']==self.binding.prompts[len(self.canary_rows)],'PRODUCT_BATCH_CANARY_PROMPT_ORDER')
         eligible,reason=classify_batch(rows,scheduler.num_scheduled_tokens)
         self.frame=dict(index=self.frame_index,ids=ids,eligible=eligible and not self.canary,reason=reason,decode=all(r['computed']>=r['prompt_length'] for r in rows))
         # Canary still observes decode batch membership, but never injects.
@@ -158,11 +163,12 @@ class AutomaticBatches:
             resource_scope='REQUEST_REGIONS_RELEASED_OBSERVER_REMAINS_SCOPE_OWNED',model_baseline_comparison='NOT_PERFORMED_FOR_USER_REQUEST')
         self.records.append(record)
         if self.canary:
-            key=row['prompt'];require(key not in self.canary_rows and row['samples']==4 and completed and not row['reasons'] and row.get('decode_batch_seen'), 'PRODUCT_BATCH_CANARY_COMPLETION')
+            key=row['prompt'];require(key not in self.canary_rows and row['samples']==4 and completed and not row['reasons'], 'PRODUCT_BATCH_CANARY_COMPLETION')
             self.canary_rows[key]=row
             if len(self.canary_rows)==len(self.binding.prompts):
                 output=[self.canary_rows[p]['output'] for p in self.binding.prompts]
-                self.binding.warmups.append(dict(output=output,all_finite=all(v['finite'] for steps in output for v in steps)))
+                from .batch_canary import PROTOCOL
+                self.binding.warmups.append(dict(output=output,all_finite=all(v['finite'] for steps in output for v in steps),canary_protocol=PROTOCOL,schedule=[self.canary_rows[p]['canary_schedule'] for p in self.binding.prompts]))
                 self.completed_canary=True
 
     def close(self):

@@ -65,12 +65,30 @@ class ProductBatchTests(BatchSiteTests):
         for i in range(4):self.step(r,['solo'],new={'solo':[1,2]} if i==0 else None)
         row=m.records[0];self.assertEqual(row['status'],'NOT_INJECTED');self.assertIn('DECODE_BATCH_SIZE_ONE',row['reasons'])
         self.assertEqual(row['coverage']['applied'],0);m.close()
-    def test_canary_observes_batch_without_fault(self):
+    def test_canary_observes_serial_b1_without_fault(self):
         m,r,b=self.make(canary=True)
-        for i in range(4):self.step(r,['a','b'],new={'a':[1,2],'b':[10,20]} if i==0 else None)
+        for rid,prompt in [('a',[1,2]),('b',[10,20])]:
+            for i in range(4):self.step(r,[rid],new={rid:prompt} if i==0 else None)
         self.assertTrue(m.completed_canary);self.assertTrue(b.warmups[0]['all_finite'])
         self.assertEqual(len(b.warmups[0]['output']),2)
         self.assertTrue(all(not e['applied'] for e in m.site.events));m.close()
+        from demoncat.runtime.vllm_ascend.worker_extension.batch_canary import stable
+        from copy import deepcopy
+        self.assertFalse(stable(b.warmups*2,3));self.assertTrue(stable(b.warmups*3,3))
+        self.assertTrue(stable(b.warmups*2,2,b.warmups[0]))
+        bad=deepcopy(b.warmups[0]);bad['schedule'][0][1]['batch_size']=2
+        self.assertFalse(stable([bad]*3,3))
+        bad=deepcopy(b.warmups[0]);bad['output'][0][0]['hidden']='different'
+        self.assertFalse(stable([bad]*2,2,b.warmups[0]))
+
+    def test_concurrent_canary_refuses_before_any_injection(self):
+        m,r,b=self.make(canary=True)
+        with self.assertRaisesRegex(RuntimeError,'SERIAL_B1'):
+            self.step(r,['a','b'],new={'a':[1,2],'b':[10,20]})
+        self.assertTrue(all(not e.get('applied') for e in m.site.events))
+        # A diagnostic failure must not be presented as a completed canary.
+        self.assertFalse(m.completed_canary)
+        m.canary=False;m.close()
     def test_scope_disable_is_not_user_completion(self):
         m,r,b=self.make();self.step(r,['a','b'],new={'a':[1,2],'b':[10,20]});self.step(r,['a','b'])
         m.close();self.assertTrue(all(not row['completed'] and row['bytes_restored'] for row in m.records))

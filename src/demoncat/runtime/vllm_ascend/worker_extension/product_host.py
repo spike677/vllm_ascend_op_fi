@@ -128,7 +128,9 @@ class ProductClient:
             self._binding('attach', group_contract=contract, scope=dict(mode=policy.mode))
             for unused in range(6):
                 observations = self._canary()
-                if all(row['warmup_valid'] for row in observations):
+                from .batch_canary import stable
+                batch=self.config.mechanism=='quant.batch_shared_scale'
+                if all(stable(row['observations'],3) if batch else row['warmup_valid'] for row in observations):
                     break
             else:
                 raise RuntimeError('PRODUCT_CANARY_UNSTABLE_IN_SIX')
@@ -172,9 +174,14 @@ class ProductClient:
             self.cleanup_evidence = dict(disable=stopped,unregister=self._all('unregister'),detach=self._all('detach'))
             self._binding('reset_canary_observer')
             actual = self._canary()
+            if self.config.mechanism=='quant.batch_shared_scale':
+                actual = self._canary()
             self.canary_evidence['after'] = deepcopy(actual)
             same = all(r['observations'][-1]['output'] == reference and r['observations'][-1]['all_finite']
                        for r, reference in zip(actual, self.baseline))
+            if self.config.mechanism=='quant.batch_shared_scale':
+                from .batch_canary import stable
+                same=all(stable(r['observations'],2,b['observations'][-1]) for r,b in zip(actual,self.canary_evidence['before']))
             bytes_ok = all(r['bytes_restored'] and r['coverage']['failed'] == 0
                            for req in self.requests for r in req['ranks'])
             zero = released_resources(self.cleanup_evidence)

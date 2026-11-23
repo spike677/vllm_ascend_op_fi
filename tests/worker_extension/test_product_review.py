@@ -95,3 +95,16 @@ class ProductReviewTests(unittest.TestCase):
         self.assertEqual(result['scopes'][0]['effects'][0]['coverage'],d['scopes'][0]['requests'][0]['result']['ranks'][0]['coverage'])
         d['scopes'][0]['requests'][0]['result']['ranks'][0]['sites'][0]['partition_reference']['control_agreement']['bitwise_equal']=98
         with self.assertRaisesRegex(ValueError,'PRODUCT_PAGED_CONTROL_MISSING'):review(d)
+
+
+class ExplicitWorldSizeReviewTests(unittest.TestCase):
+    def test_tp1_is_explicit_and_cannot_borrow_tp2_record(self):
+        data=receipt()
+        for scope in data['scopes']:
+            for req in scope['requests']:req['result']['ranks']=req['result']['ranks'][:1]
+            for phase in ('before','after'):scope['disable']['canary'][phase]=scope['disable']['canary'][phase][:1]
+            for action in ('disable','unregister','detach'):scope['disable']['cleanup'][action]=scope['disable']['cleanup'][action][:1]
+            scope['cleanup']=scope['cleanup'][:1]
+        self.assertEqual(review(data,expected_tp=1)['status'],'PRODUCT_BLUE_REVIEW_PASSED')
+        with self.assertRaisesRegex(ValueError,'RANK_SET_REQUIRED'):review(data,expected_tp=2)
+        with self.assertRaisesRegex(ValueError,'TP_UNSUPPORTED'):review(data,expected_tp=3)

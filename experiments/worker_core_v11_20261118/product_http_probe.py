@@ -95,7 +95,9 @@ def main():
                 return text
             canary_text=long_prompt('Explain rivers and mountains.')
         ex.collective_rpc('demoncat_acceptance_bootstrap',args=('capture_start',{}))
-        inference(canary_text)
+        if batch:
+            for prompt in canary_text:inference(prompt)
+        else:inference(canary_text)
         captures=ex.collective_rpc('demoncat_acceptance_bootstrap',args=('capture_stop',{}))
         assert len(captures)==2 and [r['tokens'] for r in captures[0]]==[r['tokens'] for r in captures[1]]
         canary=[r['tokens'] for r in captures[0]] if batch else captures[0][0]['tokens'];paths={}
@@ -118,7 +120,7 @@ def main():
             for index in range(2):
                 ex.collective_rpc('demoncat_acceptance_bootstrap',args=('permit',dict(mechanisms=[mechanism],attempt='http-'+str(index),source_manifest_sha256=source_sha)))
                 client=ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',
-                    run_canary=lambda spec:inference(spec['prompt']),drain=lambda:None,timeout=120)
+                    run_canary=lambda spec:[inference(p) for p in spec['prompt']] if batch else inference(spec['prompt']),drain=lambda:None,timeout=120)
                 scope=dict(scope=index,requests=[]);report['scopes'].append(scope)
                 scope['attach']=client.attach();scope['workers']=client.members;scope['enable']=client.enable();save()
                 if batch:
