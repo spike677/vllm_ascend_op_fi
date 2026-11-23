@@ -88,4 +88,15 @@ class RegionLeases:
             raise RuntimeError('REGION_BYTES_NOT_RESTORED')
         del self.active[token]
 
+    def release_unmodified(self,token):
+        """Finish a read-only base lease after an alias-redirection consumer.
+
+        Never copy an old snapshot onto a tensor with later legitimate writes.
+        """
+        lease=self._get(token)
+        if lease['written'] or not lease['consumed'] or version(lease['tensor'])!=lease['version'] or not exact(lease['tensor'],lease['backup']):
+            raise RuntimeError('LEASE_BASE_CHANGED_NO_WRITEBACK')
+        self.complete(lease['stream'])
+        del self.active[token]
+
     def count(self):return len(self.active)

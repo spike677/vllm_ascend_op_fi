@@ -36,7 +36,7 @@ class HTTPExecutor:
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--mechanism',nargs='+',choices=['18','39','22','28','17','batch','39mr','33','41','26fia','20'],required=True)
+    p=argparse.ArgumentParser();p.add_argument('--mechanism',nargs='+',choices=['15','18','39','22','28','17','batch','39mr','33','41','26fia','20'],required=True)
     p.add_argument('--image')
     p.add_argument('--native-library');p.add_argument('--native-sha256')
     a=p.parse_args();visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
@@ -65,7 +65,7 @@ def main():
             except Exception:time.sleep(1)
         else:raise RuntimeError('HTTP_SERVER_READY_TIMEOUT')
         from demoncat.runtime.vllm_ascend.worker_extension.product_host import ProductClient
-        mechanisms={'18':'18.api_half','39':'39.output_proxy','22':'22.wrong_row','28':'28.fia.denominator_replay','17':'17.spatial_padding','batch':'quant.batch_shared_scale','39mr':'39.matmul_range','33':'33.paged_decode','41':'41.tail_column','26fia':'26.fia_destination','20':'20.buffer_substitute'}
+        mechanisms={'15':'15.alias_detach','18':'18.api_half','39':'39.output_proxy','22':'22.wrong_row','28':'28.fia.denominator_replay','17':'17.spatial_padding','batch':'quant.batch_shared_scale','39mr':'39.matmul_range','33':'33.paged_decode','41':'41.tail_column','26fia':'26.fia_destination','20':'20.buffer_substitute'}
         images=[]
         if visual:
             from PIL import Image

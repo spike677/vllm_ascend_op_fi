@@ -555,3 +555,6 @@ fault20_buffer_ctl arm-all-matmul-mantissa 3 1 12800 25600 bf16 3
 - 外部故障框架集成。
 
 2026-11-21持续任务进展：[逐项审视](docs/worker_core_v1/continuous_task_audit_20261121.md)。Batch torch已在0.26/A2/TP2的Qwen3-0.6B与Qwen3.8完成B8、prefill+3decode、同组Worker两作用域真实site验收；采用CPU-FP32参考重算并交给原NPU QMM，详见[实机报告](docs/worker_core_v1/continuous_batch_real_model_20261121.md)。公共Runtime准入尚未完成，不继承为A3/现役通过。
+
+
+本开发分支新增 [Fault15 B档产品验收](docs/worker_core_v1/alias15_product_20261123/README.md)：A2/0.26/Qwen3.8 W8A8/TP2，ND视图别名断开，不含私有格式触发条件；独立于冻结r7。A3须先审查现役普查，当前仍拒绝。

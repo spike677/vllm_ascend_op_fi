@@ -49,6 +49,10 @@ def product_binding_rpc(worker, action, payload):
     if action == 'attach':
         native_identity=None
         scope = RequestScope(**payload['scope'])
+        if mechanism=='15.alias_detach':
+            from fault_injection.environment import _live_soc
+            soc,_=_live_soc()
+            require(authority.source=='BLUE_COMBINATION' and worker.model_runner.vllm_config.parallel_config.tensor_parallel_size==2 and soc is not None and soc['observed_name']=='Ascend910B4','ALIAS15_A2_TP2_TRIAL_ONLY')
         if mechanism=='33.paged_decode':
             from fault_injection.environment import _live_soc
             soc,source=_live_soc()
