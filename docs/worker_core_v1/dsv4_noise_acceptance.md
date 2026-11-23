@@ -22,9 +22,11 @@ fault/off/health的区域字节恢复必须严格成立，leases/hooks/inflight�
 2. 在可信验收驱动中，将`experiments/worker_core_v11_20261118/dsv4_noise_capture.py`的capture作为受信collective_rpc callable；每个单独校准请求前start，通过普通推理API发真实请求，真实完成后stop。它仅包裹实际compute_logits读取完整hidden/logits，不发请求、不写张量；任何异常用abort移除自己的观察器。此接口不能开放给普通用户。
 3. 宿主将每rank的steps、真实driver生成token、实际prompt token SHA、process身份和唯一sample ID组合成run。一个run含ranks="0"…"7"、tokens四项、prompt_tokens、single_chunk=true、prompt_sha256、sample_id、process_identity。不同进程的process身份不得相同；每个进程sample ID不得重复。所有数组留在黄区，不能用统计摘要伪装完整数组。
 4. 输入JSON结构为combination + calibration（≥10个run）；正式四阶段另加phases={normal,fault,off,health}。每阶段run还含实际region_bytes_restored及resources={leases:0,hooks:0,inflight:0}；这些从机制回执取值，不由观测器宣称。
-5. 运行`PYTHONPATH=<source> python tools/review_dsv4_noise.py <private-input.json> --output <private-summary.json>`。它从原始标定重新计算规则，不接受外部手填阈值。每条prompt单独输出，超过60KB则拒绝文本导出，不截掉失败信息。回传summary全文和输入/summary的文件名、字节数、SHA；完整原件留黄区。
+5. 运行`PYTHONPATH=<source> python tools/review_dsv4_noise.py <private-input.json> --output <private-summary.json>`。它从原始标定重新计算规则，不接受外部手填阈值。每条prompt单独输出，超过60KB则拒绝文本导出，不截掉失败信息。使用tools/extract_dsv4_record.py noise生成每rank不超过4KiB的提取文本回传；原summary和完整数组留黄区，只回传文件名、字节数和SHA。
 6. 先标定与只观测，不因本页自动启用V4注入。回传后核对数值有限性、token稳定、上界、源码匹配及site适用性，再决定第二批包。
 
 待黄区标定数据到达；目前只有CPU规则测试通过，不是V4实机验收。W4A8 NaN诊断单独接收，不改变上述W8A8目标。
 
 故障阶段允许显式记录 `+inf`、`-inf`、`nan` 字符串（JSON 不含非标准 NaN）。这些是超出有限标定范围的现象，不能解释为噪声；normal/off/health 与所有校准仍必须有限。capture 的 start 通过可信驱动指定 `phase="fault"`，其他阶段默认拒绝非有限值。若某 rank 没有可观测的 compute_logits 返回值，当前采集器明确拒绝；不得复制 driver 的数组伪装该 rank 的观测。需按实际模型边界补齐观测后再验收。
+
+2026-11-23补充：上述capture及observe漏打包，已通过独立B组工具补充件补交，不改r5/r6标签。先验证采集→组装→review→extract链路再开始正式标定；不能用未知旧脚本的摘要替代完整数组。

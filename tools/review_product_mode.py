@@ -5,15 +5,15 @@ import json
 from pathlib import Path
 
 
-def review_batch_requests(requests,need):
+def review_batch_requests(requests,need,expected_tp=2):
     """Rebuild unique rank/frame counts, never add per-request participation."""
     from fault_injection.product_contract import COUNTERS
     frames={};members={};effects=[];sizes=set();negative=False
     need(len(requests)>=4,'BATCH_PRODUCT_REQUEST_MATRIX_MISSING')
     for row in requests:
         result=row['result'];ranks=sorted(result['ranks'],key=lambda r:r['rank'])
-        need([r['rank'] for r in ranks]==[0,1],'EXACT_TP2_RANK_SET_REQUIRED')
-        need(ranks[0]['prompt_sha256']==ranks[1]['prompt_sha256'],'RANK_USER_INPUTS_DIFFER')
+        need([r['rank'] for r in ranks]==list(range(expected_tp)),'EXACT_REQUESTED_RANK_SET_REQUIRED')
+        need(all(r['prompt_sha256']==ranks[0]['prompt_sha256'] for r in ranks),'RANK_USER_INPUTS_DIFFER')
         for r in ranks:
             need(r['request_id']==result['request_id'] and r['completed'],'REQUEST_ASSOCIATION_INCOMPLETE')
             need(r['coverage_unit']=='REQUEST_PARTICIPATION_IN_ACTUAL_BATCH_CALLS','BATCH_COVERAGE_UNIT_UNDEFINED')
@@ -43,17 +43,19 @@ def review_batch_requests(requests,need):
                 if row['scenario']=='single':
                     need('DECODE_BATCH_SIZE_ONE' in r['reasons'],'B1_SKIP_REASON_MISSING');negative=True
             effects.append(dict(rank=r['rank'],request_id=r['request_id'],coverage=sums,reasons=r['reasons']))
-    totals={r:dict.fromkeys(COUNTERS,0) for r in (0,1)}
+    totals={r:dict.fromkeys(COUNTERS,0) for r in range(expected_tp)}
     for key,f in frames.items():
         need(members[key]==set(f['request_ids']),'BATCH_FRAME_PARTICIPANTS_MISSING')
-        other=frames.get((1-key[0],key[1]))
-        need(other is not None and all(other[k]==f[k] for k in ('request_ids','scheduled_counts','eligible','reason')),'RANK_BATCH_MAPPING_DIFFERENT')
+        for peer in range(expected_tp):
+            other=frames.get((peer,key[1]))
+            need(other is not None and all(other[k]==f[k] for k in ('request_ids','scheduled_counts','eligible','reason')),'RANK_BATCH_MAPPING_DIFFERENT')
         for k in COUNTERS:totals[key[0]][k]+=f['coverage'][k]
     need(sizes and negative,'REAL_BATCH_AND_B1_NEGATIVE_REQUIRED')
     return dict(request_participation=effects,unique_batch_calls_by_rank=totals,actual_eligible_batch_sizes=sorted(sizes))
 
 
-def review(data):
+def review(data, *, expected_tp=2, hardware_scope="A2/0.26/Qwen3.8-community-W8A8/TP2"):
+    if type(expected_tp) is not int or expected_tp not in (1,2):raise ValueError("PRODUCT_REVIEW_TP_UNSUPPORTED")
     def need(value, code):
         if not value: raise ValueError(code)
     need(data.get('status') == 'HTTP_PRODUCT_TWO_SCOPES_PENDING_REVIEW', 'PRODUCT_RUN_INCOMPLETE')
@@ -68,11 +70,11 @@ def review(data):
         need(len(requests) >= 4, 'THREE_USER_REQUESTS_AND_NEGATIVE_REQUIRED')
         effects = []
         hashes = []
-        batch_report=review_batch_requests(requests,need) if data['mechanism']=='quant.batch_shared_scale' else None
+        batch_report=review_batch_requests(requests,need,expected_tp) if data['mechanism']=='quant.batch_shared_scale' else None
         for index, row in ([] if batch_report else enumerate(requests)):
             result = row['result']
             ranks = sorted(result['ranks'], key=lambda r:r['rank'])
-            need([r['rank'] for r in ranks] == [0,1], 'EXACT_TP2_RANK_SET_REQUIRED')
+            need([r['rank'] for r in ranks] == list(range(expected_tp)), 'EXACT_TP2_RANK_SET_REQUIRED')
             for rank in ranks:
                 need(rank['request_id'] == result['request_id'] and rank['completed'], 'REQUEST_ASSOCIATION_INCOMPLETE')
                 c = rank['coverage']
@@ -105,19 +107,19 @@ def review(data):
                                     consumers=sorted({s['consumer_operator'] for s in sites if s.get('consumer_operator')}),
                                     **nonfinite))
             if index < 3:
-                need(ranks[0]['prompt_sha256']==ranks[1]['prompt_sha256'], 'RANK_USER_INPUTS_DIFFER')
+                need(all(r['prompt_sha256']==ranks[0]['prompt_sha256'] for r in ranks), 'RANK_USER_INPUTS_DIFFER')
                 hashes.append(ranks[0]['prompt_sha256'])
         if batch_report is None:need(len(set(hashes))==3, 'DISTINCT_USER_PROMPTS_REQUIRED')
         stopped = scope['disable']
         before, after = stopped['canary']['before'], stopped['canary']['after']
-        need([r['rank'] for r in before]==[0,1] and [r['rank'] for r in after]==[0,1], 'CANARY_ALL_RANK_REQUIRED')
+        need([r['rank'] for r in before]==list(range(expected_tp)) and [r['rank'] for r in after]==list(range(expected_tp)), 'CANARY_ALL_RANK_REQUIRED')
         for b,a in zip(before,after):
             bs, az = b['observations'], a['observations'][-1]
             need(len(bs)>=2 and all(x['all_finite'] for x in bs[-2:]), 'FINITE_STABLE_CANARY_REQUIRED')
             need(bs[-1]['output']==bs[-2]['output']==az['output'] and az['all_finite'], 'CANARY_FULL_OUTPUT_NOT_EXACT')
         for action in ('disable','unregister','detach'):
             replies = stopped['cleanup'][action]
-            need(len(replies)==2 and all(x['status']==('DETACHED' if action=='detach' else 'ACTION_COMPLETED') for x in replies), 'RUNTIME_RELEASE_FAILED')
+            need(len(replies)==expected_tp and all(x['status']==('DETACHED' if action=='detach' else 'ACTION_COMPLETED') for x in replies), 'RUNTIME_RELEASE_FAILED')
         for released, detached in zip(stopped['cleanup']['unregister'], stopped['cleanup']['detach']):
             state = released.get('response', {}).get('provider_state', {})
             need(all(type(state.get(k)) is int and state[k] == 0 for k in ('leases','owned_hooks','inflight'))
@@ -141,7 +143,7 @@ def review(data):
                 product_entry=data.get('product_entry','ProductClient direct constructor'),
                 between_request_cache_reset=data.get('between_request_cache_reset'),
                 deployment_config_sha256=data.get('deployment_config_sha256'),
-                hardware_scope='A2/0.26/Qwen3.8-community-W8A8/TP2',
+                hardware_scope=hardware_scope,
                 yellow_main_project_integration_verified=False, product_closed=False, qualification_granted=False)
 
 
