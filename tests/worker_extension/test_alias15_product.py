@@ -63,3 +63,37 @@ class Alias15ReviewTests(unittest.TestCase):
         for k,v in [('detached_storage',False),('after_sha256','new'),('changed',2),('consumer_sha256','different'),('gate_device_read_completed',False)]:
             d=self.fixture();d['scopes'][0]['requests'][0]['result']['ranks'][0]['alias_detach_effect']['calls'][0][k]=v
             with self.assertRaisesRegex(ValueError,'INDEPENDENT_MECHANISM_PROOF'):review(d)
+
+class Alias15DeploymentTests(unittest.TestCase):
+    def test_attach_tp2_observed_identity_only_and_no_native_library(self):
+        from demoncat.runtime.vllm_ascend.worker_extension import product_binding as pb
+        NS=types.SimpleNamespace
+        profile=dict(mechanism='15.alias_detach',canary_prompts=[[1,2]],mode='PRODUCT_ACCEPTANCE_ONLY')
+        w=NS(model_runner=NS(model=object(),vllm_config=NS(parallel_config=NS(tensor_parallel_size=2))),_demoncat_product_profiles={'alias':profile})
+        payload=dict(operator='trusted',profile='alias',scope={'mode':'all'},group_contract={})
+        for source in ('BLUE_COMBINATION','YELLOW_DEDICATED_INSTANCE'):
+            authority=NS(source=source,authorize_operator=lambda *a:True);b=NS(product=None)
+            with patch.object(pb,'authority_for',return_value=authority),patch.object(pb,'current_binding',side_effect=[None,b]),patch.object(pb,'validate_blue_native_worker',return_value={'source':source,'qualification_granted':False}) as check,patch.object(pb,'install_continuous_binding',return_value={'qualification_granted':False}) as install:
+                pb.product_binding_rpc(w,'attach',payload)
+                check.assert_called_once_with(w,source)
+                self.assertIsNone(install.call_args.kwargs['native_library'])
+                self.assertFalse(b.alias_runtime_identity['qualification_granted'])
+            with patch.object(pb,'authority_for',return_value=authority),patch.object(pb,'current_binding',return_value=None),patch.object(pb,'validate_blue_native_worker',side_effect=RuntimeError('UNPROVEN_CANN')),patch.object(pb,'install_continuous_binding') as install:
+                with self.assertRaisesRegex(RuntimeError,'UNPROVEN_CANN'):pb.product_binding_rpc(w,'attach',payload)
+                install.assert_not_called()
+        w.model_runner.vllm_config.parallel_config.tensor_parallel_size=1
+        with patch.object(pb,'authority_for',return_value=authority),patch.object(pb,'current_binding',return_value=None):
+            with self.assertRaisesRegex(RuntimeError,'ALIAS15_TP2_ACCEPTANCE_ONLY'):pb.product_binding_rpc(w,'attach',payload)
+
+class Alias15A3ReviewTests(Alias15ReviewTests):
+    def test_a3_runtime_identity_required_and_blue_cannot_relabel(self):
+        from tools.review_alias15_product import review
+        d=self.fixture()
+        with self.assertRaisesRegex(ValueError,'INDEPENDENT_MECHANISM_PROOF'):review(d,require_a3=True)
+        identity=dict(source='YELLOW_DEDICATED_INSTANCE',tp=2,soc={'family':'A3','observed_name':'Ascend910_9382'},toolkit_version='9.1.0',cann_observation_source='VERIFIED_MAPPED_ELF_LINKED_TO_INSTALLED_VERSION_METADATA',loaded_runtime=[dict(name=n,version='9.1.0',sha256='a'*64,metadata_sha256='b'*64) for n in ('libascendcl.so','libruntime.so')])
+        for scope in d['scopes']:
+            for request in scope['requests'][:3]:
+                for rank in request['result']['ranks']:rank['alias_detach_effect']['runtime_identity']=identity
+        review(d,require_a3=True)
+        identity['source']='BLUE_COMBINATION'
+        with self.assertRaisesRegex(ValueError,'INDEPENDENT_MECHANISM_PROOF'):review(d,require_a3=True)

@@ -50,9 +50,10 @@ def product_binding_rpc(worker, action, payload):
         native_identity=None
         scope = RequestScope(**payload['scope'])
         if mechanism=='15.alias_detach':
-            from fault_injection.environment import _live_soc
-            soc,_=_live_soc()
-            require(authority.source=='BLUE_COMBINATION' and worker.model_runner.vllm_config.parallel_config.tensor_parallel_size==2 and soc is not None and soc['observed_name']=='Ascend910B4','ALIAS15_A2_TP2_TRIAL_ONLY')
+            require(worker.model_runner.vllm_config.parallel_config.tensor_parallel_size == 2,
+                    'ALIAS15_TP2_ACCEPTANCE_ONLY')
+            # Reuse observed device/CANN identity checks; no Native library is used.
+            alias_identity = validate_blue_native_worker(worker, authority.source)
         if mechanism=='33.paged_decode':
             from fault_injection.environment import _live_soc
             soc,source=_live_soc()
@@ -65,6 +66,7 @@ def product_binding_rpc(worker, action, payload):
                                             group_contract=payload['group_contract'], native_library=profile.get('native_library'),
                                             paged_partition=(512,256) if mechanism=='33.paged_decode' else None)
         b = current_binding(worker, worker.model_runner.model, mechanism)
+        if mechanism == '15.alias_detach':b.alias_runtime_identity=alias_identity
         if mechanism in NATIVE_TRIALS:b.native_runtime_identity=native_identity
         b.product = dict(mode='PRODUCT_ACCEPTANCE_ONLY', scope=dict(mode=scope.mode),
                          profile=payload['profile'])

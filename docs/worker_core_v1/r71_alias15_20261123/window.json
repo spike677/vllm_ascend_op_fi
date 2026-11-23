@@ -1,0 +1,61 @@
+{
+  "schema": "dcat.alias15.product.window.v1",
+  "attempt": "r71-alias15-product-a1",
+  "start": "2026-11-23T11:41:11.670849+00:00",
+  "end": "2026-11-23T11:45:39.496559+00:00",
+  "seconds": 267.82574021886103,
+  "status": "FINISHED",
+  "isolation_removed": true,
+  "isolation_records": [
+    {
+      "time": "2026-11-23T11:41:11.670981+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "maximum_seconds": 2100,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-23T11:41:11.833506+00:00",
+      "event": "STOP_BEGIN",
+      "container": "/ptq_271b5c99d8dc8de2_fla-1123-clc-full-01_dev2_slot0_8a4d1791",
+      "id": "9e7ee3e34f8807d55b2c6e566cee6893a3df5e544b4d85617994913e4d1b17ab",
+      "image": "cann:9.2.0-fla-a2-b3881d4-atk2698",
+      "cards": [
+        2
+      ]
+    },
+    {
+      "time": "2026-11-23T11:41:13.560175+00:00",
+      "event": "STOP_END",
+      "container": "/ptq_271b5c99d8dc8de2_fla-1123-clc-full-01_dev2_slot0_8a4d1791",
+      "image": "cann:9.2.0-fla-a2-b3881d4-atk2698",
+      "returncode": 0,
+      "stdout": "9e7ee3e34f8807d55b2c6e566cee6893a3df5e544b4d85617994913e4d1b17ab",
+      "stderr": ""
+    },
+    {
+      "time": "2026-11-23T11:45:39.496659+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ],
+  "source_manifest_sha256": "7d313f6cde66d8decfb7ad9ee58961e2c1014f208b941346f36f4623fe7f6925",
+  "combination": {
+    "hardware": "Ascend910B4/A2",
+    "stack": "vLLM0.26/vllm-ascend0.26.0rc1/CANN9.1.0",
+    "model": "Qwen3.8 W8A8 community",
+    "tp": 2
+  },
+  "latency_ratio": null,
+  "latency_ratio_reason": "No timed baseline matching-user-request pair; no inference from total window",
+  "qualification_granted": false,
+  "shutdown_warnings": [
+    "Python resource_tracker: 62 semaphore and 4 shared_memory at server shutdown; separate from injection lease/hook/inflight recovery; no claim to third-party cleanup fix"
+  ]
+}

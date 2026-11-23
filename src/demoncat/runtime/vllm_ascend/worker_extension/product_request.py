@@ -233,7 +233,7 @@ class ProductRequest(ContinuousRequest):
         if self.inject and not self.skip and self.binding.mechanism=='15.alias_detach':
             report['alias_detach_effect']=dict(semantics='ND_VIEW_ALIAS_DETACH_NO_PRIVATE_FORMAT_TRIGGER',
                 calls=[{k:e.get(k) for k in ('site','request_ids','dtype','format','before_sha256','intended_sha256','after_sha256','restored_sha256','initial_view_exact','detached_storage','changed','changed_elements','gate_input_sha256','gate_result_sha256','consumer_sha256','gate_device_read_completed','projection_reads_exact_produced_value','device_consumer_completed','restore_kind','initial_all_finite')} for e in events],
-                pending=self.site.pending)
+                pending=self.site.pending, runtime_identity=self.binding.alias_runtime_identity)
         if not self.inject:
             report.update(output=list(self.rows),all_finite=bool(self.rows) and all(r['finite'] for r in self.rows))
         self.close()
