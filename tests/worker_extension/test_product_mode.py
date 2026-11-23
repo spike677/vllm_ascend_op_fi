@@ -136,3 +136,14 @@ class ProductContractTests(unittest.TestCase):
 
 
 if __name__ == '__main__': unittest.main()
+
+
+class Product33AdmissionTests(unittest.TestCase):
+    def test_a3_cannot_inherit_a2_split_groups(self):
+        from unittest.mock import patch
+        from demoncat.runtime.vllm_ascend.worker_extension import product_binding as pb
+        worker=NS(model_runner=NS(model=object()),_demoncat_product_profiles={'paged':dict(mechanism='33.paged_decode',canary_prompts=[[1,2]],mode='PRODUCT_ACCEPTANCE_ONLY')})
+        authority=NS(authorize_operator=lambda *a:True)
+        with patch.object(pb,'authority_for',return_value=authority),patch.object(pb,'current_binding',return_value=None),patch('fault_injection.environment._live_soc',return_value=({'family':'A3','observed_name':'Ascend910_9382'},'observed')),patch.object(pb,'install_continuous_binding') as install:
+            with self.assertRaisesRegex(RuntimeError,'A3_NOT_ADMITTED'):pb.product_binding_rpc(worker,'attach',dict(operator='trusted',profile='paged',scope={'mode':'all'},group_contract={}))
+            install.assert_not_called()

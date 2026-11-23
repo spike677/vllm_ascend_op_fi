@@ -77,3 +77,21 @@ class ProductReviewTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'EXACT_TP2_RANK_SET_REQUIRED'):review(data)
         data=receipt();data['scopes'][1]['disable']['cleanup']['unregister'][0]['worker']={'rank':0,'pid':999}
         with self.assertRaisesRegex(ValueError,'WORKERS_CHANGED_BETWEEN_SCOPES'):review(data)
+
+
+    def test_matmul_or_paged_cannot_use_generic_consumer_as_control(self):
+        for mechanism,code in [('39.matmul_range','PRODUCT_MATMUL_CONTROL_MISSING'),('33.paged_decode','PRODUCT_PAGED_CONTROL_MISSING')]:
+            d=receipt();d['mechanism']=mechanism
+            with self.assertRaisesRegex(ValueError,code):review(d)
+
+    def test_paged_control_does_not_replace_coverage_counters(self):
+        d=receipt();d['mechanism']='33.paged_decode'
+        for scope in d['scopes']:
+            for request in scope['requests'][:3]:
+                for rank in request['result']['ranks']:
+                    rank['sites'][0]['partition_reference']=dict(control_agreement=dict(elements=100,bitwise_equal=99),
+                        same_legal_key_set=True,denominator_replay=False,replacement_policy='WHOLE_TARGET_ROW_NO_VALUE_SELECTION')
+        result=review(d)
+        self.assertEqual(result['scopes'][0]['effects'][0]['coverage'],d['scopes'][0]['requests'][0]['result']['ranks'][0]['coverage'])
+        d['scopes'][0]['requests'][0]['result']['ranks'][0]['sites'][0]['partition_reference']['control_agreement']['bitwise_equal']=98
+        with self.assertRaisesRegex(ValueError,'PRODUCT_PAGED_CONTROL_MISSING'):review(d)

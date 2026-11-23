@@ -19,14 +19,14 @@ class AcceptanceExtension(DemoncatWorkerExtension):
         if action=='capture_stop':
             assert self.model_runner.execute_model is self._http_capture
             del self.model_runner.execute_model
-            assert len(self._http_canary)==1
-            return self._http_canary[0]
+            assert 1<=len(self._http_canary)<=8
+            return self._http_canary
         return trusted_bootstrap(self,action,options)
 
 
 class HTTPExecutor:
     def __init__(self,base):self.base=base
-    def post(self,path,payload,timeout=600):
+    def post(self,path,payload,timeout=900):
         raw=json.dumps(payload).encode()
         req=urllib.request.Request(self.base+path,data=raw,headers={'Content-Type':'application/json'})
         with urllib.request.urlopen(req,timeout=timeout) as response:return json.load(response)
@@ -36,9 +36,10 @@ class HTTPExecutor:
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--mechanism',nargs='+',choices=['18','39','22','28','17'],required=True)
+    p=argparse.ArgumentParser();p.add_argument('--mechanism',nargs='+',choices=['18','39','22','28','17','batch','39mr','33'],required=True)
     p.add_argument('--image')
-    a=p.parse_args();visual=a.mechanism==['17'];root=Path('/evidence')
+    a=p.parse_args();visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
+    if ('batch' in a.mechanism or '33' in a.mechanism) and len(a.mechanism)!=1:p.error('Batch/33 use their own scheduler profile')
     report=dict(status='STARTED',entry='VLLM_HTTP_API',host_per_request_hooks=False,scopes=[])
     target=root/'product_http.json'
     def save():target.write_text(json.dumps(report,indent=2)+'\n')
@@ -48,7 +49,7 @@ def main():
             '--host','127.0.0.1','--port','18937','--dtype','bfloat16','--quantization','ascend',
             '--tensor-parallel-size','2','--distributed-executor-backend','mp','--enforce-eager',
             '--no-enable-prefix-caching','--no-async-scheduling','--enable-chunked-prefill',
-            '--max-num-batched-tokens','1024','--max-model-len','1024','--max-num-seqs','1',
+            '--max-num-batched-tokens','8192' if batch else '4096' if paged else '1024','--max-model-len','4096' if paged else '1024','--max-num-seqs','8' if batch else '1',
             '--gpu-memory-utilization','0.8','--seed','42','--trust-remote-code',
             '--worker-extension-cls','product_http_probe.AcceptanceExtension',
             '--limit-mm-per-prompt',json.dumps(dict(image=1 if visual else 0,video=0))]
@@ -63,7 +64,7 @@ def main():
             except Exception:time.sleep(1)
         else:raise RuntimeError('HTTP_SERVER_READY_TIMEOUT')
         from demoncat.runtime.vllm_ascend.worker_extension.product_host import ProductClient
-        mechanisms={'18':'18.api_half','39':'39.output_proxy','22':'22.wrong_row','28':'28.fia.denominator_replay','17':'17.spatial_padding'}
+        mechanisms={'18':'18.api_half','39':'39.output_proxy','22':'22.wrong_row','28':'28.fia.denominator_replay','17':'17.spatial_padding','batch':'quant.batch_shared_scale','39mr':'39.matmul_range','33':'33.paged_decode'}
         images=[]
         if visual:
             from PIL import Image
@@ -83,16 +84,26 @@ def main():
             start=time.monotonic();reply=ex.post(endpoint,payload)
             return dict(seconds=time.monotonic()-start,api_id=reply.get('id'),choices=reply['choices'])
         canary_text='Describe this image briefly.' if visual else 'Explain briefly why the sky appears blue.'
+        if batch:canary_text=['Explain briefly this subject: '+t for t in ['rain','rivers','clouds','wind','bicycles','forests','mountains','ocean']]
+        if paged:
+            from transformers import AutoTokenizer
+            tokenizer=AutoTokenizer.from_pretrained('/model',local_files_only=True,trust_remote_code=True)
+            def long_prompt(seed):
+                ids=tokenizer.encode((seed+' ')*3000,add_special_tokens=False)[:2304]
+                text=tokenizer.decode(ids,skip_special_tokens=False)
+                assert len(tokenizer.encode(text,add_special_tokens=False))==2304
+                return text
+            canary_text=long_prompt('Explain rivers and mountains.')
         ex.collective_rpc('demoncat_acceptance_bootstrap',args=('capture_start',{}))
         inference(canary_text)
         captures=ex.collective_rpc('demoncat_acceptance_bootstrap',args=('capture_stop',{}))
-        assert len(captures)==2 and captures[0]['tokens']==captures[1]['tokens']
-        canary=captures[0]['tokens'];paths={}
+        assert len(captures)==2 and [r['tokens'] for r in captures[0]]==[r['tokens'] for r in captures[1]]
+        canary=[r['tokens'] for r in captures[0]] if batch else captures[0][0]['tokens'];paths={}
         source_sha=hashlib.sha256(Path('/source/source_manifest.json').read_bytes()).hexdigest()
         for key in a.mechanism:
             number,variant=mechanisms[key].split('.',1)
             config=dict(schema='demoncat.product.deployment.v1',profile=mechanisms[key],
-                fault=dict(fault_id=int(number),variant=variant,implementation_version='1'),model='/model',tp=2,
+                fault=dict(fault_id=number if number=="quant" else int(number),variant=variant,implementation_version='1'),model='/model',tp=2,
                 mode='PRODUCT_ACCEPTANCE_ONLY',source='BLUE_COMBINATION',source_manifest='/source/source_manifest.json',
                 source_manifest_sha256=source_sha,native_library=None,native_sha256=None,
                 canary=dict(prompt=canary_text,image=a.image if visual else None,max_tokens=4),evidence_directory='/evidence')
@@ -110,7 +121,24 @@ def main():
                     run_canary=lambda spec:inference(spec['prompt']),drain=lambda:None,timeout=120)
                 scope=dict(scope=index,requests=[]);report['scopes'].append(scope)
                 scope['attach']=client.attach();scope['workers']=client.members;scope['enable']=client.enable();save()
-                for n,text in enumerate(['Name a city with a river.','Explain how a bicycle moves.','What is seven plus six?','This request exceeds the validated generation budget.']):
+                if batch:
+                    from concurrent.futures import ThreadPoolExecutor
+                    from threading import Barrier
+                    seen=0
+                    for count in (2,4,8):
+                        barrier=Barrier(count)
+                        def concurrent_call(n):
+                            barrier.wait()
+                            return inference('Explain briefly '+['weather','cities','plants','rivers','physics','music','bikes','oceans'][n]+' using simple words.')
+                        with ThreadPoolExecutor(max_workers=count) as pool:timings=list(pool.map(concurrent_call,range(count)))
+                        status=client.status();new=status['requests'][seen:];assert len(new)==count
+                        for result in new:
+                            scope['requests'].append(dict(result=result,scenario='concurrent',submitted_concurrency=count,api_group_timings=timings,expected_injection=True))
+                        seen+=count;save()
+                    for text,max_tokens in [('One standalone request should remain unmodified.',4),('This request exceeds the generation scope.',5)]:
+                        timing=inference(text,max_tokens=max_tokens);status=client.status();assert len(status['requests'])==seen+1
+                        scope['requests'].append(dict(result=status['requests'][-1],scenario='single' if max_tokens==4 else 'range_negative',expected_injection=False,**timing));seen+=1;save()
+                for n,text in ([] if batch else enumerate([long_prompt(t) for t in ['Rivers and cities.','Bicycles and gears.','Numbers and arithmetic.','Outside validated generation.']] if paged else ['Name a city with a river.','Explain how a bicycle moves.','What is seven plus six?','This request exceeds the validated generation budget.'])):
                     timing=inference(text,image=1+n%2,max_tokens=5 if n==3 else 4)
                     status=client.status();result=status['requests'][-1]
                     assert len(status['requests'])==n+1

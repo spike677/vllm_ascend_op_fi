@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 
 COUNTERS = ('observed', 'eligible', 'attempted', 'applied', 'changed', 'consumed', 'restored', 'failed')
-PRODUCT_CANDIDATES = ('18.api_half', '39.output_proxy', '22.wrong_row', '28.fia.denominator_replay', '17.spatial_padding')
+PRODUCT_CANDIDATES = ('18.api_half', '39.output_proxy', '22.wrong_row', '28.fia.denominator_replay', '17.spatial_padding', 'quant.batch_shared_scale', '39.matmul_range', '33.paged_decode')
 
 
 @dataclass(frozen=True)
@@ -51,9 +51,12 @@ def summarize_request(request_id, rank, events, *, skipped=(), completed=False):
                              and event.get('before_sha256') is not None
                              and event.get('before_sha256') == event.get('restored_sha256')):
             counts['failed'] += int(not event.get('failed'))
-        sites.append({key: event.get(key) for key in (
+        site={key: event.get(key) for key in (
             'site', 'eligible', 'reason', 'changed', 'nonfinite_before', 'nonfinite_after',
-            'consumer_operator', 'consumed', 'restored', 'before_sha256', 'restored_sha256')})
+            'consumer_operator', 'consumed', 'restored', 'before_sha256', 'restored_sha256')}
+        for key in ('full_range_control_passed','range_reference','non_target_exact','partition_reference'):
+            if key in event:site[key]=event[key]
+        sites.append(site)
     return dict(request_id=request_id, rank=rank, status='NOT_INJECTED' if skipped else 'OBSERVED',
                 reasons=list(skipped), coverage=counts, sites=sites,
                 changed_elements=sum(e.get('changed', 0) for e in events),

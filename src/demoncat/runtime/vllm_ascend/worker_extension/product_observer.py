@@ -120,3 +120,10 @@ class AutomaticRequests:
             leases=len(pending) if isinstance(pending, dict) else pending,
             owned_hooks=len(self.patches) + (len(s.patches) + len(s.hooks) if s else 0),
             inflight=self.inside + (s.inside if s else 0), failure=self.error)
+
+
+def make_automatic_observer(binding,*,canary=False):
+    if binding.mechanism=='quant.batch_shared_scale':
+        from .product_batch import AutomaticBatches
+        return AutomaticBatches(binding,canary=canary)
+    return AutomaticRequests(binding,canary=canary)

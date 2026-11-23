@@ -24,9 +24,10 @@ def cpu_reference(rows):
 
 
 class BatchQuantSite:
-    def __init__(self,model,runner,*,fault,arithmetic_device='cpu',region_leases=None,reference_mode='immediate'):
+    def __init__(self,model,runner,*,fault,arithmetic_device='cpu',region_leases=None,reference_mode='immediate',call_policy=None):
         require(arithmetic_device in ('cpu','input'),'UNKNOWN_QUANT_ARITHMETIC_BACKEND')
         self.arithmetic_device=arithmetic_device
+        self.call_policy=call_policy
         require(reference_mode in ('immediate','forward') and (reference_mode=='immediate' or arithmetic_device=='input'),
                 'UNREVIEWED_REFERENCE_MODE')
         self.reference_mode=reference_mode;self.reference_queue=None
@@ -68,7 +69,7 @@ class BatchQuantSite:
             require(x.ndim==2 and q.shape==x.shape and s.shape==(x.shape[0],) and q.dtype==torch.int8 and s.dtype==torch.float32,'UNSUPPORTED_QUANT_LAYOUT')
             require(q.is_contiguous() and s.is_contiguous(),'QUANT_LAYOUT_NOT_CONTIGUOUS')
             ctx['buffers']=(q,s)
-            if not self.fault:return result
+            if not self.fault or not event['eligible']:return result
             require(len(event['request_ids'])>=2,'MULTIPLE_ACTUAL_REQUESTS_REQUIRED')
             require(self.actual_rows()==x.shape[0],'PADDED_OR_UNMAPPED_QUANT_ROWS')
             backups=(q.clone(),s.clone());ctx['backups']=backups;self.pending+=1
@@ -106,6 +107,7 @@ class BatchQuantSite:
             require(torch.npu.current_stream()==ctx['stream'],'QMM_STREAM_CHANGED')
             out=self.original_qmm(x,*args,**kwargs)
             ctx['event']['qmm_calls']+=1
+            ctx['event']['consumer_operator']='torch_npu.npu_quant_matmul'
             return out
         quant._dcat_site=True
         self.quant_wrapper=quant;self.qmm_wrapper=qmm
@@ -135,7 +137,12 @@ class BatchQuantSite:
         require(getattr(self.local,'context',None) is None,'OVERLAPPING_QUANT_CALL')
         event=dict(site=name,method='_forward_prefill' if self.forward_index==0 else '_forward_decode',
                    request_ids=list(self.runner.input_batch.req_ids),applied=False,changed=0,consumed=False,
-                   restored=False,failed=False,qmm_calls=0)
+                   restored=False,failed=False,qmm_calls=0,eligible=True)
+        if self.call_policy is not None:
+            policy=self.call_policy()
+            require(set(policy)=={'eligible','reason','method','batch_frame'},'QUANT_PRODUCT_POLICY_SCHEMA')
+            event.update(policy)
+            event['eligible']=self.fault and policy['eligible']
         self.events.append(event)
         ctx=dict(x=x,event=event,stream=torch.npu.current_stream());self.local.context=ctx
         try:

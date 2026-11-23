@@ -34,23 +34,29 @@ def product_binding_rpc(worker, action, payload):
     if action == 'capabilities':
         return dict(status='PRODUCT_CANDIDATE', mechanism=mechanism,
                     mode='PRODUCT_ACCEPTANCE_ONLY', product_qualified=False,
-                    range=dict(max_context=1024, max_tokens=4, max_num_seqs=1, single_chunk=True,
+                    range=dict(max_context=4096 if mechanism=='33.paged_decode' else 1024, max_tokens=4, max_num_seqs=8 if mechanism=='quant.batch_shared_scale' else 1, single_chunk=True,
                                image_grid=[1,4,4] if mechanism=='17.spatial_padding' else None),
                     user_prompt_registry=False, named_variant=mechanism)
     b = current_binding(worker, worker.model_runner.model, mechanism)
     if action == 'attach':
         scope = RequestScope(**payload['scope'])
+        if mechanism=='33.paged_decode':
+            from fault_injection.environment import _live_soc
+            soc,source=_live_soc()
+            require(soc is not None and soc['family']=='A2' and soc['observed_name']=='Ascend910B4',
+                'PRODUCT33_REQUIRES_REVIEWED_A2_LAUNCH_A3_NOT_ADMITTED')
         result = install_continuous_binding(worker, mechanism=mechanism, prompts=profile['canary_prompts'],
-                                            group_contract=payload['group_contract'])
+                                            group_contract=payload['group_contract'],
+                                            paged_partition=(512,256) if mechanism=='33.paged_decode' else None)
         b = current_binding(worker, worker.model_runner.model, mechanism)
         b.product = dict(mode='PRODUCT_ACCEPTANCE_ONLY', scope=dict(mode=scope.mode),
                          profile=payload['profile'])
         return dict(result, product_mode=True)
     require(b is not None and b.product is not None, 'PRODUCT_BINDING_NOT_ATTACHED')
     if action == 'arm_canary':
-        from .product_observer import AutomaticRequests
+        from .product_observer import make_automatic_observer
         require(not b.leases and b.warmup_request is None and len(b.warmups)<6, 'PRODUCT_CANARY_IDLE_BUDGET')
-        b.warmup_request=AutomaticRequests(b,canary=True)
+        b.warmup_request=make_automatic_observer(b,canary=True)
         b.warmup_request.install()
         return dict(status='CANARY_OBSERVER_ARMED',rank=b.identity['rank'])
     if action == 'canary':
@@ -67,7 +73,7 @@ def product_binding_rpc(worker, action, payload):
         require(type(cursor) is int and 0<=cursor<=len(observer.records),'PRODUCT_STATUS_CURSOR_INVALID')
         rows=deepcopy(observer.records[cursor:cursor+1])
         return dict(rank=b.identity['rank'],requests=rows,cursor=cursor+len(rows),
-                    more=cursor+len(rows)<len(observer.records),active_request_id=observer.session.ids[0] if observer.session else None,
+                    more=cursor+len(rows)<len(observer.records),active_request_id=next(iter(observer.states),None) if hasattr(observer,'states') else observer.session.ids[0] if observer.session else None,
                     failure=observer.error)
     if action == 'reset_canary_observer':
         require(not b.leases and b.warmup_request is None, 'PRODUCT_CANARY_REQUIRES_RELEASED_OWNER')

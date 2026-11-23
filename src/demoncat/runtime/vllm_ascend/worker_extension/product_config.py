@@ -31,7 +31,9 @@ def load_product_deployment(path):
     if config['native_library'] is not None or config['native_sha256'] is not None:
         raise ValueError('PRODUCT_NATIVE_ADAPTER_PENDING')
     canary = config['canary']
-    if type(canary) is not dict or set(canary) != {'prompt','image','max_tokens'} or type(canary['prompt']) is not str or not canary['prompt'] or type(canary['max_tokens']) is not int or canary['max_tokens'] != 4:
+    batch=fault.mechanism=='quant.batch_shared_scale'
+    valid_prompt=(type(canary.get('prompt')) is list and 2<=len(canary['prompt'])<=8 and all(type(t) is str and t for t in canary['prompt']) and len(set(canary['prompt']))==len(canary['prompt'])) if type(canary) is dict and batch else type(canary) is dict and type(canary.get('prompt')) is str and bool(canary['prompt'])
+    if type(canary) is not dict or set(canary) != {'prompt','image','max_tokens'} or not valid_prompt or type(canary['max_tokens']) is not int or canary['max_tokens'] != 4:
         raise ValueError('PRODUCT_CANARY_CONFIG_INVALID')
     if (fault.mechanism == '17.spatial_padding' and not (canary['image'] is None or type(canary['image']) is str and canary['image'])) or (fault.mechanism != '17.spatial_padding' and canary['image'] is not None):
         raise ValueError('PRODUCT_CANARY_IMAGE_POLICY_INVALID')
@@ -64,10 +66,15 @@ def configure_product_deployments(worker, paths, *, authority, operator, canary_
             raise ValueError('PRODUCT_LIVE_DEPLOYMENT_IDENTITY_MISMATCH')
         name = deployment['profile']
         tokens = canary_tokens.get(name)
-        if name in profiles or type(tokens) is not list or len(tokens) < 2 or any(type(t) is not int or t < 0 for t in tokens):
+        mechanism = FaultConfig.from_dict(deployment['fault']).mechanism
+        batch=mechanism=='quant.batch_shared_scale'
+        prompts=tokens if batch else [tokens]
+        if name in profiles or type(prompts) is not list or not prompts or any(type(p) is not list or len(p)<2 or any(type(t) is not int or t<0 for t in p) for p in prompts):
             raise ValueError('PRODUCT_PROCESSED_CANARY_TOKENS_REQUIRED')
         mechanism = FaultConfig.from_dict(deployment['fault']).mechanism
-        profiles[name] = dict(mechanism=mechanism, canary_prompts=[tokens], mode=deployment['mode'])
+        if batch and (not 2<=len(prompts)<=8 or len({tuple(p) for p in prompts})!=len(prompts) or live.scheduler_config.max_num_seqs!=8):
+            raise ValueError('PRODUCT_BATCH_CANARY_OR_SCHEDULER_RANGE')
+        profiles[name] = dict(mechanism=mechanism, canary_prompts=prompts, mode=deployment['mode'])
         permits.append(dict(profile=name, mechanisms=[mechanism], source=deployment['source'],
                             source_manifest_sha256=deployment['source_manifest_sha256']))
     if set(canary_tokens) != set(profiles):

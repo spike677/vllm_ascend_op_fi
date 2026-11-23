@@ -3,7 +3,7 @@ from copy import deepcopy
 from ._scope import Scope, reject_unknown
 from ..continuous_binding import current_binding
 from ..serving_context import require
-from ..product_observer import AutomaticRequests
+from ..product_observer import make_automatic_observer
 from fault_injection.product_contract import RequestScope
 
 
@@ -41,7 +41,7 @@ class ProductProvider(Scope):
                 self.checked = True
             elif action == 'enable':
                 require(self.checked and not self.started, 'PRODUCT_SINGLE_SCOPE_START')
-                self.observer = AutomaticRequests(self.binding)
+                self.observer = make_automatic_observer(self.binding)
                 self.observer.install()
                 self.started = True
             elif action in ('disable', 'unregister', 'clean', 'abort', 'recover', 'finish'):

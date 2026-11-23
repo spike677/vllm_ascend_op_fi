@@ -1,0 +1,433 @@
+{
+  "review": {
+    "status": "PRODUCT_BLUE_REVIEW_PASSED",
+    "mechanism": "39.matmul_range",
+    "source_manifest_sha256": "437c91c25b577b4299b1fe9653123bed7622fee608aac072500ae4e41e14b2e5",
+    "scopes": [
+      {
+        "scope": 0,
+        "effects": [
+          {
+            "rank": 0,
+            "request_index": 0,
+            "coverage": {
+              "observed": 1216,
+              "eligible": 704,
+              "attempted": 704,
+              "applied": 704,
+              "changed": 702,
+              "consumed": 704,
+              "restored": 704,
+              "failed": 0
+            },
+            "changed_elements": 702,
+            "reasons": [],
+            "consumers": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 1,
+            "request_index": 0,
+            "coverage": {
+              "observed": 1216,
+              "eligible": 704,
+              "attempted": 704,
+              "applied": 704,
+              "changed": 703,
+              "consumed": 704,
+              "restored": 704,
+              "failed": 0
+            },
+            "changed_elements": 703,
+            "reasons": [],
+            "consumers": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 0,
+            "request_index": 1,
+            "coverage": {
+              "observed": 1216,
+              "eligible": 704,
+              "attempted": 704,
+              "applied": 704,
+              "changed": 702,
+              "consumed": 704,
+              "restored": 704,
+              "failed": 0
+            },
+            "changed_elements": 702,
+            "reasons": [],
+            "consumers": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 1,
+            "request_index": 1,
+            "coverage": {
+              "observed": 1216,
+              "eligible": 704,
+              "attempted": 704,
+              "applied": 704,
+              "changed": 703,
+              "consumed": 704,
+              "restored": 704,
+              "failed": 0
+            },
+            "changed_elements": 703,
+            "reasons": [],
+            "consumers": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 0,
+            "request_index": 2,
+            "coverage": {
+              "observed": 1216,
+              "eligible": 704,
+              "attempted": 704,
+              "applied": 704,
+              "changed": 703,
+              "consumed": 704,
+              "restored": 704,
+              "failed": 0
+            },
+            "changed_elements": 703,
+            "reasons": [],
+            "consumers": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 1,
+            "request_index": 2,
+            "coverage": {
+              "observed": 1216,
+              "eligible": 704,
+              "attempted": 704,
+              "applied": 704,
+              "changed": 701,
+              "consumed": 704,
+              "restored": 704,
+              "failed": 0
+            },
+            "changed_elements": 701,
+            "reasons": [],
+            "consumers": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 0,
+            "request_index": 3,
+            "coverage": {
+              "observed": 0,
+              "eligible": 0,
+              "attempted": 0,
+              "applied": 0,
+              "changed": 0,
+              "consumed": 0,
+              "restored": 0,
+              "failed": 0
+            },
+            "changed_elements": 0,
+            "reasons": [
+              "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+            ],
+            "consumers": [],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 1,
+            "request_index": 3,
+            "coverage": {
+              "observed": 0,
+              "eligible": 0,
+              "attempted": 0,
+              "applied": 0,
+              "changed": 0,
+              "consumed": 0,
+              "restored": 0,
+              "failed": 0
+            },
+            "changed_elements": 0,
+            "reasons": [
+              "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+            ],
+            "consumers": [],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          }
+        ],
+        "batch": null,
+        "canary_exact": true,
+        "all_resources_zero": true
+      },
+      {
+        "scope": 1,
+        "effects": [
+          {
+            "rank": 0,
+            "request_index": 0,
+            "coverage": {
+              "observed": 1216,
+              "eligible": 704,
+              "attempted": 704,
+              "applied": 704,
+              "changed": 702,
+              "consumed": 704,
+              "restored": 704,
+              "failed": 0
+            },
+            "changed_elements": 702,
+            "reasons": [],
+            "consumers": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 1,
+            "request_index": 0,
+            "coverage": {
+              "observed": 1216,
+              "eligible": 704,
+              "attempted": 704,
+              "applied": 704,
+              "changed": 703,
+              "consumed": 704,
+              "restored": 704,
+              "failed": 0
+            },
+            "changed_elements": 703,
+            "reasons": [],
+            "consumers": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 0,
+            "request_index": 1,
+            "coverage": {
+              "observed": 1216,
+              "eligible": 704,
+              "attempted": 704,
+              "applied": 704,
+              "changed": 702,
+              "consumed": 704,
+              "restored": 704,
+              "failed": 0
+            },
+            "changed_elements": 702,
+            "reasons": [],
+            "consumers": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 1,
+            "request_index": 1,
+            "coverage": {
+              "observed": 1216,
+              "eligible": 704,
+              "attempted": 704,
+              "applied": 704,
+              "changed": 703,
+              "consumed": 704,
+              "restored": 704,
+              "failed": 0
+            },
+            "changed_elements": 703,
+            "reasons": [],
+            "consumers": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 0,
+            "request_index": 2,
+            "coverage": {
+              "observed": 1216,
+              "eligible": 704,
+              "attempted": 704,
+              "applied": 704,
+              "changed": 703,
+              "consumed": 704,
+              "restored": 704,
+              "failed": 0
+            },
+            "changed_elements": 703,
+            "reasons": [],
+            "consumers": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 1,
+            "request_index": 2,
+            "coverage": {
+              "observed": 1216,
+              "eligible": 704,
+              "attempted": 704,
+              "applied": 704,
+              "changed": 701,
+              "consumed": 704,
+              "restored": 704,
+              "failed": 0
+            },
+            "changed_elements": 701,
+            "reasons": [],
+            "consumers": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 0,
+            "request_index": 3,
+            "coverage": {
+              "observed": 0,
+              "eligible": 0,
+              "attempted": 0,
+              "applied": 0,
+              "changed": 0,
+              "consumed": 0,
+              "restored": 0,
+              "failed": 0
+            },
+            "changed_elements": 0,
+            "reasons": [
+              "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+            ],
+            "consumers": [],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 1,
+            "request_index": 3,
+            "coverage": {
+              "observed": 0,
+              "eligible": 0,
+              "attempted": 0,
+              "applied": 0,
+              "changed": 0,
+              "consumed": 0,
+              "restored": 0,
+              "failed": 0
+            },
+            "changed_elements": 0,
+            "reasons": [
+              "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+            ],
+            "consumers": [],
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          }
+        ],
+        "batch": null,
+        "canary_exact": true,
+        "all_resources_zero": true
+      }
+    ],
+    "product_entry": "ProductClient direct constructor",
+    "between_request_cache_reset": null,
+    "deployment_config_sha256": null,
+    "hardware_scope": "A2/0.26/Qwen3.8-community-W8A8/TP2",
+    "yellow_main_project_integration_verified": false,
+    "product_closed": false,
+    "qualification_granted": false,
+    "receipt_sha256": "02f8a60705107078673119045647fc7ab581d409304c2e11aa21c6c3c949a677",
+    "reviewer_sha256": "a7f600062f2f4b7828377b0aec66e417d330428f85576f5d8fe760f67c93e580"
+  },
+  "window": {
+    "status": "FINISHED",
+    "start": "2026-11-23T03:05:37.715464+00:00",
+    "ended": "2026-11-23T03:10:23.210807+00:00",
+    "elapsed_seconds": 285.4953720709309,
+    "isolation_removed": true
+  },
+  "isolation": [
+    {
+      "time": "2026-11-23T03:05:37.715592+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "maximum_seconds": 2100,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-23T03:10:23.210901+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ]
+}

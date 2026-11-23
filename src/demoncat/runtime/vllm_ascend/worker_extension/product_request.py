@@ -93,7 +93,9 @@ class ProductRequest(ContinuousRequest):
                             or not 0 <= feature.mm_position.offset < feature.mm_position.offset + feature.mm_position.length <= len(prompt)):
                         self.skip.append('IMAGE_ENCODER_MAPPING_OR_CACHE_UNPROVEN')
                     self.feature = feature
-                self.skip.extend(request_range(facts, visual=self.visual)['reasons'])
+                self.skip.extend(request_range(facts, visual=self.visual, max_context=4096 if self.binding.mechanism=='33.paged_decode' else 1024)['reasons'])
+                if self.binding.mechanism=='33.paged_decode' and (facts['prompt_length']!=2304 or facts['max_tokens']!=4):
+                    self.skip.append('SPLITFUSE33_MEASURED_PROMPT2304_GENERATION4_REQUIRED')
                 if intermediate_tensors is not None:
                     self.skip.append('INTERMEDIATE_PIPELINE_INPUT_UNSUPPORTED')
                 if not self.skip:
