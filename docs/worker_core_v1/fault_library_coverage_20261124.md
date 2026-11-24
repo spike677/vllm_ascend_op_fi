@@ -13,11 +13,11 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
 |CLOSED_NO_INJECTION|5|1、4、5、29、36|
 |AWAIT_FORMAL_TEST|14|6、15、17、18、20、22、23、26、27、28、30、35、39、41|
 |YELLOW_ADAPTER_READY_UNTESTED|8|2、11、14、21、24、31、37、40|
-|REFERENCE_ADAPTER_PENDING|5|12、16、19、32、34|
+|REFERENCE_ADAPTER_PENDING|4|12、19、32、34|
 |HCCL_BITWISE_PENDING|2|25、38|
 |FAULT33_EVIDENCE_PENDING|1|33|
 |V4_D_PACKAGE_PENDING|1|13|
-|ADAPTER_READY_UNTESTED|5|3、7、8、9、10|
+|ADAPTER_READY_UNTESTED|6|3、7、8、9、10、16|
 
 历史公共证据不等于本轮通过。参考适配器通过 A2 后记 ADAPTER_READY_UNTESTED，标注等待黄区审查；正式测试审查并登记后才记 REGISTERED。第21行按区域寿命选择v1或v2，待黄区确认。
 
@@ -38,7 +38,7 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
 |13|D|V4_D_PACKAGE_PENDING|黄区router量化噪声变体，经D包外部v1|须观测router概率、top-k与真实路由；加噪不等于专家改变|V4 A3 TP8+EP|D0/D1及V4 router原件待回传；V2-Lite仅预演|
 |14|B|YELLOW_ADAPTER_READY_UNTESTED|黄区kv_rope_quant_loss（v2）|KV持久性按请求/页代际恢复|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
 |15|A|AWAIT_FORMAL_TEST|公共15 alias_detach（B档ND）|ND别名断开现象；无私有格式触发条件|Qwen3.8 A3 TP2（蓝区A2仅验证）|最新负责人汇总称A3双owner通过，仍需正式登记回执；15初值风险已完成A2两轮诊断，均未复现历史44次非有限，限制见r741_b1_b6_closure_20261124.md。|
-|16|B|REFERENCE_ADAPTER_PENDING|黄区conv2d_compute_downcast扩展Conv3d|低精度卷积重算需只读真实输入和权重；Conv2d原语不能直接套3D|Qwen3.8 A3 TP2（蓝区A2仅验证）|与黄区进度存在冲突，已有原语/挂点不等于已适配：见本页冲突表及yellow_adapter_recipes_20261124.md；正式产品验收待黄区|
+|16|B|ADAPTER_READY_UNTESTED|黄区conv2d_compute_downcast扩展Conv3d|低精度卷积重算需只读真实输入和权重；Conv2d原语不能直接套3D|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row16_conv3d_compute_fp16；yellow-reference-vision-compute-20261125-r1；真实encoder add消费、恢复/金丝雀/负例通过|
 |17|C|AWAIT_FORMAL_TEST|公共17 spatial_padding（Conv3d）|仅空间位置/边界误差同类现象；不等价于ConvTranspose输出高度减2|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查|
 |18|A|AWAIT_FORMAL_TEST|公共18 api_half|当前api_half只缩放单元素，非FP16强转原机理|Qwen3.8 A3 TP2（蓝区A2仅验证）|最新附件报告A3双owner通过；最终包登记材料待审|
 |19|B|REFERENCE_ADAPTER_PENDING|黄区float_matmul（独立适配，不能并入公共39mr）|B类；累加顺序/精度规则改变需内部计算证据，输出有限微扰只能记现象代理|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区报告需适配；库19/34/39分别记录累加精度差/融合差/溢出，52/56原描述尚无材料，不能猜测或据此登记|

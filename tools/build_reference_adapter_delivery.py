@@ -32,6 +32,10 @@ DEPENDENCIES=['experiments/worker_core_v11_20261118/external_input_examples.py',
     'fault_injection/sites/projection39.py','fault_injection/sites/mla28.py',
     'fault_injection/engines/region_lease.py','fault_injection/product_contract.py',
     'tools/review_product_mode.py',
+    'fault_injection/conv3d_natural.py','fault_injection/vision_input.py',
+    'src/demoncat/runtime/vllm_ascend/worker_extension/external_provider.py',
+    'src/demoncat/runtime/vllm_ascend/worker_extension/product_host.py',
+    'src/demoncat/runtime/vllm_ascend/worker_extension/product_request.py',
     'experiments/worker_core_v11_20261118/product_mode_probe.py',
     'experiments/worker_core_v11_20261118/continuous_public_probe.py']
 

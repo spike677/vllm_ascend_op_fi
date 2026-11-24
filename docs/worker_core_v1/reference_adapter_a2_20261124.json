@@ -4485,6 +4485,648 @@
         "hidden_rows.py": "c622c630a9ecd756272e3844b18d1f775a7b9e0d788501b3ff5416d9f69e6da2"
       },
       "negative_sha256": "d7577c7d8d1c0d08dabf65bf9113c4862c5fb1595a75e7edb4f96f58ece6cbb6"
+    },
+    "row16_conv3d_compute_fp16": {
+      "status": "REFERENCE_A2_TP2_TWO_OWNERS_REVIEWED",
+      "mechanism": "external.row16_conv3d_compute_fp16",
+      "semantics": "PHENOMENON_PROXY_NOT_ORIGINAL_MECHANISM",
+      "qualification_granted": false,
+      "public_review": {
+        "status": "PRODUCT_BLUE_REVIEW_PASSED",
+        "mechanism": "external.row16_conv3d_compute_fp16",
+        "source_manifest_sha256": "1c51e10e2cf1fd6421d07a47f8add25cdcbd422a82bf2f0bc8f50acaeafb19f8",
+        "scopes": [
+          {
+            "scope": 0,
+            "effects": [
+              {
+                "rank": 0,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 1,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 1202,
+                "reasons": [],
+                "consumers": [
+                  "aten::add"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": 0,
+                "nonfinite_after": 0
+              },
+              {
+                "rank": 1,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 1,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 1202,
+                "reasons": [],
+                "consumers": [
+                  "aten::add"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": 0,
+                "nonfinite_after": 0
+              },
+              {
+                "rank": 0,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 1,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 1153,
+                "reasons": [],
+                "consumers": [
+                  "aten::add"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": 0,
+                "nonfinite_after": 0
+              },
+              {
+                "rank": 1,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 1,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 1153,
+                "reasons": [],
+                "consumers": [
+                  "aten::add"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": 0,
+                "nonfinite_after": 0
+              },
+              {
+                "rank": 0,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 1,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 1202,
+                "reasons": [],
+                "consumers": [
+                  "aten::add"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": 0,
+                "nonfinite_after": 0
+              },
+              {
+                "rank": 1,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 1,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 1202,
+                "reasons": [],
+                "consumers": [
+                  "aten::add"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": 0,
+                "nonfinite_after": 0
+              },
+              {
+                "rank": 0,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              }
+            ],
+            "batch": null,
+            "canary_exact": true,
+            "all_resources_zero": true
+          },
+          {
+            "scope": 1,
+            "effects": [
+              {
+                "rank": 0,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 1,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 1202,
+                "reasons": [],
+                "consumers": [
+                  "aten::add"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": 0,
+                "nonfinite_after": 0
+              },
+              {
+                "rank": 1,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 1,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 1202,
+                "reasons": [],
+                "consumers": [
+                  "aten::add"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": 0,
+                "nonfinite_after": 0
+              },
+              {
+                "rank": 0,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 1,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 1153,
+                "reasons": [],
+                "consumers": [
+                  "aten::add"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": 0,
+                "nonfinite_after": 0
+              },
+              {
+                "rank": 1,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 1,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 1153,
+                "reasons": [],
+                "consumers": [
+                  "aten::add"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": 0,
+                "nonfinite_after": 0
+              },
+              {
+                "rank": 0,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 1,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 1202,
+                "reasons": [],
+                "consumers": [
+                  "aten::add"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": 0,
+                "nonfinite_after": 0
+              },
+              {
+                "rank": 1,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 1,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 1202,
+                "reasons": [],
+                "consumers": [
+                  "aten::add"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": 0,
+                "nonfinite_after": 0
+              },
+              {
+                "rank": 0,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              }
+            ],
+            "batch": null,
+            "canary_exact": true,
+            "all_resources_zero": true
+          }
+        ],
+        "product_entry": "ProductClient direct constructor",
+        "between_request_cache_reset": null,
+        "deployment_config_sha256": null,
+        "hardware_scope": "A2/0.26/Qwen3.8-community-W8A8/TP2",
+        "yellow_main_project_integration_verified": false,
+        "product_closed": false,
+        "qualification_granted": false
+      },
+      "effects_by_rank": {
+        "0": {
+          "calls": 6,
+          "changed_calls": 6,
+          "changed_elements": 7114,
+          "consumers": [
+            "aten::add"
+          ],
+          "distribution_l1": 0.0
+        },
+        "1": {
+          "calls": 6,
+          "changed_calls": 6,
+          "changed_elements": 7114,
+          "consumers": [
+            "aten::add"
+          ],
+          "distribution_l1": 0.0
+        }
+      },
+      "receipt_sha256": "a768d7efc1094ed58f8b24dbde53e7b296d4e9814e10a9c1a8363553128b1fb0",
+      "sidecar_sha256": {
+        "external-input-rank0.jsonl": "6719f4b9fa0c121c65e63652dc8a2a41da2062947323ab5d3ca2394209db4701",
+        "external-input-rank1.jsonl": "2b686b8ea925334c05bc2f43c81f0392f7a08dad0a7bf7321feb5d406f014c03"
+      },
+      "scope_identities": [
+        {
+          "scope": 0,
+          "ranks": [
+            {
+              "rank": 0,
+              "owner": "0bee551617febeb2dd4e3ad406dc4bf6",
+              "worker": {
+                "pid": 163,
+                "rank": 0,
+                "model_instance_id": "7b4028f303a880fc4384b5f41e407893",
+                "worker_start_identity": "d20a65376ce918af445aa3de81d9e619",
+                "logical_device": 0
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            },
+            {
+              "rank": 1,
+              "owner": "ee8a835e9d710445ad785cf21473b28c",
+              "worker": {
+                "pid": 164,
+                "rank": 1,
+                "model_instance_id": "0405bbe8e7e6b395154b859283368937",
+                "worker_start_identity": "5a8314e5dae453fd73a93316f5b54d64",
+                "logical_device": 1
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          }
+        },
+        {
+          "scope": 1,
+          "ranks": [
+            {
+              "rank": 0,
+              "owner": "e621ee432cf1496e0a2426fadd9ae123",
+              "worker": {
+                "pid": 163,
+                "rank": 0,
+                "model_instance_id": "7b4028f303a880fc4384b5f41e407893",
+                "worker_start_identity": "d20a65376ce918af445aa3de81d9e619",
+                "logical_device": 0
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            },
+            {
+              "rank": 1,
+              "owner": "c251a4673f85f4fafee5f8e7c1f023e6",
+              "worker": {
+                "pid": 164,
+                "rank": 1,
+                "model_instance_id": "0405bbe8e7e6b395154b859283368937",
+                "worker_start_identity": "5a8314e5dae453fd73a93316f5b54d64",
+                "logical_device": 1
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          }
+        }
+      ],
+      "attempt": {
+        "case": "refs1124b4-row16-conv3d-compute-fp16",
+        "source_commit": "492d19e71c465b1eaa176919326ed86f8c3b387a",
+        "source_manifest_sha256": "1c51e10e2cf1fd6421d07a47f8add25cdcbd422a82bf2f0bc8f50acaeafb19f8",
+        "controller_status": "RUNNING",
+        "window_seconds": null,
+        "isolation_removed": null,
+        "case_started_utc": "2026-11-24T16:02:20.339327+00:00",
+        "case_ended_utc": "2026-11-24T16:07:58.504510+00:00",
+        "case_exit_code": 0,
+        "owned_container_removed": true
+      },
+      "reviewer_sha256": "b43b54f1c4ebbdb0eb1d771a56749ff1ffe6ba362526629b4f7bbe3a95d0e5e2",
+      "factory_sha256": {
+        "vision_precision.py": "cc055c20e95cc8286ab83a85847f2528c2c16a624b13b6268eee1338f308186a"
+      },
+      "negative_sha256": "fbbaaec733d2a32a66fbf79020378d133afd283274d7e94fc4905af176ab7344"
     }
   },
   "windows": [

@@ -203,9 +203,9 @@
       "capability": "黄区conv2d_compute_downcast扩展Conv3d",
       "boundary": "低精度卷积重算需只读真实输入和权重；Conv2d原语不能直接套3D",
       "deployment": "Qwen3.8 A3 TP2（蓝区A2仅验证）",
-      "evidence": "与黄区进度存在冲突，已有原语/挂点不等于已适配：见本页冲突表及yellow_adapter_recipes_20261124.md；正式产品验收待黄区",
-      "progress_state": "REFERENCE_ADAPTER_PENDING",
-      "progress_note": "codex参考实现；A2两个owner通过后改ADAPTER_READY_UNTESTED，等待黄区审查与正式测试"
+      "evidence": "reference_adapter_a2_20261124.json#row16_conv3d_compute_fp16；yellow-reference-vision-compute-20261125-r1；真实encoder add消费、恢复/金丝雀/负例通过",
+      "progress_state": "ADAPTER_READY_UNTESTED",
+      "progress_note": "codex参考实现；带图请求A2 TP2同组Worker两个owner通过，等待黄区审查"
     },
     {
       "row": 17,

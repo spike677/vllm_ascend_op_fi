@@ -11,10 +11,11 @@ class LedgerTests(unittest.TestCase):
         row=data['rows'][8]
         category=row['category']
         old=row['progress_state']
-        row['progress_state']='ADAPTER_READY_UNTESTED'
+        new='REGISTERED' if old=='ADAPTER_READY_UNTESTED' else 'ADAPTER_READY_UNTESTED'
+        row['progress_state']=new
         after=progress_counts(data)
-        self.assertEqual(after[old],before[old]-1)
-        self.assertEqual(after['ADAPTER_READY_UNTESTED'],before.get('ADAPTER_READY_UNTESTED',0)+1)
+        self.assertEqual(after.get(old,0),before[old]-1)
+        self.assertEqual(after[new],before.get(new,0)+1)
         self.assertEqual(row['category'],category)
         self.assertEqual(sum(after.values()),41)
         render(data)
