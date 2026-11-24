@@ -1,1 +1,254 @@
-{"schema":"dcat.product.registry.v1","records":[]}
+{
+  "schema": "dcat.product.registry.v1",
+  "records": [
+    {
+      "schema": "dcat.product.registration.v1",
+      "source": "BLUE_COMBINATION",
+      "mechanism": "18.api_half",
+      "expected_ranks": [
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "hardware_logical_device": 0,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 0,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "3dd010c686cafcabc1d7b5e8703cb12e100b0ead0090a52b27fad93dd6734739",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        },
+        {
+          "hardware_family": "A2",
+          "hardware_device_name": "Ascend910B4",
+          "hardware_logical_device": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 1,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "3dd010c686cafcabc1d7b5e8703cb12e100b0ead0090a52b27fad93dd6734739",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        }
+      ],
+      "evidence": {
+        "mode": "product",
+        "level": "BLUE_ORIGINAL_REVIEWED",
+        "owners": [
+          "worker-group-afe8b70fa66844f3955293074ca57aaa",
+          "worker-group-22ac00c99bcf4b7a82ea3ed79616e332"
+        ],
+        "review_passed": true,
+        "receipt_sha256": "097c2466d677d7dcd909a8deaaaaeebb3b345f4915c0b7771d16360b9f011264",
+        "reviewer_sha256": "9c5a03a56c498ed86662af68d0caf9acf405429ee18fa56c82687c2b33530baf",
+        "source_manifest_sha256": "7030ff087eea2d8e717fec0154d4cd2c68587cae29e036303f30d154d66e9e54",
+        "consumers": true,
+        "bytes_restored": true,
+        "resources_zero": true,
+        "canary_recovered": true,
+        "negative_controls": true,
+        "coverage": [
+          {
+            "owner": "worker-group-afe8b70fa66844f3955293074ca57aaa",
+            "rank": 0,
+            "counts": {
+              "observed": 1932,
+              "eligible": 1932,
+              "attempted": 1932,
+              "applied": 1932,
+              "changed": 1931,
+              "consumed": 1932,
+              "restored": 1932,
+              "failed": 0
+            }
+          },
+          {
+            "owner": "worker-group-afe8b70fa66844f3955293074ca57aaa",
+            "rank": 1,
+            "counts": {
+              "observed": 1932,
+              "eligible": 1932,
+              "attempted": 1932,
+              "applied": 1932,
+              "changed": 1931,
+              "consumed": 1932,
+              "restored": 1932,
+              "failed": 0
+            }
+          },
+          {
+            "owner": "worker-group-22ac00c99bcf4b7a82ea3ed79616e332",
+            "rank": 0,
+            "counts": {
+              "observed": 1932,
+              "eligible": 1932,
+              "attempted": 1932,
+              "applied": 1932,
+              "changed": 1931,
+              "consumed": 1932,
+              "restored": 1932,
+              "failed": 0
+            }
+          },
+          {
+            "owner": "worker-group-22ac00c99bcf4b7a82ea3ed79616e332",
+            "rank": 1,
+            "counts": {
+              "observed": 1932,
+              "eligible": 1932,
+              "attempted": 1932,
+              "applied": 1932,
+              "changed": 1931,
+              "consumed": 1932,
+              "restored": 1932,
+              "failed": 0
+            }
+          }
+        ],
+        "owner_rank_mapping": [
+          {
+            "scope": 0,
+            "group_owner": "worker-group-afe8b70fa66844f3955293074ca57aaa",
+            "rank": 0,
+            "provider_owner": "f5a028a8fdb6bdecb80f062b2cd17e9f",
+            "generation": 1
+          },
+          {
+            "scope": 0,
+            "group_owner": "worker-group-afe8b70fa66844f3955293074ca57aaa",
+            "rank": 1,
+            "provider_owner": "56509b6412897a3bf69cdef768bfdf44",
+            "generation": 1
+          },
+          {
+            "scope": 1,
+            "group_owner": "worker-group-22ac00c99bcf4b7a82ea3ed79616e332",
+            "rank": 0,
+            "provider_owner": "e7664a5524336e7b05c1b27caa028601",
+            "generation": 2
+          },
+          {
+            "scope": 1,
+            "group_owner": "worker-group-22ac00c99bcf4b7a82ea3ed79616e332",
+            "rank": 1,
+            "provider_owner": "de9f48967343b3bdcacd907dd81ad269",
+            "generation": 2
+          }
+        ],
+        "negative_receipt_sha256": "e2bfa34723ce2a9418f654b69447a0528b8a12950022b8fcac894fdcb79c6653",
+        "negative_scope": "Actual missing-permit enable/rollback and same-client positive on scope0; Worker unknown profile/mechanism and zero-resource checks both scopes; not yellow CLI acceptance"
+      },
+      "record_sha256": "938f2e2ca9cb778de3f09f15abdd44afe9c7a861b27a3947a31b3c675062a27a"
+    }
+  ]
+}

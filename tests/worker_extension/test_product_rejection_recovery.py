@@ -92,7 +92,7 @@ class ProductRejectionRecoveryTests(unittest.TestCase):
             def close(self):self.live=False
             def snapshot(self):return dict(requests=[],request_count=0,owned_hooks=int(self.live),leases=0,inflight=0,failure=None)
         for size in (1,2):
-            for stage in ('prepare','register','check','enable'):
+            for stage in ('admission','prepare','register','check','enable'):
                 workers=[_extended_worker(rank=i) for i in range(size)]
                 for w in workers:w.load_model()
                 c=ProductClient(ExistingExecutor(workers),FaultConfig(18,'api_half'),profile='norm',operator='trusted',run_canary=lambda:None,drain=lambda:None)
@@ -118,7 +118,9 @@ class ProductRejectionRecoveryTests(unittest.TestCase):
                             self.error='injected control failure'
                             raise RuntimeError(self.error)
                         return super().dispatch(action,settings,owner=owner,generation=generation)
-                with patch.object(identity,'_current_device',return_value=0), patch.object(runtime,'_resolve_provider',side_effect=lambda m,v,w,model,i:Failure(w,model,i,m)), patch('demoncat.runtime.vllm_ascend.worker_extension.providers.product.make_automatic_observer',side_effect=lambda b:Observer()):
+                def admission(provider,action,**kw):
+                    return dict(scope_valid=not(stage=='admission' and action=='prepare' and provider.identity['rank']==size-1))
+                with patch.object(identity,'_current_device',return_value=0), patch.object(runtime,'_resolve_provider',side_effect=lambda m,v,w,model,i:Failure(w,model,i,m)), patch('demoncat.runtime.vllm_ascend.worker_extension.providers.product.make_automatic_observer',side_effect=lambda b:Observer()), patch('demoncat.runtime.vllm_ascend.worker_extension.deployment_authorization.acceptance_use',side_effect=admission):
                     c.attach();c._binding=binding
                     c._canary=Mock(return_value=[dict(warmup_valid=True,observations=[dict(output=['stable'])]) for _ in workers])
                     with self.assertRaisesRegex(RuntimeError,'PRODUCT_ALL_RANK_'):c.enable()

@@ -38,9 +38,11 @@ class HTTPExecutor:
 def main():
     p=argparse.ArgumentParser();p.add_argument('--mechanism',nargs='+',choices=['8','15','18','39','22','28','17','batch','39mr','33','41','26fia','20'],required=True)
     p.add_argument('--external-example',action='store_true')
+    p.add_argument('--negative-regression',action='store_true')
     p.add_argument('--image');p.add_argument('--registered',action='store_true')
     p.add_argument('--native-library');p.add_argument('--native-sha256')
     a=p.parse_args();visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
+    if a.negative_regression and (a.registered or a.mechanism!=['18']):p.error('Negative regression requires acceptance-mode 18')
     if a.external_example and (a.mechanism!=['18'] or a.registered):p.error('External example uses its own unqualified serial text profile')
     if ('batch' in a.mechanism or '33' in a.mechanism) and len(a.mechanism)!=1:p.error('Batch/33 use their own scheduler profile')
     report=dict(status='STARTED',entry='VLLM_HTTP_API',host_per_request_hooks=False,scopes=[])
@@ -125,6 +127,27 @@ def main():
             if visual:
                 report['visual_input']=visual_identity
                 report['image_pixel_sha256']=[hashlib.sha256(Image.open(io.BytesIO(base64.b64decode(data.split(',',1)[1]))).convert('RGB').tobytes()).hexdigest() for data in images]
+            if a.negative_regression:
+                negative = dict(mechanism=mechanism, expected_exit=4)
+                target_negative = root/'product_control_negative.json'
+                unknown=ex.collective_rpc('demoncat_product_binding',args=('capabilities',dict(operator='product-acceptance',profile='unknown-profile')))
+                assert all(r['status']=='PRODUCT_BINDING_REFUSED' and r['reason']=='PRODUCT_PROFILE_UNKNOWN' for r in unknown)
+                negative['unknown_profile']=unknown
+                negative['healthy_after_unknown']=inference(canary_text)
+                rejected=ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',
+                    run_canary=lambda spec:inference(spec['prompt']),drain=lambda:None,timeout=120)
+                negative['attach']=rejected.attach()
+                try:rejected.enable()
+                except ValueError as error:negative['missing_permit']=str(error)
+                else:raise AssertionError('MISSING_PERMIT_NOT_REJECTED')
+                assert not rejected.bound and rejected.recovery['resources_zero']
+                negative['rollback']=rejected.cleanup_evidence
+                negative['disable_after_rollback']=rejected.disable()
+                negative['detach_after_rollback']=rejected.detach()
+                negative['healthy_after_rejection']=inference(canary_text)
+                negative['resources']=ex.collective_rpc('demoncat_acceptance_bootstrap',args=('audit',{}))
+                assert all(r['leases']==r['owners']==r['bindings']==r['wrappers']==0 for r in negative['resources'])
+                target_negative.write_text(json.dumps(negative,indent=2)+'\n')
             for index in range(2):
                 if a.external_example:
                     ex.collective_rpc('demoncat_acceptance_bootstrap',args=('permit',dict(mechanisms=[mechanism],attempt='http-'+str(index),source_manifest_sha256=source_sha)))
@@ -135,8 +158,26 @@ def main():
                     if not a.registered:ex.collective_rpc('demoncat_product_bootstrap',args=('permit',dict(operator='product-acceptance',mechanisms=[mechanism],attempt='http-'+str(index),source_manifest_sha256=source_sha)))
                     client=ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',
                         run_canary=lambda spec:[inference(p) for p in spec['prompt']] if batch else inference(spec['prompt']),drain=lambda:None,timeout=120)
+                if a.negative_regression and index==0:client=rejected
                 scope=dict(scope=index,requests=[]);report['scopes'].append(scope)
-                scope['attach']=client.attach();scope['workers']=client.members;scope['capabilities']=client.capabilities();scope['enable']=client.enable();save()
+                scope['attach']=negative['attach'] if a.negative_regression and index==0 else client.attach();scope['workers']=client.members;scope['capabilities']=client.capabilities()
+                session=None
+                if a.registered:
+                    from demoncat.runtime.vllm_ascend.worker_extension.product_cli import TrustedProductSession
+                    from demoncat.runtime.vllm_ascend.worker_extension.product_cli_entry import SCHEMA
+                    session=TrustedProductSession({mechanism:client},authorize_operator=lambda principal,operation:principal=='a2-trusted-host')
+                    def cli(action, **fields):
+                        reply=session.dispatch(dict(schema=SCHEMA,action=action,**fields),principal='a2-trusted-host')
+                        assert reply['exit_code']==0,reply
+                        return reply
+                    scope['cli_list']=cli('list')
+                    scope['cli_unknown']=session.dispatch(dict(schema=SCHEMA,action='enable',mechanism='99'),principal='a2-trusted-host')
+                    scope['cli_unauthorized']=session.dispatch(dict(schema=SCHEMA,action='list'),principal='untrusted')
+                    assert scope['cli_unknown']['exit_code']==scope['cli_unauthorized']['exit_code']==4
+                    scope['enable']=cli('enable',mechanism=mechanism)['result']
+                    assert scope['enable']['product_qualified'] is True
+                else:scope['enable']=client.enable()
+                save()
                 if batch:
                     from concurrent.futures import ThreadPoolExecutor
                     from threading import Barrier
@@ -147,23 +188,25 @@ def main():
                             barrier.wait()
                             return inference('Explain briefly '+['weather','cities','plants','rivers','physics','music','bikes','oceans'][n]+' using simple words.')
                         with ThreadPoolExecutor(max_workers=count) as pool:timings=list(pool.map(concurrent_call,range(count)))
-                        status=client.status();new=status['requests'][seen:];assert len(new)==count
+                        status=cli('status')['result'] if a.registered else client.status();new=status['requests'][seen:];assert len(new)==count
                         for result in new:
                             scope['requests'].append(dict(result=result,scenario='concurrent',submitted_concurrency=count,api_group_timings=timings,expected_injection=True))
                         seen+=count;save()
                     for text,max_tokens in [('One standalone request should remain unmodified.',4),('This request exceeds the generation scope.',5)]:
-                        timing=inference(text,max_tokens=max_tokens);status=client.status();assert len(status['requests'])==seen+1
+                        timing=inference(text,max_tokens=max_tokens);status=cli('status')['result'] if a.registered else client.status();assert len(status['requests'])==seen+1
                         scope['requests'].append(dict(result=status['requests'][-1],scenario='single' if max_tokens==4 else 'range_negative',expected_injection=False,**timing));seen+=1;save()
                 for n,text in ([] if batch else enumerate([long_prompt(t) for t in ['Rivers and cities.','Bicycles and gears.','Numbers and arithmetic.','Outside validated generation.']] if paged else ['Name a city with a river.','Explain how a bicycle moves.','What is seven plus six?','This request exceeds the validated generation budget.'])):
                     timing=inference(text,image=1+n%2,max_tokens=5 if n==3 else 4)
-                    status=client.status();result=status['requests'][-1]
+                    status=cli('status')['result'] if a.registered else client.status();result=status['requests'][-1]
                     assert len(status['requests'])==n+1
                     for r in result['ranks']:
                         c=r['coverage']
                         if n==3:assert r['status']=='NOT_INJECTED' and c['applied']==0 and r['reasons']
                         else:assert c['eligible']>0 and c['eligible']==c['applied']==c['consumed']==c['restored'] and c['failed']==0
                     scope['requests'].append(dict(result=result,**timing));save()
-                scope['disable']=client.disable();scope['detach']=client.detach()
+                if a.registered:
+                    closed=cli('disable');scope['disable']=closed['recovery'];scope['detach']=closed['detach']
+                else:scope['disable']=client.disable();scope['detach']=client.detach()
                 scope['cleanup']=ex.collective_rpc('demoncat_acceptance_bootstrap',args=('registered_cleanup' if a.registered else 'remove_permit',{}));save()
                 assert all(r['leases']==r['owners']==0 for r in scope['cleanup'])
                 scope['negative_controls']=ex.collective_rpc('demoncat_acceptance_bootstrap',args=('negative',dict(mechanism=mechanism)));save()

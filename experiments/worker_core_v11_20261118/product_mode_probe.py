@@ -29,6 +29,11 @@ def trusted_bootstrap(wrapper, action, options):
         configure_product_profiles(worker,profiles={mechanism:dict(mechanism=mechanism,mode='PRODUCT_ACCEPTANCE_ONLY',
             canary_prompts=[options['canary_tokens']])},authority=authority,operator='product-acceptance')
         return registration
+    if action == 'audit':
+        runtime=getattr(worker,'_demoncat_worker_fault_runtime',None)
+        return dict(rank=worker.rank,leases=len(getattr(runtime,'_leases',{})),owners=len(getattr(runtime,'_tenants',{})),
+                    bindings=len(getattr(worker,'_demoncat_continuous_bindings',{})),
+                    wrappers=sum(n in vars(worker.model_runner) for n in ('execute_model','sample_tokens','_preprocess')))
     if action == 'configure':
         from demoncat.runtime.vllm_ascend.worker_extension.product_bootstrap import configure_product_bootstrap, product_bootstrap_rpc
         # Isolated acceptance only. Production supplies its own authenticated callback.
