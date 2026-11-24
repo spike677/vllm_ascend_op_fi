@@ -25,8 +25,9 @@ def trusted_bootstrap(wrapper, action, options):
             authority=configure_deployment_acceptance(worker,source='BLUE_COMBINATION',
                 authorize_operator=lambda principal,operation:principal=='product-acceptance')
         if options.get('input_site'):
-            from external_input_examples import ExternalModuleInputSite, ExternalDispatchInputSite
-            factories={'module':ExternalModuleInputSite,'dispatch':ExternalDispatchInputSite}
+            from external_input_examples import ExternalModuleInputSite
+            from external_quant_argument_example import ExternalQuantArgumentSite
+            factories={'module':ExternalModuleInputSite,'dispatch':ExternalQuantArgumentSite}
             factory=factories[options['input_site']];mechanism='external.'+options['input_site']+'_input_gain';stage='model'
         elif options.get('vision'):
             from external_vision_example import ExternalVisionGainSite
