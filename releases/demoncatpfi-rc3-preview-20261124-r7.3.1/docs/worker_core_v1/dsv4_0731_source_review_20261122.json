@@ -1,0 +1,173 @@
+{
+  "source": "local v0.32 source snapshot; deployment-source equality not yet supplied",
+  "upstream_reference": "24487f4f48ee99cf45d86d1c504e645549b8c1ef",
+  "files": [
+    {
+      "path": "vllm_ascend/attention/dsa_attn_kv_plan.py",
+      "sha256": "2418cbfdd36d73332cb1e057b34fb653ed5c7d500f39a068a89f1bea4a6f484e",
+      "symbols": {
+        "npu_sparse_attn_sharedkv": [
+          244,
+          245
+        ]
+      }
+    },
+    {
+      "path": "vllm_ascend/attention/dsa_v1.py",
+      "sha256": "7d7442d14f654263ddf98e6db22b5ba7c36cc093a16ca72471ecf408865bd2ac",
+      "symbols": {
+        "compressor_metadata": [
+          134,
+          137,
+          147,
+          157,
+          186,
+          202,
+          220,
+          496,
+          497,
+          935,
+          1028,
+          1191,
+          2114,
+          2116,
+          2119,
+          2126,
+          2127,
+          2131,
+          2402,
+          2408,
+          2426,
+          3028,
+          3030,
+          3036,
+          3061,
+          3063,
+          3064,
+          3125
+        ],
+        "_C_ascend.compressor": [
+          186,
+          220
+        ],
+        "inplace_partial_rotary_mul": [
+          2664,
+          2722,
+          2747,
+          2859,
+          2896
+        ],
+        "npu_rms_norm": [
+          2705,
+          2834
+        ],
+        "npu_dynamic_quant": [
+          2691,
+          2795
+        ],
+        "npu_quant_matmul": [
+          2692,
+          2708,
+          2733,
+          2871
+        ]
+      }
+    },
+    {
+      "path": "vllm_ascend/models/deepseek_v4/model.py",
+      "sha256": "ef772a60deb27548b8e69ad40b312fe09fd775b9283e5ed6a537aa8b6390835a",
+      "symbols": {
+        "npu_hc_pre_v2": [
+          784
+        ],
+        "npu_hc_post": [
+          790
+        ],
+        "npu_rms_norm": [
+          775
+        ]
+      }
+    },
+    {
+      "path": "vllm_ascend/models/deepseek_v4/compressor.py",
+      "sha256": "b1c8cdbf8172f1fe6a2d3df0361ef7d8f4009c290c8ef21f734b376ca89857db",
+      "symbols": {
+        "compressor_metadata": [
+          190,
+          192,
+          194,
+          199,
+          207,
+          209,
+          211,
+          222,
+          224
+        ],
+        "_C_ascend.compressor": [
+          212
+        ]
+      }
+    },
+    {
+      "path": "vllm_ascend/models/deepseek_v4/indexer.py",
+      "sha256": "988ddd112504077c763ac775370de18056c025ec0b81cdbedbf3b96805009597",
+      "symbols": {
+        "inplace_partial_rotary_mul": [
+          580,
+          692
+        ],
+        "npu_quant_matmul": [
+          563,
+          680
+        ]
+      }
+    },
+    {
+      "path": "vllm_ascend/ops/fused_moe/token_dispatcher.py",
+      "sha256": "43e57927ed54a2d2a1193ccf8bbcd56d1751417e460954bc0b8b967d2a23b228",
+      "symbols": {
+        "npu_moe_distribute_dispatch_v2": [
+          247
+        ],
+        "npu_moe_distribute_combine_v2": [
+          348
+        ],
+        "npu_dynamic_quant": [
+          536
+        ]
+      }
+    },
+    {
+      "path": "vllm_ascend/ops/rotary_embedding.py",
+      "sha256": "df37a913a83ac778f0573c8dfd3e7d6c4906594b9f724fbebc62d40f1f4e069c",
+      "symbols": {}
+    },
+    {
+      "path": "vllm_ascend/ops/layernorm.py",
+      "sha256": "58413cd5767befceb39e4c1404d157e1a04370061ca262a4c9d064e9cca2e27a",
+      "symbols": {
+        "npu_rms_norm": [
+          97
+        ]
+      }
+    },
+    {
+      "path": "vllm_ascend/quantization/methods/w8a8/w8a8_dynamic.py",
+      "sha256": "80c1069a57d64e1447007fcbcd6902121d9c67dd937648f4265c0046602db11d",
+      "symbols": {
+        "npu_dynamic_quant": [
+          101,
+          117,
+          506,
+          537
+        ],
+        "npu_quant_matmul": [
+          124
+        ]
+      }
+    }
+  ],
+  "yellow_source_equality_proven": false,
+  "blue_v4_npu_run": false,
+  "qualification_granted": false
+}

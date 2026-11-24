@@ -1,0 +1,96 @@
+{
+  "schema": "demoncat.yellow_source_followup.v1",
+  "snapshot_reference": "24487f4f48ee99cf45d86d1c504e645549b8c1ef",
+  "rows": [
+    {
+      "path": "vllm_ascend/__init__.py",
+      "yellow_reported_sha256": "de815dc73c489284ba6001265f3a4ca700828ffa0f9b71dca8577712b542b9bb",
+      "snapshot_matches": true,
+      "in_original_required_list": false,
+      "snapshot_worktree_sha256": "5411391da351c279e4040f00e33beb158373221cf23a1311075d2553e5e4ae73",
+      "snapshot_git_blob_sha256": "de815dc73c489284ba6001265f3a4ca700828ffa0f9b71dca8577712b542b9bb",
+      "worktree_crlf_only_difference": true
+    },
+    {
+      "path": "vllm_ascend/quantization/methods/w4a8/w4a8.py",
+      "yellow_reported_sha256": "8e189bbc84e741872cfcc3a1ddd01412fd508790784fbf9e083056eff42ad673",
+      "snapshot_matches": true,
+      "in_original_required_list": false,
+      "snapshot_worktree_sha256": "c17fb3fd15dd12c865e14521c63355aaf878816acdfbd07fefdb21df93ed3292",
+      "snapshot_git_blob_sha256": "8e189bbc84e741872cfcc3a1ddd01412fd508790784fbf9e083056eff42ad673",
+      "worktree_crlf_only_difference": true
+    },
+    {
+      "path": "vllm_ascend/ops/fused_moe/moe_mlp.py",
+      "yellow_reported_sha256": "7882f9d0847e0303c78f2b216cfc50da9d3d062d6bd6f0cd22c94d1c7e78af0e",
+      "snapshot_matches": true,
+      "in_original_required_list": false,
+      "snapshot_worktree_sha256": "615ae8926e0f650f94f14a93afb733351621ddcbdeb79791ce087ede36d511da",
+      "snapshot_git_blob_sha256": "7882f9d0847e0303c78f2b216cfc50da9d3d062d6bd6f0cd22c94d1c7e78af0e",
+      "worktree_crlf_only_difference": true
+    },
+    {
+      "path": "vllm_ascend/ops/linear.py",
+      "yellow_reported_sha256": "28a0e5ec9ac35a82fa3d9a95e0e45fc6f7e0bbaf32e968d5cc5a007a7beb5b44",
+      "snapshot_matches": true,
+      "in_original_required_list": false,
+      "snapshot_worktree_sha256": "c61c7da1ca48432bb02025154f0c66fd9f348721516702f9ddb1ddcd34661b6f",
+      "snapshot_git_blob_sha256": "28a0e5ec9ac35a82fa3d9a95e0e45fc6f7e0bbaf32e968d5cc5a007a7beb5b44",
+      "worktree_crlf_only_difference": true
+    },
+    {
+      "path": "vllm_ascend/models/deepseek_v41/model.py",
+      "yellow_reported_sha256": "3575e46a01ab20d839aa7ac1272307dde89802a7e722b7dd55b35e8d2dad03b1",
+      "snapshot_matches": true,
+      "in_original_required_list": false,
+      "snapshot_worktree_sha256": "9fe001d80a2aa2f4ab1b6f0c6aadaba03e30ac720ad0f59bc59cf7ce136e8f84",
+      "snapshot_git_blob_sha256": "3575e46a01ab20d839aa7ac1272307dde89802a7e722b7dd55b35e8d2dad03b1",
+      "worktree_crlf_only_difference": true
+    },
+    {
+      "path": "vllm_ascend/quantization/method_adapters.py",
+      "yellow_reported_sha256": "341d93cae5774414a810444a50eb752cd425330156f404d1b9a10381e6bc0138",
+      "snapshot_matches": true,
+      "in_original_required_list": false,
+      "snapshot_worktree_sha256": "e4dc08ca29566b633179d35cac916c055575def2aaadde38f6b39010548660ab",
+      "snapshot_git_blob_sha256": "341d93cae5774414a810444a50eb752cd425330156f404d1b9a10381e6bc0138",
+      "worktree_crlf_only_difference": true
+    },
+    {
+      "path": "vllm/model_executor/layers/linear.py",
+      "yellow_reported_sha256": "7a9b90937865fa35d955ffc2017f23d3997bc4fba954e2667870b1b4854a38e0",
+      "local_snapshot_sha256": null,
+      "snapshot_matches": null,
+      "in_original_required_list": false
+    }
+  ],
+  "required_files_not_returned": [
+    "vllm_ascend/attention/dsa_attn_kv_plan.py",
+    "vllm_ascend/attention/dsa_v1.py",
+    "vllm_ascend/models/deepseek_v4/compressor.py",
+    "vllm_ascend/models/deepseek_v4/indexer.py",
+    "vllm_ascend/models/deepseek_v4/model.py",
+    "vllm_ascend/ops/fused_moe/token_dispatcher.py",
+    "vllm_ascend/ops/layernorm.py",
+    "vllm_ascend/ops/rotary_embedding.py",
+    "vllm_ascend/quantization/methods/w8a8/w8a8_dynamic.py"
+  ],
+  "formal_probe_source_received": false,
+  "runtime_class_module_observed": false,
+  "qualification_granted": false,
+  "additional_candidate_files": [
+    {
+      "path": "vllm_ascend/models/__init__.py",
+      "sha256": "cc7e3fecd5198a88cfed78ce71e4ff92cee0481469bdbfcf2c15e764c65a3f47"
+    },
+    {
+      "path": "vllm_ascend/worker/v1/model_runner.py",
+      "sha256": "9a7092b0a88a40692c6e4f7bae31dace61a01de7213ae94af909e597bdaa5ea6"
+    },
+    {
+      "path": "vllm_ascend/compilation/acl_graph.py",
+      "sha256": "8e1c269e331d005f1361acc5cec24402bff7ae39b75e952ea890da7812804955"
+    }
+  ],
+  "comparison_byte_source": "Git commit blobs, not Windows CRLF checkout; no normalization of received hashes"
+}

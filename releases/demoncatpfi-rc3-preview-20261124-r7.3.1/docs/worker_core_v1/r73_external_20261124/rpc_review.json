@@ -1,0 +1,85 @@
+{
+  "status": "REPRODUCED_ON_R72",
+  "base_commit": "7ffd9a602184ec445cd9ef9b4a5666c25b012e98",
+  "combination": "A2/0.26/CANN9.1/Qwen3.8-W8A8/TP2",
+  "aligned_calls": {
+    "serial": 16,
+    "delayed": 16,
+    "structured": 16
+  },
+  "after_error": [
+    {
+      "sent": "after-0",
+      "rows": [
+        {
+          "rank": 0,
+          "token": "after-0",
+          "pid": 153,
+          "thread": 281470189441152,
+          "status": "OK"
+        },
+        {
+          "rank": 1,
+          "token": "error",
+          "pid": 154,
+          "thread": 281462486732928,
+          "status": "OK"
+        }
+      ]
+    },
+    {
+      "sent": "after-1",
+      "rows": [
+        {
+          "rank": 0,
+          "token": "after-1",
+          "pid": 153,
+          "thread": 281470189441152,
+          "status": "OK"
+        },
+        {
+          "rank": 1,
+          "token": "after-0",
+          "pid": 154,
+          "thread": 281462486732928,
+          "status": "OK"
+        }
+      ]
+    },
+    {
+      "sent": "after-2",
+      "rows": [
+        {
+          "rank": 0,
+          "token": "after-2",
+          "pid": 153,
+          "thread": 281470189441152,
+          "status": "OK"
+        },
+        {
+          "rank": 1,
+          "token": "after-1",
+          "pid": 154,
+          "thread": 281462486732928,
+          "status": "OK"
+        }
+      ]
+    }
+  ],
+  "controlled_error": "<HTTPError 500: 'Internal Server Error'>",
+  "window": {
+    "start": "2026-11-24T03:17:55.298908+00:00",
+    "ended": "2026-11-24T03:21:10.080008+00:00",
+    "elapsed_seconds": 194.78112764982507,
+    "status": "FINISHED",
+    "isolation_removed": true
+  },
+  "raw_sha256": {
+    "controller.json": "be9b25cffdde13cdf7a50c73fe335027b8dad80e071daf3ba440076cc1daa73f",
+    "isolation.jsonl": "fb53ed6cb6d59e7e2f55e103b83942a518d92e847c32630074af9416bb7adb9a",
+    "rpc_alignment.json": "2f47599a003290d29d0620e7b06dd1aa8dc3209d2e1481d8cef84cc12940b0cf"
+  },
+  "executor_source_sha256": "fb279ff0e0a08681aa0078037d559351006b5453ecd1b1ea12277995925f3312",
+  "root_cause": "vLLM 0.26 MultiprocExecutor get_response raises at first FAILURE before draining later rank queues; normal/structured replies remain aligned",
+  "yellow_trigger_not_proven": true
+}

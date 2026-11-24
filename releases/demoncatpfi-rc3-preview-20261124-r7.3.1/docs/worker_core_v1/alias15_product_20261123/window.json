@@ -1,0 +1,48 @@
+{
+  "schema": "dcat.alias15.product.window.v1",
+  "attempt": "alias15-product-a1",
+  "status": "FINISHED",
+  "start": "2026-11-23T11:07:53.234739+00:00",
+  "end": "2026-11-23T11:12:14.979926+00:00",
+  "seconds": 261.7452149419114,
+  "isolation": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+  "isolation_removed": true,
+  "combination": {
+    "hardware": "Ascend910B4/A2",
+    "stack": "vLLM0.26/vllm-ascend0.26.0rc1/CANN9.1.0",
+    "model": "Qwen3.8 W8A8 community",
+    "tp": 2
+  },
+  "source_manifest_sha256": "edc1e739857889661f1f57a2a01dfe59cdd0f6c80114c894fc3190066d3abe2b",
+  "qualification_granted": false,
+  "request_times_seconds": [
+    [
+      1.4170455890707672,
+      1.3466742360033095,
+      1.352109391009435,
+      1.3638249791692942
+    ],
+    [
+      1.3282921959180385,
+      1.3352400420699269,
+      1.333525348920375,
+      1.336349004181102
+    ]
+  ],
+  "latency_ratio": null,
+  "latency_ratio_reason": "No timed unmodified matching-user-request pair; not inferred from canary or whole-window time",
+  "isolation_record": {
+    "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+    "start": "2026-11-23T11:07:53.234866+00:00",
+    "end": "2026-11-23T11:12:14.980025+00:00",
+    "stopped_external_containers": [],
+    "cleaner_stopped": true,
+    "dispatch_ability_restored": true,
+    "dispatcher_or_docker_configuration_changed": false
+  },
+  "cpu_check": {
+    "tests": 45,
+    "passed": 45,
+    "npu_claim": false
+  }
+}
