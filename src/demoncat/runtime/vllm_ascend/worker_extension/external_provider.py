@@ -33,6 +33,8 @@ class ExternalSite:
     factory: object
     source_sha256: str
     expected_deployment: dict
+    stage: str = 'model'
+    region_kind: str = 'transient'
 
 
 def factory_sha256(factory):
@@ -49,6 +51,8 @@ def register_external_site(worker, spec, *, authority, operator):
             and authority.authorize_operator(operator, 'register_external_site') is True,
             'EXTERNAL_TRUSTED_DEPLOYMENT_AUTHORITY_REQUIRED')
     require(type(spec) is ExternalSite, 'EXTERNAL_TYPED_SPEC_REQUIRED')
+    require(spec.stage in ('model', 'sampler'), 'EXTERNAL_STAGE_UNSUPPORTED')
+    require(spec.region_kind == 'transient', 'EXTERNAL_V1_PERSISTENT_WEIGHT_OR_KV_RESTORE_UNPROVEN')
     require(spec.mechanism.startswith('external.'), 'EXTERNAL_CANNOT_SHADOW_BUILTIN')
     ExternalFaultConfig('external', spec.mechanism.removeprefix('external.'))
     require(type(spec.expected_deployment) is dict and bool(spec.expected_deployment), 'EXTERNAL_DEPLOYMENT_IDENTITY_REQUIRED')
@@ -61,7 +65,7 @@ def register_external_site(worker, spec, *, authority, operator):
     sites = getattr(worker, ATTRIBUTE, {})
     require(type(sites) is dict and spec.mechanism not in sites, 'EXTERNAL_SITE_ALREADY_REGISTERED')
     sites[spec.mechanism] = (ExternalSite(spec.mechanism, spec.factory, spec.source_sha256,
-                                        deepcopy(spec.expected_deployment)), worker.model_runner.model)
+                                        deepcopy(spec.expected_deployment), spec.stage, spec.region_kind), worker.model_runner.model)
     setattr(worker, ATTRIBUTE, sites)
     return dict(status='EXTERNAL_SITE_REGISTERED_NOT_QUALIFIED', mechanism=spec.mechanism,
                 source_sha256=spec.source_sha256, qualification_granted=False)
@@ -83,7 +87,7 @@ def external_site(worker, mechanism, *, validate=False):
 def external_capabilities(worker):
     return [dict(mechanism=name, implementation_version='1', attachment='trusted_external_site',
                  execution='external_product_binding_and_current_permit_required',
-                 source_sha256=spec.source_sha256, qualification_granted=False)
+                 source_sha256=spec.source_sha256, stage=spec.stage, region_kind=spec.region_kind, qualification_granted=False)
             for name, (spec, _) in sorted(getattr(worker, ATTRIBUTE, {}).items())]
 
 
@@ -109,4 +113,7 @@ def make_external_site(binding, *, fault, region_leases):
             and all(hasattr(site, k) for k in ('events', 'sites', 'forward_calls', 'pending', 'uncovered')),
             'EXTERNAL_SITE_PROTOCOL_INCOMPLETE')
     require(getattr(site, 'region_leases', None) is region_leases, 'EXTERNAL_SHARED_LEASE_MANAGER_REQUIRED')
+    if spec.stage == 'sampler':
+        require(all(callable(getattr(site,k,None)) for k in ('begin_sample','finish_sample')),
+                'EXTERNAL_SAMPLE_PROTOCOL_INCOMPLETE')
     return site

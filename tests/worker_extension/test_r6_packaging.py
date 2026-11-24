@@ -29,3 +29,12 @@ class R6PackagingTests(unittest.TestCase):
         import hashlib
         raw=Path('tools/_r5/review_continuous_public.py').read_bytes()
         self.assertEqual(hashlib.sha256(raw).hexdigest(),'deb3c5c0d600f7bcae7d0997cfd883591ece87231ed8128e486edb5d823ffadc')
+
+    def test_integrated_adapter_dependencies_exist_and_are_packaged(self):
+        for name in ('external_kv_engine_plugin.py','external_kv_product_probe.py',
+                     'external_kv_v2_example.py','external_persistent_product_probe.py',
+                     'external_weight_scale_v2_example.py','fault33_capture_worker.py',
+                     'paged33_launch_capture_v2.cpp','rpc_alignment_probe.py'):
+            path='experiments/worker_core_v11_20261118/'+name
+            self.assertIn(path,EXACT)
+            self.assertTrue(Path(path).is_file(),path)

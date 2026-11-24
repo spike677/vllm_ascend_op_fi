@@ -1,5 +1,7 @@
 # 收口台账：2026-11-24最新决定
 
+2026-11-24晚增补：r7.4已冻结并推送`abd40cdc`，v2 weight_scale与KV16层A2 TP2两owner通过、无设备安装398文件一致。33仅采集器进入r7.4，A3适配与三形状控制检查在r7.5。r8整合及当前指纹免许可验收见[晚间报告](closure_progress_20261124_evening.md)。下面事项表的早期状态按该报告更新；未收到的新黄区证据不得补推。
+
 公共13项：18、22、39op、39mr、28 denominator、17、Batch、15、41、26fia、20、33在A3 Qwen3.8 TP2完成注入测试与登记；8在A3 DeepSeek V4-0731 TP8+EP完成。TP1不是必要条件，已有结果保留。
 
 不交付4项：25、26 residual、28 FA legal、28 FIA legal。15为B档ND视图别名断开，不含私有格式触发条件；changed为调用次数，changed_elements单列。

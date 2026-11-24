@@ -11,6 +11,16 @@ EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',
        'experiments/worker_core_v11_20261118/product_http_probe.py',
        'experiments/worker_core_v11_20261118/product_mode_probe.py',
        'experiments/worker_core_v11_20261118/external_gain_example.py',
+       'experiments/worker_core_v11_20261118/external_persistent_census.py',
+       'experiments/worker_core_v11_20261118/external_persistent_product_probe.py',
+       'experiments/worker_core_v11_20261118/external_weight_scale_v2_example.py',
+       'experiments/worker_core_v11_20261118/external_kv_v2_example.py',
+       'experiments/worker_core_v11_20261118/external_kv_engine_plugin.py',
+       'experiments/worker_core_v11_20261118/external_kv_page_probe.py',
+       'experiments/worker_core_v11_20261118/external_kv_product_probe.py',
+       'experiments/worker_core_v11_20261118/fault33_capture_worker.py',
+       'experiments/worker_core_v11_20261118/paged33_launch_capture_v2.cpp',
+       'experiments/worker_core_v11_20261118/rpc_alignment_probe.py',
        'experiments/worker_core_v11_20261118/alias15_readonly_probe.py',
        'experiments/worker_core_v11_20261118/alias15_output_probe.py',
        'experiments/worker_core_v11_20261118/paged33_launch_capture.cpp',
@@ -60,7 +70,7 @@ def build(repo,output):
                           '8/DeepSeek':'New deployment and product acceptance pending','15.alias_detach':'ND alias detach only; A2 TP2 product reviewed; A3 TP2 trusted acceptance candidate, runtime CANN/source/consumer checks required; no private-format claim'},qualification_granted=False)
         # Documentation is directly visible in the delivery, not just inside the tarball.
         for row in files:
-            if row['path'].startswith('docs/'):
+            if row['path'].startswith('docs/') or (row['path'].startswith('experiments/worker_core_v11_20261118/external_') and row['path'].endswith('.py')):
                 dest=output/row['path'];dest.parent.mkdir(parents=True,exist_ok=True)
                 dest.write_bytes((stage/row['path']).read_bytes())
         write_json_bytes(output/'source-review.json',review)

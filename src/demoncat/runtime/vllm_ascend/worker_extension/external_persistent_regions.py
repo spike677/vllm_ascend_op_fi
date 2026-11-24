@@ -73,22 +73,42 @@ class PersistentRegions:
             k=identity(r.tensor)
             require(not any(k[:2]==p[:2] and max(k[2],p[2])<min(k[3],p[3]) for p in keys),'V2_OVERLAPPING_REGIONS')
             keys.append(k)
-        for r,k in zip(regions,keys):
-            token=self.leases.acquire(r.tensor)
-            self.entries[r.name]=dict(region=r,identity=k,token=token,readers=set(),events=[])
+        try:
+            for r,k in zip(regions,keys):
+                token=self.leases.acquire(r.tensor)
+                self.entries[r.name]=dict(region=r,identity=k,token=token,readers=set(),events=[])
+        except Exception:
+            # Every successful acquisition is already owned in entries. A
+            # backup OOM must not strand prior, unwritten snapshots silently.
+            for name in tuple(self.entries):self.release_unwritten(name)
+            raise
         return dict(regions=len(self.entries),backup_bytes=total)
 
     def write(self,name,value):
-        self._boundary(); entry=self.entries[name];r=self._current(entry)
-        require(type(value) is torch.Tensor and value.shape==r.tensor.shape and value.dtype==r.tensor.dtype
-                and value.device==r.tensor.device,'V2_EXACT_VALUE_LAYOUT_REQUIRED')
-        before=r.tensor.detach().view(torch.uint8).clone()
-        event=dict(region=name,region_kind=r.region_kind,observed=1,eligible=1,attempted=1,applied=0,
+        entry=self.entries[name]
+        event=dict(region=name,region_kind=entry['region'].region_kind,observed=1,eligible=1,attempted=1,applied=0,
                    changed=0,changed_elements=0,
                    consumed=0,restored=0,failed=0,restore_kind=None)
         entry['events'].append(event);self.events.append(event)
         try:
-            self.leases.write(entry['token'],value)
+            self._boundary();r=self._current(entry)
+            require(type(value) is torch.Tensor and value.shape==r.tensor.shape and value.dtype==r.tensor.dtype
+                    and value.device==r.tensor.device,'V2_EXACT_VALUE_LAYOUT_REQUIRED')
+            require(all(e['consumed'] and not e['failed'] for e in entry['events'][:-1]),
+                    'V2_PRIOR_WRITE_READERS_INCOMPLETE')
+            lease=self.leases._get(entry['token'])
+            before=r.tensor.detach().view(torch.uint8).clone()
+            with torch.no_grad():
+                if lease['written']:
+                    # Keep the original backup for this allocation generation.
+                    # Rewrites need their own reader completion before another write.
+                    require(version(r.tensor)==lease['version'] and exact(r.tensor,lease['expected']),
+                            'V2_INTERVENING_WRITE_NO_OVERWRITE')
+                    r.tensor.copy_(value);self.leases.complete(lease['stream'])
+                    lease.update(version=version(r.tensor),expected=value.detach().clone(),consumed=False)
+                else:
+                    self.leases.write(entry['token'],value)
+            entry['readers'].clear()
             changed=int((before.reshape(-1,r.tensor.element_size())!=r.tensor.detach().view(torch.uint8).reshape(-1,r.tensor.element_size())).any(dim=1).sum().item())
             event.update(applied=1,changed=int(changed>0),changed_elements=changed)
         except Exception:
@@ -102,7 +122,7 @@ class PersistentRegions:
         require(entry['events'] and all(e['applied'] and not e['failed'] for e in entry['events']),'V2_NO_WRITE_TO_CONSUME')
         self.leases.consumed(entry['token'])  # device completion on the held stream
         entry['readers'].add(consumer);self.reader_observations+=1
-        for event in entry['events']:event['consumed']=1
+        entry['events'][-1]['consumed']=int(set(r.consumers)<=entry['readers'])
 
     def observe_kv_legal_write(self,name,*,request_generation):
         """Only a reviewed KV writer boundary may record its own completed write.
@@ -125,7 +145,7 @@ class PersistentRegions:
             require(r.request_generation in b.get('ended_request_generations',())
                     and b.get('before_page_release') is True,'V2_KV_SAFE_END_REQUIRED')
         try:
-            self.leases.restore(entry['token'])
+            with torch.no_grad():self.leases.restore(entry['token'])
         except Exception:
             for e in entry['events']:e['failed']=1
             raise
@@ -136,6 +156,30 @@ class PersistentRegions:
         self._boundary();entry=self.entries[name];self._current(entry)
         require(not entry['events'],'V2_WRITTEN_REGION_REQUIRES_RESTORE')
         self.leases.consumed(entry['token']);self.leases.release_unmodified(entry['token'])
+        del self.entries[name]
+
+    def rollback_unconsumed_weight(self,name):
+        """Rollback a failed all-rank enable before ingress was ever reopened.
+
+        No consumer is invented. A real drained device boundary plus the held
+        expected bytes proves no outstanding reader or intervening legal write.
+        This is failure cleanup, never successful injection acceptance. KV has
+        a different end/page protocol and cannot use this operation.
+        """
+        self._boundary();entry=self.entries[name];r=self._current(entry)
+        require(r.region_kind=='persistent_weight','V2_WEIGHT_ROLLBACK_ONLY')
+        require(not entry['readers'] and all(not e['consumed'] for e in entry['events']),
+                'V2_ALREADY_CONSUMED_USE_NORMAL_RESTORE')
+        lease=self.leases._get(entry['token'])
+        require(version(r.tensor)==lease['version'] and exact(r.tensor,lease['expected']),
+                'V2_ROLLBACK_INTERVENING_WRITE_NO_OVERWRITE')
+        with torch.no_grad():
+            self.leases.complete(lease['stream'])
+            r.tensor.copy_(lease['backup']);self.leases.complete(lease['stream'])
+        require(exact(r.tensor,lease['backup']),'V2_ROLLBACK_BYTES_NOT_RESTORED')
+        del self.leases.active[entry['token']]
+        for event in entry['events']:
+            event.update(restored=1,restore_kind='FAILED_ENABLE_ROLLBACK_NO_CONSUMER')
         del self.entries[name]
 
     def snapshot(self):

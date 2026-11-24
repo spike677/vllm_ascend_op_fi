@@ -78,6 +78,14 @@ class ProductRequest(ContinuousRequest):
                     prompt_embeds=getattr(req, 'prompt_embeds', None) is not None,
                     image_count=sum(f.modality == 'image' for f in features) if isinstance(features, list) else None,
                     video_count=sum(f.modality == 'video' for f in features) if isinstance(features, list) else None)
+                self.external_stage='model'
+                if self.binding.mechanism.startswith('external.'):
+                    from .external_provider import external_site
+                    self.external_stage=external_site(self.binding.worker,self.binding.mechanism,validate=True).stage
+                    if self.inject and self.external_stage=='sampler':
+                        temperature=getattr(getattr(req,'sampling_params',None),'temperature',None)
+                        if not isinstance(temperature,(int,float)) or not 0 < temperature < float('inf'):
+                            self.skip.append('EXTERNAL_SAMPLER_POSITIVE_TEMPERATURE_REQUIRED')
                 self.range_facts = facts
                 external=getattr(req, 'external_req_id', None)
                 if type(external) is str: self.external_request_id=external
@@ -103,7 +111,7 @@ class ProductRequest(ContinuousRequest):
                     if self.visual: self.install_visual_site(patch)
                     elif self.inject:
                         self.install_site()
-                        if self.binding.mechanism.startswith('external.'):
+                        if self.binding.mechanism.startswith('external.') and self.external_stage=='model':
                             def external_logits(original,*args,**kwargs):
                                 value=original(*args,**kwargs)
                                 self.site.finish_forward()
@@ -145,7 +153,10 @@ class ProductRequest(ContinuousRequest):
             self.model_output = value
 
         def sample(original, *args, **kwargs):
+            sampling=not self.skip and self.inject and getattr(self,'external_stage','model')=='sampler'
+            if sampling:self.site.begin_sample()
             result = original(*args, **kwargs)
+            if sampling:self.site.finish_sample()
             if not self.skip:
                 require(result.req_ids == self.ids and self.runner.execute_model_state is None,
                         'PRODUCT_SAMPLE_REQUEST_ASSOCIATION')

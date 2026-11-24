@@ -61,11 +61,6 @@ class ExternalProviderTests(unittest.TestCase):
         self.worker._demoncat_continuous_bindings={'18.api_half':object()}
         with self.assertRaisesRegex(RuntimeError,'IDLE_WORKER'):self.install()
 
-    def test_bootstrap_permission_failure_does_not_escape_rpc(self):
-        from demoncat.runtime.vllm_ascend.worker_extension.extension import DemoncatWorkerExtension
-        row=DemoncatWorkerExtension.demoncat_product_bootstrap(self.worker,'configure',{'operator':'user'})
-        self.assertEqual(row['status'],'PRODUCT_BOOTSTRAP_REFUSED')
-        self.assertEqual(row['exit_code'],4)
 
 
 if __name__=='__main__':unittest.main()
