@@ -2,7 +2,7 @@
 import argparse,hashlib,json,os,subprocess,sys,tarfile,tempfile
 from pathlib import Path
 
-VERSIONS={'demoncatpfi':'0.4.0rc6.post4','demoncat-worker-extension':'0.3.0rc6.post4','demoncat-fault39-core':'0.3.0rc6.post4'}
+VERSIONS={'demoncatpfi':'0.4.0rc6.post5','demoncat-worker-extension':'0.3.0rc6.post5','demoncat-fault39-core':'0.3.0rc6.post5'}
 ROOTS=('src/','fault_injection/','fault39/src/','native_execution_strategy/','engineering_closure/',
        'tools/','tests/','docs/worker_core_v1/')
 EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',
@@ -11,6 +11,14 @@ EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',
        'experiments/worker_core_v11_20261118/product_http_probe.py',
        'experiments/worker_core_v11_20261118/product_mode_probe.py',
        'experiments/worker_core_v11_20261118/external_gain_example.py',
+       'experiments/worker_core_v11_20261118/external_persistent_census.py',
+       'experiments/worker_core_v11_20261118/external_persistent_product_probe.py',
+       'experiments/worker_core_v11_20261118/external_weight_scale_v2_example.py',
+       'experiments/worker_core_v11_20261118/external_kv_v2_example.py',
+       'experiments/worker_core_v11_20261118/external_kv_engine_plugin.py',
+       'experiments/worker_core_v11_20261118/external_kv_page_probe.py',
+       'experiments/worker_core_v11_20261118/external_kv_product_probe.py',
+       'experiments/worker_core_v11_20261118/paged33_launch_capture_v2.cpp',
        'experiments/worker_core_v11_20261118/rpc_alignment_probe.py',
        'experiments/worker_core_v11_20261118/alias15_readonly_probe.py',
        'experiments/worker_core_v11_20261118/alias15_output_probe.py',
@@ -63,7 +71,7 @@ def build(repo,output):
         # Browsable documentation and adapter example alongside the wheels.
         for row in files:
             name=row['path']
-            if name.startswith('docs/worker_core_v1/') or name=='experiments/worker_core_v11_20261118/external_gain_example.py':
+            if name.startswith('docs/worker_core_v1/') or (name.startswith('experiments/worker_core_v11_20261118/external_') and name.endswith('.py')):
                 dest=output/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes((stage/name).read_bytes())
         archive=output/(output.name+'.tar.gz')
         with tarfile.open(archive,'w:gz') as tf:

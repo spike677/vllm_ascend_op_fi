@@ -17,16 +17,18 @@ def register():
         if not hasattr(engine,'_dcat_kv_page_probe'):
             from demoncat.runtime.vllm_ascend.worker_extension.persistent_kv_release import KVReleaseBarrier
             from demoncat.runtime.vllm_ascend.worker_extension.serving_context import require
-            groups=engine.scheduler.kv_cache_config.kv_cache_groups;selected=[];layers=[]
+            groups=engine.scheduler.kv_cache_config.kv_cache_groups;selected=[];layers=[];sizes={}
             for i,group in enumerate(groups):
                 spec=group.kv_cache_spec
                 specs=list(spec.kv_cache_specs.values()) if type(spec).__name__=='UniformTypeKVCacheSpecs' else [spec]
                 if specs and all(type(s).__name__=='FullAttentionSpec' for s in specs):
+                    require(len({s.block_size for s in specs})==1,'KV_GROUP_BLOCK_SIZES_DIFFER')
+                    sizes[str(i)]=specs[0].block_size
                     selected.append(i);layers.extend(group.layer_names)
             require(len(layers)==16,'V2_EXAMPLE_EXPECTS_16_ACTUAL_FULL_ATTENTION_LAYERS')
             def notify(action,payload):
                 return engine.model_executor.collective_rpc('demoncat_kv_page_evidence',timeout=120,
-                    args=(action,dict(payload,full_attention_layers=layers)))
+                    args=(action,dict(payload,full_attention_layers=layers,allocation_block_sizes=sizes)))
             barrier=KVReleaseBarrier(engine,notify=notify,world_size=engine.vllm_config.parallel_config.tensor_parallel_size,
                                      group_ids=tuple(selected))
             barrier.install();engine._dcat_kv_page_probe=barrier

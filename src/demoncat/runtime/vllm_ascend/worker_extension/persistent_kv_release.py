@@ -70,7 +70,8 @@ class KVReleaseBarrier:
     def _rpc(self,action,ticket,pages):
         self.sequence+=1;sequence=self.sequence
         payload=dict(sequence=sequence,request_id=ticket['request_id'],request_generation=ticket['generation'],
-                     pages=pages,world_size=self.world_size)
+                     pages=pages,world_size=self.world_size,
+                     request_status=getattr(getattr(ticket['request'],'status',None),'name',None))
         rows=self.notify(action,payload)
         require(type(rows) is list and len(rows)==self.world_size
                 and all(type(r.get('rank')) is int for r in rows)

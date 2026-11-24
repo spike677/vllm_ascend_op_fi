@@ -8,9 +8,10 @@ from contextlib import contextmanager
 import threading
 import time
 import uuid
+from .serving_context import ContextRefused
 
 
-class IngressRefused(RuntimeError):
+class IngressRefused(ContextRefused):
     exit_code=4
 
 

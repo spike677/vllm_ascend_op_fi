@@ -1,3 +1,5 @@
+> r7.4：新增持久区域 provider v2 与33完整采集器。A2 TP2 weight_scale/KV 两owner、真实消费者和恢复证据见 [验收记录](docs/worker_core_v1/r74_v2_acceptance_20261124.md)。A3及未审查组合仍关闭；33候选适配在r7.5，不随本包放行。
+
 ## r7.3：窄外部 provider 维护包（2026-11-24）
 
 基于 r7.2，保留全部既有机制字节；只加入可信外部 site 接线、真实采样边界与控制回包 helper。

@@ -18,6 +18,10 @@ class PersistentExampleExtension(CensusExtension):
         model=self.model_runner.model
         if action=='configure':
             from external_weight_scale_v2_example import WeightScaleProvider
+            provider_factory=WeightScaleProvider;region_kind='persistent_weight';variant='weight_scale_half'
+            if os.environ.get('DCAT_V2_KV_PRODUCT')=='1':
+                from external_kv_v2_example import KVProvider
+                provider_factory=KVProvider;region_kind='persistent_kv';variant='kv_value_cell'
             from demoncat.runtime.vllm_ascend.worker_extension.external_persistent_runtime import install_persistent_runtime,register_persistent_site,PersistentSite
             from demoncat.runtime.vllm_ascend.worker_extension.external_provider import factory_sha256
             from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import observe_deployment
@@ -31,8 +35,9 @@ class PersistentExampleExtension(CensusExtension):
             install_persistent_runtime(self,authority=authority,operator='v2-example')
             actual=observe_deployment(self,model)
             require(actual['tp']==2 and actual['eager'] is True and actual['max_num_seqs']==1,'V2_EXAMPLE_DEPLOYMENT_RANGE')
-            register_persistent_site(self,PersistentSite('external.weight_scale_half','persistent_weight',WeightScaleProvider,
-                factory_sha256(WeightScaleProvider),actual),authority=authority,operator='v2-example')
+            self._v2_example_mechanism='external.'+variant
+            register_persistent_site(self,PersistentSite(self._v2_example_mechanism,region_kind,provider_factory,
+                factory_sha256(provider_factory),actual),authority=authority,operator='v2-example')
             self._v2_canary_rows=[]
             def observe(module,args,output):
                 require(isinstance(output,torch.Tensor),'V2_EXAMPLE_HIDDEN_TENSOR_REQUIRED')
@@ -57,7 +62,7 @@ class PersistentExampleExtension(CensusExtension):
             return dict(rank=self.rank,all_finite=all(r['finite'] for r in rows),output={'hidden':rows})
         if action=='permit':
             return install_deployment_acceptance_permit(self,authority=authority,operator='v2-example',
-                mechanisms=['external.weight_scale_half'],attempt=options['attempt'],source_manifest_sha256=options['source_sha'])
+                mechanisms=[self._v2_example_mechanism],attempt=options['attempt'],source_manifest_sha256=options['source_sha'])
         if action=='cleanup':
             remove_deployment_acceptance_permit(self,authority=authority,operator='v2-example')
             r=self._demoncat_worker_fault_runtime
@@ -68,13 +73,13 @@ class PersistentExampleExtension(CensusExtension):
         raise ValueError('EXAMPLE_ACTION_UNKNOWN')
 
 
-def main():
+def main(extension='external_persistent_product_probe.PersistentExampleExtension',variant='weight_scale_half'):
     from product_http_probe import HTTPExecutor
     from demoncat.runtime.vllm_ascend.worker_extension.persistent_product_host import PersistentProductClient
     from demoncat.runtime.vllm_ascend.worker_extension.persistent_ingress import PersistentIngress,IngressRefused
     from demoncat.runtime.vllm_ascend.worker_extension.external_persistent_runtime import PersistentFaultConfig
     from demoncat.runtime.vllm_ascend.worker_extension.product_errors import product_control_reply
-    root=Path('/evidence');server=None;report=dict(status='STARTED',mode='persistent_weight_example',scopes=[])
+    root=Path('/evidence');server=None;report=dict(status='STARTED',mode='persistent_'+variant+'_example',scopes=[])
     def save():(root/'persistent_product.json').write_text(json.dumps(report,indent=2)+'\n')
     try:
         cmd=[sys.executable,'-m','vllm.entrypoints.openai.api_server','--model','/model','--served-model-name','acceptance',
@@ -83,7 +88,7 @@ def main():
             '--no-enable-prefix-caching','--no-async-scheduling','--enable-chunked-prefill',
             '--max-num-batched-tokens','1024','--max-model-len','1024','--max-num-seqs','1',
             '--gpu-memory-utilization','0.8','--seed','42','--trust-remote-code',
-            '--worker-extension-cls','external_persistent_product_probe.PersistentExampleExtension',
+            '--worker-extension-cls',extension,
             '--limit-mm-per-prompt','{"image":0,"video":0}']
         server=subprocess.Popen(cmd,env=dict(os.environ,VLLM_WORKER_MULTIPROC_METHOD='spawn'),
             stdout=(root/'http-server.log').open('w'),stderr=subprocess.STDOUT)
@@ -128,7 +133,7 @@ def main():
         # in the positive sequence. Cancellation is a separate required gate.
         def canary():
             rpc('canary_start');send(prompt);return rpc('canary_end')
-        def create():return PersistentProductClient(ex,PersistentFaultConfig('external','weight_scale_half'),
+        def create():return PersistentProductClient(ex,PersistentFaultConfig('external',variant),
             operator='v2-example',ingress=gate,run_canary=canary,canary_request={'tokens':4},
             control_boundary=lambda owner,snapshot:rpc('boundary',dict(owner=owner,snapshot=snapshot)))
         source_sha=hashlib.sha256(Path('/source/source_manifest.json').read_bytes()).hexdigest()
@@ -139,12 +144,54 @@ def main():
             rpc('permit',dict(attempt='v2-weight-'+str(index),source_sha=source_sha))
             client=create();row=dict(owner=client.identity.owner);report['scopes'].append(row)
             row['attach']=client.attach();row['enable']=client.enable();save()
-            with gate.request({'tokens':4}):row['fault_http']=send('Explain how rivers form.')
+            if variant=='kv_value_cell':
+                def outside_range():
+                    with gate.request({'tokens':5}):raise RuntimeError('RANGE_GATE_DID_NOT_REFUSE')
+                row['range_negative']=product_control_reply(outside_range)
+                if row['range_negative']['exit_code']!=4:raise RuntimeError('RANGE_NEGATIVE_NOT_STRUCTURED')
+            rpc('canary_start')
+            with gate.request({'tokens':4}):row['fault_http']=send(prompt)
+            row['fault_hidden']=rpc('canary_end')
+            row['fault_hidden_changed']=row['fault_hidden']!=client.baseline
             row['status']=client.status();save()
+            if variant=='kv_value_cell':row['page_audit']=ex.collective_rpc('demoncat_kv_cancel_audit',args=())
             row['disable']=client.disable();row['detach']=client.detach();row['cleanup']=rpc('cleanup');save()
             if not all(r['leases']==r['owners']==0 for r in row['cleanup']):raise RuntimeError('RESOURCES_NOT_ZERO')
+        if variant=='kv_value_cell':
+            rpc('permit',dict(attempt='v2-kv-http-cancel',source_sha=source_sha))
+            client=create();cancel=dict(owner=client.identity.owner);report['cancel_scope']=cancel
+            cancel['attach']=client.attach();cancel['enable']=client.enable();save()
+            with gate.request({'tokens':4}):
+                req=urllib.request.Request(ex.base+'/v1/completions',data=json.dumps(dict(model='acceptance',
+                    prompt=prompt,temperature=0,max_tokens=4,min_tokens=4,ignore_eos=True,seed=42,stream=True)).encode(),
+                    headers={'Content-Type':'application/json'})
+                submissions['pending']+=1
+                try:
+                    with urllib.request.urlopen(req,timeout=120) as response:
+                        for line in response:
+                            if line.startswith(b'data: ') and b'[DONE]' not in line:
+                                chunk=json.loads(line[6:])
+                                if chunk.get('choices') and chunk['choices'][0].get('text'):
+                                    cancel['http_id']=chunk['id'];break
+                    if not cancel.get('http_id'):raise RuntimeError('CANCEL_STREAM_NO_TOKEN')
+                    for _ in range(60):
+                        audit=ex.collective_rpc('demoncat_kv_cancel_audit',args=())
+                        endings=[[e for e in r['events'] if e['action']=='before_free'
+                                  and e['request_id'].startswith(cancel['http_id'])] for r in audit]
+                        if len(audit)==2 and all(endings):break
+                        time.sleep(.25)
+                    else:raise RuntimeError('CANCEL_ENGINE_RELEASE_NOT_OBSERVED')
+                    if not all(len(e)==1 and e[0].get('request_status')=='FINISHED_ABORTED' for e in endings):
+                        raise RuntimeError('HTTP_CLOSE_WAS_NOT_ACTUAL_ENGINE_ABORT')
+                    if any(r['tickets'] or r['leases'] for r in audit):raise RuntimeError('CANCEL_RESOURCES_REMAIN')
+                    cancel['audit']=audit;cancel['actual_abort_proven']=True
+                except BaseException:submissions['uncertain']+=1;raise
+                finally:submissions['pending']-=1
+            cancel['status']=client.status();cancel['disable']=client.disable();cancel['detach']=client.detach()
+            cancel['cleanup']=rpc('cleanup');save()
         report['observer_cleanup']=rpc('finish')
-        report['status']='TWO_OWNER_WEIGHT_EXAMPLE_COMPLETE_NOT_RELEASE_QUALIFICATION'
+        label='WEIGHT' if variant=='weight_scale_half' else variant.upper()
+        report['status']='TWO_OWNER_'+label+'_EXAMPLE_COMPLETE_NOT_RELEASE_QUALIFICATION'
     except Exception:
         report.update(status='FAILED',error=traceback.format_exc());raise
     finally:
