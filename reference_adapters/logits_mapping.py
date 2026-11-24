@@ -17,6 +17,20 @@ class LogitsMode(TorchDispatchMode):
 
     def __torch_dispatch__(self, func, types, args=(), kwargs=None):
         kwargs = kwargs or {}; site = self.site
+        # vLLM Sampler.forward converts BF16 compute_logits to FP32 before
+        # temperature and softmax. Track this actual conversion, not an
+        # unrelated equal-shaped tensor. The lease is on the live FP32 reader.
+        if (func._schema.name == 'aten::_to_copy' and args and args[0] is site.logits
+                and kwargs.get('dtype') == torch.float32):
+            result = func(*args, **kwargs)
+            require(result.shape == site.logits.shape and result.device == site.logits.device,
+                'REFERENCE_LOGITS_CAST_MAPPING')
+            with _disable_current_modes():
+                require(torch.equal(result, site.logits.float()), 'REFERENCE_LOGITS_CAST_VALUES')
+                site.cast_chain.append(dict(operator=func._schema.name,
+                    input_sha256=fingerprint(site.logits), output_sha256=fingerprint(result)))
+            site.logits = result
+            return result
         if func._schema.name != 'aten::_softmax' or not args or not isinstance(args[0], torch.Tensor):
             return func(*args, **kwargs)
         tensor = args[0]
@@ -30,6 +44,7 @@ class LogitsMode(TorchDispatchMode):
             event = site.event('compute_logits.storage->sampler.softmax', tensor)
             event.update(target='all_vocab_columns_rotate_one', named_variant='row12_logits_columns_rotate',
                 effect='PHENOMENON_PROXY_NOT_ORIGINAL_MECHANISM', producer_sha256=site.producer_sha,
+                producer_to_sampler_casts=list(site.cast_chain),
                 restore_boundary='AFTER_REAL_SOFTMAX_BEFORE_RETURN;AFTER_LEGITIMATE_TEMPERATURE_WRITES')
             before = tensor.detach().float().cpu().clone()
             value = torch.roll(tensor, 1, -1)
@@ -58,6 +73,7 @@ class LogitsColumnsRotate(BaseSite):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mode = LogitsMode(self); self.logits = None; self.wrapper = None
+        self.cast_chain = []
 
     def install(self):
         require('compute_logits' not in vars(self.model), 'REFERENCE_LOGITS_ALREADY_PATCHED')
@@ -66,7 +82,7 @@ class LogitsColumnsRotate(BaseSite):
             value = original(*args, **kwargs)
             require(not self.active and self.logits is None and isinstance(value, torch.Tensor),
                 'REFERENCE_LOGITS_PRODUCER_ORDER')
-            self.logits = value; self.producer_sha = fingerprint(value)
+            self.logits = value; self.producer_sha = fingerprint(value); self.cast_chain = []
             return value
         self.wrapper = compute; self.model.compute_logits = compute
         self.sites = ['compute_logits.storage->sampler.softmax']

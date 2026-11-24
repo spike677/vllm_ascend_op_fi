@@ -36,3 +36,16 @@ class LogitsTests(unittest.TestCase):
         site=LogitsColumnsRotate(Model(),None,fault=True,
             region_leases=RegionLeases('owner',1,stream=lambda:0,complete=lambda s:None))
         with self.assertRaisesRegex(RuntimeError,'NOT_FROM_REAL_MODEL'):site.begin_sample()
+
+    def test_real_sampler_fp32_conversion_is_traced(self):
+        model=Model();x=torch.tensor([[1.,2.,3.,4.]],dtype=torch.bfloat16)
+        runner=types.SimpleNamespace(input_batch=types.SimpleNamespace(req_ids=['q']))
+        leases=RegionLeases('owner',1,stream=lambda:0,complete=lambda s:None)
+        site=LogitsColumnsRotate(model,runner,fault=True,region_leases=leases);site.install()
+        original=model.compute_logits(x);site.begin_sample()
+        logits=original.float();logits.div_(.7);expected=logits.clone()
+        output=logits.softmax(-1);site.finish_sample()
+        self.assertTrue(torch.equal(output,torch.roll(expected,1,-1).softmax(-1)))
+        self.assertTrue(torch.equal(logits,expected));self.assertTrue(torch.equal(original,x))
+        self.assertEqual(site.events[0]['producer_to_sampler_casts'][0]['operator'],'aten::_to_copy')
+        site.close();self.assertEqual(leases.count(),0)
