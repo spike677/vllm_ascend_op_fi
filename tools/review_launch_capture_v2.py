@@ -49,9 +49,28 @@ def review(directory, pid):
                     or path.name != f'launch-{pid}-{serial}.bin' or serial in serials):
                 raise ValueError('invalid header, length, serial, or native return')
             serials.add(serial)
-            records.append(dict(file=path.name, serial=serial, key=key, blocks=blocks,
-                                bytes=len(data), sha256=hashlib.sha256(data).hexdigest()))
-        except (struct.error, ValueError) as error:
+            record = dict(file=path.name, serial=serial, key=key, blocks=blocks,
+                          bytes=len(data), sha256=hashlib.sha256(data).hexdigest())
+            if report.get('binding_metadata') is True:
+                binding_raw = Path(str(path) + '.binding.json').read_bytes()
+                binding = json.loads(binding_raw)
+                if (binding.get('schema') != 'dcat.launch.binding.v1'
+                        or binding.get('pid') != pid or binding.get('serial') != serial
+                        or binding.get('key_source') not in ('entry', 'name_only')
+                        or not isinstance(binding.get('function_name'), str)):
+                    raise ValueError('BINDING_IDENTITY_INVALID')
+                entry = binding['key_source'] == 'entry'
+                if ((entry and (type(binding.get('entry')) is not int or binding['entry'] != key))
+                        or (not entry and (binding.get('entry') is not None or key != 0
+                                          or not binding['function_name']))):
+                    raise ValueError('BINDING_KEY_INVALID')
+                record.update(key=key if entry else None, captured_key=key,
+                              key_source=binding['key_source'], function_name=binding['function_name'],
+                              binding_sha256=hashlib.sha256(binding_raw).hexdigest())
+            else:
+                record['key_source'] = 'legacy_unverified'
+            records.append(record)
+        except (OSError, TypeError, AttributeError, struct.error, ValueError) as error:
             issues.append('INVALID_RECORD:' + path.name + ':' + str(error))
     if len(records) != report['written']:
         issues.append('FILE_COUNT_MISMATCH')
@@ -59,6 +78,7 @@ def review(directory, pid):
         issues.append('SELECTED_SERIALS_NOT_COMPLETE')
     return dict(schema='dcat.launch.capture.review.v2', complete=not issues, issues=issues,
                 manifest_sha256=hashlib.sha256(raw).hexdigest(), census=report, records=records,
+                name_only_records=sum(r.get('key_source') == 'name_only' for r in records),
                 qualification_granted=False, serializer_validated=False,
                 scope='ARMED_WINDOW_SELECTED_KEYS_ONLY')
 

@@ -62,3 +62,34 @@ class CaptureTests(unittest.TestCase):
         self.save();self.assertFalse(review(self.root,12)['complete'])
         self.record(0);self.manifest.update(seen=2,selected=1,written=1);self.save()
         self.assertIn('CENSUS_ACCOUNTING_MISMATCH',review(self.root,12)['issues'])
+
+    def binding_record(self, source='entry', key=123, entry=123):
+        p=self.record(0)
+        p.write_bytes(HEADER.pack(0x444341544c415531,12,0,key,2,8,0,16,0,0)+b'\0'*8)
+        Path(str(p)+'.binding.json').write_text(json.dumps(dict(
+            schema='dcat.launch.binding.v1',pid=12,serial=0,key_source=source,
+            entry=entry,function_name='kernel')))
+        self.manifest.update(seen=1,selected=1,written=1,binding_metadata=True)
+        self.save()
+        return p
+
+    def test_name_only_complete_does_not_invent_tiling_key(self):
+        self.binding_record('name_only',0,None)
+        r=review(self.root,12)
+        self.assertTrue(r['complete'])
+        self.assertIsNone(r['records'][0]['key'])
+        self.assertEqual(r['name_only_records'],1)
+        self.assertFalse(r['serializer_validated'])
+
+    def test_binding_sidecar_required_for_new_capture(self):
+        p=self.binding_record()
+        Path(str(p)+'.binding.json').unlink()
+        self.assertFalse(review(self.root,12)['complete'])
+
+    def test_forged_entry_rejected(self):
+        self.binding_record(entry=456)
+        self.assertFalse(review(self.root,12)['complete'])
+
+    def test_name_only_cannot_claim_real_key(self):
+        self.binding_record('name_only',123,None)
+        self.assertFalse(review(self.root,12)['complete'])
