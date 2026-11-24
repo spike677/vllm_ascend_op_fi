@@ -12,6 +12,16 @@ REQUIRED=('numHeads','kvHeads','embeddingSize','embeddingSizeV','batch','blockSi
           'maxQSeqlen','maxKvSeqlen','sparseMode')
 
 
+def check_binding(data, binding):
+    if len(data)<80:raise ValueError('TRUNCATED_CAPTURE')
+    _,pid,serial,key,*_=struct.unpack_from('<10Q',data)
+    if (binding.get('schema')!='dcat.launch.binding.v1'
+            or binding.get('pid')!=pid or binding.get('serial')!=serial
+            or binding.get('key_source')!='entry'
+            or type(binding.get('entry')) is not int or binding['entry']!=key):
+        raise ValueError('REAL_ENTRY_BINDING_REQUIRED')
+
+
 def fields(layout):
     if layout.get('schema')!='dcat.fault33.sdk_layout.v1':raise ValueError('SDK_LAYOUT_SCHEMA_REQUIRED')
     classes={c['name']:c for c in layout['classes']}
@@ -84,7 +94,9 @@ if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('capture',type=Path);p.add_argument('--layout',type=Path,required=True)
     p.add_argument('--metadata',type=Path,required=True);p.add_argument('--holder-index',type=int,required=True)
     p.add_argument('--reviewed-key',type=int,action='append',required=True);p.add_argument('--output',type=Path,required=True)
-    a=p.parse_args();r=decode(a.capture.read_bytes(),json.loads(a.layout.read_text()),json.loads(a.metadata.read_text()),
+    a=p.parse_args();raw=a.capture.read_bytes()
+    check_binding(raw,json.loads(Path(str(a.capture)+'.binding.json').read_bytes()))
+    r=decode(raw,json.loads(a.layout.read_text()),json.loads(a.metadata.read_text()),
         holder_index=a.holder_index,allowed_keys=a.reviewed_key)
     a.output.write_text(json.dumps(r,indent=2)+'\n',encoding='utf-8')
     raise SystemExit(0 if r['shape_consistent'] else 1)

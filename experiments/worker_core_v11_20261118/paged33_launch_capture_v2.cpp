@@ -16,9 +16,10 @@
 #include <string>
 
 namespace {
+struct Binding { uint64_t key=0; bool entry=false; std::string name; };
 struct State {
  std::mutex lock;
- std::unordered_map<void*,uint64_t> entries;
+ std::unordered_map<void*,Binding> entries;
  std::unordered_set<uint64_t> keys;
  std::string dir;
  bool all=false,valid=true,finalized=false;
@@ -52,14 +53,41 @@ bool emit(int fd,const void* data,size_t size){
  while(size){ssize_t n=write(fd,p,size);if(n<0 && errno==EINTR)continue;
   if(n<=0)return false;p+=n;size-=n;}return true;
 }
+std::string quote(const std::string& value){
+ std::string out="\"";char escaped[7];
+ for(unsigned char c:value){
+  if(c=='"' || c=='\\'){out+='\\';out+=c;}
+  else if(c<32 || c>=127){snprintf(escaped,sizeof(escaped),"\\u%04x",c);out+=escaped;}
+  else out+=c;
+ }
+ return out+'"';
+}
+}
+
+extern "C" aclError aclrtBinaryGetFunction(aclrtBinHandle b,const char* name,aclrtFuncHandle* f){
+ using Fn=aclError(*)(aclrtBinHandle,const char*,aclrtFuncHandle*);
+ static Fn real=reinterpret_cast<Fn>(dlsym(RTLD_NEXT,"aclrtBinaryGetFunction"));
+ if(!real)std::abort();auto rc=real(b,name,f);auto& s=state();
+ if(rc==ACL_SUCCESS && f && *f && name){std::lock_guard<std::mutex> g(s.lock);
+  size_t length=strnlen(name,513);
+  if(length>512){++s.map_drop;}
+  else if(s.entries.count(*f) || s.entries.size()<s.handle_limit){
+   // A name is not a tiling key. Zero is only a placeholder, explicitly
+   // identified in each record's binding sidecar. Never downgrade a real entry.
+   auto& binding=s.entries[*f];binding.name.assign(name,length);
+  }else ++s.map_drop;
+ }
+ return rc;
 }
 
 extern "C" aclError aclrtBinaryGetFunctionByEntry(aclrtBinHandle b,uint64_t e,aclrtFuncHandle* f){
  using Fn=aclError(*)(aclrtBinHandle,uint64_t,aclrtFuncHandle*);
  static Fn real=reinterpret_cast<Fn>(dlsym(RTLD_NEXT,"aclrtBinaryGetFunctionByEntry"));
  if(!real)std::abort();auto rc=real(b,e,f);auto& s=state();
- if(rc==ACL_SUCCESS && f){std::lock_guard<std::mutex> g(s.lock);
-  if(s.entries.count(*f) || s.entries.size()<s.handle_limit)s.entries[*f]=e;else ++s.map_drop;}
+ if(rc==ACL_SUCCESS && f && *f){std::lock_guard<std::mutex> g(s.lock);
+  if(s.entries.count(*f) || s.entries.size()<s.handle_limit){
+   auto& binding=s.entries[*f];binding.key=e;binding.entry=true;
+  }else ++s.map_drop;}
  return rc;
 }
 
@@ -67,7 +95,7 @@ extern "C" aclError aclrtLaunchKernelWithHostArgs(aclrtFuncHandle f,uint32_t blo
  aclrtLaunchKernelCfg* cfg,void* args,size_t size,aclrtPlaceHolderInfo* holders,size_t count){
  using Fn=aclError(*)(aclrtFuncHandle,uint32_t,aclrtStream,aclrtLaunchKernelCfg*,void*,size_t,aclrtPlaceHolderInfo*,size_t);
  static Fn real=reinterpret_cast<Fn>(dlsym(RTLD_NEXT,"aclrtLaunchKernelWithHostArgs"));
- if(!real)std::abort();auto& s=state();uint64_t key=0,id=0;bool capture=false;
+ if(!real)std::abort();auto& s=state();uint64_t key=0,id=0;bool capture=false;Binding binding;
  {
   std::lock_guard<std::mutex> g(s.lock);
   // Deployment creates/removes this file for a short, explicitly bounded window.
@@ -76,10 +104,10 @@ extern "C" aclError aclrtLaunchKernelWithHostArgs(aclrtFuncHandle f,uint32_t blo
   else {
    ++s.seen;auto it=s.entries.find(f);
    if(it==s.entries.end())++s.unknown;
-   else if(!s.all && !s.keys.count(it->second))++s.filtered;
+   else if(!s.all && (!it->second.entry || !s.keys.count(it->second.key)))++s.filtered;
    else {
-    key=it->second;id=s.selected++;
-    uint64_t bytes=80+size+count*sizeof(aclrtPlaceHolderInfo);
+    binding=it->second;key=binding.key;id=s.selected++;
+    uint64_t bytes=80+size+count*sizeof(aclrtPlaceHolderInfo)+4096;
     if(!args || size==0 || size>65536 || count>128 || (count && !holders))++s.oversize;
     else if(id>=s.limit || bytes>s.byte_limit-s.reserved_bytes)++s.capacity_drop;
     else {s.reserved_bytes+=bytes;++s.pending;capture=true;}
@@ -97,6 +125,15 @@ extern "C" aclError aclrtLaunchKernelWithHostArgs(aclrtFuncHandle f,uint32_t blo
   uint64_t h[10]={0x444341544c415531ULL,(uint64_t)getpid(),id,key,blocks,size,count,sizeof(aclrtPlaceHolderInfo),(uint64_t)rc,ph.size()};
   bool ok=false;int closed=0;
   if(fd>=0){ok=emit(fd,h,sizeof(h)) && emit(fd,copy.data(),copy.size()) && emit(fd,ph.data(),ph.size());closed=close(fd);}
+  // Provenance is frozen at launch time. A later ByEntry lookup does not
+  // retroactively manufacture a key for earlier name-only launches.
+  if(fd>=0 && ok && !closed){
+   std::string metadata="{\"schema\":\"dcat.launch.binding.v1\",\"pid\":"+std::to_string(getpid())+
+    ",\"serial\":"+std::to_string(id)+",\"key_source\":"+quote(binding.entry?"entry":"name_only")+
+    ",\"entry\":"+(binding.entry?std::to_string(key):"null")+",\"function_name\":"+quote(binding.name)+"}\n";
+   int meta=open((path+".binding.json").c_str(),O_WRONLY|O_CREAT|O_EXCL,0600);
+   if(meta<0)fd=-1;else {ok=emit(meta,metadata.data(),metadata.size());closed=close(meta);}
+  }
   std::lock_guard<std::mutex> g(s.lock);
   if(rc!=ACL_SUCCESS)++s.launch_error;
   if(fd<0)++s.open_error;else if(!ok)++s.short_write;else if(closed)++s.close_error;else ++s.written;
@@ -112,7 +149,7 @@ extern "C" int dcat33_capture_flush(){
  std::string path=s.dir+"/capture-"+std::to_string(getpid())+".json";
  int fd=open(path.c_str(),O_WRONLY|O_CREAT|O_EXCL,0600);if(fd<0)return 2;
  char out[2048];int n=snprintf(out,sizeof(out),
-  "{\"schema\":\"dcat.launch.capture.v2\",\"finalized\":true,\"pending_writes\":0,\"pid\":%d,\"config_valid\":%s,"
+  "{\"schema\":\"dcat.launch.capture.v2\",\"binding_metadata\":true,\"finalized\":true,\"pending_writes\":0,\"pid\":%d,\"config_valid\":%s,"
   "\"seen\":%llu,\"unarmed\":%llu,\"unknown\":%llu,\"filtered\":%llu,\"selected\":%llu,\"written\":%llu,"
   "\"oversize\":%llu,\"capacity_drop\":%llu,\"open_error\":%llu,\"short_write\":%llu,\"close_error\":%llu,"
   "\"map_drop\":%llu,\"copy_error\":%llu,\"reserved_bytes\":%llu,\"launch_error\":%llu}\n",

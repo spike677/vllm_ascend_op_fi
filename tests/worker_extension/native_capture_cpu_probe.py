@@ -21,9 +21,13 @@ struct aclrtLaunchKernelCfg { int unused; };
 struct aclrtPlaceHolderInfo { uint64_t a,b; };
 #define ACL_SUCCESS 0
 extern "C" aclError aclrtBinaryGetFunctionByEntry(aclrtBinHandle,uint64_t,aclrtFuncHandle*);
+extern "C" aclError aclrtBinaryGetFunction(aclrtBinHandle,const char*,aclrtFuncHandle*);
 extern "C" aclError aclrtLaunchKernelWithHostArgs(aclrtFuncHandle,uint32_t,aclrtStream,aclrtLaunchKernelCfg*,void*,size_t,aclrtPlaceHolderInfo*,size_t);
 '''
 FAKE='''#include <acl/acl.h>
+#include <cstring>
+extern "C" aclError aclrtBinaryGetFunction(aclrtBinHandle,const char* name,aclrtFuncHandle* f){
+ *f=(void*)101;return !strcmp(name,"fail")?7:0;}
 extern "C" aclError aclrtBinaryGetFunctionByEntry(aclrtBinHandle,uint64_t e,aclrtFuncHandle* f){*f=(void*)(uintptr_t)(e+1);return 0;}
 extern "C" aclError aclrtLaunchKernelWithHostArgs(aclrtFuncHandle f,uint32_t b,aclrtStream,aclrtLaunchKernelCfg*,void* p,size_t n,aclrtPlaceHolderInfo*,size_t){
  return f && b==3 && n>=8 && *(uint64_t*)p==0x12345678 ? 0:5;
@@ -39,7 +43,24 @@ int main(int argc,char** argv){aclrtFuncHandle f=nullptr;uint64_t args[8193]={0x
  auto flush=(int(*)())dlsym(RTLD_DEFAULT,"dcat33_capture_flush");if(!flush)return 13;
  std::string marker=std::string(getenv("DCAT33_CAPTURE_DIR"))+"/ARMED";
  if(access(marker.c_str(),F_OK)==0 && flush()!=1)return 14;
- for(int i=0;i<9000;i++){if(aclrtBinaryGetFunctionByEntry(nullptr,100+i,&f))return 10;
+ const char* mode=getenv("BINDING_TEST");
+ if(mode){
+  std::string m(mode);
+  if(m=="failed_lookup"){
+   if(aclrtBinaryGetFunction(nullptr,"fail",&f)!=7)return 20;
+   if(aclrtLaunchKernelWithHostArgs(f,3,nullptr,nullptr,args,8,nullptr,0))return 21;
+  }else{
+   if(m=="entry_first" && aclrtBinaryGetFunctionByEntry(nullptr,100,&f))return 22;
+   if(aclrtBinaryGetFunction(nullptr,"named_kernel",&f))return 23;
+   if(aclrtLaunchKernelWithHostArgs(f,3,nullptr,nullptr,args,8,nullptr,0))return 24;
+   if(m=="promote"){
+    if(aclrtBinaryGetFunctionByEntry(nullptr,100,&f))return 25;
+    if(aclrtLaunchKernelWithHostArgs(f,3,nullptr,nullptr,args,8,nullptr,0))return 26;
+    if(aclrtBinaryGetFunction(nullptr,"named_kernel",&f))return 27;
+    if(aclrtLaunchKernelWithHostArgs(f,3,nullptr,nullptr,args,8,nullptr,0))return 28;
+   }
+  }
+ }else for(int i=0;i<9000;i++){if(aclrtBinaryGetFunctionByEntry(nullptr,100+i,&f))return 10;
   if(aclrtLaunchKernelWithHostArgs(f,3,nullptr,nullptr,args,argc>1?sizeof(args):8,nullptr,0))return 11;
   if(args[0]!=0x12345678)return 12;}
  unlink(marker.c_str());if(flush()!=0 || flush()!=0)return 15;
@@ -72,6 +93,24 @@ def main():
             elif name=='oversize':assert c['oversize']==9000
             else:assert c['unarmed']==9000 and c['written']==0
             result['cases'].append(dict(case=name,passed=True,census=c,complete=reviewed['complete'],issues=reviewed['issues']))
+        for name in ('name_only','promote','entry_first','failed_lookup','name_filtered'):
+            out=p/name;out.mkdir();(out/'ARMED').touch()
+            env=dict(os.environ,LD_PRELOAD=str(p/'capture.so'),DCAT33_CAPTURE_DIR=str(out),
+                     DCAT33_CAPTURE_ALL='0' if name=='name_filtered' else '1',
+                     DCAT33_CAPTURE_KEYS='0',BINDING_TEST=name)
+            pid=int(subprocess.check_output([str(p/'main')],env=env,text=True))
+            reviewed=module.review(out,pid);c=reviewed['census']
+            assert reviewed['complete']==(name not in ('failed_lookup','name_filtered')), reviewed
+            records=sorted(reviewed['records'],key=lambda r:r['serial'])
+            if name=='name_only':
+                assert c['unknown']==0 and records[0]['key'] is None and records[0]['key_source']=='name_only'
+            elif name=='promote':
+                assert [r['key'] for r in records]==[None,100,100]
+            elif name=='entry_first':assert records[0]['key']==100
+            elif name=='failed_lookup':assert c['unknown']==1 and not records
+            else:assert c['filtered']==1 and not records
+            result['cases'].append(dict(case=name,passed=True,census=c,records=records,
+                                      complete=reviewed['complete'],issues=reviewed['issues']))
     result['passed']=all(c['passed'] for c in result['cases'])
     Path(sys.argv[1]).write_text(json.dumps(result,indent=2)+'\n')
     print(json.dumps(dict(passed=result['passed'],cases=len(result['cases']),npu_calls=0)))
