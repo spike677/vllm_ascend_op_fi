@@ -33,10 +33,16 @@ MAIN='''#include <acl/acl.h>
 #include <cstdlib>
 #include <cstdio>
 #include <unistd.h>
+#include <dlfcn.h>
+#include <string>
 int main(int argc,char** argv){aclrtFuncHandle f=nullptr;uint64_t args[8193]={0x12345678};
+ auto flush=(int(*)())dlsym(RTLD_DEFAULT,"dcat33_capture_flush");if(!flush)return 13;
+ std::string marker=std::string(getenv("DCAT33_CAPTURE_DIR"))+"/ARMED";
+ if(access(marker.c_str(),F_OK)==0 && flush()!=1)return 14;
  for(int i=0;i<9000;i++){if(aclrtBinaryGetFunctionByEntry(nullptr,100+i,&f))return 10;
   if(aclrtLaunchKernelWithHostArgs(f,3,nullptr,nullptr,args,argc>1?sizeof(args):8,nullptr,0))return 11;
   if(args[0]!=0x12345678)return 12;}
+ unlink(marker.c_str());if(flush()!=0 || flush()!=0)return 15;
  printf("%d",getpid());return 0;}
 '''
 
@@ -52,7 +58,7 @@ def main():
         (p/'fake.cpp').write_text(FAKE);(p/'main.cpp').write_text(MAIN)
         subprocess.run(['g++','-std=c++17','-shared','-fPIC','-I',str(p),str(p/'fake.cpp'),'-o',str(p/'libfake.so')],check=True)
         subprocess.run(['g++','-std=c++17','-shared','-fPIC','-I',str(p),str(SOURCE),'-ldl','-pthread','-o',str(p/'capture.so')],check=True)
-        subprocess.run(['g++','-std=c++17','-I',str(p),str(p/'main.cpp'),'-L',str(p),'-lfake','-Wl,-rpath,'+str(p),'-o',str(p/'main')],check=True)
+        subprocess.run(['g++','-std=c++17','-I',str(p),str(p/'main.cpp'),'-L',str(p),'-lfake','-ldl','-Wl,-rpath,'+str(p),'-o',str(p/'main')],check=True)
         for name,limit,armed,oversize in [('full_9000',10000,True,False),('capacity',16,True,False),('oversize',10000,True,True),('unarmed',10000,False,False)]:
             out=p/name;out.mkdir()
             if armed:(out/'ARMED').touch()

@@ -20,6 +20,7 @@ def review(directory, pid):
         report = json.loads(raw)
         if (report.get('schema') != 'dcat.launch.capture.v2' or report.get('pid') != pid
                 or report.get('config_valid') is not True
+                or report.get('finalized') is not True or report.get('pending_writes') != 0
                 or any(type(report.get(k)) is not int or report[k] < 0 for k in COUNTS)
                 or report['selected'] > 1000000):
             raise ValueError('invalid manifest fields')

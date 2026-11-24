@@ -21,7 +21,8 @@ struct State {
  std::unordered_map<void*,uint64_t> entries;
  std::unordered_set<uint64_t> keys;
  std::string dir;
- bool all=false,valid=true;
+ bool all=false,valid=true,finalized=false;
+ uint64_t pending=0;
  uint64_t limit=65536,handle_limit=131072,byte_limit=1073741824ULL;
  uint64_t seen=0,unarmed=0,unknown=0,filtered=0,selected=0,written=0;
  uint64_t oversize=0,capacity_drop=0,open_error=0,short_write=0,close_error=0;
@@ -70,7 +71,8 @@ extern "C" aclError aclrtLaunchKernelWithHostArgs(aclrtFuncHandle f,uint32_t blo
  {
   std::lock_guard<std::mutex> g(s.lock);
   // Deployment creates/removes this file for a short, explicitly bounded window.
-  if(!s.valid || access((s.dir+"/ARMED").c_str(),F_OK)!=0)++s.unarmed;
+  if(s.finalized){} // Explicit finalization seals this process window.
+  else if(!s.valid || access((s.dir+"/ARMED").c_str(),F_OK)!=0)++s.unarmed;
   else {
    ++s.seen;auto it=s.entries.find(f);
    if(it==s.entries.end())++s.unknown;
@@ -80,14 +82,14 @@ extern "C" aclError aclrtLaunchKernelWithHostArgs(aclrtFuncHandle f,uint32_t blo
     uint64_t bytes=80+size+count*sizeof(aclrtPlaceHolderInfo);
     if(!args || size==0 || size>65536 || count>128 || (count && !holders))++s.oversize;
     else if(id>=s.limit || bytes>s.byte_limit-s.reserved_bytes)++s.capacity_drop;
-    else {s.reserved_bytes+=bytes;capture=true;}
+    else {s.reserved_bytes+=bytes;++s.pending;capture=true;}
    }
   }
  }
  std::vector<unsigned char> copy,ph;
  if(capture){try{copy.resize(size);std::memcpy(copy.data(),args,size);
   if(count){ph.resize(count*sizeof(aclrtPlaceHolderInfo));std::memcpy(ph.data(),holders,ph.size());}}
-  catch(...){std::lock_guard<std::mutex> g(s.lock);++s.copy_error;capture=false;}}
+  catch(...){std::lock_guard<std::mutex> g(s.lock);++s.copy_error;--s.pending;capture=false;}}
  auto rc=real(f,blocks,stream,cfg,args,size,holders,count);
  if(capture){
   std::string path=s.dir+"/launch-"+std::to_string(getpid())+"-"+std::to_string(id)+".bin";
@@ -98,16 +100,19 @@ extern "C" aclError aclrtLaunchKernelWithHostArgs(aclrtFuncHandle f,uint32_t blo
   std::lock_guard<std::mutex> g(s.lock);
   if(rc!=ACL_SUCCESS)++s.launch_error;
   if(fd<0)++s.open_error;else if(!ok)++s.short_write;else if(closed)++s.close_error;else ++s.written;
+  --s.pending;
  }
  return rc;
 }
 
-__attribute__((destructor)) static void finish_capture(){
- auto& s=state();std::lock_guard<std::mutex> g(s.lock);if(s.dir.empty())return;
+extern "C" int dcat33_capture_flush(){
+ auto& s=state();std::lock_guard<std::mutex> g(s.lock);
+ if(s.finalized)return 0;
+ if(s.dir.empty() || s.pending || access((s.dir+"/ARMED").c_str(),F_OK)==0)return 1;
  std::string path=s.dir+"/capture-"+std::to_string(getpid())+".json";
- int fd=open(path.c_str(),O_WRONLY|O_CREAT|O_EXCL,0600);if(fd<0)return;
+ int fd=open(path.c_str(),O_WRONLY|O_CREAT|O_EXCL,0600);if(fd<0)return 2;
  char out[2048];int n=snprintf(out,sizeof(out),
-  "{\"schema\":\"dcat.launch.capture.v2\",\"pid\":%d,\"config_valid\":%s,"
+  "{\"schema\":\"dcat.launch.capture.v2\",\"finalized\":true,\"pending_writes\":0,\"pid\":%d,\"config_valid\":%s,"
   "\"seen\":%llu,\"unarmed\":%llu,\"unknown\":%llu,\"filtered\":%llu,\"selected\":%llu,\"written\":%llu,"
   "\"oversize\":%llu,\"capacity_drop\":%llu,\"open_error\":%llu,\"short_write\":%llu,\"close_error\":%llu,"
   "\"map_drop\":%llu,\"copy_error\":%llu,\"reserved_bytes\":%llu,\"launch_error\":%llu}\n",
@@ -116,6 +121,8 @@ __attribute__((destructor)) static void finish_capture(){
   (unsigned long long)s.oversize,(unsigned long long)s.capacity_drop,(unsigned long long)s.open_error,
   (unsigned long long)s.short_write,(unsigned long long)s.close_error,(unsigned long long)s.map_drop,
   (unsigned long long)s.copy_error,(unsigned long long)s.reserved_bytes,(unsigned long long)s.launch_error);
- if(n>0 && (size_t)n<sizeof(out))emit(fd,out,n);close(fd);
- // Missing or truncated final manifest is rejected by the independent verifier.
+ bool ok=n>0 && (size_t)n<sizeof(out) && emit(fd,out,n);
+ if(fsync(fd)!=0)ok=false;if(close(fd)!=0)ok=false;
+ s.finalized=ok;return ok?0:2;
 }
+__attribute__((destructor)) static void finish_capture(){dcat33_capture_flush();}

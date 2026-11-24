@@ -1,5 +1,7 @@
 # 33完整捕获增量：尚未授予A3资格
 
+实际执行请用[33 A3 TP2取证执行单r1](fault33_a3_evidence_execution_20261124.md)。新修订支持原Worker控制边界显式flush并封存，避免依赖多进程退出析构器。以下编译和容量说明仍有效；以执行单的显式封存步骤为准。
+
 新增文件 `experiments/worker_core_v11_20261118/paged33_launch_capture_v2.cpp`，不覆盖旧采集器。公开ACL函数声明在124已有A2 CANN9.1镜像内无设备编译通过；不代表A3已加载库、serializer或分组已匹配。
 
 独立CPU模拟：9000个不同函数handle、9000次原生转发，全部捕获；16条容量限制正确报告8984条capacity_drop；过大host参数报告9000条oversize；未开启窗口报告9000条unarmed。fake ACL检查原参数和返回值，未调用NPU。原件统计见[r74_capture_cpu_20261124.json](r74_capture_cpu_20261124.json)。本地审查器另测试8193条、文件截断、缺manifest、计数矛盾与未知handle。

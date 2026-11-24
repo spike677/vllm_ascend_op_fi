@@ -11,7 +11,11 @@ class CaptureTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.manifest = dict.fromkeys(COUNTS, 0)
-        self.manifest.update(schema='dcat.launch.capture.v2', pid=12, config_valid=True)
+        self.manifest.update(schema='dcat.launch.capture.v2', pid=12, config_valid=True,finalized=True,pending_writes=0)
+
+    def test_unsealed_manifest_rejected(self):
+        self.record(0);self.manifest.update(seen=1,selected=1,written=1,finalized=False);self.save()
+        self.assertFalse(review(self.root,12)['complete'])
 
     def save(self):
         (self.root / 'capture-12.json').write_text(json.dumps(self.manifest))
