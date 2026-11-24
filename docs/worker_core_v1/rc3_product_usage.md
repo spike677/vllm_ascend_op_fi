@@ -56,3 +56,8 @@ export VLLM_WORKER_MULTIPROC_METHOD=spawn
 ## r7 Native 蓝区候选
 
 41、26fia、20 已通过 A2/0.26/CANN9.1/社区 Qwen3.8 W8A8/TP2 真实 HTTP 产品验收。受信部署文件指定已审查 `native_library` 和 `native_sha256`；用户 payload 不能传库路径、地址或 rank。Native 当前只接受 BLUE_COMBINATION、实际 Ascend910B4 和 TP2，A3/TP1 未开放。41 仅在真实 paged decode KV 消费窗口合格，prefill 保留不适用原因；26fia/20 各自依据真实消费者和安全恢复点。详见 [r7 报告](r7_native_a2_20261123/README.md)。
+# 15的故障值与恢复边界（K5补充）
+
+15 B档是“别名断开语义（ND视图），不含私有格式触发条件”。故障请求可能读到未初始化旧字节，因此不保证有限值或逐位稳定。关闭验收分别核对原base字节、资源清零、干净新请求金丝雀；不要求被污染的原请求恢复为从未注入的结果。
+
+A2/0.26/CANN9.1/Qwen3.8 W8A8/TP2已通过受控NaN分配器场景的两个owner安全与恢复诊断，见 `alias15_uninitialized_risk_20261124.md`；诊断预处理不是产品开关，不进入命名变体或公共配置，不代表A3资格。A3仍按r7.4.1正式执行单验证。
