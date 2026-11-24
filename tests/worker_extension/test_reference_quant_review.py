@@ -84,3 +84,30 @@ class ReviewTests(unittest.TestCase):
             c=json.loads(lines[0]);c['events'][0]['scale_multiplier']=.25
             lines[0]=json.dumps(c);p.write_text('\n'.join(lines))
             with self.assertRaisesRegex(ValueError,'RECIPE_MISMATCH'):review_directory(directory)
+
+    def test_native_reference_drift_is_not_an_order_effect(self):
+        from reference_adapters.review_reference import run
+        with tempfile.TemporaryDirectory() as tmp, patch('reference_adapters.review_reference.review',return_value={}):
+            directory=Path(tmp);self.fixture(directory)
+            p=directory/'product_http_18.json';d=json.loads(p.read_bytes())
+            d['mechanism']='external.row19_bf16_reverse_splitk';p.write_text(json.dumps(d))
+            p=directory/'product_control_negative.json';neg=json.loads(p.read_bytes())
+            neg['missing_permit_cli']['refusal_codes']=['EXTERNAL_CURRENT_ACCEPTANCE_PERMIT_REQUIRED']
+            p.write_text(json.dumps(neg))
+            for rank in (0,1):
+                p=directory/f'external-input-rank{rank}.jsonl';lines=[]
+                for line in p.read_text().splitlines():
+                    chunk=json.loads(line);chunk['kind']='ReverseSplitK'
+                    chunk['events'][0].update(control_passed=True,bf16_operands=True,
+                        quantized_operand_recomputed=False,control_changed_elements=2,rule_changed_elements=0)
+                    lines.append(json.dumps(chunk))
+                p.write_text('\n'.join(lines))
+            result=run(directory,'product_http_18.json','product_control_negative.json')
+            self.assertEqual(result['status'],'EXECUTION_RECOVERY_PASSED_NO_NUMERIC_PHENOMENON')
+            self.assertEqual(result['effects_by_rank'][0]['changed_elements'],12)
+            self.assertEqual(result['effects_by_rank'][0]['rule_changed_elements'],0)
+            p=directory/'external-input-rank0.jsonl';lines=p.read_text().splitlines()
+            chunk=json.loads(lines[0]);del chunk['events'][0]['rule_changed_elements']
+            lines[0]=json.dumps(chunk);p.write_text('\n'.join(lines))
+            with self.assertRaisesRegex(ValueError,'RULE_CONTROL_SEPARATION_REQUIRED'):
+                run(directory,'product_http_18.json','product_control_negative.json')

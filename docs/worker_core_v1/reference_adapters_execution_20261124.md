@@ -19,6 +19,9 @@ K文档和正式测试分阶段交接已提交；`releases/qwen-r741-phased-hand
 |`releases/yellow-reference-swiglu-20261124-r1`|3|`22de08405a52228d9f4771ec32f75bf65b10bebc2f1b68a506215cc54f36d6fe`|
 |`releases/yellow-reference-quant-20261124-r1`|9、10，各两档|`dbcb1da1346f02d39ca921dfa78c517fece9f179d9704da937ef14f5aaf61cf3`|
 |`releases/yellow-reference-hidden-20261124-r1`|7、8|`c3aed8dd84bb533adc45276cff55882c81b09b628e9bde14a0eaec5aa592b246`|
+|`releases/yellow-reference-vision-compute-20261125-r1`|16|`83145839a481d1a111ebb78b62c566e421f61ea2a459cb03a0d8d69d348d6da3`|
+
+以上ZIP逐文件bytes/SHA及归档SHA均重新校验通过。
 
 以上均已在独立目录以冻结r7.4.1源码加补充ZIP解压，执行对应CPU测试。实机结论来自原始回执的独立复核，CPU测试不替代实机。
 
@@ -27,8 +30,13 @@ K文档和正式测试分阶段交接已提交；`releases/qwen-r741-phased-hand
 - 量化初始两次尝试在注入前被测试工具错误拦截：外部机制错误使用内部FaultConfig、随后错误预期内部缺许可码。已仅修测试工具；正确外部拒绝码为 `EXTERNAL_CURRENT_ACCEPTANCE_PERMIT_REQUIRED`。
 - 三档合并测试的一次资源预算超过单case1800秒门禁，在NPU启动前拒绝；随后使用满足预算的同Worker三档配方。
 - 第7、8行第一轮虽计数一致，但消费者是 `vllm::maybe_chunk_residual`，实际只读x的形状。独立源码审查否决该结果；工厂保持租约直到 `_C_ascend::npu_add_rms_norm_bias` 真正读取，修正版重新实机通过。审查器新增对形状-only假消费者的拒绝测试。
-- 第12行首轮未观察到softmax，测试引擎退出，未计为通过。实际vLLM采样器会先把BF16 logits转FP32；修正版追踪真实转换后的存储来源，保留合法温度写入，再在真实softmax短窗口内租用和恢复。修正版仍须独立实机通过后才交付。
+- 第12行前两轮未观察到softmax，测试引擎退出，未计为通过。实际vLLM采样器会先把BF16 logits转FP32；修正版追踪真实转换后的存储来源，保留合法温度写入，再在真实softmax短窗口内租用和恢复。第二轮进一步查到lmhead TP路径在FP32转换前取 `logits[:input_batch.num_reqs]`，产生同存储的新视图。仅允许实际首请求完整词表行的连续视图，拒绝同值副本和错行。修正版仍须独立实机通过后才交付。
 - 设备门禁一度将Kubernetes释放后的显式 `PodDeviceEntries=null` 误判为未知格式。独立测试控制器兼容显式空切片；缺字段和其他未知格式仍拒绝。宿主checkpoint、Docker配置和产品准入均未改。
+
+- 第32行实机两个owner、每rank六次真实Conv3d/encoder消费及恢复通过，但BF16图像输入的FP16往返changed=0。结论为 `EXECUTION_RECOVERY_PASSED_NO_NUMERIC_PHENOMENON`，不加入通过补充件，不加额外扰动制造数值变化。
+- 第19行首轮真实BF16矩阵乘→all_gather，每rank24次应用和恢复，前64列changed=0。后续固定档观测前1024列，并分别记录control_changed_elements（原生对正序参考）与rule_changed_elements（正序对逆序）；仅前者变化不能证明累加顺序效应。
+
+- 第34行两个rank均报 `REFERENCE_NO_REAL_BF16_WEIGHT`，引擎随后退出。已确认社区视觉矩阵权重为int8，当前自然BF16带bias点位不适用。未完成两个owner，不能称为安全拒绝或产品通过；不解量化权重、不添加假bias/residual。失败日志SHA保留在A2结果JSON。
 
 ## 资源窗口
 
@@ -38,6 +46,8 @@ K文档和正式测试分阶段交接已提交；`releases/qwen-r741-phased-hand
 - `refquant1124a6`：0.25/2/4三档，同Worker，480.109秒，窗口已结束。
 - `refhidden1124b3`：7/8修正版，同Worker，304.123秒，窗口已结束。
 - `refs1124b1`：含旧7/8、第12行失败及第3行通过；总窗口1059.537秒。中途空分配解析拒绝后已退出；旧7/8不能作为通过证据。
+
+- `refs1124b4`：UTC 15:58:15.140706 → 16:24:13.450883，1558.310秒；12失败、16通过、32/19无数值现象、34无合格候选。只读监视已结束、卡锁已释放。
 
 这些是验收窗口墙钟时间，包含加载、预热、HTTP和取证开销，不冒充纯NPU计算时间。`unregister` 中间状态尚未执行最终金丝雀；恢复结论读取 `disable.recovery` 和独立审查的 `canary_exact/all_resources_zero`。
 
