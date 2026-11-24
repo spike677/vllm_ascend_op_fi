@@ -79,16 +79,30 @@ class PersistentRegions:
         return dict(regions=len(self.entries),backup_bytes=total)
 
     def write(self,name,value):
-        self._boundary(); entry=self.entries[name];r=self._current(entry)
-        require(type(value) is torch.Tensor and value.shape==r.tensor.shape and value.dtype==r.tensor.dtype
-                and value.device==r.tensor.device,'V2_EXACT_VALUE_LAYOUT_REQUIRED')
-        before=r.tensor.detach().view(torch.uint8).clone()
-        event=dict(region=name,region_kind=r.region_kind,observed=1,eligible=1,attempted=1,applied=0,
+        entry=self.entries[name]
+        event=dict(region=name,region_kind=entry['region'].region_kind,observed=1,eligible=1,attempted=1,applied=0,
                    changed=0,changed_elements=0,
                    consumed=0,restored=0,failed=0,restore_kind=None)
         entry['events'].append(event);self.events.append(event)
         try:
-            self.leases.write(entry['token'],value)
+            self._boundary();r=self._current(entry)
+            require(type(value) is torch.Tensor and value.shape==r.tensor.shape and value.dtype==r.tensor.dtype
+                    and value.device==r.tensor.device,'V2_EXACT_VALUE_LAYOUT_REQUIRED')
+            require(all(e['consumed'] and not e['failed'] for e in entry['events'][:-1]),
+                    'V2_PRIOR_WRITE_READERS_INCOMPLETE')
+            lease=self.leases._get(entry['token'])
+            before=r.tensor.detach().view(torch.uint8).clone()
+            with torch.no_grad():
+                if lease['written']:
+                    # Keep the original backup for this allocation generation.
+                    # Rewrites need their own reader completion before another write.
+                    require(version(r.tensor)==lease['version'] and exact(r.tensor,lease['expected']),
+                            'V2_INTERVENING_WRITE_NO_OVERWRITE')
+                    r.tensor.copy_(value);self.leases.complete(lease['stream'])
+                    lease.update(version=version(r.tensor),expected=value.detach().clone(),consumed=False)
+                else:
+                    self.leases.write(entry['token'],value)
+            entry['readers'].clear()
             changed=int((before.reshape(-1,r.tensor.element_size())!=r.tensor.detach().view(torch.uint8).reshape(-1,r.tensor.element_size())).any(dim=1).sum().item())
             event.update(applied=1,changed=int(changed>0),changed_elements=changed)
         except Exception:
@@ -102,7 +116,7 @@ class PersistentRegions:
         require(entry['events'] and all(e['applied'] and not e['failed'] for e in entry['events']),'V2_NO_WRITE_TO_CONSUME')
         self.leases.consumed(entry['token'])  # device completion on the held stream
         entry['readers'].add(consumer);self.reader_observations+=1
-        for event in entry['events']:event['consumed']=1
+        entry['events'][-1]['consumed']=int(set(r.consumers)<=entry['readers'])
 
     def observe_kv_legal_write(self,name,*,request_generation):
         """Only a reviewed KV writer boundary may record its own completed write.
@@ -125,7 +139,7 @@ class PersistentRegions:
             require(r.request_generation in b.get('ended_request_generations',())
                     and b.get('before_page_release') is True,'V2_KV_SAFE_END_REQUIRED')
         try:
-            self.leases.restore(entry['token'])
+            with torch.no_grad():self.leases.restore(entry['token'])
         except Exception:
             for e in entry['events']:e['failed']=1
             raise

@@ -1,8 +1,8 @@
 # 外部 provider v2：持久区域恢复设计（已批准开发）
 
-2026-11-24最新负责人决定已批准开发，覆盖此前“只设计”。首批区域原语见external_persistent_regions.py，10项CPU用例通过；尚未接入实际模型、Ingress排空与组事务，未做A2示例验收。v1继续拒绝 EXTERNAL_V1_PERSISTENT_WEIGHT_OR_KV_RESTORE_UNPROVEN，不能用新原语绕过。
+2026-11-24最新负责人决定已批准开发，覆盖此前“只设计”。区域原语见external_persistent_regions.py，14项CPU用例通过；尚未接入实际模型、Ingress排空与组事务，未做A2示例验收。v1继续拒绝 EXTERNAL_V1_PERSISTENT_WEIGHT_OR_KV_RESTORE_UNPROVEN，不能用新原语绕过。
 复用现有Runtime、owner/generation、RegionLeases、request_plan、产品attach/enable/status/disable/detach及多rank控制；不另建状态机。
-本阶段产品收口为A3 Qwen3.8 TP2；以下A2试验是批准后计划，不代表已经验收。
+本阶段持久区域先在A2验证，再以A3 Qwen3.8 TP2验收；DeepSeek专属条目走独立D包。以下A2试验已经获准，但尚未完成。
 
 ## 区域和证明对象
 
@@ -24,7 +24,7 @@ KV按cache group/layer/rank、request generation、block/page allocation generat
 开启期间保持同一个已注入权重版本，所有真实读取持续受影响；不能每次读都重复乘scale形成未定义的指数漂移，也不能把读取次数伪装成applied次数。
    与v1瞬态门禁有一处必须明确的契约区别：持久权重不能在超范围请求上简单“NOT_INJECTED”，因为它仍会读污染权重。
    第一版拟仅支持可信请求准入能在入计算前拒绝超范围请求的专用实例；或由部署方把它路由至独立干净实例。无法证明这个入口的部署拒绝持久模式。
-   不在同一已污染模型上并发执行所谓正常请求，不用逐请求临时恢复来制造竞态。该新增契约须负责人批准后实现。
+   不在同一已污染模型上并发执行所谓正常请求，不用逐请求临时恢复来制造竞态。该契约已获负责人批准，真实入口接线仍待实现。
 6. disable停止新请求；等所有设备读者、异步副本、预取事件完成，再在同一allocation generation下恢复字节。
    恢复基础和派生缓存，以原备份恢复或经过精确对照的重建；重建不能保证字节一致时不能宣称区域字节恢复。
 7. 全rank验证区间哈希、租约零；对每条消费路径重跑部署金丝雀并核对hidden/logits精确恢复。
