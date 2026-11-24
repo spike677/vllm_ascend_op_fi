@@ -6625,6 +6625,216 @@
         "matmul_order.py": "23214d21d241f8cc3274847d604f05a21c9985674cb777b828f6e613c8f85fea"
       },
       "negative_sha256": "83150f0202b706aab152b5be24c118a1e6b78b03aa7097bcfa4eee44dd0c19d0"
+    },
+    "row12_logits_columns_rotate": {
+      "status": "BLOCKED_REAL_SAMPLER_CONSUMER_UNPROVEN",
+      "qualification_granted": false,
+      "mechanism": "external.row12_logits_columns_rotate",
+      "reason": "REFERENCE_LOGITS_SOFTMAX_NOT_OBSERVED",
+      "observed_ranks": [
+        0,
+        1
+      ],
+      "two_owners_complete": false,
+      "engine_survived": false,
+      "safe_refusal_proven": false,
+      "files": {
+        "process.log": {
+          "bytes": 74,
+          "sha256": "e0113a39d0b6461a15b3030477fd33ca6b79341415381eca2f6b608cc9f71c3f"
+        },
+        "http-server.log": {
+          "bytes": 68816,
+          "sha256": "a8f45d160126ae3007354f3acfb939caaea907310f229ad923432e6c5f997607"
+        },
+        "product_http_18.json": {
+          "bytes": 1318773,
+          "sha256": "de068e461666e72283674da04413fdf8e0a0f329b47e20f157851b3331cc3762"
+        },
+        "controller.json": {
+          "bytes": 57992,
+          "sha256": "d42e54602729d3c63fd039102a3cbba599acb70793cb22514cd47c11002dffd8"
+        },
+        "isolation.jsonl": {
+          "bytes": 837,
+          "sha256": "89686d40c0538c0ef07501f8344f486b1eb65f6dd1025faa6c43c7e05a511112"
+        }
+      },
+      "attempt": {
+        "id": "reflogits1125c1-row12-logits-columns-rotate",
+        "review": {
+          "experiment_id": "reflogits1125c1-row12-logits-columns-rotate",
+          "provider": "ProductClient row12-logits-columns-rotate explicit route",
+          "model": "Qwen3.8 W8A8",
+          "cann": "9.1.0",
+          "soc": "Ascend910B4/A2",
+          "physical_cards": [
+            2,
+            5
+          ],
+          "ranks": [
+            0,
+            1
+          ],
+          "worker": "standard TP2 multiprocess executor; all-rank continuous fault phases",
+          "build_fingerprint": {
+            "script_sha256": "f9efe8f9beaca412e4d05baf279066a9d8d078d7c24126719046f9f6e25124ca"
+          },
+          "expected_hits": 2,
+          "resource_budget": {
+            "timeout_seconds": 1200,
+            "memory_gib": 80,
+            "cpus": 16
+          },
+          "recovery_plan": "Drain HTTP requests, restore same-generation regions, remove leases/hooks/permits, verify clean canary; stop owned container in finally",
+          "source_commit": "f1cc3d9eda0cfff8d0c18a5481adeaa900d8e41e",
+          "source_manifest_sha256": "4aa247ce13ccc543ec6ed89d86bd6e132f34133b490ef9a53ba87b6d61b62411",
+          "expected": "Two owners, all rank real consumers, exact byte and canary recovery; independent route review"
+        },
+        "image_id": "sha256:c9c9432b69767cf1855efad44f20eaa8ab02520ae05b75c936e67ea4e7eb2702",
+        "frozen_scripts": [],
+        "source_manifests": [
+          {
+            "manifest_sha256": "4aa247ce13ccc543ec6ed89d86bd6e132f34133b490ef9a53ba87b6d61b62411",
+            "base_commit": "f1cc3d9eda0cfff8d0c18a5481adeaa900d8e41e",
+            "files": 790
+          }
+        ],
+        "command": [
+          "docker",
+          "run",
+          "--runtime",
+          "runc",
+          "--name",
+          "dcat-v2-census-reflogits1125c1-row12-logits-columns-rotate-2163603",
+          "--label",
+          "dcat.task=17-fault-c2c3-20261117",
+          "--network",
+          "none",
+          "--memory",
+          "80g",
+          "--cpus",
+          "16",
+          "--pids-limit",
+          "4096",
+          "--shm-size",
+          "4g",
+          "--device",
+          "/dev/davinci2",
+          "--device",
+          "/dev/davinci5",
+          "--device",
+          "/dev/davinci_manager",
+          "--device",
+          "/dev/devmm_svm",
+          "--device",
+          "/dev/hisi_hdc",
+          "--mount",
+          "type=bind,src=/usr/local/Ascend/driver,dst=/usr/local/Ascend/driver,readonly",
+          "--mount",
+          "type=bind,src=/usr/local/dcmi,dst=/usr/local/dcmi,readonly",
+          "--mount",
+          "type=bind,src=/dev/null,dst=/etc/ld.so.preload,readonly",
+          "--mount",
+          "type=bind,src=/home/17-fault-c2c3-20261117/window-reflogits1125c1/reflogits1125c1-row12-logits-columns-rotate,dst=/evidence",
+          "--mount",
+          "type=bind,src=/home/batch-scale-dynamic-msprobe-20261023/python_packages,dst=/msprobe_packages,readonly",
+          "--mount",
+          "type=bind,src=/home/17-fault-c2c3-20261117/source-reflogits1125c1,dst=/source,readonly",
+          "--mount",
+          "type=bind,src=/home/models/Eco-Tech/Qwen3.8-27B-w8a8,dst=/model,readonly",
+          "-e",
+          "PYTHONDONTWRITEBYTECODE=1",
+          "-e",
+          "TASK_QUEUE_ENABLE=0",
+          "-e",
+          "VLLM_SERVER_DEV_MODE=1",
+          "-e",
+          "HF_HUB_OFFLINE=1",
+          "-e",
+          "TRANSFORMERS_OFFLINE=1",
+          "-e",
+          "TOKENIZERS_PARALLELISM=false",
+          "-e",
+          "PYTHONPATH=/source/src:/source:/source/fault39/src:/source/experiments/worker_core_v11_20261118",
+          "-e",
+          "VLLM_WORKER_MULTIPROC_METHOD=spawn",
+          "-e",
+          "VLLM_ALLOW_INSECURE_SERIALIZATION=1",
+          "-e",
+          "VLLM_HOST_IP=127.0.0.1",
+          "-e",
+          "GLOO_SOCKET_IFNAME=lo",
+          "-e",
+          "HCCL_CONNECT_TIMEOUT=120",
+          "-e",
+          "HCCL_EXEC_TIMEOUT=120",
+          "-e",
+          "OMP_NUM_THREADS=4",
+          "-e",
+          "DCAT_EXTERNAL_SITE_EVIDENCE=/evidence",
+          "--entrypoint",
+          "/bin/bash",
+          "sha256:c9c9432b69767cf1855efad44f20eaa8ab02520ae05b75c936e67ea4e7eb2702",
+          "-c",
+          "source /usr/local/Ascend/cann/set_env.sh\nunset ASCEND_RT_VISIBLE_DEVICES\ncd /source\npython3 -B reference_adapters/product_probe.py --mechanism 18 --reference row12_logits_columns_rotate --negative-regression && python3 -B -m reference_adapters.review_reference /evidence --receipt product_http_18.json --output /evidence/reference-review.json"
+        ],
+        "started_utc": "2026-11-24T16:29:50.043248+00:00",
+        "exit_code": 2,
+        "container_state": {
+          "Status": "exited",
+          "Running": false,
+          "Paused": false,
+          "Restarting": false,
+          "OOMKilled": false,
+          "Dead": false,
+          "Pid": 0,
+          "ExitCode": 2,
+          "Error": "",
+          "StartedAt": "2026-11-24T16:29:50.654410344Z",
+          "FinishedAt": "2026-11-24T16:33:56.260790878Z"
+        },
+        "cleanup": {
+          "status": "OWNED_CONTAINER_REMOVED",
+          "state_before_cleanup": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 2,
+            "Error": "",
+            "StartedAt": "2026-11-24T16:29:50.654410344Z",
+            "FinishedAt": "2026-11-24T16:33:56.260790878Z"
+          },
+          "final_state": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 2,
+            "Error": "",
+            "StartedAt": "2026-11-24T16:29:50.654410344Z",
+            "FinishedAt": "2026-11-24T16:33:56.260790878Z"
+          },
+          "recovery_proven": false,
+          "note": "Container cleanup does not prove same-process OFF recovery."
+        },
+        "ended_utc": "2026-11-24T16:33:56.958617+00:00"
+      },
+      "window": {
+        "start": "2026-11-24T16:29:47.502486+00:00",
+        "ended": "2026-11-24T16:33:58.005813+00:00",
+        "elapsed_seconds": 250.50335873104632,
+        "isolation_removed": true,
+        "status": "CASE_FAILED"
+      },
+      "retry_policy": "Stopped same-reason NPU retries; no shared runtime changes; not delivered"
     }
   },
   "windows": [
@@ -7297,5 +7507,43 @@
       },
       "negative_sha256": "e703a83882b1890e1d2bf3f15c3841c98034d418339d9aee205c3b12b71bfb3e"
     }
+  },
+  "final_window_audit": {
+    "observed_at": "2026-11-24T16:35:21.429031+00:00",
+    "windows": [
+      {
+        "name": "refs1124b4",
+        "start": "2026-11-24T15:58:15.140706+00:00",
+        "ended": "2026-11-24T16:24:13.450883+00:00",
+        "elapsed_seconds": 1558.3102101809345,
+        "isolation_removed": true,
+        "status": "CASE_FAILED",
+        "post_gate_present": true,
+        "post_gate_blocker_reasons": []
+      },
+      {
+        "name": "refmatmul1125c2",
+        "start": "2026-11-24T16:24:13.457930+00:00",
+        "ended": "2026-11-24T16:29:47.493371+00:00",
+        "elapsed_seconds": 334.0354764899239,
+        "isolation_removed": true,
+        "status": "FINISHED",
+        "post_gate_present": true,
+        "post_gate_blocker_reasons": []
+      },
+      {
+        "name": "reflogits1125c1",
+        "start": "2026-11-24T16:29:47.502486+00:00",
+        "ended": "2026-11-24T16:33:58.005813+00:00",
+        "elapsed_seconds": 250.50335873104632,
+        "isolation_removed": true,
+        "status": "CASE_FAILED",
+        "post_gate_present": true,
+        "post_gate_blocker_reasons": []
+      }
+    ],
+    "own_reference_containers": [],
+    "foreign_containers_stopped": [],
+    "host_dispatcher_or_docker_changed": false
   }
 }

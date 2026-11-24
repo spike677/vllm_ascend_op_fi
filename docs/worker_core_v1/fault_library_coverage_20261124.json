@@ -166,9 +166,9 @@
       "capability": "黄区operator_output_value：compute_logits列错位/命名坍塌",
       "boundary": "C类现象复现；原机理为lm_head错误量化/量化误差累积，当前lm_head BF16未量化，不宣称原机理成立",
       "deployment": "Qwen3.8 A3 TP2（蓝区A2仅验证）",
-      "evidence": "已收到xlsx第12行原文；当前A3词表248320，124160是他模历史值；需真实sampler消费、熵/分布变化与恢复，待黄区正式验收",
+      "evidence": "reference_adapter_a2_20261124.json row12_logits_columns_rotate：原回执/错误日志SHA及窗口恢复；等待真实采样边界适配。",
       "progress_state": "REFERENCE_ADAPTER_PENDING",
-      "progress_note": "codex参考实现；A2两个owner通过后改ADAPTER_READY_UNTESTED，等待黄区审查与正式测试"
+      "progress_note": "参考factory及CPU4项已写；A2实际compute_logits→sampler消费链仍未闭合，REFERENCE_LOGITS_SOFTMAX_NOT_OBSERVED，同原因NPU尝试停止。未完成两个owner、引擎退出，不交付为通过项；不改共享runtime。"
     },
     {
       "row": 13,
@@ -465,6 +465,6 @@
     "original_suggestion": "篡改特定Token ID对应的权重向量",
     "current_variant": "仅compute_logits输出列错位/坍塌现象，不改持久权重"
   },
-  "progress_snapshot": "2026-11-24：逐项A2独立复核更新（黄区正式登记未完成）",
+  "progress_snapshot": "附件799977本轮A2实测及独立复核；最新时间见reference_adapter_a2_20261124.json final_window_audit；未收到新的黄区正式回传",
   "progress_source": "负责人逐行确认；与A–F归属分类独立；正式结果审查登记前不记REGISTERED"
 }

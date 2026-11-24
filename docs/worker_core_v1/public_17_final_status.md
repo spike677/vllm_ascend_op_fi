@@ -98,3 +98,5 @@
 逐行进度以 [41行台账](fault_library_coverage_20261124.md) 的 `progress_state` 为准；计数由JSON生成。A2/0.26/CANN9.1/社区Qwen3.8 W8A8/TP2的两个owner证据在 [独立复核记录](reference_adapter_a2_20261124.json)。`ADAPTER_READY_UNTESTED` 表示蓝区参考适配器已通过、等待黄区审查和正式产品测试，不能解释为A3登记。
 
 33仍等待N2六条记录的完整字段，D包仍等待D0/D1。没有对应回传，不锁定A3 serializer，不发33注入资格，不把参考补充件或历史结果登记成黄区正式通过；r8仍依赖这些审查和登记结果。
+
+本轮附件799977的参考项交付边界见 [执行记录](reference_adapters_execution_20261124.md)：3/7/8/9/10/16/19已完成A2两个owner，仍等黄区审查。12真实sampler消费未证明；32无数值变化；34当前社区视觉部署无合格BF16带bias点位。后三项不提升为已验收。所有进度数量从41行JSON汇总，完整正式范围及A3登记条件不变。
