@@ -73,5 +73,6 @@ class TrustedProductSession:
                 if (self.active is not None and not self.active.bound and type(cleanup) is dict
                         and cleanup.get('enable_rollback') and cleanup.get('resources_zero')):
                     self.active=None
-                return response(4,error=str(error))
+                from .product_errors import product_error_reply
+                return dict(schema=SCHEMA,**product_error_reply(error),error=str(error))
             except Exception as error:return response(5,error=str(error),recovery_required=self.active is not None)

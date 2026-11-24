@@ -72,4 +72,15 @@ class SessionTests(unittest.TestCase):
         s=TrustedProductSession({'p':c},authorize_operator=lambda p,a:True)
         r=s.dispatch(dict(schema=cli.SCHEMA,action='enable',mechanism='18.api_half'),principal='trusted')
         self.assertEqual(r['exit_code'],5);self.assertTrue(r['recovery_required']);self.assertIs(s.active,c)
+    def test_typed_refusal_codes_reach_console_body(self):
+        from demoncat.runtime.vllm_ascend.worker_extension.product_cli import TrustedProductSession
+        from demoncat.runtime.vllm_ascend.worker_extension.product_errors import ProductContractRefused
+        from unittest.mock import Mock
+        c=Mock();c.capabilities.return_value=[dict(status='PRODUCT_CANDIDATE',mechanism='18.api_half')]
+        c.enable.side_effect=ProductContractRefused('PRODUCT_ALL_RANK_PREPARE_FAILED',[
+            dict(rank=i,status='PROVIDER_UNAVAILABLE',reason='NO_PERMIT') for i in range(2)])
+        s=TrustedProductSession({'p':c},authorize_operator=lambda p,a:True)
+        r=s.dispatch(dict(schema=cli.SCHEMA,action='enable',mechanism='18.api_half'),principal='trusted')
+        self.assertEqual(r['exit_code'],4);self.assertEqual(r['refusal_codes'],['NO_PERMIT'])
+        self.assertEqual([x['rank'] for x in r['refusals']],[0,1])
 if __name__=='__main__':unittest.main()

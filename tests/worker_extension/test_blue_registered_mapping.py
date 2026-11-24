@@ -13,11 +13,20 @@ class BlueMappingTests(unittest.TestCase):
         r=self.record()
         for a in r['expected_ranks']:
             self.assertEqual(pr.select_registration(r['mechanism'],'BLUE_COMBINATION',a,[r]),r)
-            self.assertEqual(a['implementation_sha256'],pr.implementation_identity())
         mapped=r['evidence']['owner_rank_mapping']
         self.assertEqual({(x['group_owner'],x['rank']) for x in mapped},
                          {(o,i) for o in r['evidence']['owners'] for i in (0,1)})
         self.assertEqual(len({x['provider_owner'] for x in mapped}),4)
+
+    def test_new_implementation_cannot_borrow_historical_qualification(self):
+        r=self.record()
+        for expected in r['expected_ranks']:
+            actual=copy.deepcopy(expected)
+            actual['implementation_sha256']=pr.implementation_identity()
+            if actual['implementation_sha256']==expected['implementation_sha256']:
+                actual['implementation_sha256']='0'*64
+            with self.assertRaisesRegex(ValueError,'IDENTITY_MISMATCH:implementation_sha256'):
+                pr.select_registration(r['mechanism'],'BLUE_COMBINATION',actual,[r])
 
     def test_missing_or_drifted_mapping_never_borrows_path_digest(self):
         r=self.record();a=copy.deepcopy(r['expected_ranks'][0])
