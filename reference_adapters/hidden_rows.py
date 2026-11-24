@@ -3,6 +3,21 @@ import torch
 from torch.utils._python_dispatch import _disable_current_modes
 from experiments.worker_core_v11_20261118.external_input_examples import BaseSite, InputReadMode, changed
 from fault_injection.sites.mla28 import require
+from fault_injection.sites.projection39 import contains_element
+
+
+class HiddenReadMode(InputReadMode):
+    metadata_name='vllm::maybe_chunk_residual'
+    def __torch_dispatch__(self,func,types,args=(),kwargs=None):
+        if func._schema.name==self.metadata_name:
+            # Actual 0.26 _maybe_chunk_residual_impl uses x.size(0) only and
+            # returns/chunks residual. Its custom schema does not mark aliases.
+            # Never count x as consumed or restore before npu_add_rms_norm.
+            require(len(args)>=2,'REFERENCE_RESIDUAL_METADATA_SCHEMA')
+            require(not any(contains_element(args[1],p['region']) for p in self.pending),
+                'REFERENCE_RESIDUAL_ALIAS_PATH_UNSUPPORTED')
+            return func(*args,**(kwargs or {}))
+        return super().__torch_dispatch__(func,types,args,kwargs)
 
 
 class HiddenRowSite(BaseSite):
@@ -10,7 +25,7 @@ class HiddenRowSite(BaseSite):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.mode = InputReadMode(self)
+        self.mode = HiddenReadMode(self)
 
     @property
     def pending(self):

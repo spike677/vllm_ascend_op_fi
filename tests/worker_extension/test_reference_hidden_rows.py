@@ -4,6 +4,10 @@ import torch
 from reference_adapters.hidden_rows import MlpContributionLost, DecoderPaddingRow
 from fault_injection.engines.region_lease import RegionLeases
 
+LIB=torch.library.Library('dcat_ref_hidden','DEF')
+LIB.define('metadata(Tensor x, Tensor residual) -> Tensor')
+LIB.impl('metadata',lambda x,residual:residual,'CPU')
+
 
 class Mlp(torch.nn.Module):
     def __init__(self):
@@ -36,6 +40,22 @@ class Model(torch.nn.Module):
 
 
 class HiddenTests(unittest.TestCase):
+    def test_shape_only_custom_op_is_not_a_consumer(self):
+        class WithResidual(torch.nn.Module):
+            def __init__(self):super().__init__();self.mlp=Mlp()
+            def forward(self,x):
+                out=self.mlp(x)
+                residual=torch.ops.dcat_ref_hidden.metadata(out,x)
+                return out+residual
+        model=WithResidual();x=torch.ones(2,4,dtype=torch.bfloat16)
+        leases=RegionLeases('owner',1,stream=lambda:0,complete=lambda s:None)
+        site=MlpContributionLost(model,types.SimpleNamespace(input_batch=types.SimpleNamespace(req_ids=['q'])),fault=True,region_leases=leases)
+        site.mode.metadata_name='dcat_ref_hidden::metadata'
+        site.install();result=model(x);site.finish_forward();site.close()
+        self.assertTrue(torch.equal(result[-1],x[-1]))
+        self.assertEqual(site.events[0]['consumer_operator'],'aten::add')
+        self.assertEqual(leases.count(),0)
+
     def test_real_reader_two_generations_and_clean_recovery(self):
         for cls in (MlpContributionLost, DecoderPaddingRow):
             model = Model()
