@@ -41,5 +41,14 @@
     "target": "A2 / 0.26 / CANN9.1 / Qwen3.8 W8A8 / TP2",
     "reason": "Card5 occupied by ATK during read-only checks; newest task directs deferral"
   },
-  "qualification_granted": false
+  "qualification_granted": false,
+  "expanded_worker_diagnostic": {
+    "status": "NOT_COMPLETED_NOT_A_RELEASE_GATE_PASS",
+    "log_sha256": "39a0ed9028536e04217e92acb42a9fa94cbacdc8445ab4c391d1df79ddd4fd39",
+    "findings": [
+      "Historical modules importing worker_extension fixtures need tests on PYTHONPATH after tests/worker_extension",
+      "Stack samples show legacy host/writer26 JSON receipt snapshot copying; this is not a proven new product-path regression"
+    ],
+    "required_before_freeze": "Rerun complete declared release gate with corrected import path; targeted 117-test result is not a full release gate"
+  }
 }
