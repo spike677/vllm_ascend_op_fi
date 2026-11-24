@@ -1,0 +1,638 @@
+{
+  "schema": "demoncat.continuous.public_review.v1",
+  "mechanism": "39.matmul_range",
+  "arithmetic_device": "input",
+  "reference_mode": "immediate",
+  "passed": true,
+  "scopes": [
+    {
+      "owner": "worker-group-541d0afb468f47d9ba725439000d8d96",
+      "rank_effects": {
+        "0": {
+          "coverage": {
+            "applied": 704,
+            "attempted": 704,
+            "changed": 704,
+            "consumed": 704,
+            "eligible": 704,
+            "failed": 0,
+            "observed": 1216,
+            "restored": 704
+          },
+          "site_count": 304,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "immediate",
+            "q_sample_difference_fraction": null,
+            "q_sample_differences": 0,
+            "reference_scope": "NOT_APPLIED",
+            "sampled_elements": 0
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "bef236c53f64d71234e3749389f3697c112066aa9c7fc662e4ebc99f01e38975",
+          "matmul_effect": {
+            "actual_quantized_calls": 704,
+            "reference_controls": 704,
+            "rules": [
+              "omit_final_quarter"
+            ],
+            "call_proofs_summary": {
+              "call_count": 1216,
+              "ordered_calls_sha256": "bef236c53f64d71234e3749389f3697c112066aa9c7fc662e4ebc99f01e38975",
+              "schema": "demoncat.matmul.site_proofs.v1",
+              "site_count": 304,
+              "sites_sha256": "c62b99891c4555aeb95b5f29c51ae68d90362a1ef7e9817c482d046363ea4d98",
+              "failed": 0
+            }
+          },
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [
+            "language_model.model.layers.0.linear_attn.conv1d",
+            "language_model.model.layers.1.linear_attn.conv1d",
+            "language_model.model.layers.10.linear_attn.conv1d",
+            "language_model.model.layers.12.linear_attn.conv1d",
+            "language_model.model.layers.13.linear_attn.conv1d",
+            "language_model.model.layers.14.linear_attn.conv1d",
+            "language_model.model.layers.16.linear_attn.conv1d",
+            "language_model.model.layers.17.linear_attn.conv1d",
+            "language_model.model.layers.18.linear_attn.conv1d",
+            "language_model.model.layers.2.linear_attn.conv1d",
+            "language_model.model.layers.20.linear_attn.conv1d",
+            "language_model.model.layers.21.linear_attn.conv1d",
+            "language_model.model.layers.22.linear_attn.conv1d",
+            "language_model.model.layers.24.linear_attn.conv1d",
+            "language_model.model.layers.25.linear_attn.conv1d",
+            "language_model.model.layers.26.linear_attn.conv1d",
+            "language_model.model.layers.28.linear_attn.conv1d",
+            "language_model.model.layers.29.linear_attn.conv1d",
+            "language_model.model.layers.30.linear_attn.conv1d",
+            "language_model.model.layers.32.linear_attn.conv1d",
+            "language_model.model.layers.33.linear_attn.conv1d",
+            "language_model.model.layers.34.linear_attn.conv1d",
+            "language_model.model.layers.36.linear_attn.conv1d",
+            "language_model.model.layers.37.linear_attn.conv1d",
+            "language_model.model.layers.38.linear_attn.conv1d",
+            "language_model.model.layers.4.linear_attn.conv1d",
+            "language_model.model.layers.40.linear_attn.conv1d",
+            "language_model.model.layers.41.linear_attn.conv1d",
+            "language_model.model.layers.42.linear_attn.conv1d",
+            "language_model.model.layers.44.linear_attn.conv1d",
+            "language_model.model.layers.45.linear_attn.conv1d",
+            "language_model.model.layers.46.linear_attn.conv1d",
+            "language_model.model.layers.48.linear_attn.conv1d",
+            "language_model.model.layers.49.linear_attn.conv1d",
+            "language_model.model.layers.5.linear_attn.conv1d",
+            "language_model.model.layers.50.linear_attn.conv1d",
+            "language_model.model.layers.52.linear_attn.conv1d",
+            "language_model.model.layers.53.linear_attn.conv1d",
+            "language_model.model.layers.54.linear_attn.conv1d",
+            "language_model.model.layers.56.linear_attn.conv1d",
+            "language_model.model.layers.57.linear_attn.conv1d",
+            "language_model.model.layers.58.linear_attn.conv1d",
+            "language_model.model.layers.6.linear_attn.conv1d",
+            "language_model.model.layers.60.linear_attn.conv1d",
+            "language_model.model.layers.61.linear_attn.conv1d",
+            "language_model.model.layers.62.linear_attn.conv1d",
+            "language_model.model.layers.8.linear_attn.conv1d",
+            "language_model.model.layers.9.linear_attn.conv1d"
+          ],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        },
+        "1": {
+          "coverage": {
+            "applied": 704,
+            "attempted": 704,
+            "changed": 700,
+            "consumed": 704,
+            "eligible": 704,
+            "failed": 0,
+            "observed": 1216,
+            "restored": 704
+          },
+          "site_count": 304,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "immediate",
+            "q_sample_difference_fraction": null,
+            "q_sample_differences": 0,
+            "reference_scope": "NOT_APPLIED",
+            "sampled_elements": 0
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "e190ef276470b7414457fc97095c84834eaa8e410d3f8cc77db1a21375d740c0",
+          "matmul_effect": {
+            "actual_quantized_calls": 704,
+            "reference_controls": 704,
+            "rules": [
+              "omit_final_quarter"
+            ],
+            "call_proofs_summary": {
+              "call_count": 1216,
+              "ordered_calls_sha256": "e190ef276470b7414457fc97095c84834eaa8e410d3f8cc77db1a21375d740c0",
+              "schema": "demoncat.matmul.site_proofs.v1",
+              "site_count": 304,
+              "sites_sha256": "d31fb013559510016f365d630d5a5b3fa3a033ff87b446e0413cfa7564b99ca6",
+              "failed": 0
+            }
+          },
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [
+            "language_model.model.layers.0.linear_attn.conv1d",
+            "language_model.model.layers.1.linear_attn.conv1d",
+            "language_model.model.layers.10.linear_attn.conv1d",
+            "language_model.model.layers.12.linear_attn.conv1d",
+            "language_model.model.layers.13.linear_attn.conv1d",
+            "language_model.model.layers.14.linear_attn.conv1d",
+            "language_model.model.layers.16.linear_attn.conv1d",
+            "language_model.model.layers.17.linear_attn.conv1d",
+            "language_model.model.layers.18.linear_attn.conv1d",
+            "language_model.model.layers.2.linear_attn.conv1d",
+            "language_model.model.layers.20.linear_attn.conv1d",
+            "language_model.model.layers.21.linear_attn.conv1d",
+            "language_model.model.layers.22.linear_attn.conv1d",
+            "language_model.model.layers.24.linear_attn.conv1d",
+            "language_model.model.layers.25.linear_attn.conv1d",
+            "language_model.model.layers.26.linear_attn.conv1d",
+            "language_model.model.layers.28.linear_attn.conv1d",
+            "language_model.model.layers.29.linear_attn.conv1d",
+            "language_model.model.layers.30.linear_attn.conv1d",
+            "language_model.model.layers.32.linear_attn.conv1d",
+            "language_model.model.layers.33.linear_attn.conv1d",
+            "language_model.model.layers.34.linear_attn.conv1d",
+            "language_model.model.layers.36.linear_attn.conv1d",
+            "language_model.model.layers.37.linear_attn.conv1d",
+            "language_model.model.layers.38.linear_attn.conv1d",
+            "language_model.model.layers.4.linear_attn.conv1d",
+            "language_model.model.layers.40.linear_attn.conv1d",
+            "language_model.model.layers.41.linear_attn.conv1d",
+            "language_model.model.layers.42.linear_attn.conv1d",
+            "language_model.model.layers.44.linear_attn.conv1d",
+            "language_model.model.layers.45.linear_attn.conv1d",
+            "language_model.model.layers.46.linear_attn.conv1d",
+            "language_model.model.layers.48.linear_attn.conv1d",
+            "language_model.model.layers.49.linear_attn.conv1d",
+            "language_model.model.layers.5.linear_attn.conv1d",
+            "language_model.model.layers.50.linear_attn.conv1d",
+            "language_model.model.layers.52.linear_attn.conv1d",
+            "language_model.model.layers.53.linear_attn.conv1d",
+            "language_model.model.layers.54.linear_attn.conv1d",
+            "language_model.model.layers.56.linear_attn.conv1d",
+            "language_model.model.layers.57.linear_attn.conv1d",
+            "language_model.model.layers.58.linear_attn.conv1d",
+            "language_model.model.layers.6.linear_attn.conv1d",
+            "language_model.model.layers.60.linear_attn.conv1d",
+            "language_model.model.layers.61.linear_attn.conv1d",
+            "language_model.model.layers.62.linear_attn.conv1d",
+            "language_model.model.layers.8.linear_attn.conv1d",
+            "language_model.model.layers.9.linear_attn.conv1d"
+          ],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        }
+      },
+      "deployment": {
+        "0": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_device_name": "Ascend910B4",
+          "hardware_family": "A2",
+          "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+          "hardware_logical_device": 0,
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+          },
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        },
+        "1": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_device_name": "Ascend910B4",
+          "hardware_family": "A2",
+          "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+          "hardware_logical_device": 1,
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+          },
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        }
+      },
+      "fault_time_ratio": 2.6979060140930557,
+      "request_plan": {
+        "schema": "demoncat.continuous.request_plan.v1",
+        "mechanism": "39.matmul_range",
+        "phases": [
+          {
+            "phase": "normal",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "fault",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "off",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "health",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          }
+        ],
+        "unit": "request",
+        "max_iterations": 4,
+        "max_requests": 4,
+        "external_health_required": false,
+        "advance_argument": "request_id",
+        "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+        "qualification_granted": false,
+        "completion": "next_phase == complete AND all rank recovery checks passed"
+      },
+      "recovered": true,
+      "resources_zero": true
+    },
+    {
+      "owner": "worker-group-d1ccad8846ea4522801080f27ab85574",
+      "rank_effects": {
+        "0": {
+          "coverage": {
+            "applied": 704,
+            "attempted": 704,
+            "changed": 704,
+            "consumed": 704,
+            "eligible": 704,
+            "failed": 0,
+            "observed": 1216,
+            "restored": 704
+          },
+          "site_count": 304,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "immediate",
+            "q_sample_difference_fraction": null,
+            "q_sample_differences": 0,
+            "reference_scope": "NOT_APPLIED",
+            "sampled_elements": 0
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "70dce7e0c5a6e61b130430b8bd614309ef1d4e2df35bcbab806c5c048df5bc3b",
+          "matmul_effect": {
+            "actual_quantized_calls": 704,
+            "reference_controls": 704,
+            "rules": [
+              "omit_final_quarter"
+            ],
+            "call_proofs_summary": {
+              "call_count": 1216,
+              "ordered_calls_sha256": "70dce7e0c5a6e61b130430b8bd614309ef1d4e2df35bcbab806c5c048df5bc3b",
+              "schema": "demoncat.matmul.site_proofs.v1",
+              "site_count": 304,
+              "sites_sha256": "c62b99891c4555aeb95b5f29c51ae68d90362a1ef7e9817c482d046363ea4d98",
+              "failed": 0
+            }
+          },
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [
+            "language_model.model.layers.0.linear_attn.conv1d",
+            "language_model.model.layers.1.linear_attn.conv1d",
+            "language_model.model.layers.10.linear_attn.conv1d",
+            "language_model.model.layers.12.linear_attn.conv1d",
+            "language_model.model.layers.13.linear_attn.conv1d",
+            "language_model.model.layers.14.linear_attn.conv1d",
+            "language_model.model.layers.16.linear_attn.conv1d",
+            "language_model.model.layers.17.linear_attn.conv1d",
+            "language_model.model.layers.18.linear_attn.conv1d",
+            "language_model.model.layers.2.linear_attn.conv1d",
+            "language_model.model.layers.20.linear_attn.conv1d",
+            "language_model.model.layers.21.linear_attn.conv1d",
+            "language_model.model.layers.22.linear_attn.conv1d",
+            "language_model.model.layers.24.linear_attn.conv1d",
+            "language_model.model.layers.25.linear_attn.conv1d",
+            "language_model.model.layers.26.linear_attn.conv1d",
+            "language_model.model.layers.28.linear_attn.conv1d",
+            "language_model.model.layers.29.linear_attn.conv1d",
+            "language_model.model.layers.30.linear_attn.conv1d",
+            "language_model.model.layers.32.linear_attn.conv1d",
+            "language_model.model.layers.33.linear_attn.conv1d",
+            "language_model.model.layers.34.linear_attn.conv1d",
+            "language_model.model.layers.36.linear_attn.conv1d",
+            "language_model.model.layers.37.linear_attn.conv1d",
+            "language_model.model.layers.38.linear_attn.conv1d",
+            "language_model.model.layers.4.linear_attn.conv1d",
+            "language_model.model.layers.40.linear_attn.conv1d",
+            "language_model.model.layers.41.linear_attn.conv1d",
+            "language_model.model.layers.42.linear_attn.conv1d",
+            "language_model.model.layers.44.linear_attn.conv1d",
+            "language_model.model.layers.45.linear_attn.conv1d",
+            "language_model.model.layers.46.linear_attn.conv1d",
+            "language_model.model.layers.48.linear_attn.conv1d",
+            "language_model.model.layers.49.linear_attn.conv1d",
+            "language_model.model.layers.5.linear_attn.conv1d",
+            "language_model.model.layers.50.linear_attn.conv1d",
+            "language_model.model.layers.52.linear_attn.conv1d",
+            "language_model.model.layers.53.linear_attn.conv1d",
+            "language_model.model.layers.54.linear_attn.conv1d",
+            "language_model.model.layers.56.linear_attn.conv1d",
+            "language_model.model.layers.57.linear_attn.conv1d",
+            "language_model.model.layers.58.linear_attn.conv1d",
+            "language_model.model.layers.6.linear_attn.conv1d",
+            "language_model.model.layers.60.linear_attn.conv1d",
+            "language_model.model.layers.61.linear_attn.conv1d",
+            "language_model.model.layers.62.linear_attn.conv1d",
+            "language_model.model.layers.8.linear_attn.conv1d",
+            "language_model.model.layers.9.linear_attn.conv1d"
+          ],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        },
+        "1": {
+          "coverage": {
+            "applied": 704,
+            "attempted": 704,
+            "changed": 700,
+            "consumed": 704,
+            "eligible": 704,
+            "failed": 0,
+            "observed": 1216,
+            "restored": 704
+          },
+          "site_count": 304,
+          "quant_reference": {
+            "backend": "input",
+            "mode": "immediate",
+            "q_sample_difference_fraction": null,
+            "q_sample_differences": 0,
+            "reference_scope": "NOT_APPLIED",
+            "sampled_elements": 0
+          },
+          "hidden_changed": true,
+          "logits_changed": true,
+          "recovered": true,
+          "events_sha256": "b8f0ea57964279945221644d6536b0333bf2be35237a76d2f0c77a44202e1bf4",
+          "matmul_effect": {
+            "actual_quantized_calls": 704,
+            "reference_controls": 704,
+            "rules": [
+              "omit_final_quarter"
+            ],
+            "call_proofs_summary": {
+              "call_count": 1216,
+              "ordered_calls_sha256": "b8f0ea57964279945221644d6536b0333bf2be35237a76d2f0c77a44202e1bf4",
+              "schema": "demoncat.matmul.site_proofs.v1",
+              "site_count": 304,
+              "sites_sha256": "d31fb013559510016f365d630d5a5b3fa3a033ff87b446e0413cfa7564b99ca6",
+              "failed": 0
+            }
+          },
+          "projection_effect": {
+            "already_positive_inf_calls": 0,
+            "consumer_operators": [
+              "aten::contiguous",
+              "npu::npu_swiglu",
+              "vllm::qwen_gdn_attention_core",
+              "vllm::triton_split_qkv_rmsnorm_mrope"
+            ],
+            "upstream_nonfinite_calls": 0
+          },
+          "structural_candidates_without_call": [
+            "language_model.model.layers.0.linear_attn.conv1d",
+            "language_model.model.layers.1.linear_attn.conv1d",
+            "language_model.model.layers.10.linear_attn.conv1d",
+            "language_model.model.layers.12.linear_attn.conv1d",
+            "language_model.model.layers.13.linear_attn.conv1d",
+            "language_model.model.layers.14.linear_attn.conv1d",
+            "language_model.model.layers.16.linear_attn.conv1d",
+            "language_model.model.layers.17.linear_attn.conv1d",
+            "language_model.model.layers.18.linear_attn.conv1d",
+            "language_model.model.layers.2.linear_attn.conv1d",
+            "language_model.model.layers.20.linear_attn.conv1d",
+            "language_model.model.layers.21.linear_attn.conv1d",
+            "language_model.model.layers.22.linear_attn.conv1d",
+            "language_model.model.layers.24.linear_attn.conv1d",
+            "language_model.model.layers.25.linear_attn.conv1d",
+            "language_model.model.layers.26.linear_attn.conv1d",
+            "language_model.model.layers.28.linear_attn.conv1d",
+            "language_model.model.layers.29.linear_attn.conv1d",
+            "language_model.model.layers.30.linear_attn.conv1d",
+            "language_model.model.layers.32.linear_attn.conv1d",
+            "language_model.model.layers.33.linear_attn.conv1d",
+            "language_model.model.layers.34.linear_attn.conv1d",
+            "language_model.model.layers.36.linear_attn.conv1d",
+            "language_model.model.layers.37.linear_attn.conv1d",
+            "language_model.model.layers.38.linear_attn.conv1d",
+            "language_model.model.layers.4.linear_attn.conv1d",
+            "language_model.model.layers.40.linear_attn.conv1d",
+            "language_model.model.layers.41.linear_attn.conv1d",
+            "language_model.model.layers.42.linear_attn.conv1d",
+            "language_model.model.layers.44.linear_attn.conv1d",
+            "language_model.model.layers.45.linear_attn.conv1d",
+            "language_model.model.layers.46.linear_attn.conv1d",
+            "language_model.model.layers.48.linear_attn.conv1d",
+            "language_model.model.layers.49.linear_attn.conv1d",
+            "language_model.model.layers.5.linear_attn.conv1d",
+            "language_model.model.layers.50.linear_attn.conv1d",
+            "language_model.model.layers.52.linear_attn.conv1d",
+            "language_model.model.layers.53.linear_attn.conv1d",
+            "language_model.model.layers.54.linear_attn.conv1d",
+            "language_model.model.layers.56.linear_attn.conv1d",
+            "language_model.model.layers.57.linear_attn.conv1d",
+            "language_model.model.layers.58.linear_attn.conv1d",
+            "language_model.model.layers.6.linear_attn.conv1d",
+            "language_model.model.layers.60.linear_attn.conv1d",
+            "language_model.model.layers.61.linear_attn.conv1d",
+            "language_model.model.layers.62.linear_attn.conv1d",
+            "language_model.model.layers.8.linear_attn.conv1d",
+            "language_model.model.layers.9.linear_attn.conv1d"
+          ],
+          "fault_all_finite": true,
+          "sampled_q_difference_fraction": null
+        }
+      },
+      "deployment": {
+        "0": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_device_name": "Ascend910B4",
+          "hardware_family": "A2",
+          "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+          "hardware_logical_device": 0,
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+          },
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        },
+        "1": {
+          "cann": [
+            "9.1.0"
+          ],
+          "dp": 1,
+          "dtype": "torch.bfloat16",
+          "eager": true,
+          "hardware_device_name": "Ascend910B4",
+          "hardware_family": "A2",
+          "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+          "hardware_logical_device": 1,
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "pp": 1,
+          "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+          },
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "tp": 2,
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1"
+        }
+      },
+      "fault_time_ratio": 2.46951160948433,
+      "request_plan": {
+        "schema": "demoncat.continuous.request_plan.v1",
+        "mechanism": "39.matmul_range",
+        "phases": [
+          {
+            "phase": "normal",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "fault",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "off",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          },
+          {
+            "phase": "health",
+            "request_count": 1,
+            "max_tokens": 4,
+            "includes_prefill": true,
+            "includes_decode": true
+          }
+        ],
+        "unit": "request",
+        "max_iterations": 4,
+        "max_requests": 4,
+        "external_health_required": false,
+        "advance_argument": "request_id",
+        "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+        "qualification_granted": false,
+        "completion": "next_phase == complete AND all rank recovery checks passed"
+      },
+      "recovered": true,
+      "resources_zero": true
+    }
+  ],
+  "negative_creation_verified": true,
+  "acceptance_scope": "PUBLIC_RUNTIME_SOURCE_REVIEW_STILL_REQUIRED",
+  "qualification_granted": false,
+  "source_receipt_sha256": "12501511503a69e75926f31affd5f8f53b91a5297505e55c7c2a50c03333b2df",
+  "reviewer_sha256": "deb3c5c0d600f7bcae7d0997cfd883591ece87231ed8128e486edb5d823ffadc"
+}

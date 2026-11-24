@@ -1,0 +1,89 @@
+{
+  "schema": "dcat.r741.development_validation.v1",
+  "base": "abd40cdcd4131ed4e27b1a8268e606a81fa3d16f",
+  "status": "B1_B6_BLUE_VALIDATED_RELEASE_RECORD_IN_HANDOFF",
+  "targeted_cpu": {
+    "run": 117,
+    "passed": 115,
+    "skipped": 2,
+    "skip_reason": "Existing retired research public entry tests",
+    "log_sha256": "26e9c082db9e5725cf78102bb80301ab12fa6dc027357d24f16869a3407d6738"
+  },
+  "unchanged_mechanism_sources": [
+    {
+      "path": "fault_injection/sites/norm18.py",
+      "sha256": "82a0237223e4ead74100f8a2a97f0a9b4298bb357a0fface53b645fbec508d18",
+      "identical_to_r74": true
+    },
+    {
+      "path": "fault_injection/sites/projection39.py",
+      "sha256": "5a6a8cda1d1d0caa1c0d4b52bbe5410d20500217df40dfcccc1e412a0d3b3075",
+      "identical_to_r74": true
+    },
+    {
+      "path": "fault_injection/sites/alias15.py",
+      "sha256": "a23ca7e0582ea0e9006099fe34a994dc1b1d928a435bef5698dc2129a75103fd",
+      "identical_to_r74": true
+    },
+    {
+      "path": "fault_injection/sites/vision17.py",
+      "sha256": "7e3a514193e74acb09b1f13910a6c82f57d325ce2a3fd54aecd70a43f8e2db4e",
+      "identical_to_r74": true
+    },
+    {
+      "path": "fault_injection/engines/region_lease.py",
+      "sha256": "822d1a356bf54e6cf39348db2018f6eca267dfead6687bcf38ad89a7fb3df245",
+      "identical_to_r74": true
+    }
+  ],
+  "npu": {
+    "executed": true,
+    "target": "A2 / 0.26 / CANN9.1 / Qwen3.8 W8A8 / TP2",
+    "last_readonly_gate": {
+      "time_utc": "2026-11-24T13:02:41Z",
+      "compute_processes": 0,
+      "allocation_blockers": 2,
+      "reason": "KUBELET_DEVICE_ALLOCATION",
+      "idle": false,
+      "container_started": false,
+      "preemption_or_isolation_started": false
+    },
+    "historical_deferral_reason": "Card5 occupied by ATK during read-only checks; newest task directs deferral",
+    "report": "r741_npu_validation_20261124.json",
+    "passed_mechanisms": [
+      "18.api_half",
+      "17.spatial_padding",
+      "18.variance_over4",
+      "external.conv3d_output_gain"
+    ],
+    "initial_vision_failure_retained": true,
+    "isolation_removed": true,
+    "completion_report": "r741_b1_b6_closure_20261124.json",
+    "a3_qualification_granted": false,
+    "remaining_a3_qualification_note": "No A3 qualification is granted; A3 execution and review remain pending."
+  },
+  "qualification_granted": false,
+  "expanded_worker_diagnostic": {
+    "status": "RESOLVED_BY_COMPLETE_RELEASE_MATRIX",
+    "log_sha256": "39a0ed9028536e04217e92acb42a9fa94cbacdc8445ab4c391d1df79ddd4fd39",
+    "findings": [
+      "Historical modules importing worker_extension fixtures need tests on PYTHONPATH after tests/worker_extension",
+      "Stack samples show legacy host/writer26 JSON receipt snapshot copying; this is not a proven new product-path regression"
+    ],
+    "resolution": "r741_final_cpu_20261124.json: 1327 tests, 1325 passed, two existing retired research skips; all new modules included."
+  },
+  "cpu_rechecks": [
+    {
+      "log": "vision-fix-cpu.log",
+      "run": 32,
+      "passed": 32,
+      "sha256": "8d259d7b2565c9f0074577b8e16367f4b18bb82d5dda1dcff917ea7290e0d38f"
+    },
+    {
+      "log": "npu-product-regression-final.log",
+      "run": 91,
+      "passed": 91,
+      "sha256": "dfb7c64602502fd50207a23d46ae22e4a8c05c18d8dd401c3af0a9698e9be6f0"
+    }
+  ]
+}
