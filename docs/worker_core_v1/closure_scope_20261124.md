@@ -14,8 +14,12 @@
 |四项黄区新增设计|init_routing_cutoff、cp_padding_restore、conv_transpose_padding、faulty_requant_rounding：仅收到源码/CPU检查汇总，无最终注入证据|
 |故障库12行|9/10/13/19/23/34/35/39/7/8/17/37只映射已有能力＋变体；撤回G1/G2/G3。见fault_library_coverage_20261124.md；35、8等现象覆盖不冒充历史根因|
 |HCCL与黄区其余条目|仅引用黄区实证；统一工具需要预加载路径真实回执适配，不伪造公共计数|
-|D包/8|V4仅为8与DeepSeek专属黄区项重启；其他公共V4项仍暂缓|
+|D包/8/第13行|负责人已批准第13行router量化噪声变体与公共8一起进入D包；0.32路线附外部provider v1，依赖D0/D1与噪声审查；其他公共V4项仍按原范围，未验收不登记|
 |r8|最终r7.x+D包+审查通过登记+可信bootstrap+CLI helper+免许可；冻结取决于真实证据，不以A2代A3|
+
+## 映射范围补充决定
+
+2026-11-24映射范围补充决定：第37行由D14“仅配置说明”改为“配置项说明＋faulty_requant舍入命名变体测试”；第7行仅在Qwen用MLP部分token行置零，不做V4 combine扩展。蓝区维护公共说明与接入边界，黄区实现自有变体并实测。三项范围均已确认，验收状态仍待实证；见[d_package_scope_20261124.md](d_package_scope_20261124.md)。
 
 ## 负例口径
 
