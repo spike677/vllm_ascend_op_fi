@@ -60,9 +60,18 @@ python tools/decode_fault33_candidate.py "$LAUNCH_BIN" \
 
 对三组×两rank分别执行。shape_consistent必须为true；`serializer_validated=false`和`qualification_granted=false`保留。该工具主动拒绝越界、重叠、截断、未知类型、缺元数据、未审key；它不自动选择分支或证明key覆盖。
 
+对候选key `5100000000010200203`，增加B1/Q1、GQA每组不超过128个Q头的分区自洽检查：
+
+```bash
+python tools/fault33_candidate_partitions.py "$WORK/decoded-call.json" \
+  --output "$WORK/candidate-partitions.json"
+```
+
+它逐core重建每个KV head的合法key区间，并交叉核对splitInfo的head范围、split数量、LSE/O偏移与workspace字节数。512来自已锁定候选头文件的MAX_KV_STACK_LEN，并非A3实测常量；其他key和范围明确拒绝。四项CPU测试包括129/513/2305合成长度、尾块、缺口、错误分支和偏移，不计入三组实际shape门禁。输出始终installed_kernel_correspondence=false；公开host候选的自洽仍不能证明A3 kernel采用该算法。
+
 ## 窗口二：固定真实Q/K/V的控制重算
 
-**须先收到窗口一并完成分组字段审查，才下达这一窗口的具体配置。** 当前开发解码器还没有把coreInfo/splitInfo完整映射为每个head的合法key分区，不能让黄区自行填A2的512分组。
+**须先收到窗口一并完成分组字段审查，才下达这一窗口的具体配置。** 当前仅新增上述窄范围的候选分区映射，尚无A3实际调用通过证据；不能让黄区自行填A2的512分组。
 
 新实例重放相同三组输入，在实际调用边界只读保留各rank的Q、按真实block_table还原的合法K/V及完整原生输出。必须保留mask与序列边界，证明每个合法key恰好一次；私有张量不进入Git。旧单次 `_paged33_qkv_saved` 采集器不能冒充三形状采集。
 
@@ -70,10 +79,13 @@ python tools/decode_fault33_candidate.py "$LAUNCH_BIN" \
 
 ```bash
 python tools/paged33_control_checkpoint.py "$PRIVATE_QKV" \
-  --launch-review "$OBSERVED_SPANS_JSON" --device "$LOCAL_LOGICAL_DEVICE" > "$WORK/control.json"
+  --launch-review "$OBSERVED_SPANS_JSON" --device "$LOCAL_LOGICAL_DEVICE" \
+  --differences-output "$WORK/private-control-differences.json" > "$WORK/control.json"
 ```
 
-每组、每rank均独立达到完整输出逐位一致率≥99%，两次控制重算精确稳定；逐个定位不一致元素的head/行/列、原生值、控制值及所属分区，不能只回传平均百分比。现有控制工具尚需补齐该位置清单，补齐后才交付窗口二。
+每组、每rank均独立达到完整输出逐位一致率≥99%，两次控制重算精确稳定。控制工具现已输出完整私有差异清单：query/head/column、原生值/控制值及BF16原始位；summary仅记录清单SHA、字节数和条数。清单包含全部参与合并的分区。最终输出是这些分区的合并值，不能把某个输出差异归因于单一分区；single_partition_attribution保持null。私有清单不提交Git，不截断以掩盖不一致。3项CPU测试覆盖坐标、符号零和非有限值拒绝。
+
+窗口二仍等待A3真实coreInfo/splitInfo对照、逐head控制重算接线和三形状Q/K/V采集接线，尚不能下达完整实机执行；差异清单工具通过不是A3控制重算通过。
 
 ## 放行与停止
 
