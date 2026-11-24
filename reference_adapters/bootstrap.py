@@ -12,10 +12,12 @@ def trusted_bootstrap(wrapper, action, options):
     from reference_adapters.quant_scale import FACTORIES as quant
     from reference_adapters.hidden_rows import FACTORIES as hidden
     from reference_adapters.logits_mapping import FACTORIES as logits
-    factories = {**quant, **hidden, **logits}
+    from reference_adapters.swiglu import FACTORIES as swiglu
+    from reference_adapters.vision_precision import FACTORIES as vision
+    factories = {**quant, **hidden, **logits, **swiglu, **vision}
     assert set(options) == {'variant', 'canary_tokens'}
     factory = factories[options['variant']]
-    stage = 'sampler' if options['variant'] in logits else 'model'
+    stage = 'sampler' if options['variant'] in logits else 'vision' if options['variant'] in vision else 'model'
     worker = wrapper.worker if isinstance(wrapper, WorkerWrapperBase) else wrapper
     authority = authority_for(worker)
     if authority is None:
