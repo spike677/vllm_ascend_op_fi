@@ -92,7 +92,7 @@ class CensusExtension(DemoncatWorkerExtension):
         raise ValueError('CENSUS_ACTION_UNKNOWN')
 
 
-def main():
+def main(extension='external_persistent_census.CensusExtension'):
     from product_http_probe import HTTPExecutor
     root=Path('/evidence');server=None
     report=dict(status='STARTED',purpose='READ_ONLY_PERSISTENT_SITE_CENSUS_NOT_ACCEPTANCE')
@@ -103,7 +103,7 @@ def main():
             '--no-enable-prefix-caching','--no-async-scheduling','--enable-chunked-prefill',
             '--max-num-batched-tokens','1024','--max-model-len','1024','--max-num-seqs','1',
             '--gpu-memory-utilization','0.8','--seed','42','--trust-remote-code',
-            '--worker-extension-cls','external_persistent_census.CensusExtension',
+            '--worker-extension-cls',extension,
             '--limit-mm-per-prompt','{"image":0,"video":0}']
         server=subprocess.Popen(cmd,env=dict(os.environ,VLLM_WORKER_MULTIPROC_METHOD='spawn'),
             stdout=(root/'http-server.log').open('w'),stderr=subprocess.STDOUT)
