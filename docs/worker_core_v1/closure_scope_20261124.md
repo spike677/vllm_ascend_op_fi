@@ -32,3 +32,7 @@
 ## 审查
 
 结论只有通过/不通过/需退补。核对组合身份、owner/provider owner、rank、请求与调用关联、八项计数、消费者、三项恢复、原件SHA。changed<applied允许；image_digest按4.9非必需可空；耗时只记录。seq若只是宿主顺序，必须标注，不能当成wire回包对齐证据。当前不新增YELLOW_DEDICATED_INSTANCE记录。
+
+## B1—B6蓝区补齐
+
+两个18固定gain档、module-input和DynamicQuant参数例已通过A2/0.26/CANN9.1/Qwen3.8 W8A8/TP2两个owner。状态诊断与15风险边界、排空复测、41行台账及33只读取证补充件已整理；见[r7.4.1蓝区收口](r741_b1_b6_closure_20261124.md)。A3资格和r8/D包不由本轮自动完成。

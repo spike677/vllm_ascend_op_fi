@@ -1,3 +1,5 @@
+> r7.4.1：补齐B1—B6蓝区任务，新增两个18固定档、外部输入/dispatch/图片示例与失败诊断。A2 TP2证据及限制见[收口报告](docs/worker_core_v1/r741_b1_b6_closure_20261124.md)；发行安装与许可SHA见[交接单](releases/RC3-PREVIEW-R7.4.1-HANDOFF-20261124.md)。A3未验收组合与33注入仍关闭。
+
 > r7.4：新增持久区域 provider v2 与33完整采集器。A2 TP2 weight_scale/KV 两owner、真实消费者和恢复证据见 [验收记录](docs/worker_core_v1/r74_v2_acceptance_20261124.md)。A3及未审查组合仍关闭；33候选适配在r7.5，不随本包放行。
 
 ## r7.3：窄外部 provider 维护包（2026-11-24）
