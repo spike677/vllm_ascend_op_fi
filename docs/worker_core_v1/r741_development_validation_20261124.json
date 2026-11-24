@@ -39,7 +39,16 @@
   "npu": {
     "executed": false,
     "target": "A2 / 0.26 / CANN9.1 / Qwen3.8 W8A8 / TP2",
-    "reason": "Card5 occupied by ATK during read-only checks; newest task directs deferral"
+    "reason": "Card5 occupied by ATK during read-only checks; newest task directs deferral",
+    "last_readonly_gate": {
+      "time_utc": "2026-11-24T13:02:41Z",
+      "compute_processes": 0,
+      "allocation_blockers": 2,
+      "reason": "KUBELET_DEVICE_ALLOCATION",
+      "idle": false,
+      "container_started": false,
+      "preemption_or_isolation_started": false
+    }
   },
   "qualification_granted": false,
   "expanded_worker_diagnostic": {
