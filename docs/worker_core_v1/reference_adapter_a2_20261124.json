@@ -5127,6 +5127,645 @@
         "vision_precision.py": "cc055c20e95cc8286ab83a85847f2528c2c16a624b13b6268eee1338f308186a"
       },
       "negative_sha256": "fbbaaec733d2a32a66fbf79020378d133afd283274d7e94fc4905af176ab7344"
+    },
+    "row32_conv3d_input_fp16": {
+      "status": "EXECUTION_RECOVERY_PASSED_NO_NUMERIC_PHENOMENON",
+      "mechanism": "external.row32_conv3d_input_fp16",
+      "semantics": "PHENOMENON_PROXY_NOT_ORIGINAL_MECHANISM",
+      "qualification_granted": false,
+      "public_review": {
+        "status": "PRODUCT_BLUE_REVIEW_PASSED",
+        "mechanism": "external.row32_conv3d_input_fp16",
+        "source_manifest_sha256": "1c51e10e2cf1fd6421d07a47f8add25cdcbd422a82bf2f0bc8f50acaeafb19f8",
+        "scopes": [
+          {
+            "scope": 0,
+            "effects": [
+              {
+                "rank": 0,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 0,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [],
+                "consumers": [
+                  "aten::conv3d"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 0,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [],
+                "consumers": [
+                  "aten::conv3d"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 0,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [],
+                "consumers": [
+                  "aten::conv3d"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 0,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [],
+                "consumers": [
+                  "aten::conv3d"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 0,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [],
+                "consumers": [
+                  "aten::conv3d"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 0,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [],
+                "consumers": [
+                  "aten::conv3d"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              }
+            ],
+            "batch": null,
+            "canary_exact": true,
+            "all_resources_zero": true
+          },
+          {
+            "scope": 1,
+            "effects": [
+              {
+                "rank": 0,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 0,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [],
+                "consumers": [
+                  "aten::conv3d"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 0,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [],
+                "consumers": [
+                  "aten::conv3d"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 0,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [],
+                "consumers": [
+                  "aten::conv3d"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 0,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [],
+                "consumers": [
+                  "aten::conv3d"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 0,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [],
+                "consumers": [
+                  "aten::conv3d"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1,
+                  "eligible": 1,
+                  "attempted": 1,
+                  "applied": 1,
+                  "changed": 0,
+                  "consumed": 1,
+                  "restored": 1,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [],
+                "consumers": [
+                  "aten::conv3d"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              }
+            ],
+            "batch": null,
+            "canary_exact": true,
+            "all_resources_zero": true
+          }
+        ],
+        "product_entry": "ProductClient direct constructor",
+        "between_request_cache_reset": null,
+        "deployment_config_sha256": null,
+        "hardware_scope": "A2/0.26/Qwen3.8-community-W8A8/TP2",
+        "yellow_main_project_integration_verified": false,
+        "product_closed": false,
+        "qualification_granted": false
+      },
+      "effects_by_rank": {
+        "0": {
+          "calls": 6,
+          "changed_calls": 0,
+          "changed_elements": 0,
+          "consumers": [
+            "aten::conv3d"
+          ],
+          "distribution_l1": 0.0
+        },
+        "1": {
+          "calls": 6,
+          "changed_calls": 0,
+          "changed_elements": 0,
+          "consumers": [
+            "aten::conv3d"
+          ],
+          "distribution_l1": 0.0
+        }
+      },
+      "receipt_sha256": "36a5f4ba474d8d4c66873a94985065fbed50571d7b8198da7dee0416b53b8acb",
+      "sidecar_sha256": {
+        "external-input-rank0.jsonl": "f1a2736407103a3b4c9121ccf5639c65159ca1d53caa319c98625cba0e50ebcd",
+        "external-input-rank1.jsonl": "b67e06c2e1992b6201a933ce76622207def6e5259b7c2399d457598762bb301d"
+      },
+      "scope_identities": [
+        {
+          "scope": 0,
+          "ranks": [
+            {
+              "rank": 0,
+              "owner": "e073c335c2008e9c4e11efefa68005b8",
+              "worker": {
+                "pid": 157,
+                "rank": 0,
+                "model_instance_id": "38f8a702de5159aa9d3718c0bb6e0b91",
+                "worker_start_identity": "bbbdacc9d1329734fa468e1db6492b28",
+                "logical_device": 0
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            },
+            {
+              "rank": 1,
+              "owner": "f368cf4c34d0c3fd76f248632c1ec330",
+              "worker": {
+                "pid": 158,
+                "rank": 1,
+                "model_instance_id": "8f190132ea884517580bb87c02a125ad",
+                "worker_start_identity": "e9f5001cbf7eab29ed4557a27c602862",
+                "logical_device": 1
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          }
+        },
+        {
+          "scope": 1,
+          "ranks": [
+            {
+              "rank": 0,
+              "owner": "3dbb19bda2fb0b2e59c170ed8605717f",
+              "worker": {
+                "pid": 157,
+                "rank": 0,
+                "model_instance_id": "38f8a702de5159aa9d3718c0bb6e0b91",
+                "worker_start_identity": "bbbdacc9d1329734fa468e1db6492b28",
+                "logical_device": 0
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            },
+            {
+              "rank": 1,
+              "owner": "a747d4e66f9908120a5271dec0b6fe4f",
+              "worker": {
+                "pid": 158,
+                "rank": 1,
+                "model_instance_id": "8f190132ea884517580bb87c02a125ad",
+                "worker_start_identity": "e9f5001cbf7eab29ed4557a27c602862",
+                "logical_device": 1
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          }
+        }
+      ],
+      "attempt": {
+        "case": "refs1124b4-row32-conv3d-input-fp16",
+        "source_commit": "492d19e71c465b1eaa176919326ed86f8c3b387a",
+        "source_manifest_sha256": "1c51e10e2cf1fd6421d07a47f8add25cdcbd422a82bf2f0bc8f50acaeafb19f8",
+        "controller_status": "RUNNING",
+        "window_seconds": null,
+        "isolation_removed": null
+      },
+      "reviewer_sha256": "b43b54f1c4ebbdb0eb1d771a56749ff1ffe6ba362526629b4f7bbe3a95d0e5e2",
+      "factory_sha256": {
+        "vision_precision.py": "cc055c20e95cc8286ab83a85847f2528c2c16a624b13b6268eee1338f308186a"
+      },
+      "negative_sha256": "8d2c4652c2a919ff1028c6d8b155c49461fbd2a2acea42273589369f714f49f5",
+      "limitation": "BF16 input -> FP16 -> BF16 was byte-exact on all tested images. Execution, real Conv3d/encoder consumption and recovery passed; no numerical precision-loss phenomenon reproduced. No added perturbation."
     }
   },
   "windows": [

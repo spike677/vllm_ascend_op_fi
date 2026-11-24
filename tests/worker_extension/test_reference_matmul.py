@@ -4,6 +4,10 @@ import torch
 from reference_adapters.matmul_order import reference, ReverseSplitK, EarlyBiasRound
 from fault_injection.engines.region_lease import RegionLeases
 
+LIB=torch.library.Library('vllm','FRAGMENT')
+LIB.define('unquantized_gemm(Tensor x, Tensor weight, Tensor? bias=None) -> Tensor')
+LIB.impl('unquantized_gemm',lambda x,weight,bias=None:torch.nn.functional.linear(x,weight,bias),'CPU')
+
 
 class Model(torch.nn.Module):
     def __init__(self,bias):
@@ -12,6 +16,19 @@ class Model(torch.nn.Module):
 
 
 class MatmulTests(unittest.TestCase):
+    def test_real_026_custom_linear_boundary(self):
+        class Linear(torch.nn.Linear):
+            def forward(self,x):return torch.ops.vllm.unquantized_gemm(x,self.weight,self.bias)
+        model=Model(True);model.proj=Linear(257,16,bias=True).to(torch.bfloat16)
+        x=torch.randn(2,257,dtype=torch.bfloat16);baseline=model(x)
+        leases=RegionLeases('owner',1,stream=lambda:0,complete=lambda s:None)
+        site=ReverseSplitK(model,types.SimpleNamespace(input_batch=types.SimpleNamespace(req_ids=['q'])),fault=True,region_leases=leases)
+        site.install();model(x);site.finish_forward();site.close()
+        self.assertEqual(len(site.events),1)
+        self.assertEqual(site.events[0]['native_operator'],'vllm::unquantized_gemm')
+        self.assertIn('rule_changed_elements',site.events[0])
+        self.assertTrue(torch.equal(model(x),baseline));self.assertEqual(leases.count(),0)
+
     def test_tail_key_not_omitted_and_bias_requires_natural_input(self):
         x=torch.ones(257);w=torch.ones(257,8)
         normal,fault=reference(x,w)

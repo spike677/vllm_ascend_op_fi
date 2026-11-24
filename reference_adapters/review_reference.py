@@ -31,7 +31,8 @@ def run(directory,receipt,negative_file):
             for e in chunk['events']:
                 need(len(e['request_ids'])==1,'REFERENCE_AMBIGUOUS_REQUEST')
                 raw.setdefault((rank,e['request_ids'][0]),[]).append(e)
-    totals={r:dict(calls=0,changed_calls=0,changed_elements=0,consumers=set(),distribution_l1=0.) for r in range(2)}
+    totals={r:dict(calls=0,changed_calls=0,changed_elements=0,consumers=set(),distribution_l1=0.,
+        rule_changed_elements=0,control_changed_elements=0) for r in range(2)}
     seen=set()
     for scope in data['scopes']:
         for request in scope['requests'][:3]:
@@ -54,12 +55,20 @@ def run(directory,receipt,negative_file):
                         if variant.startswith('row32_'):need(e['encoder_consumer_operator'],'REFERENCE_ENCODER')
                     if variant.startswith(('row19_','row34_')):
                         need(e['control_passed'] and e['bf16_operands'] and not e['quantized_operand_recomputed'],'REFERENCE_BF16_CONTROL')
+                        need(type(e.get('rule_changed_elements')) is int and type(e.get('control_changed_elements')) is int,
+                            'REFERENCE_RULE_CONTROL_SEPARATION_REQUIRED')
                         if variant.startswith('row34_'):need(e['early_bf16_before_real_bias'],'REFERENCE_REAL_BIAS')
                     t=totals[rank['rank']];t['calls']+=1;t['changed_calls']+=e['changed']
                     t['changed_elements']+=e['changed_elements'];t['consumers'].add(e['consumer_operator'])
                     t['distribution_l1']+=e.get('distribution_l1',0.)
+                    t['rule_changed_elements']+=e.get('rule_changed_elements',0)
+                    t['control_changed_elements']+=e.get('control_changed_elements',0)
     need(seen==set(raw),'REFERENCE_ORPHAN_REQUEST')
     changed=all(t['changed_calls']>0 for t in totals.values())
+    if variant.startswith(('row19_','row34_')):
+        # A native-vs-reference discrepancy alone does not establish that the
+        # named change in accumulation order/rounding point made a difference.
+        changed=changed and all(t['rule_changed_elements']>0 for t in totals.values())
     for t in totals.values():t['consumers']=sorted(t['consumers'])
     return dict(status='REFERENCE_A2_TP2_TWO_OWNERS_REVIEWED' if changed else 'EXECUTION_RECOVERY_PASSED_NO_NUMERIC_PHENOMENON',
         mechanism=data['mechanism'],semantics='PHENOMENON_PROXY_NOT_ORIGINAL_MECHANISM',qualification_granted=False,

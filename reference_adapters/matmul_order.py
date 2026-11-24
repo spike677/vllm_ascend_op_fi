@@ -1,7 +1,7 @@
 """Library19/34 BF16 arithmetic proxies. Quantized operands are not dequantized.
 
 Only an observed mm/addmm/linear whose real BF16 weight belongs to the model is
-eligible. Fixed last row / first 64 columns bounds CPU reference cost. Library34
+eligible. Fixed last row / first 1024 columns bounds CPU reference cost. Library34
 requires an actual bias-bearing fused producer; no synthetic residual is added.
 """
 import torch
@@ -30,9 +30,10 @@ def reference(left, right, bias=None, *, early_round=False):
 
 
 class MatmulMode(InputReadMode):
+    linear_names=('aten::linear','npu::npu_linear','vllm::unquantized_gemm')
     def __torch_dispatch__(self,func,types,args=(),kwargs=None):
         kwargs=kwargs or {};name=func._schema.name;site=self.site
-        if name not in ('aten::mm','aten::addmm','aten::linear','npu::npu_linear'):
+        if name not in ('aten::mm','aten::addmm',*self.linear_names):
             return super().__torch_dispatch__(func,types,args,kwargs)
         values={a.name:a.default_value for a in func._schema.arguments}
         values.update(zip((a.name for a in func._schema.arguments),args));values.update(kwargs)
@@ -51,9 +52,9 @@ class MatmulMode(InputReadMode):
             return super().__torch_dispatch__(func,types,args,kwargs)
         # Same object/storage must be the actual dispatch operand, including a transpose view.
         with _disable_current_modes():
-            matrix=w.t() if name in ('aten::linear','npu::npu_linear') else w
+            matrix=w.t() if name in self.linear_names else w
             require(matrix.shape[0]==x.shape[1],'REFERENCE_BF16_MATMUL_LAYOUT')
-            width=min(64,matrix.shape[1])
+            width=min(1024,matrix.shape[1])
             if bias is not None:
                 require(bias.ndim==1 and bias.numel()==matrix.shape[1],'REFERENCE_MATMUL_BIAS_LAYOUT')
             before=fingerprint(w)
@@ -70,9 +71,11 @@ class MatmulMode(InputReadMode):
             event.update(named_variant=site.variant,effect='PHENOMENON_PROXY_NOT_ORIGINAL_MECHANISM',
                 native_operator=name,native_return_identity=True,shape=list(result.shape),
                 input_shape=list(x.shape),weight_shape=list(w.shape),readonly_inputs_weights_unchanged=True,
-                target='last_row_first_64_columns',k_block=128,reverse_k_order=not site.early_round,
+                target='last_row_first_1024_columns',k_block=128,reverse_k_order=not site.early_round,
                 early_bf16_before_real_bias=site.early_round,control_passed=True,
                 control_max_abs=float((observed-normal.float()).abs().max()),weight_sha256=before,
+                control_changed_elements=int((observed!=normal.float()).sum()),
+                rule_changed_elements=int((normal!=alternate).sum()),
                 bf16_operands=True,quantized_operand_recomputed=False)
             def replacement(region):
                 value=alternate.to(region.device)

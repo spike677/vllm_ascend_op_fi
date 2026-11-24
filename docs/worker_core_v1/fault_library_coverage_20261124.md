@@ -54,7 +54,7 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
 |29|F|CLOSED_NO_INJECTION|310P特有硬件条件|当前A3不具备310P条件|当前A3不适用|范围决定，不要求注入|
 |30|C|AWAIT_FORMAL_TEST|公共18方差误差命名变体（新增）|固定增益1/sqrt(k)的归一化输出代理；非INTraining训练方差实现|Qwen3.8 A3 TP2（蓝区A2仅验证）|18.variance_over4（k=4、gain=0.5）和18.variance_under4（k=0.25、gain=2）均通过A2/0.26/CANN9.1/Qwen3.8 W8A8/TP2两个owner；见r741_b1_b6_closure_20261124.md。A3待验收。|
 |31|B|YELLOW_ADAPTER_READY_UNTESTED|黄区fake/faulty_requant|与黄区重量化能力合并，按命名变体登记|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
-|32|B|REFERENCE_ADAPTER_PENDING|黄区operator_input_precision/compute_downcast扩展Conv3d|输入cast与内部低精度重算须分别记变体；3D/图片待验收|Qwen3.8 A3 TP2（蓝区A2仅验证）|与黄区进度存在冲突，已有原语/挂点不等于已适配：见本页冲突表及yellow_adapter_recipes_20261124.md；正式产品验收待黄区|
+|32|B|REFERENCE_ADAPTER_PENDING|黄区operator_input_precision/compute_downcast扩展Conv3d|输入cast与内部低精度重算须分别记变体；3D/图片待验收|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row32_conv3d_input_fp16：每rank applied/consumed/restored=6，changed=0、changed_elements=0；不额外加扰动|
 |33|A|FAULT33_EVIDENCE_PENDING|公共33 paged_decode|A3实际launch/三形状控制未闭合，关闭|Qwen3.8 A3 TP2（蓝区A2仅验证）|r7.5候选解码工具已提供；A3三形状实际回传待补|
 |34|C|REFERENCE_ADAPTER_PENDING|黄区float_matmul现象变体（独立登记）|C类；eager无原图编译融合，比较MM与加法路径的数值现象，不用公共39mr结果替代黄区适配器验收|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区float_matmul需适配；同一次测试仅在证据逐条支持时备注覆盖多行|
 |35|B|AWAIT_FORMAL_TEST|合并公共28 denominator_replay；黄区finite_perturb历史保留|数学不等价：分母重放不是仅累加序改变，合并只覆盖错误输出现象|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|

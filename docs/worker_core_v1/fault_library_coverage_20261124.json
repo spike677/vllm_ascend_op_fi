@@ -350,9 +350,9 @@
       "capability": "黄区operator_input_precision/compute_downcast扩展Conv3d",
       "boundary": "输入cast与内部低精度重算须分别记变体；3D/图片待验收",
       "deployment": "Qwen3.8 A3 TP2（蓝区A2仅验证）",
-      "evidence": "与黄区进度存在冲突，已有原语/挂点不等于已适配：见本页冲突表及yellow_adapter_recipes_20261124.md；正式产品验收待黄区",
+      "evidence": "reference_adapter_a2_20261124.json#row32_conv3d_input_fp16：每rank applied/consumed/restored=6，changed=0、changed_elements=0；不额外加扰动",
       "progress_state": "REFERENCE_ADAPTER_PENDING",
-      "progress_note": "codex参考实现；A2两个owner通过后改ADAPTER_READY_UNTESTED，等待黄区审查与正式测试"
+      "progress_note": "实现与A2两个owner执行恢复已完成；该组合changed=0，未复现数值精度损失，不计正式通过"
     },
     {
       "row": 33,
