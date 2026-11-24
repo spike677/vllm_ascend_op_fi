@@ -8,6 +8,7 @@ _TENSOR = (
     ('17.spatial_padding', ['torch.nn.Conv3d']),
     ('18.api_half', ['torch.nn.RMSNorm']),
     ('18.variance_over4', ['AscendGemmaRMSNorm', 'vllm::triton_split_qkv_rmsnorm_mrope']),
+    ('18.variance_under4', ['AscendGemmaRMSNorm', 'vllm::triton_split_qkv_rmsnorm_mrope']),
     ('22.wrong_row', ['vllm::npu_rotary_embedding.positions', 'RoPE_consumer']),
 )
 _NATIVE = (

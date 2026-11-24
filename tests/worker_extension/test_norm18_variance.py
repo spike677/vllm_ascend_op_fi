@@ -2,7 +2,7 @@ import unittest
 from types import SimpleNamespace as NS
 import torch
 from fault_injection.engines.region_lease import RegionLeases
-from fault_injection.sites.norm18_variance import Variance18Site
+from fault_injection.sites.norm18_variance import Variance18Site, Variance18Under4Site
 from demoncat.runtime.vllm_ascend.worker_extension.config import FaultConfig
 from demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission import ordinary_route_report
 
@@ -71,3 +71,17 @@ class VarianceTests(unittest.TestCase):
         with site.mode:y=x.clone()
         self.assertTrue(torch.equal(x,y));self.assertEqual(site.region_leases.count(),0)
         self.assertFalse(site.events[0]['applied'])
+
+    def test_second_named_band_underestimates_mean_square(self):
+        for owner in ('a','b'):
+            site=Variance18Under4Site(None,NS(input_batch=NS(req_ids=['real'])),fault=True,
+                region_leases=RegionLeases(owner,1,stream=lambda:0,complete=lambda s:None))
+            site.active=True;site.forward_calls.append({})
+            x=torch.arange(1,7,dtype=torch.bfloat16).reshape(2,3);before=x.clone()
+            site.output('norm',x)
+            with site.mode:y=x.clone()
+            self.assertTrue(torch.equal(y,before*2));self.assertTrue(torch.equal(x,before))
+            self.assertEqual(site.events[0]['named_variant'],'18.variance_under4')
+            self.assertEqual(site.events[0]['mean_square_multiplier'],.25)
+            self.assertTrue(site.events[0]['restored']);self.assertEqual(site.pending,0)
+            self.assertFalse(ordinary_route_report('18.variance_under4')['can_prepare'])

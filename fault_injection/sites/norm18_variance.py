@@ -65,6 +65,10 @@ class FullNormConsumerMode(NormConsumerMode):
 
 
 class Variance18Site(Norm18Site):
+    mechanism = MECHANISM
+    multiplier = 4
+    gain = 0.5
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mode = FullNormConsumerMode(self)
@@ -78,13 +82,20 @@ class Variance18Site(Norm18Site):
             region = t.view(-1)
             e = dict(site=name, request_ids=list(self.runner.input_batch.req_ids), eligible=True,
                      applied=False, changed=0, changed_elements=0, consumed=False, restored=False,
-                     failed=False, effect='RMS_MEAN_SQUARE_GAIN_PROXY', named_variant=MECHANISM,
-                     mean_square_multiplier=4, gain=0.5, epsilon_exact=False, shape=list(t.shape),
+                     failed=False, effect='RMS_MEAN_SQUARE_GAIN_PROXY', named_variant=self.mechanism,
+                     mean_square_multiplier=self.multiplier, gain=self.gain, epsilon_exact=False, shape=list(t.shape),
                      covered_elements=t.numel())
             self.events.append(e)
             def replacement(x):
-                value = x*0.5
+                value = x*self.gain
                 e['changed_elements'] = int((x.view(torch.uint8).reshape(-1, x.element_size()) !=
                     value.view(torch.uint8).reshape(-1, x.element_size())).any(dim=1).sum().item())
                 return value
             self.mode.watch(region, e, inject=self.fault, replacement=replacement)
+
+
+class Variance18Under4Site(Variance18Site):
+    """Named underestimation: k=1/4, gain=2; no user numeric parameter."""
+    mechanism = "18.variance_under4"
+    multiplier = 0.25
+    gain = 2.0

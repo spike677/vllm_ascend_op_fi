@@ -47,7 +47,7 @@ def main():
     p.add_argument('--external-sampling',action='store_true')
     p.add_argument('--external-vision',action='store_true')
     p.add_argument('--external-input',choices=['module','dispatch'])
-    p.add_argument('--variance18',action='store_true')
+    p.add_argument('--variance18',nargs='?',const='over4',choices=('over4','under4'))
     p.add_argument('--status-diagnostics',action='store_true')
     p.add_argument('--drain-stress',action='store_true')
     p.add_argument('--alias-diagnostics',action='store_true')
@@ -57,7 +57,7 @@ def main():
     if a.external_vision and not visual:p.error('External vision uses the isolated image scheduler: --mechanism 17')
     if a.external_input and a.mechanism!=['18']:p.error('Input examples require --mechanism 18')
     if a.variance18 and a.mechanism!=['18']:p.error('Variance proxy requires --mechanism 18')
-    if sum((a.external_example,a.external_sampling,a.external_vision,bool(a.external_input),a.variance18))>1:p.error('Choose one adapter variant')
+    if sum((a.external_example,a.external_sampling,a.external_vision,bool(a.external_input),bool(a.variance18)))>1:p.error('Choose one adapter variant')
     if a.batch_canary_negative and not batch:p.error('Nonserial canary negative requires Batch')
     if ('batch' in a.mechanism or '33' in a.mechanism) and len(a.mechanism)!=1:p.error('Batch/33 use their own scheduler profile')
     report=dict(status='STARTED',entry='VLLM_HTTP_API',host_per_request_hooks=False,scopes=[])
@@ -90,7 +90,7 @@ def main():
         if a.external_example:mechanisms['18']='external.gain_three_quarters'
         if a.external_sampling:mechanisms['18']='external.exponential_perturb'
         if a.external_vision:mechanisms['17']='external.conv3d_output_gain'
-        if a.variance18:mechanisms['18']='18.variance_over4'
+        if a.variance18:mechanisms['18']='18.variance_'+a.variance18
         if a.external_input:mechanisms['18']='external.'+a.external_input+'_input_gain'
         images=[]
         if visual:

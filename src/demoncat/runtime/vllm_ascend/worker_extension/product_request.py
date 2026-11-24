@@ -122,7 +122,7 @@ class ProductRequest(ContinuousRequest):
                                         'EXTERNAL_CONSUMPTION_OR_RESTORE_PENDING')
                                 return value
                             patch(self.model,'compute_logits',external_logits)
-                        if self.binding.mechanism in ('18.api_half', '18.variance_over4'):
+                        if self.binding.mechanism in ('18.api_half', '18.variance_over4', '18.variance_under4'):
                             def logits(original,*args,**kwargs):
                                 value=original(*args,**kwargs)
                                 require(self.site.active and not self.site.pending and not self.site.parents,
@@ -271,7 +271,7 @@ class ProductRequest(ContinuousRequest):
                 pending=self.site.pending, runtime_identity=self.binding.alias_runtime_identity)
         if not self.inject:
             report.update(output=list(self.rows),all_finite=bool(self.rows) and all(r['finite'] for r in self.rows))
-        if self.inject and not self.skip and self.binding.mechanism=='18.variance_over4':
+        if self.inject and not self.skip and self.binding.mechanism in ('18.variance_over4','18.variance_under4'):
             report['norm_variance_effect']=dict(calls=[{k:e.get(k) for k in (
                 'site','request_ids','named_variant','shape','covered_elements','mean_square_multiplier',
                 'gain','epsilon_exact','changed','changed_elements','before_sha256','after_sha256',

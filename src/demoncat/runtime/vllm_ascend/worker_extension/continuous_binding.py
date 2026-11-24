@@ -10,7 +10,7 @@ from pathlib import Path
 from .serving_context import require
 
 ATTRIBUTE='_demoncat_continuous_bindings'
-SUPPORTED=('15.alias_detach','20.buffer_substitute','26.fia_destination','41.tail_column','17.spatial_padding','33.paged_decode','28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','39.matmul_range','18.api_half','18.variance_over4','22.wrong_row','8.restore_offset')
+SUPPORTED=('15.alias_detach','20.buffer_substitute','26.fia_destination','41.tail_column','17.spatial_padding','33.paged_decode','28.fia.denominator_replay','quant.batch_shared_scale','39.output_proxy','39.matmul_range','18.api_half','18.variance_over4','18.variance_under4','22.wrong_row','8.restore_offset')
 
 
 def digest(value):
@@ -259,9 +259,9 @@ class ContinuousRequest:
                 event=torch.npu.Event();event.record(stream);event.synchronize()
             leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],stream=torch.npu.current_stream,complete=complete)
             self.site=Alias15Site(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
-        elif self.binding.mechanism in ('18.api_half','18.variance_over4','22.wrong_row','8.restore_offset'):
+        elif self.binding.mechanism in ('18.api_half','18.variance_over4','18.variance_under4','22.wrong_row','8.restore_offset'):
             from fault_injection.sites.norm18 import Norm18Site
-            from fault_injection.sites.norm18_variance import Variance18Site
+            from fault_injection.sites.norm18_variance import Variance18Site, Variance18Under4Site
             from fault_injection.sites.rope22 import Rope22Site
             from fault_injection.sites.mla_rope22 import MLARope22Site
             from fault_injection.sites.moe8 import MoE8Site
@@ -270,7 +270,7 @@ class ContinuousRequest:
                 event=torch.npu.Event();event.record(stream);event.synchronize()
             leases=RegionLeases(self.binding.group['owner'],self.binding.group['group_generation'],
                 stream=torch.npu.current_stream,complete=complete)
-            site_type={'18.api_half':Norm18Site,'18.variance_over4':Variance18Site,'22.wrong_row':Rope22Site,'8.restore_offset':MoE8Site}[self.binding.mechanism]
+            site_type={'18.api_half':Norm18Site,'18.variance_over4':Variance18Site,'18.variance_under4':Variance18Under4Site,'22.wrong_row':Rope22Site,'8.restore_offset':MoE8Site}[self.binding.mechanism]
             if self.binding.mechanism=='22.wrong_row' and type(self.model).__name__=='DeepseekV2ForCausalLM':site_type=MLARope22Site
             self.site=site_type(self.model,self.runner,fault=self.phase=='fault',region_leases=leases)
         elif self.binding.mechanism in ('41.tail_column','26.fia_destination','20.buffer_substitute'):
@@ -320,7 +320,7 @@ class ContinuousRequest:
         require(self.inside==0 and self.samples==4 and self.error is None,'CONTINUOUS_REQUEST_NOT_COMPLETE')
         events=self.site.events
         actual_sites={e['site'] for e in events}
-        if self.binding.mechanism in ('39.output_proxy','39.matmul_range','18.api_half','18.variance_over4','22.wrong_row','8.restore_offset'):
+        if self.binding.mechanism in ('39.output_proxy','39.matmul_range','18.api_half','18.variance_over4','18.variance_under4','22.wrong_row','8.restore_offset'):
             calls=self.site.forward_calls
             require(len(calls)==4 and all(calls) and sum(sum(c.values()) for c in calls)==len(events),
                     'CONTINUOUS_ACTUAL_FORWARD_COVERAGE_INCOMPLETE')

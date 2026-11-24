@@ -8,19 +8,20 @@ from tools.review_product_mode import review
 
 def route_checks(data):
     mechanism=data['mechanism']
-    if mechanism not in ('18.variance_over4','external.conv3d_output_gain'):
+    if mechanism not in ('18.variance_over4','18.variance_under4','external.conv3d_output_gain'):
         raise ValueError('R741_ROUTE_NOT_SUPPORTED')
     def need(ok,code):
         if not ok:raise ValueError(code)
     for scope in data['scopes']:
         for request in scope['requests'][:3]:
             for rank in request['result']['ranks']:
-                if mechanism=='18.variance_over4':
+                if mechanism in ('18.variance_over4','18.variance_under4'):
+                    multiplier,gain=(4,.5) if mechanism=='18.variance_over4' else (.25,2.)
                     calls=rank.get('norm_variance_effect',{}).get('calls',[])
                     need(len(calls)==rank['coverage']['applied']>0,'VARIANCE_EFFECT_CALLS_MISSING')
                     for c in calls:
-                        need(c.get('named_variant')==mechanism and c.get('mean_square_multiplier')==4
-                             and c.get('gain')==.5 and c.get('epsilon_exact') is False,'VARIANCE_PROXY_RULE_CHANGED')
+                        need(c.get('named_variant')==mechanism and c.get('mean_square_multiplier')==multiplier
+                             and c.get('gain')==gain and c.get('epsilon_exact') is False,'VARIANCE_PROXY_RULE_CHANGED')
                         shape=c.get('shape')
                         need(isinstance(shape,list) and shape and all(type(n) is int and n>0 for n in shape)
                              and c.get('covered_elements')==math.prod(shape),'WHOLE_NORM_OUTPUT_NOT_PROVEN')
