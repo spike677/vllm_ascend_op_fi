@@ -1,0 +1,45 @@
+{
+  "schema": "dcat.r741.development_validation.v1",
+  "base": "abd40cdcd4131ed4e27b1a8268e606a81fa3d16f",
+  "status": "DEVELOPMENT_NPU_PENDING",
+  "targeted_cpu": {
+    "run": 117,
+    "passed": 115,
+    "skipped": 2,
+    "skip_reason": "Existing retired research public entry tests",
+    "log_sha256": "26e9c082db9e5725cf78102bb80301ab12fa6dc027357d24f16869a3407d6738"
+  },
+  "unchanged_mechanism_sources": [
+    {
+      "path": "fault_injection/sites/norm18.py",
+      "sha256": "82a0237223e4ead74100f8a2a97f0a9b4298bb357a0fface53b645fbec508d18",
+      "identical_to_r74": true
+    },
+    {
+      "path": "fault_injection/sites/projection39.py",
+      "sha256": "5a6a8cda1d1d0caa1c0d4b52bbe5410d20500217df40dfcccc1e412a0d3b3075",
+      "identical_to_r74": true
+    },
+    {
+      "path": "fault_injection/sites/alias15.py",
+      "sha256": "a23ca7e0582ea0e9006099fe34a994dc1b1d928a435bef5698dc2129a75103fd",
+      "identical_to_r74": true
+    },
+    {
+      "path": "fault_injection/sites/vision17.py",
+      "sha256": "7e3a514193e74acb09b1f13910a6c82f57d325ce2a3fd54aecd70a43f8e2db4e",
+      "identical_to_r74": true
+    },
+    {
+      "path": "fault_injection/engines/region_lease.py",
+      "sha256": "822d1a356bf54e6cf39348db2018f6eca267dfead6687bcf38ad89a7fb3df245",
+      "identical_to_r74": true
+    }
+  ],
+  "npu": {
+    "executed": false,
+    "target": "A2 / 0.26 / CANN9.1 / Qwen3.8 W8A8 / TP2",
+    "reason": "Card5 occupied by ATK during read-only checks; newest task directs deferral"
+  },
+  "qualification_granted": false
+}

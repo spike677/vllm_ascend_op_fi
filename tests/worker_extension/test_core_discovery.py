@@ -73,9 +73,9 @@ class CoreDiscoveryTests(unittest.TestCase):
 class RegistryTests(unittest.TestCase):
     def test_inventory_retains_history_but_fault25_has_no_rpc_route(self):
         manifest = registry.worker_core_manifest()
-        self.assertEqual(manifest['mechanism_count'], 17)
-        self.assertEqual(manifest['rpc_provider_count'], 16)
-        self.assertEqual(len(provider_capabilities()), 16)
+        self.assertEqual(manifest['mechanism_count'], 18)
+        self.assertEqual(manifest['rpc_provider_count'], 17)
+        self.assertEqual(len(provider_capabilities()), 17)
         pending = [r for r in manifest['mechanisms'] if not r['rpc_available']]
         self.assertEqual([row['mechanism'] for row in pending], ['25.reduce_scatter'])
         self.assertEqual(pending[0]['status'], 'UNSUPPORTED')

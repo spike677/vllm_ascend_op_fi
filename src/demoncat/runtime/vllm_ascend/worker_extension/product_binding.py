@@ -47,7 +47,7 @@ def product_binding_rpc(worker, action, payload):
         return dict(status='PRODUCT_CANDIDATE', mechanism=mechanism,
                     mode='PRODUCT_ACCEPTANCE_ONLY', product_qualified=False,
                     range=dict(max_context=4096 if mechanism=='33.paged_decode' else 1024, max_tokens=4, max_num_seqs=8 if mechanism=='quant.batch_shared_scale' else 1, single_chunk=True,
-                               image_grid=[1,4,4] if mechanism=='17.spatial_padding' else None),
+                               image_grid=[1,4,4] if mechanism=='17.spatial_padding' or external is not None and external.stage=='vision' else None),
                     user_prompt_registry=False, named_variant=mechanism,
                     external_provider=dict(source_sha256=external.source_sha256,qualification_granted=False) if external else None)
     b = current_binding(worker, worker.model_runner.model, mechanism)

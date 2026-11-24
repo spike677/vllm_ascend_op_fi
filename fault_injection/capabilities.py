@@ -14,6 +14,9 @@ from .delivery_scope import describe_delivery
 INTEGRATION_STATUS = 'INNER_FRAMEWORK_INTEGRATION_PENDING'
 
 _DETAILS = {
+    '18.variance_over4': ('continuous_product_only', 'rms_mean_square_gain_proxy',
+        'Source-bound continuous product site only; no legacy ModelFaultBackend adapter or inherited qualification.',
+        'Whole dense BF16 norm output gain 0.5; not exact epsilon-dependent normalization replay.'),
     '8.restore_offset': ('legacy_evidence_only', 'paired_moe_restore_mapping',
         'Missing reusable worker; actual routing indices, top-k weights and restore consumer required.',
         'Restore output or its consumer; no automatic msprobe alignment is supplied.'),

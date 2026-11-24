@@ -31,9 +31,9 @@ class CoveragePlanningTests(unittest.TestCase):
         catalog = {item.name for item in CAPABILITIES}
         manifest = integration_manifest()
         host = {row['mechanism'] for row in manifest['mechanisms']}
-        self.assertEqual(len(catalog), 17)
+        self.assertEqual(len(catalog), 18)
         self.assertEqual(manifest['mechanism_count'], 15)
-        self.assertEqual(catalog - host, {'39.matmul_range', '39.output_proxy'})
+        self.assertEqual(catalog - host, {'39.matmul_range', '39.output_proxy', '18.variance_over4'})
         for row in list_mechanisms():
             self.assertFalse(row['coverage']['multi_target'])
             self.assertFalse(row['coverage']['every_match'])

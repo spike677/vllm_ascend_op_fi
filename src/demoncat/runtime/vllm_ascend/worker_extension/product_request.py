@@ -18,6 +18,9 @@ class ProductRequest(ContinuousRequest):
         self.inject = inject
         self.external_request_id = None
         self.visual = binding.mechanism == "17.spatial_padding"
+        if binding.mechanism.startswith('external.'):
+            from .external_provider import external_site
+            self.visual = external_site(binding.worker, binding.mechanism, validate=True).stage == 'vision'
         self.encoder_calls = self.embedding_calls = 0
         self.encoder_output = None
         self.in_encoder = False
@@ -119,7 +122,7 @@ class ProductRequest(ContinuousRequest):
                                         'EXTERNAL_CONSUMPTION_OR_RESTORE_PENDING')
                                 return value
                             patch(self.model,'compute_logits',external_logits)
-                        if self.binding.mechanism=='18.api_half':
+                        if self.binding.mechanism in ('18.api_half', '18.variance_over4'):
                             def logits(original,*args,**kwargs):
                                 value=original(*args,**kwargs)
                                 require(self.site.active and not self.site.pending and not self.site.parents,
@@ -197,6 +200,10 @@ class ProductRequest(ContinuousRequest):
                 result = original(scheduler)
             finally:
                 self.in_encoder = False
+            if self.inject and self.binding.mechanism.startswith('external.'):
+                self.site.finish_forward()
+                require(not self.site.pending and self.site.region_leases.count()==0,
+                        'EXTERNAL_VISION_CONSUMPTION_OR_RESTORE_PENDING')
             cached = self.runner.encoder_cache[self.feature.identifier]
             require(self.encoder_output is not None and cached.untyped_storage()._cdata == self.encoder_output.untyped_storage()._cdata,
                     'PRODUCT_VISUAL_CACHE_CONSUMER_CHANGED')
@@ -219,9 +226,12 @@ class ProductRequest(ContinuousRequest):
         patch(self.model, 'embed_input_ids', embedding)
         self.hooks.append(self.model.visual.register_forward_hook(output))
         if self.inject:
-            self.site = Vision17Site(self.model.visual, fault=True, references={}, product_mode=True,
-                request_ids=lambda:self.runner.input_batch.req_ids, stream=torch.npu.current_stream, complete=complete)
-            self.site.install()
+            if self.binding.mechanism.startswith('external.'):
+                self.install_site()
+            else:
+                self.site = Vision17Site(self.model.visual, fault=True, references={}, product_mode=True,
+                    request_ids=lambda:self.runner.input_batch.req_ids, stream=torch.npu.current_stream, complete=complete)
+                self.site.install()
 
     def collect(self):
         require(self.inside == 0 and self.finished and self.error is None and self.samples > 0,
@@ -250,7 +260,7 @@ class ProductRequest(ContinuousRequest):
         report.update(external_request_id=self.external_request_id,external_request_id_status='OBSERVED' if self.external_request_id is not None else 'UNKNOWN',
                       prompt_sha256=digest(list(self.prompts[self.ids[0]])) if self.prompts else None,
                       range_facts=self.range_facts, observed_model_steps=self.samples,
-                      restore_kind='CALL_ARGUMENT_ONLY_NO_STORAGE_OVERWRITE' if self.visual else 'LIVE_REGION_BYTES')
+                      restore_kind='CALL_ARGUMENT_ONLY_NO_STORAGE_OVERWRITE' if self.binding.mechanism=='17.spatial_padding' else 'LIVE_REGION_BYTES')
         require(report['coverage']['failed'] == 0, 'PRODUCT_ELIGIBLE_CALL_FAILED')
         from .product_native import MECHANISMS, request_evidence
         if self.inject and not self.skip and self.binding.mechanism in MECHANISMS:
@@ -261,11 +271,20 @@ class ProductRequest(ContinuousRequest):
                 pending=self.site.pending, runtime_identity=self.binding.alias_runtime_identity)
         if not self.inject:
             report.update(output=list(self.rows),all_finite=bool(self.rows) and all(r['finite'] for r in self.rows))
+        if self.inject and not self.skip and self.binding.mechanism=='18.variance_over4':
+            report['norm_variance_effect']=dict(calls=[{k:e.get(k) for k in (
+                'site','request_ids','named_variant','shape','covered_elements','mean_square_multiplier',
+                'gain','epsilon_exact','changed','changed_elements','before_sha256','after_sha256',
+                'restored_sha256','consumer_operator','consumed','restored')} for e in events])
         if self.binding.mechanism.startswith('external.'):
             from .external_provider import external_site
             spec=external_site(self.binding.worker,self.binding.mechanism,validate=True)
             report['external_provider']=dict(mechanism=spec.mechanism,source_sha256=spec.source_sha256,
                                              qualification_granted=False)
+            if spec.stage=='vision':
+                report['external_provider'].update(stage='vision',encoder_calls=self.encoder_calls,
+                    embedding_calls=self.embedding_calls,readonly_inputs_weights_unchanged=
+                    all(e.get('readonly_inputs_weights_unchanged') is True for e in events) if events else None)
         self.close()
         report['resources'] = dict(leases=0, hooks=0, inflight=0)
         return report

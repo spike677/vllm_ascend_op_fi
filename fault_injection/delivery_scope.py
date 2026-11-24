@@ -11,6 +11,9 @@ INTEGRATION_STATUS = 'INNER_FRAMEWORK_INTEGRATION_PENDING'
 # State, declared deployment, next concrete step. Historical evidence stays in
 # the existing catalog/reports; these decisions never rewrite C2/C3 results.
 _SCOPES = {
+    '18.variance_over4': ('DEVELOPMENT_NOT_ACCEPTED',
+        ['source_bound_continuous_binding', 'scoped_acceptance_permit', 'full_output_consumer'],
+        'Complete A2 TP2 two-owner product acceptance; no api_half evidence is inherited.'),
     '8.restore_offset': ('ACCEPTED_SCOPE_RETAINED',
         ['actual MoE restore indices, routing weights and consumer'],
         'Wire the existing accepted serving mapping into the actual host.'),

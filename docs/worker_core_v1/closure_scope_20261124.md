@@ -12,7 +12,7 @@
 |外部v1七项|公共模型/采样示例A2已验证；黄区各适配器仍需实际注入测试|
 |外部v2四项|最新批准开发；weight/faulty_requant、weight/param_perturb、kv_update_misdirect、kv_rope_quant_loss；未验收前关闭|
 |四项黄区新增设计|init_routing_cutoff、cp_padding_restore、conv_transpose_padding、faulty_requant_rounding：仅收到源码/CPU检查汇总，无最终注入证据|
-|故障库12行|9/10/13/19/23/34/35/39/7/8/17/37只映射已有能力＋变体；撤回G1/G2/G3。见fault_library_coverage_20261124.md；35、8等现象覆盖不冒充历史根因|
+|故障库41行|以fault_library_coverage_20261124.md为唯一当前口径；库行号不是公共编号。库8=CP padding、库17=转置卷积padding；27→公共15、41→公共20、39→公共39mr。C类含新增30→18方差误差代理，待实测；不以公共17冒充原转置卷积机理|
 |HCCL与黄区其余条目|仅引用黄区实证；统一工具需要预加载路径真实回执适配，不伪造公共计数|
 |D包/8/第13行|负责人已批准第13行router量化噪声变体与公共8一起进入D包；0.32路线附外部provider v1，依赖D0/D1与噪声审查；其他公共V4项仍按原范围，未验收不登记|
 |r8|最终r7.x+D包+审查通过登记+可信bootstrap+CLI helper+免许可；冻结取决于真实证据，不以A2代A3|

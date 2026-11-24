@@ -42,9 +42,15 @@ def main():
     p.add_argument('--effect-probe',action='store_true')
     p.add_argument('--external-example',action='store_true')
     p.add_argument('--external-sampling',action='store_true')
+    p.add_argument('--external-vision',action='store_true')
+    p.add_argument('--variance18',action='store_true')
+    p.add_argument('--status-diagnostics',action='store_true')
     p.add_argument('--image')
     p.add_argument('--native-library');p.add_argument('--native-sha256')
     a=p.parse_args();visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
+    if a.external_vision and not visual:p.error('External vision uses the isolated image scheduler: --mechanism 17')
+    if a.variance18 and a.mechanism!=['18']:p.error('Variance proxy requires --mechanism 18')
+    if sum((a.external_example,a.external_sampling,a.external_vision,a.variance18))>1:p.error('Choose one adapter variant')
     if a.batch_canary_negative and not batch:p.error('Nonserial canary negative requires Batch')
     if ('batch' in a.mechanism or '33' in a.mechanism) and len(a.mechanism)!=1:p.error('Batch/33 use their own scheduler profile')
     report=dict(status='STARTED',entry='VLLM_HTTP_API',host_per_request_hooks=False,scopes=[])
@@ -71,9 +77,13 @@ def main():
             except Exception:time.sleep(1)
         else:raise RuntimeError('HTTP_SERVER_READY_TIMEOUT')
         from demoncat.runtime.vllm_ascend.worker_extension.product_host import ProductClient
+        if a.status_diagnostics:
+            from demoncat.runtime.vllm_ascend.worker_extension.product_diagnostics import DiagnosticProductClient as ProductClient
         mechanisms={'15':'15.alias_detach','18':'18.api_half','39':'39.output_proxy','22':'22.wrong_row','28':'28.fia.denominator_replay','17':'17.spatial_padding','batch':'quant.batch_shared_scale','39mr':'39.matmul_range','33':'33.paged_decode','41':'41.tail_column','26fia':'26.fia_destination','20':'20.buffer_substitute'}
         if a.external_example:mechanisms['18']='external.gain_three_quarters'
         if a.external_sampling:mechanisms['18']='external.exponential_perturb'
+        if a.external_vision:mechanisms['17']='external.conv3d_output_gain'
+        if a.variance18:mechanisms['18']='18.variance_over4'
         images=[]
         if visual:
             from PIL import Image
@@ -119,8 +129,8 @@ def main():
                 source_manifest_sha256=source_sha,native_library=a.native_library,native_sha256=a.native_sha256,
                 canary=dict(prompt=canary_text,image=a.image if visual else None,max_tokens=4),evidence_directory='/evidence')
             path=root/('deployment-'+key+'.json');path.write_text(json.dumps(config));paths[key]=str(path)
-        if a.external_example or a.external_sampling:
-            ex.collective_rpc('demoncat_acceptance_bootstrap',args=('external_configure',dict(canary_tokens=canary,sampling=a.external_sampling)))
+        if a.external_example or a.external_sampling or a.external_vision:
+            ex.collective_rpc('demoncat_acceptance_bootstrap',args=('external_configure',dict(canary_tokens=canary,sampling=a.external_sampling,vision=a.external_vision)))
         else:ex.collective_rpc('demoncat_acceptance_bootstrap',args=('configure',dict(paths=list(paths.values()),canary_tokens={mechanisms[k]:canary for k in a.mechanism})))
         for key in a.mechanism:
             mechanism=mechanisms[key];target=root/('product_http_'+key+'.json')
@@ -176,7 +186,7 @@ def main():
                 rejected.run_canary=lambda:[inference(p) for p in canary_text]
             for index in range(2):
                 ex.collective_rpc('demoncat_acceptance_bootstrap',args=('permit',dict(mechanisms=[mechanism],attempt='http-'+str(index),source_manifest_sha256=source_sha)))
-                if a.external_example or a.external_sampling:
+                if a.external_example or a.external_sampling or a.external_vision:
                     from demoncat.runtime.vllm_ascend.worker_extension.external_provider import ExternalFaultConfig
                     client=ProductClient(ex,ExternalFaultConfig('external',mechanism.split('.',1)[1]),profile=mechanism,operator='product-acceptance',run_canary=lambda:inference(canary_text),drain=lambda:None,timeout=120)
                 else:
@@ -247,7 +257,8 @@ def main():
                 (root/('effect_'+key+'_page.json')).write_bytes(canonical(page)+b'\n')
                 ex.collective_rpc('demoncat_acceptance_bootstrap',args=('remove_permit',{}))
     except BaseException as error:
-        report.update(status='FAILED',error=repr(error),traceback=traceback.format_exc());save()
+        report.update(status='FAILED',error=repr(error),traceback=traceback.format_exc(),
+                      status_diagnostic=getattr(error,'status_diagnostic',None));save()
     finally:
         if server is not None:
             server.terminate()

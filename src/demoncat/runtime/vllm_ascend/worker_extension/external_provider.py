@@ -51,7 +51,7 @@ def register_external_site(worker, spec, *, authority, operator):
             and authority.authorize_operator(operator, 'register_external_site') is True,
             'EXTERNAL_TRUSTED_DEPLOYMENT_AUTHORITY_REQUIRED')
     require(type(spec) is ExternalSite, 'EXTERNAL_TYPED_SPEC_REQUIRED')
-    require(spec.stage in ('model', 'sampler'), 'EXTERNAL_STAGE_UNSUPPORTED')
+    require(spec.stage in ('model', 'sampler', 'vision'), 'EXTERNAL_STAGE_UNSUPPORTED')
     require(spec.region_kind == 'transient', 'EXTERNAL_V1_PERSISTENT_WEIGHT_OR_KV_RESTORE_UNPROVEN')
     require(spec.mechanism.startswith('external.'), 'EXTERNAL_CANNOT_SHADOW_BUILTIN')
     ExternalFaultConfig('external', spec.mechanism.removeprefix('external.'))

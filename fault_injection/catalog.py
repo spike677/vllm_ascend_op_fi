@@ -33,6 +33,11 @@ class Capability:
 
 
 CAPABILITIES = (
+    Capability('18.variance_over4', 'whole RMSNorm output fixed gain proxy', 'continuous_product_only',
+        'CPU development; no inherited NPU qualification',
+        'RMS mean-square k=4 gain=0.5 proxy; not centered variance or exact epsilon-dependent kernel replay',
+        'fault_injection/sites/norm18_variance.py', None, None,
+        ('NATIVE_VALIDATION_PENDING',), None),
     Capability('8.restore_offset', 'MoE restore indices/top-k mapping', 'evidence_only', 'historical fixed experiment', 'No complete reusable local source',
         None, None,
         None,
@@ -159,7 +164,9 @@ def list_faults():
 
 
 def _audit(item):
-    if item.name.startswith('39.'):
+    if item.integration == 'continuous_product_only':
+        host_binding = None
+    elif item.name.startswith('39.'):
         host_binding = 'fault39.native.matmul' if item.name == '39.matmul_range' else None
     else:
         host_binding = 'model_fault.' + item.name

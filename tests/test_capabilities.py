@@ -16,7 +16,7 @@ class CapabilityScopeTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         inventory = list_faults()
         contract = {row["mechanism"]: row for row in integration_manifest()["mechanisms"]}
-        self.assertEqual(len(inventory), 17)
+        self.assertEqual(len(inventory), 18)
         self.assertEqual(len(contract), 15)
         self.assertEqual(sum(row['model_session_route_available'] for row in contract.values()), 10)
         self.assertEqual(sum(row['deployment_runtime_required'] for row in contract.values()), 5)
@@ -43,7 +43,7 @@ class CapabilityScopeTests(unittest.TestCase):
 
     def test_every_remaining_variant_has_explicit_non_inherited_scope(self):
         specs = list_mechanisms()
-        self.assertEqual(len(specs), 15)
+        self.assertEqual(len(specs), 16)
         self.assertEqual({s['name'] for s in specs},
                          {s['name'] for s in list_faults() if not s['name'].startswith('39.')})
         for spec in specs:

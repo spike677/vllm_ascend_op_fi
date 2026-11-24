@@ -33,7 +33,7 @@ def integration_manifest():
     """Describe variants, without inventing fifteen inner-framework primitives."""
     mechanisms = []
     for capability in CAPABILITIES:
-        if capability.name.startswith("39."):
+        if capability.name.startswith("39.") or capability.integration == 'continuous_product_only':
             continue
         mechanisms.append({
             "mechanism": capability.name,
