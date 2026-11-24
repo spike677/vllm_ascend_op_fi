@@ -13,11 +13,11 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
 |CLOSED_NO_INJECTION|5|1、4、5、29、36|
 |AWAIT_FORMAL_TEST|14|6、15、17、18、20、22、23、26、27、28、30、35、39、41|
 |YELLOW_ADAPTER_READY_UNTESTED|8|2、11、14、21、24、31、37、40|
-|REFERENCE_ADAPTER_PENDING|7|7、8、12、16、19、32、34|
+|REFERENCE_ADAPTER_PENDING|5|12、16、19、32、34|
 |HCCL_BITWISE_PENDING|2|25、38|
 |FAULT33_EVIDENCE_PENDING|1|33|
 |V4_D_PACKAGE_PENDING|1|13|
-|ADAPTER_READY_UNTESTED|3|3、9、10|
+|ADAPTER_READY_UNTESTED|5|3、7、8、9、10|
 
 历史公共证据不等于本轮通过。参考适配器通过 A2 后记 ADAPTER_READY_UNTESTED，标注等待黄区审查；正式测试审查并登记后才记 REGISTERED。第21行按区域寿命选择v1或v2，待黄区确认。
 
@@ -29,8 +29,8 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
 |4|E|CLOSED_NO_INJECTION|量化校准数据集分布|校准数据分布影响，非运行时故障|Qwen3.8 A3 TP2（蓝区A2仅验证）|范围决定，不要求注入|
 |5|F|CLOSED_NO_INJECTION|GPT-NeoX RoPE能力缺失|功能缺失，不是可注入故障|当前A3不适用|范围决定，不要求注入|
 |6|C|AWAIT_FORMAL_TEST|公共22 wrong_row|现象：错误cos/sin行；不复现超4096缓存不足|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查|
-|7|C|REFERENCE_ADAPTER_PENDING|黄区operator_output_value，MLP部分token行置零|现象：贡献丢失；dense模型无MoE超容量|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区需实现已有能力的命名变体并实测|
-|8|C|REFERENCE_ADAPTER_PENDING|黄区operator_output_value，激活行替换padding/零|现象：有效激活行被零/padding替换；不证明CP restore索引错误|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区需实现已有能力的命名变体并实测|
+|7|C|ADAPTER_READY_UNTESTED|黄区operator_output_value，MLP部分token行置零|现象：贡献丢失；dense模型无MoE超容量|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-hidden-20261124-r1；真实add/rmsnorm消费者，旧metadata-only结果已作废|
+|8|C|ADAPTER_READY_UNTESTED|黄区operator_output_value，激活行替换padding/零|现象：有效激活行被零/padding替换；不证明CP restore索引错误|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-hidden-20261124-r1；真实add/rmsnorm消费者，旧metadata-only结果已作废|
 |9|B|ADAPTER_READY_UNTESTED|黄区fake_requant saturation|须证明真实scale除法及clip；仅改变反量化乘数不等价|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-quant-20261124-r1独立补充件；原始QMM消费、字节恢复、逐位金丝雀和负例通过|
 |10|B|ADAPTER_READY_UNTESTED|黄区fake_requant squeeze；公共Batch已有相关证据|须观测共享/增大scale造成的量化分辨率降低|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-quant-20261124-r1独立补充件；原始QMM消费、字节恢复、逐位金丝雀和负例通过|
 |11|B|YELLOW_ADAPTER_READY_UNTESTED|黄区activation/faulty_requant|重量化语义及真实消费者由黄区确认|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|

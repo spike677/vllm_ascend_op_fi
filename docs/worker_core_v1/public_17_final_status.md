@@ -90,3 +90,11 @@
 ## K5完成记录
 
 15在A2/0.26/CANN9.1/Qwen3.8社区W8A8/TP2的受控NaN分配器场景中，同组Worker两个owner通过：768次命中，738次初始非有限，projection/hidden/logits存在非有限，后续请求与OFF精确金丝雀通过，资源清零。用时259.39秒，隔离已解除，未停止外部容器。原产品机制和冻结包不变。此为安全诊断，不是自然发生率证明或A3登记；详见 `alias15_nonfinite_safety_20261124.json`。
+
+## 10行参考适配器交付
+
+附件799977任务的参考工厂在独立开发线 `codex/yellow-reference-adapters-20261124`，通过项逐批放在 `releases/yellow-reference-*-20261124-r1`。它们是黄区能力的参考实现，全部为现象复现，不新增公共故障编号，也不改冻结r7.4.1。
+
+逐行进度以 [41行台账](fault_library_coverage_20261124.md) 的 `progress_state` 为准；计数由JSON生成。A2/0.26/CANN9.1/社区Qwen3.8 W8A8/TP2的两个owner证据在 [独立复核记录](reference_adapter_a2_20261124.json)。`ADAPTER_READY_UNTESTED` 表示蓝区参考适配器已通过、等待黄区审查和正式产品测试，不能解释为A3登记。
+
+33仍等待N2六条记录的完整字段，D包仍等待D0/D1。没有对应回传，不锁定A3 serializer，不发33注入资格，不把参考补充件或历史结果登记成黄区正式通过；r8仍依赖这些审查和登记结果。
