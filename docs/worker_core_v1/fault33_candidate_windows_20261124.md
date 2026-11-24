@@ -1,5 +1,24 @@
 # 33：公开源码候选与 A3 两个只读窗口
 
+## r2勘误：本单必须配套r2采集器
+
+2026-11-24完整报告只作为问题定位和可复用身份/金丝雀的文本证据，不算本单窗口一通过。用`fault33-evidence-candidate-20261124-r2`替代r1及黄区自改版本；冻结的r7.4/r7.4.1产品包不动。完整回传要求见`yellow_intake_20261124_fault33_full.md`。
+
+r2新增`aclrtBinaryGetFunction`按名句柄登记，每条二进制旁保存`.bin.binding.json`。name-only的header临时key为0，审查输出key=null；它没有真实tiling key，不能进入候选解码。后到的ByEntry只更新之后的launch，早期记录不追补。候选CLI要求sidecar的rank进程内pid/serial/entry与bin一致；不能删除sidecar绕过检查。
+
+初次三形状窗口必须`DCAT33_CAPTURE_ALL=1`，完整性检查要求`binding_metadata=true`，所有name-only调用单列。仅当目标FIA具有真实entry且与API唯一关联时才解码。unknown=0不替代这一门禁。过滤key模式不能当作全窗口普查。
+
+在新的工具目录中，先运行`sha256sum -c SHA256SUMS`（补充件外层清单），再校验manifest中的逐文件SHA。附带的aarch64库是蓝区SDK构建参考，不自动获得A3资格；A3使用实际SDK重建：
+
+```bash
+python tools/build_fault33_capture.py \
+  --source experiments/worker_core_v11_20261118/paged33_launch_capture_v2.cpp \
+  --sdk "$ASCEND_HOME_PATH" --output "$WORK/capture-r2-build" \
+  --source-commit "$(python -c 'import json; print(json.load(open("manifest.json"))["source_commit"])')"
+```
+
+输出目录必须不存在。保留build-receipt.json及其SHA，随后按下文既有可信RPC、LD_PRELOAD链、ARMED及flush步骤加载`$WORK/capture-r2-build/capture-v2-r2.so`，核对实际映射的库SHA。不得只改库文件名而继续加载旧库。两个窗口用不同实例和新目录，不删除上一轮原件。
+
 2026-11-24负责人已批准五条标准。本单替代旧执行单中“必须证明二进制与源码一一对应”的前置要求；旧冻结补充件不改。**不把≥99%当作解码正确的充分条件**。原件留黄区，交负责人转发，蓝区不直接要求黄区运行。
 
 范围：Qwen3.8 W8A8、A3、TP2、0.26.0rc1-a3、运行时CANN9.1.0；33保持关闭，不改模型输出。r7.4只含采集器，以下候选解码在r7.5开发线；没有完成适配或授予资格。

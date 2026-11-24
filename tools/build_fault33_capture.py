@@ -30,7 +30,9 @@ def build(source, sdk, output, source_commit, compiler='g++'):
         headers.append(dict(path=path.relative_to(sdk).as_posix(), bytes=path.stat().st_size,
                             sha256=sha(path)))
     versions = []
-    for name in ('version.cfg', 'version.info'):
+    for name in ('version.cfg', 'version.info', 'compiler/version.info',
+                 'opp/version.info', 'share/info/runtime/version.info',
+                 'share/info/asc-devkit/version.info'):
         path = sdk / name
         if path.is_file():
             versions.append(dict(path=name, sha256=sha(path), text=path.read_text()))
