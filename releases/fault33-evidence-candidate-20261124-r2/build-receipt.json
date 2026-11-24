@@ -1,0 +1,111 @@
+{
+  "schema": "dcat.capture.build.r2",
+  "source_commit": "8528293dd2ebdc03c4d00451e2a81700ef1967cb",
+  "source_file": "paged33_launch_capture_v2.cpp",
+  "source_bytes": 8366,
+  "source_sha256": "2d472c2e3268080c52bfa3ba497e6239a22f77e062849bbed379e5177578a835",
+  "library": "capture-v2-r2.so",
+  "library_bytes": 171536,
+  "library_sha256": "c87db1e157bca28e395e1c8280b0958fdea2d057b29affa21576c727996e023e",
+  "compiler": "g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+  "architecture": "aarch64",
+  "flags": [
+    "-std=c++17",
+    "-shared",
+    "-fPIC",
+    "-Wl,--build-id=sha1",
+    "-MMD",
+    "-MF",
+    "/result/sdk-build/headers.d",
+    "-I",
+    "/usr/local/Ascend/cann-9.1.0/include",
+    "/source/experiments/worker_core_v11_20261118/paged33_launch_capture_v2.cpp",
+    "-ldl",
+    "-pthread",
+    "-o",
+    "/result/sdk-build/capture-v2-r2.so"
+  ],
+  "headers": [
+    {
+      "path": "aarch64-linux/include/acl/acl.h",
+      "bytes": 810,
+      "sha256": "4f7170f7a0c1a2ebe2cb016b07b1f04816bc20de98a4a392883206399856ec8b"
+    },
+    {
+      "path": "aarch64-linux/include/acl/acl_base.h",
+      "bytes": 903,
+      "sha256": "f7c6c5c7538585c7656aa1240a402035d967d49183dce2d294429e18dca4faae"
+    },
+    {
+      "path": "aarch64-linux/include/acl/acl_base_mdl.h",
+      "bytes": 12993,
+      "sha256": "88c94d54e279297d29a34669749319f5b75c9823117618f5f83b80bdf0ddb4b7"
+    },
+    {
+      "path": "aarch64-linux/include/acl/acl_base_rt.h",
+      "bytes": 13720,
+      "sha256": "4055d6b9d3a96face0efb5d68aafb68900a1d9c78c6a877ae21381688dd8b529"
+    },
+    {
+      "path": "aarch64-linux/include/acl/acl_dump.h",
+      "bytes": 3124,
+      "sha256": "48f838554d100297ea51ea9e0005b814a4dac5893b4753371ad8f5144dfdc3a2"
+    },
+    {
+      "path": "aarch64-linux/include/acl/acl_mdl.h",
+      "bytes": 63625,
+      "sha256": "3cac13dd4b332399fb09dea40a2cc639851855c8d31b8002b7677fb64bc4e317"
+    },
+    {
+      "path": "aarch64-linux/include/acl/acl_op.h",
+      "bytes": 22950,
+      "sha256": "dc3d0da0412a728401209c8d79aa1c51b5058f0b36b8e9ce0c272f9ee0c338bc"
+    },
+    {
+      "path": "aarch64-linux/include/acl/acl_rt.h",
+      "bytes": 203764,
+      "sha256": "22c603cb80ab582006d4f26697ceb14c059d7f3613cf13b3c72aeb0d3d36e3c1"
+    },
+    {
+      "path": "aarch64-linux/include/acl/acl_rt_allocator.h",
+      "bytes": 6264,
+      "sha256": "c8e45ae3024e5ed42b84c67a05b2782f10d262fabd31bd01aab5fe8a18f1f7e5"
+    },
+    {
+      "path": "aarch64-linux/include/acl/error_codes/ge_error_codes.h",
+      "bytes": 3731,
+      "sha256": "1df2641ce314c675cb4f99d5440035711b1f09385f468885b5bfe0cead617309"
+    },
+    {
+      "path": "aarch64-linux/include/acl/error_codes/rt_error_codes.h",
+      "bytes": 12835,
+      "sha256": "5dcf3c1dce55f4e07a12fce04d69a41ac714cd94ad9a970933e2d98bf1e12ce0"
+    }
+  ],
+  "sdk_version_files": [
+    {
+      "path": "compiler/version.info",
+      "sha256": "f20359296d5a7127f841aa35f4a788137f444dc36d72641e948cb9e39e47e4f4",
+      "text": "Version=9.1.0\nversion_dir=cann\nrequired_package_runtime_version=\"9.1\"\nrequired_package_ge-executor_version=\"9.1\"\nrequired_package_metadef_version=\"9.1\"\nrequired_package_bisheng-compiler_version=\"9.1\"\nrequired_package_tbe-tik_version=\"9.1\"\ntimestamp=20260730_231653901\n"
+    },
+    {
+      "path": "opp/version.info",
+      "sha256": "841279757459d4eabc1c8cfea69d3e1dc0fc9db3eb0c18100294cd5c1301b9e6",
+      "text": "Version=9.1.0\nversion_dir=cann\nrequired_package_runtime_version=\">=8.5\"\nrequired_package_ge-executor_version=\">=8.5\"\nrequired_package_metadef_version=\">=8.5\"\nrequired_package_asc-devkit_version=\">=8.5\"\nrequired_package_bisheng-compiler_version=\">=8.5\"\ntimestamp=20260730_231653901\n"
+    },
+    {
+      "path": "share/info/runtime/version.info",
+      "sha256": "b60c90526474b29ccb5f9077fcfbb5c1f739d57987f8d3bdab5a3599c33aa365",
+      "text": "Version=9.1.0\nversion_dir=cann\ntimestamp=20260730_231653901\n"
+    },
+    {
+      "path": "share/info/asc-devkit/version.info",
+      "sha256": "f20359296d5a7127f841aa35f4a788137f444dc36d72641e948cb9e39e47e4f4",
+      "text": "Version=9.1.0\nversion_dir=cann\nrequired_package_runtime_version=\"9.1\"\nrequired_package_ge-executor_version=\"9.1\"\nrequired_package_metadef_version=\"9.1\"\nrequired_package_bisheng-compiler_version=\"9.1\"\nrequired_package_tbe-tik_version=\"9.1\"\ntimestamp=20260730_231653901\n"
+    }
+  ],
+  "elf_notes": "\nDisplaying notes found in: .note.gnu.build-id\n  Owner                Data size \tDescription\n  GNU                  0x00000014\tNT_GNU_BUILD_ID (unique build ID bitstring)\n    Build ID: 262d66a16c4a151bec1268dfa06026c37807cf1c\n",
+  "npu_initialized": false,
+  "a3_validated": false,
+  "qualification_granted": false
+}
