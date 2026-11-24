@@ -2,7 +2,6 @@ import types
 import unittest
 import torch
 from fault_injection.engines.region_lease import RegionLeases
-from reference_adapters.vision_precision import VisionPrecisionSite, ConvInputFp16RoundTrip
 from reference_adapters.swiglu import GateFp16Round
 
 LIB=torch.library.Library('dcat_ref_act','DEF')
@@ -31,6 +30,7 @@ class PrecisionTests(unittest.TestCase):
     def leases(self,n):return RegionLeases('owner',n,stream=lambda:0,complete=lambda s:None)
     def runner(self):return types.SimpleNamespace(input_batch=types.SimpleNamespace(req_ids=['r']))
     def test_real_conv_readonly_and_restore(self):
+        from reference_adapters.vision_precision import VisionPrecisionSite, ConvInputFp16RoundTrip
         for cls in (VisionPrecisionSite,ConvInputFp16RoundTrip):
             model=torch.nn.Module();model.visual=Visual()
             x=torch.arange(1,9,dtype=torch.bfloat16).reshape(1,1,2,2,2)

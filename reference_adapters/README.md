@@ -10,8 +10,8 @@
 |10|`row10_scale_double`、`row10_scale_quadruple`|同上，scale×2/4；报告新量化零值与原生零值数量|这是 per-token scale 固定放大，模拟分辨率下降，不声称由真实离群 token 或 batch 变化引起|
 |7|`row7_mlp_last_row_zero`|结构发现 MLP，实际输出最后一个 token 行置零|贡献丢失代理，不证明 MoE 超容量；若消费者原地改写受保护区域则拒绝|
 |8|`row8_decoder_last_row_zero`|结构发现 decoder，层间 hidden 最后一行置零|模拟有效行被零 padding 替代，不是公共8，也不证明 CP 原生错误|
-|12|`row12_logits_columns_rotate`|保留 compute_logits 的真实存储；采样器合法温度写入完成后、真实 softmax 读取前循环移位词表列；读取后恢复该窗口前字节|是列错位变体；排列不改变熵，报告分布 L1。只覆盖正温度、该存储直达 softmax 的请求；不修改 lm_head 权重|
-|3|`row3_gate_fp16_round`（CPU通过，待A2）|SwiGLU gate 的另一种计算/舍入顺序|需核对实际 act/mul 是否融合；保留配置项说明，不能用任意输出缩放替代|
+|12|`row12_logits_columns_rotate`|追踪 compute_logits 及采样器实际FP32转换的来源；采样器合法温度写入完成后、真实 softmax 读取前循环移位词表列；读取后恢复该窗口前字节|是列错位变体；排列不改变熵，报告分布 L1。只覆盖正温度、可证明来源存储直达 softmax 的请求；不修改 lm_head 权重|
+|3|`row3_gate_fp16_round`（A2 TP2两个owner通过，待黄区审查）|SwiGLU gate 的另一种计算/舍入顺序|需核对实际 act/mul 是否融合；保留配置项说明，不能用任意输出缩放替代|
 |16|`row16_conv3d_compute_fp16`（CPU通过，待A2）|真实 Conv3d x/weight 只读，FP16 重算后改写实际输出|不是 ConvTranspose；必须图像请求且证明 encoder 读取|
 |32|`row32_conv3d_input_fp16`（CPU通过，待A2）|真实 Conv3d 输入 FP16 round-trip|BF16 值可能恰好不变，不能用额外扰动制造变化|
 |19|`row19_bf16_reverse_splitk`（CPU通过，待A2）|BF16 matmul 反向 split-K FP32 累加|社区量化投影不等同现役 BF16 out_proj；不能擅自解量化后称为原 BF16 matmul|

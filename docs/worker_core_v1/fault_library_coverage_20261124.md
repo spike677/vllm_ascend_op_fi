@@ -6,17 +6,18 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
 
 登记按“能力＋命名变体＋部署组合＋模式”一次记录，覆盖库行仅作备注。不得由同一行号自动推导公共机制。下列A类为已交付能力，不意味着本轮最终包已登记。
 
-进度快照：2026-11-24T22:50:00+08:00。A–F 是归属，progress_state 是进度，两者独立。以下数字从逐行 JSON 汇总；52、56 行不在统计范围内。
+进度快照：2026-11-24：逐项A2独立复核更新（黄区正式登记未完成）。A–F 是归属，progress_state 是进度，两者独立。以下数字从逐行 JSON 汇总；52、56 行不在统计范围内。
 
 |进度状态|行数|库行|
 |---|---|---|
 |CLOSED_NO_INJECTION|5|1、4、5、29、36|
 |AWAIT_FORMAL_TEST|14|6、15、17、18、20、22、23、26、27、28、30、35、39、41|
 |YELLOW_ADAPTER_READY_UNTESTED|8|2、11、14、21、24、31、37、40|
-|REFERENCE_ADAPTER_PENDING|10|3、7、8、9、10、12、16、19、32、34|
+|REFERENCE_ADAPTER_PENDING|9|7、8、9、10、12、16、19、32、34|
 |HCCL_BITWISE_PENDING|2|25、38|
 |FAULT33_EVIDENCE_PENDING|1|33|
 |V4_D_PACKAGE_PENDING|1|13|
+|ADAPTER_READY_UNTESTED|1|3|
 
 历史公共证据不等于本轮通过。参考适配器通过 A2 后记 ADAPTER_READY_UNTESTED，标注等待黄区审查；正式测试审查并登记后才记 REGISTERED。第21行按区域寿命选择v1或v2，待黄区确认。
 
@@ -24,7 +25,7 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
 |---|---|---|---|---|---|---|
 |1|E|CLOSED_NO_INJECTION|rope_scaling配置|配置说明，不注入|Qwen3.8 A3 TP2（蓝区A2仅验证）|范围决定，不要求注入|
 |2|B|YELLOW_ADAPTER_READY_UNTESTED|黄区weight/faulty_requant、weight/param_perturb（v2）|持久权重/scale；覆盖派生副本与全部读取者|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
-|3|B|REFERENCE_ADAPTER_PENDING|黄区activation_mismatch/swiglu_divergence；保留配置说明|SwiGLU分支数值差；不是所有模型均有该调用|Qwen3.8 A3 TP2（蓝区A2仅验证）|与黄区进度存在冲突，已有原语/挂点不等于已适配：见本页冲突表及yellow_adapter_recipes_20261124.md；正式产品验收待黄区|
+|3|B|ADAPTER_READY_UNTESTED|黄区activation_mismatch/swiglu_divergence；保留配置说明|SwiGLU分支数值差；不是所有模型均有该调用|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row3_gate_fp16_round；回执SHA af269176c362ab2174e6ed3640b9765aa5640536dc2af75e9058dbf083ed689c；原语差异见reference_adapters/README.md|
 |4|E|CLOSED_NO_INJECTION|量化校准数据集分布|校准数据分布影响，非运行时故障|Qwen3.8 A3 TP2（蓝区A2仅验证）|范围决定，不要求注入|
 |5|F|CLOSED_NO_INJECTION|GPT-NeoX RoPE能力缺失|功能缺失，不是可注入故障|当前A3不适用|范围决定，不要求注入|
 |6|C|AWAIT_FORMAL_TEST|公共22 wrong_row|现象：错误cos/sin行；不复现超4096缓存不足|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查|

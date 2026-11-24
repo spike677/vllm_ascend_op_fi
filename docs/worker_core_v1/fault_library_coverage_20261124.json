@@ -80,9 +80,9 @@
       "capability": "黄区activation_mismatch/swiglu_divergence；保留配置说明",
       "boundary": "SwiGLU分支数值差；不是所有模型均有该调用",
       "deployment": "Qwen3.8 A3 TP2（蓝区A2仅验证）",
-      "evidence": "与黄区进度存在冲突，已有原语/挂点不等于已适配：见本页冲突表及yellow_adapter_recipes_20261124.md；正式产品验收待黄区",
-      "progress_state": "REFERENCE_ADAPTER_PENDING",
-      "progress_note": "codex参考实现；A2两个owner通过后改ADAPTER_READY_UNTESTED，等待黄区审查与正式测试"
+      "evidence": "reference_adapter_a2_20261124.json#row3_gate_fp16_round；回执SHA af269176c362ab2174e6ed3640b9765aa5640536dc2af75e9058dbf083ed689c；原语差异见reference_adapters/README.md",
+      "progress_state": "ADAPTER_READY_UNTESTED",
+      "progress_note": "codex参考实现，A2同组TP2两个owner通过；等待黄区审查与正式产品测试"
     },
     {
       "row": 4,
@@ -465,6 +465,6 @@
     "original_suggestion": "篡改特定Token ID对应的权重向量",
     "current_variant": "仅compute_logits输出列错位/坍塌现象，不改持久权重"
   },
-  "progress_snapshot": "2026-11-24T22:50:00+08:00",
+  "progress_snapshot": "2026-11-24：逐项A2独立复核更新（黄区正式登记未完成）",
   "progress_source": "负责人逐行确认；与A–F归属分类独立；正式结果审查登记前不记REGISTERED"
 }

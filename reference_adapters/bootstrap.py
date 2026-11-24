@@ -9,13 +9,12 @@ def trusted_bootstrap(wrapper, action, options):
     from demoncat.runtime.vllm_ascend.worker_extension.external_provider import ExternalSite, register_external_site, factory_sha256
     from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import observe_deployment
     from demoncat.runtime.vllm_ascend.worker_extension.product_binding import configure_product_profiles
-    from reference_adapters.quant_scale import FACTORIES as quant
-    from reference_adapters.hidden_rows import FACTORIES as hidden
-    from reference_adapters.logits_mapping import FACTORIES as logits
-    from reference_adapters.swiglu import FACTORIES as swiglu
-    from reference_adapters.vision_precision import FACTORIES as vision
-    from reference_adapters.matmul_order import FACTORIES as matmul
-    factories = {**quant, **hidden, **logits, **swiglu, **vision, **matmul}
+    import importlib
+    # A supplement may contain one reviewed family only. Never import another
+    # unreviewed factory merely to register the selected variant.
+    modules={'row9':'quant_scale','row10':'quant_scale','row7':'hidden_rows','row8':'hidden_rows',
+        'row12':'logits_mapping','row3':'swiglu','row16':'vision_precision','row32':'vision_precision',
+        'row19':'matmul_order','row34':'matmul_order'}
     assert set(options) == {'variant', 'canary_tokens'}
     variants=options['variant'] if isinstance(options['variant'],list) else [options['variant']]
     assert variants and len(variants)==len(set(variants))
@@ -26,8 +25,8 @@ def trusted_bootstrap(wrapper, action, options):
             authorize_operator=lambda principal, operation: principal == 'product-acceptance')
     results=[];profiles={}
     for variant in variants:
-        factory=factories[variant]
-        stage='sampler' if variant in logits else 'vision' if variant in vision or variant=='row34_bf16_before_bias' else 'model'
+        factory=importlib.import_module('reference_adapters.'+modules[variant.split('_')[0]]).FACTORIES[variant]
+        stage='sampler' if variant.startswith('row12_') else 'vision' if variant.startswith(('row16_','row32_','row34_')) else 'model'
         mechanism = 'external.' + variant
         spec = ExternalSite(mechanism, factory, factory_sha256(factory),
             observe_deployment(worker, worker.model_runner.model), stage=stage, region_kind='transient')

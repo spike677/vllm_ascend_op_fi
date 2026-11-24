@@ -14,12 +14,16 @@ FAMILIES={
  'hidden':(['row7_mlp_last_row_zero','row8_decoder_last_row_zero'],
           ['reference_adapters/hidden_rows.py','reference_adapters/review_reference.py',
            'tests/worker_extension/test_reference_hidden_rows.py']),
+ 'swiglu':(['row3_gate_fp16_round'],['reference_adapters/swiglu.py',
+           'reference_adapters/review_reference.py','tests/worker_extension/test_reference_precision.py']),
 }
 DEPENDENCIES=['experiments/worker_core_v11_20261118/external_input_examples.py',
     'fault_injection/sites/norm18_variance.py','fault_injection/sites/norm18.py',
     'fault_injection/sites/projection39.py','fault_injection/sites/mla28.py',
     'fault_injection/engines/region_lease.py','fault_injection/product_contract.py',
-    'tools/review_product_mode.py']
+    'tools/review_product_mode.py',
+    'experiments/worker_core_v11_20261118/product_mode_probe.py',
+    'experiments/worker_core_v11_20261118/continuous_public_probe.py']
 
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 
@@ -34,13 +38,34 @@ def build(family,destination):
             raise ValueError('A2_REVIEW_NOT_PASSED:'+variant)
         if not record.get('scope_identities'):raise ValueError('OWNER_WORKER_IDENTITY_MISSING:'+variant)
     base=subprocess.check_output(['git','rev-parse','59f6aea5'],cwd=ROOT,text=True).strip()
-    dependencies={}
+    dependencies={}; checkout_forms={}
     for file in DEPENDENCIES:
         frozen=subprocess.check_output(['git','show',base+':'+file],cwd=ROOT)
         current=(ROOT/file).read_bytes()
-        if frozen!=current:raise ValueError('FROZEN_DEPENDENCY_CHANGED:'+file)
+        # Windows checkout uses CRLF; the immutable release archive uses LF.
+        # Record both byte identities instead of pretending they match. Any
+        # difference beyond the checkout line-ending transform is refused.
+        committed=subprocess.check_output(['git','show','HEAD:'+file],cwd=ROOT)
+        if frozen!=committed or current.replace(b'\r\n',b'\n')!=frozen.replace(b'\r\n',b'\n'):
+            raise ValueError('FROZEN_DEPENDENCY_CHANGED:'+file)
         dependencies[file]=sha(frozen)
-    blobs={f:(ROOT/f).read_bytes() for f in ['reference_adapters/__init__.py','reference_adapters/README.md',*files]}
+        checkout_forms[file]=dict(release_sha256=sha(frozen),a2_checkout_sha256=sha(current),
+            identical_bytes=frozen==current,only_checkout_line_endings=frozen!=current)
+    blobs={f:(ROOT/f).read_bytes() for f in ['reference_adapters/__init__.py','reference_adapters/README.md',
+        'reference_adapters/bootstrap.py','reference_adapters/product_probe.py',*files]}
+    # Embedded test files may import sibling factories; do not advertise CPU
+    # commands requiring absent modules. A2 product commands are per variant.
+    recipes=[]
+    for variant in variants:
+        module=next(f for f in files if f.startswith('reference_adapters/') and '/review_' not in f)
+        recipes.append(dict(variant=variant,factory_module=module[:-3].replace('/','.'),
+            factory_lookup='FACTORIES['+repr(variant)+']',factory_sha256=sha((ROOT/module).read_bytes()),
+            stage='model',region_kind='transient',phenomenon_proxy=True,
+            a2_command='python3 -B reference_adapters/product_probe.py --mechanism 18 --reference '+variant+' --negative-regression',
+            review_command='python3 -B -m reference_adapters.'+('review_quant' if family=='quant' else 'review_reference')+
+                ' /evidence --receipt product_http_18.json --negative product_control_negative.json --output /evidence/reference-review.json'))
+    blobs['recipes.json']=(json.dumps(recipes,ensure_ascii=False,indent=2)+'\n').encode()
+    blobs['dependency-byte-forms.json']=(json.dumps(checkout_forms,indent=2)+'\n').encode()
     result=dict(evidence,variants={v:evidence['variants'][v] for v in variants})
     blobs['a2-review.json']=(json.dumps(result,ensure_ascii=False,indent=2)+'\n').encode()
     blobs['HANDOFF.md']=(
@@ -52,6 +77,8 @@ def build(family,destination):
         '可信宿主对每个rank导入factory，以manifest中的工厂文件SHA构造ExternalSite，region_kind=transient，'
         'expected_deployment取该rank实际observe_deployment；通过register_external_site注册，再配置product profile和验收许可。'
         '只允许固定命名变体，不接受用户数值、层名或rank。CLI映射由黄区接入方补入，能力以ProductClient.capabilities为准。\n\n'
+        '依赖文件的冻结Git内容未改。Windows验收快照部分文件为CRLF，r7.4.1源码包为LF；'
+        'dependency-byte-forms.json逐项列出两种SHA，不声称它们原始字节相等。工厂SHA按本包实际字节审核。\n\n'
         '产品顺序为attach→enable→真实用户HTTP请求→status→disable（drain和金丝雀）→detach；'
         '每变体两个owner，缺许可/超范围/重复enable负例，逐rank八计数及changed_elements，真实消费者、区域字节恢复、资源清零、逐位金丝雀。'
         'changed小于applied不等于失败，但零变化不得宣称复现了数值现象。原始回执留在验收方，回传一页总结由负责人转交。\n\n'
