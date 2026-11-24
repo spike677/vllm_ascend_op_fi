@@ -20,25 +20,25 @@ class LogitsMode(TorchDispatchMode):
         # vLLM Sampler.forward converts BF16 compute_logits to FP32 before
         # temperature and softmax. Track this actual conversion, not an
         # unrelated equal-shaped tensor. The lease is on the live FP32 reader.
-        if (func._schema.name == 'aten::_to_copy' and args and args[0] is site.logits
+        if (func._schema.name == 'aten::_to_copy' and args
+                and same_live_logits_row(args[0], site.logits)
                 and kwargs.get('dtype') == torch.float32):
             result = func(*args, **kwargs)
-            require(result.shape == site.logits.shape and result.device == site.logits.device,
+            require(result.shape == args[0].shape and result.device == site.logits.device,
                 'REFERENCE_LOGITS_CAST_MAPPING')
             with _disable_current_modes():
-                require(torch.equal(result, site.logits.float()), 'REFERENCE_LOGITS_CAST_VALUES')
+                require(torch.equal(result, args[0].float()), 'REFERENCE_LOGITS_CAST_VALUES')
                 site.cast_chain.append(dict(operator=func._schema.name,
-                    input_sha256=fingerprint(site.logits), output_sha256=fingerprint(result)))
+                    input_sha256=fingerprint(args[0]), output_sha256=fingerprint(result),
+                    producer_shape=list(site.logits.shape), sampler_shape=list(args[0].shape),
+                    first_live_request_row=True))
             site.logits = result
             return result
         if func._schema.name != 'aten::_softmax' or not args or not isinstance(args[0], torch.Tensor):
             return func(*args, **kwargs)
         tensor = args[0]
-        if tensor.untyped_storage()._cdata != site.logits.untyped_storage()._cdata:
+        if not same_live_logits_row(tensor, site.logits):
             return func(*args, **kwargs)
-        require(tensor.shape == site.logits.shape and tensor.storage_offset() == site.logits.storage_offset()
-            and tensor.is_contiguous() and tensor.ndim == 2 and tensor.shape[0] == 1,
-            'REFERENCE_LOGITS_STORAGE_MAPPING')
         require(not site.forward_calls[-1], 'REFERENCE_LOGITS_MULTIPLE_SAMPLER_READERS')
         with _disable_current_modes():
             event = site.event('compute_logits.storage->sampler.softmax', tensor)
@@ -67,6 +67,18 @@ class LogitsMode(TorchDispatchMode):
             event.update(restored=True, restored_sha256=fingerprint(tensor))
             require(event['before_sha256'] == event['restored_sha256'], 'REFERENCE_LOGITS_RESTORE')
             return result
+
+
+def same_live_logits_row(tensor, producer):
+    # NPUModelRunner._sample slices logits[:input_batch.num_reqs] when
+    # lmhead_tp_enable(). With this site's single real request, that is row0.
+    # Object identity changes even when the entire row's storage is identical.
+    return (isinstance(tensor,torch.Tensor) and isinstance(producer,torch.Tensor)
+        and tensor.ndim==producer.ndim==2 and tensor.shape[0]==1 and producer.shape[0]>=1
+        and tensor.shape[1]==producer.shape[1] and tensor.dtype==producer.dtype
+        and tensor.device==producer.device and tensor.is_contiguous() and producer.is_contiguous()
+        and tensor.untyped_storage()._cdata==producer.untyped_storage()._cdata
+        and tensor.storage_offset()==producer.storage_offset())
 
 
 class LogitsColumnsRotate(BaseSite):
