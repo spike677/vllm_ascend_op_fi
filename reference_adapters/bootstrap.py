@@ -9,9 +9,13 @@ def trusted_bootstrap(wrapper, action, options):
     from demoncat.runtime.vllm_ascend.worker_extension.external_provider import ExternalSite, register_external_site, factory_sha256
     from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import observe_deployment
     from demoncat.runtime.vllm_ascend.worker_extension.product_binding import configure_product_profiles
-    from reference_adapters.quant_scale import FACTORIES
+    from reference_adapters.quant_scale import FACTORIES as quant
+    from reference_adapters.hidden_rows import FACTORIES as hidden
+    from reference_adapters.logits_mapping import FACTORIES as logits
+    factories = {**quant, **hidden, **logits}
     assert set(options) == {'variant', 'canary_tokens'}
-    factory = FACTORIES[options['variant']]
+    factory = factories[options['variant']]
+    stage = 'sampler' if options['variant'] in logits else 'model'
     worker = wrapper.worker if isinstance(wrapper, WorkerWrapperBase) else wrapper
     authority = authority_for(worker)
     if authority is None:
@@ -19,7 +23,7 @@ def trusted_bootstrap(wrapper, action, options):
             authorize_operator=lambda principal, operation: principal == 'product-acceptance')
     mechanism = 'external.' + options['variant']
     spec = ExternalSite(mechanism, factory, factory_sha256(factory),
-        observe_deployment(worker, worker.model_runner.model), stage='model', region_kind='transient')
+        observe_deployment(worker, worker.model_runner.model), stage=stage, region_kind='transient')
     result = register_external_site(worker, spec, authority=authority, operator='product-acceptance')
     configure_product_profiles(worker, profiles={mechanism: dict(mechanism=mechanism,
         mode='PRODUCT_ACCEPTANCE_ONLY', canary_prompts=[options['canary_tokens']])},

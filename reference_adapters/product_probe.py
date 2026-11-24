@@ -55,7 +55,7 @@ def main():
     p.add_argument('--alias-diagnostics',action='store_true')
     p.add_argument('--image')
     p.add_argument('--native-library');p.add_argument('--native-sha256')
-    a=p.parse_args();a.external_example=True;visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
+    a=p.parse_args();a.external_sampling=a.reference.startswith('row12_');a.external_example=not a.external_sampling;visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
     if a.external_vision and not visual:p.error('External vision uses the isolated image scheduler: --mechanism 17')
     if a.external_input and a.mechanism!=['18']:p.error('Input examples require --mechanism 18')
     if a.variance18 and a.mechanism!=['18']:p.error('Variance proxy requires --mechanism 18')
@@ -90,7 +90,7 @@ def main():
             from demoncat.runtime.vllm_ascend.worker_extension.product_diagnostics import DiagnosticProductClient as ProductClient
         mechanisms={'15':'15.alias_detach','18':'18.api_half','39':'39.output_proxy','22':'22.wrong_row','28':'28.fia.denominator_replay','17':'17.spatial_padding','batch':'quant.batch_shared_scale','39mr':'39.matmul_range','33':'33.paged_decode','41':'41.tail_column','26fia':'26.fia_destination','20':'20.buffer_substitute'}
         if a.external_example:mechanisms['18']='external.'+a.reference
-        if a.external_sampling:mechanisms['18']='external.exponential_perturb'
+        if a.external_sampling:mechanisms['18']='external.'+a.reference
         if a.external_vision:mechanisms['17']='external.conv3d_output_gain'
         if a.variance18:mechanisms['18']='18.variance_'+a.variance18
         if a.external_input:mechanisms['18']='external.'+a.external_input+'_input_gain'
@@ -166,8 +166,9 @@ def main():
                 negative['cli_99']=product_control_reply(lambda:FaultConfig(99,'unknown'))
                 assert negative['cli_99']['exit_code']==4
                 negative['healthy_after_unknown']=inference(canary_text)
-                rejected=ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',
-                    run_canary=lambda spec:inference(spec['prompt']),drain=lambda:None,timeout=120)
+                from demoncat.runtime.vllm_ascend.worker_extension.external_provider import ExternalFaultConfig
+                rejected=ProductClient(ex,ExternalFaultConfig('external',mechanism.split('.',1)[1]),
+                    profile=mechanism,operator='product-acceptance',run_canary=lambda:inference(canary_text),drain=lambda:None,timeout=120)
                 negative['attach']=rejected.attach()
                 negative['missing_permit_cli']=product_control_reply(rejected.enable)
                 assert negative['missing_permit_cli']['exit_code']==4 and negative['missing_permit_cli']['error_type']=='ProductContractRefused'
