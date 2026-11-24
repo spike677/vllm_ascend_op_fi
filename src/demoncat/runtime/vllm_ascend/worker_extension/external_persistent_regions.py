@@ -73,9 +73,15 @@ class PersistentRegions:
             k=identity(r.tensor)
             require(not any(k[:2]==p[:2] and max(k[2],p[2])<min(k[3],p[3]) for p in keys),'V2_OVERLAPPING_REGIONS')
             keys.append(k)
-        for r,k in zip(regions,keys):
-            token=self.leases.acquire(r.tensor)
-            self.entries[r.name]=dict(region=r,identity=k,token=token,readers=set(),events=[])
+        try:
+            for r,k in zip(regions,keys):
+                token=self.leases.acquire(r.tensor)
+                self.entries[r.name]=dict(region=r,identity=k,token=token,readers=set(),events=[])
+        except Exception:
+            # Every successful acquisition is already owned in entries. A
+            # backup OOM must not strand prior, unwritten snapshots silently.
+            for name in tuple(self.entries):self.release_unwritten(name)
+            raise
         return dict(regions=len(self.entries),backup_bytes=total)
 
     def write(self,name,value):
@@ -150,6 +156,30 @@ class PersistentRegions:
         self._boundary();entry=self.entries[name];self._current(entry)
         require(not entry['events'],'V2_WRITTEN_REGION_REQUIRES_RESTORE')
         self.leases.consumed(entry['token']);self.leases.release_unmodified(entry['token'])
+        del self.entries[name]
+
+    def rollback_unconsumed_weight(self,name):
+        """Rollback a failed all-rank enable before ingress was ever reopened.
+
+        No consumer is invented. A real drained device boundary plus the held
+        expected bytes proves no outstanding reader or intervening legal write.
+        This is failure cleanup, never successful injection acceptance. KV has
+        a different end/page protocol and cannot use this operation.
+        """
+        self._boundary();entry=self.entries[name];r=self._current(entry)
+        require(r.region_kind=='persistent_weight','V2_WEIGHT_ROLLBACK_ONLY')
+        require(not entry['readers'] and all(not e['consumed'] for e in entry['events']),
+                'V2_ALREADY_CONSUMED_USE_NORMAL_RESTORE')
+        lease=self.leases._get(entry['token'])
+        require(version(r.tensor)==lease['version'] and exact(r.tensor,lease['expected']),
+                'V2_ROLLBACK_INTERVENING_WRITE_NO_OVERWRITE')
+        with torch.no_grad():
+            self.leases.complete(lease['stream'])
+            r.tensor.copy_(lease['backup']);self.leases.complete(lease['stream'])
+        require(exact(r.tensor,lease['backup']),'V2_ROLLBACK_BYTES_NOT_RESTORED')
+        del self.leases.active[entry['token']]
+        for event in entry['events']:
+            event.update(restored=1,restore_kind='FAILED_ENABLE_ROLLBACK_NO_CONSUMER')
         del self.entries[name]
 
     def snapshot(self):

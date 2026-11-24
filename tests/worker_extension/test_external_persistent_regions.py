@@ -1,5 +1,6 @@
 import unittest
 import torch
+from unittest.mock import patch
 from fault_injection.engines.region_lease import RegionLeases
 from demoncat.runtime.vllm_ascend.worker_extension.external_persistent_regions import PersistentRegions,PersistentRegion
 
@@ -101,3 +102,34 @@ class PersistentTests(unittest.TestCase):
         self.regions.consumed('weight','real_qmm',request_generation=3)
         self.regions.restore('weight')
         self.assertTrue(torch.equal(self.tensor,original));self.assertIsNone(self.tensor.grad)
+
+    def test_partial_backup_failure_releases_only_owned_unwritten_regions(self):
+        acquire=self.leases.acquire
+        def limited(t):
+            if self.leases.active:raise RuntimeError('backup allocation failed')
+            return acquire(t)
+        other=self.region(name='derived',tensor=self.tensor.clone())
+        with patch.object(self.leases,'acquire',side_effect=limited):
+            with self.assertRaisesRegex(RuntimeError,'backup allocation'):
+                self.regions.prepare([self.region(),other])
+        self.assertFalse(self.leases.active);self.assertFalse(self.regions.entries)
+
+    def test_partial_enable_rollback_does_not_invent_consumer(self):
+        original=self.tensor.clone();self.regions.prepare([self.region()])
+        self.regions.write('weight',self.tensor+1)
+        self.regions.rollback_unconsumed_weight('weight')
+        self.assertTrue(torch.equal(original,self.tensor));self.assertFalse(self.leases.active)
+        self.assertEqual(self.regions.reader_observations,0)
+        self.assertEqual(self.regions.events[0]['consumed'],0)
+        self.assertEqual(self.regions.events[0]['restored'],1)
+        self.assertIn('FAILED_ENABLE',self.regions.events[0]['restore_kind'])
+
+    def test_rollback_refuses_intervening_mutation_and_kv(self):
+        self.regions.prepare([self.region()]);self.regions.write('weight',self.tensor+1)
+        self.tensor.add_(3);current=self.tensor.clone()
+        with self.assertRaisesRegex(RuntimeError,'INTERVENING'):
+            self.regions.rollback_unconsumed_weight('weight')
+        self.assertTrue(torch.equal(current,self.tensor));self.assertTrue(self.leases.active)
+        self.regions.entries['weight']['region']=self.region('kv_cache')
+        with self.assertRaisesRegex(RuntimeError,'WEIGHT_ROLLBACK_ONLY'):
+            self.regions.rollback_unconsumed_weight('weight')

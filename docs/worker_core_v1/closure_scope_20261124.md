@@ -12,7 +12,7 @@
 |外部v1七项|公共模型/采样示例A2已验证；黄区各适配器仍需实际注入测试|
 |外部v2四项|最新批准开发；weight/faulty_requant、weight/param_perturb、kv_update_misdirect、kv_rope_quant_loss；未验收前关闭|
 |四项黄区新增设计|init_routing_cutoff、cp_padding_restore、conv_transpose_padding、faulty_requant_rounding：仅收到源码/CPU检查汇总，无最终注入证据|
-|故障库9/10/13/19/23/34/35/39|逐项探测与最终结论待黄区回传；有真实注入点才注入，不用公共包有无注册代替判定|
+|故障库12行|9/10/13/19/23/34/35/39/7/8/17/37只映射已有能力＋变体；撤回G1/G2/G3。见fault_library_coverage_20261124.md；35、8等现象覆盖不冒充历史根因|
 |HCCL与黄区其余条目|仅引用黄区实证；统一工具需要预加载路径真实回执适配，不伪造公共计数|
 |D包/8|V4仅为8与DeepSeek专属黄区项重启；其他公共V4项仍暂缓|
 |r8|最终r7.x+D包+审查通过登记+可信bootstrap+CLI helper+免许可；冻结取决于真实证据，不以A2代A3|
