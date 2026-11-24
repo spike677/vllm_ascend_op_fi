@@ -1,7 +1,7 @@
 {
   "schema": "dcat.r741.development_validation.v1",
   "base": "abd40cdcd4131ed4e27b1a8268e606a81fa3d16f",
-  "status": "DEVELOPMENT_NPU_PENDING",
+  "status": "TARGETED_NPU_PASSED_RELEASE_GATE_PENDING",
   "targeted_cpu": {
     "run": 117,
     "passed": 115,
@@ -37,9 +37,8 @@
     }
   ],
   "npu": {
-    "executed": false,
+    "executed": true,
     "target": "A2 / 0.26 / CANN9.1 / Qwen3.8 W8A8 / TP2",
-    "reason": "Card5 occupied by ATK during read-only checks; newest task directs deferral",
     "last_readonly_gate": {
       "time_utc": "2026-11-24T13:02:41Z",
       "compute_processes": 0,
@@ -48,7 +47,17 @@
       "idle": false,
       "container_started": false,
       "preemption_or_isolation_started": false
-    }
+    },
+    "historical_deferral_reason": "Card5 occupied by ATK during read-only checks; newest task directs deferral",
+    "report": "r741_npu_validation_20261124.json",
+    "passed_mechanisms": [
+      "18.api_half",
+      "17.spatial_padding",
+      "18.variance_over4",
+      "external.conv3d_output_gain"
+    ],
+    "initial_vision_failure_retained": true,
+    "isolation_removed": true
   },
   "qualification_granted": false,
   "expanded_worker_diagnostic": {
@@ -59,5 +68,19 @@
       "Stack samples show legacy host/writer26 JSON receipt snapshot copying; this is not a proven new product-path regression"
     ],
     "required_before_freeze": "Rerun complete declared release gate with corrected import path; targeted 117-test result is not a full release gate"
-  }
+  },
+  "cpu_rechecks": [
+    {
+      "log": "vision-fix-cpu.log",
+      "run": 32,
+      "passed": 32,
+      "sha256": "8d259d7b2565c9f0074577b8e16367f4b18bb82d5dda1dcff917ea7290e0d38f"
+    },
+    {
+      "log": "npu-product-regression-final.log",
+      "run": 91,
+      "passed": 91,
+      "sha256": "dfb7c64602502fd50207a23d46ae22e4a8c05c18d8dd401c3af0a9698e9be6f0"
+    }
+  ]
 }
