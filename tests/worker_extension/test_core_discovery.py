@@ -75,7 +75,7 @@ class RegistryTests(unittest.TestCase):
         manifest = registry.worker_core_manifest()
         self.assertEqual(manifest['mechanism_count'], 19)
         self.assertEqual(manifest['rpc_provider_count'], 18)
-        self.assertEqual(len(provider_capabilities()), 17)
+        self.assertEqual(len(provider_capabilities()), 18)
         pending = [r for r in manifest['mechanisms'] if not r['rpc_available']]
         self.assertEqual([row['mechanism'] for row in pending], ['25.reduce_scatter'])
         self.assertEqual(pending[0]['status'], 'UNSUPPORTED')
