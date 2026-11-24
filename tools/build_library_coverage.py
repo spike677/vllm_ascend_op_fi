@@ -1,6 +1,19 @@
 """Render the reviewed library-row ledger; identifiers are not public fault ids."""
 import json
 from pathlib import Path
+from collections import Counter
+
+PROGRESS_STATES = ('CLOSED_NO_INJECTION', 'AWAIT_FORMAL_TEST',
+    'YELLOW_ADAPTER_READY_UNTESTED', 'REFERENCE_ADAPTER_PENDING',
+    'HCCL_BITWISE_PENDING', 'FAULT33_EVIDENCE_PENDING', 'V4_D_PACKAGE_PENDING',
+    'ADAPTER_READY_UNTESTED', 'REGISTERED')
+
+
+def progress_counts(data):
+    counts = Counter(r.get('progress_state') for r in data['rows'])
+    if any(s not in PROGRESS_STATES for s in counts):
+        raise ValueError('UNKNOWN_OR_MISSING_PROGRESS_STATE')
+    return {s: counts[s] for s in PROGRESS_STATES if counts[s]}
 
 
 def render(data):
@@ -18,10 +31,17 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
 
 登记按“能力＋命名变体＋部署组合＋模式”一次记录，覆盖库行仅作备注。不得由同一行号自动推导公共机制。下列A类为已交付能力，不意味着本轮最终包已登记。
 
-|库行|类|对应能力/变体|机理与范围|部署|证据或待补项|
-|---|---|---|---|---|---|
 '''
-    return head+''.join('|'+ '|'.join(str(r[k]).replace('|','／') for k in ('row','category','capability','boundary','deployment','evidence'))+'|\n' for r in rows)+data['notes']
+    counts = progress_counts(data)
+    progress = ('进度快照：'+data['progress_snapshot']+'。A–F 是归属，progress_state 是进度，两者独立。'
+        '以下数字从逐行 JSON 汇总；52、56 行不在统计范围内。\n\n'
+        '|进度状态|行数|库行|\n|---|---|---|\n')
+    for state,count in counts.items():
+        progress += f'|{state}|{count}|'+ '、'.join(str(r['row']) for r in rows if r['progress_state']==state)+'|\n'
+    progress += ('\n历史公共证据不等于本轮通过。参考适配器通过 A2 后记 ADAPTER_READY_UNTESTED，'
+        '标注等待黄区审查；正式测试审查并登记后才记 REGISTERED。第21行按区域寿命选择v1或v2，待黄区确认。\n\n'
+        '|库行|类|进度|对应能力/变体|机理与范围|部署|证据或待补项|\n|---|---|---|---|---|---|---|\n')
+    return head+progress+''.join('|'+ '|'.join(str(r[k]).replace('|','／') for k in ('row','category','progress_state','capability','boundary','deployment','evidence'))+'|\n' for r in rows)+data['notes']
 
 
 def main():
