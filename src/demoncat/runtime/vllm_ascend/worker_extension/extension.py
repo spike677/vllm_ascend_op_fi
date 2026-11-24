@@ -35,7 +35,18 @@ def _call(worker, action, payload=None):
 class DemoncatWorkerExtension:
     def demoncat_product_binding(self, action, payload):
         from .product_binding import product_binding_rpc
-        result=product_binding_rpc(self, action, payload)
+        from .serving_context import ContextRefused
+        # Control-plane refusal is data, never a fatal executor exception.
+        # Forward/kernel exceptions are deliberately outside this boundary.
+        try:
+            result = product_binding_rpc(self, action, payload)
+        except (ContextRefused, ValueError, PermissionError) as error:
+            result = dict(status='PRODUCT_BINDING_REFUSED', reason=str(error),
+                          error_type=type(error).__name__, exit_code=4)
+        except Exception as error:
+            result = dict(status='PRODUCT_BINDING_ERROR', reason=str(error),
+                          error_type=type(error).__name__, exit_code=5,
+                          recovery_required=True)
         return dict(result,rank=self.demoncat_worker_identity()['worker']['rank'])
 
     def demoncat_inspect_readonly(self, offset=0, limit=128):

@@ -37,6 +37,7 @@ class HTTPExecutor:
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--mechanism',nargs='+',choices=['15','18','39','22','28','17','batch','39mr','33','41','26fia','20'],required=True)
+    p.add_argument('--negative-regression',action='store_true')
     p.add_argument('--image')
     p.add_argument('--native-library');p.add_argument('--native-sha256')
     a=p.parse_args();visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
@@ -118,12 +119,34 @@ def main():
             if visual:
                 report['visual_input']=visual_identity
                 report['image_pixel_sha256']=[hashlib.sha256(Image.open(io.BytesIO(base64.b64decode(data.split(',',1)[1]))).convert('RGB').tobytes()).hexdigest() for data in images]
+            if a.negative_regression:
+                negative = dict(mechanism=mechanism, expected_exit=4)
+                target_negative = root/'product_control_negative.json'
+                unknown=ex.collective_rpc('demoncat_product_binding',args=('capabilities',dict(operator='product-acceptance',profile='unknown-profile')))
+                assert all(r['status']=='PRODUCT_BINDING_REFUSED' and r['reason']=='PRODUCT_PROFILE_UNKNOWN' for r in unknown)
+                negative['unknown_profile']=unknown
+                negative['healthy_after_unknown']=inference(canary_text)
+                rejected=ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',
+                    run_canary=lambda spec:inference(spec['prompt']),drain=lambda:None,timeout=120)
+                negative['attach']=rejected.attach()
+                try:rejected.enable()
+                except ValueError as error:negative['missing_permit']=str(error)
+                else:raise AssertionError('MISSING_PERMIT_NOT_REJECTED')
+                assert not rejected.bound and rejected.recovery['resources_zero']
+                negative['rollback']=rejected.cleanup_evidence
+                negative['disable_after_rollback']=rejected.disable()
+                negative['detach_after_rollback']=rejected.detach()
+                negative['healthy_after_rejection']=inference(canary_text)
+                negative['resources']=ex.collective_rpc('demoncat_acceptance_bootstrap',args=('audit',{}))
+                assert all(r['leases']==r['owners']==r['bindings']==r['wrappers']==0 for r in negative['resources'])
+                target_negative.write_text(json.dumps(negative,indent=2)+'\n')
             for index in range(2):
                 ex.collective_rpc('demoncat_acceptance_bootstrap',args=('permit',dict(mechanisms=[mechanism],attempt='http-'+str(index),source_manifest_sha256=source_sha)))
                 client=ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',
                     run_canary=lambda spec:[inference(p) for p in spec['prompt']] if batch else inference(spec['prompt']),drain=lambda:None,timeout=120)
+                if a.negative_regression and index==0:client=rejected
                 scope=dict(scope=index,requests=[]);report['scopes'].append(scope)
-                scope['attach']=client.attach();scope['workers']=client.members;scope['enable']=client.enable();save()
+                scope['attach']=negative['attach'] if a.negative_regression and index==0 else client.attach();scope['workers']=client.members;scope['enable']=client.enable();save()
                 if batch:
                     from concurrent.futures import ThreadPoolExecutor
                     from threading import Barrier

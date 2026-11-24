@@ -1,3 +1,7 @@
+## 2026-11-24：r7.2 控制拒绝与失败清理维护
+
+[维护说明](docs/worker_core_v1/r72_control_recovery_20261124/README.md)：未知 profile 不再令 Worker RPC 终止引擎；enable 失败按原 Runtime 租户清理，保留未解决的恢复责任。A2 / 0.26 / CANN9.1 / Qwen3.8 W8A8 / TP2 已验证拒绝后服务健康、零租约与同客户端正确许可重试，再完成两个阳性 owner。r7.1 冻结物不变，不包含 r8 外部接口，不新增 A3 资格。
+
 ## 2026-11-22 隔夜：r5冻结与33方向A通过限定验收
 
 [r5交付单](releases/RC3-PREVIEW-R5-HANDOFF-20261122.md)：源码、三wheel、安装检查和SHA齐备；产品RPC契约、900秒正式预算及身份字段已发布。黄区回传缺身份时不登记，现有冻结物不改动。

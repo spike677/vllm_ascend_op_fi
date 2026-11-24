@@ -2,7 +2,7 @@
 import argparse,hashlib,json,os,subprocess,sys,tarfile,tempfile
 from pathlib import Path
 
-VERSIONS={'demoncatpfi':'0.4.0rc6.post1','demoncat-worker-extension':'0.3.0rc6.post1','demoncat-fault39-core':'0.3.0rc6.post1'}
+VERSIONS={'demoncatpfi':'0.4.0rc6.post2','demoncat-worker-extension':'0.3.0rc6.post2','demoncat-fault39-core':'0.3.0rc6.post2'}
 ROOTS=('src/','fault_injection/','fault39/src/','native_execution_strategy/','engineering_closure/',
        'tools/','tests/','docs/worker_core_v1/')
 EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',

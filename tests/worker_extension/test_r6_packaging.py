@@ -23,7 +23,7 @@ class R6PackagingTests(unittest.TestCase):
     def test_observation_sources_packaged_and_versions_bumped(self):
         self.assertIn('experiments/worker_core_v11_20261118/paged33_launch_capture.cpp',EXACT)
         self.assertIn('experiments/worker_core_v11_20261118/paged33_native_probe.py',EXACT)
-        self.assertEqual(set(VERSIONS.values()),{'0.4.0rc6.post1','0.3.0rc6.post1'})
+        self.assertEqual(set(VERSIONS.values()),{'0.4.0rc6.post2','0.3.0rc6.post2'})
 
     def test_frozen_r5_reviewer_is_still_exact(self):
         import hashlib

@@ -34,7 +34,7 @@ def product_binding_rpc(worker, action, payload):
     require(authority is not None and authority.authorize_operator(payload.get('operator'), 'product_binding_rpc') is True,
             'PRODUCT_RPC_OPERATOR_NOT_AUTHORIZED')
     allowed = {'operator', 'profile'} | ({'group_contract', 'scope'} if action == 'attach' else
-              {'cursor'} if action == 'status' else set())
+              {'cursor'} if action == 'status' else {'owner'} if action == 'rollback' else set())
     require(not set(payload) - allowed, 'PRODUCT_RPC_UNKNOWN_FIELD')
     profile = getattr(worker, ATTRIBUTE, {}).get(payload.get('profile'))
     require(profile is not None, 'PRODUCT_PROFILE_UNKNOWN')
@@ -46,6 +46,17 @@ def product_binding_rpc(worker, action, payload):
                                image_grid=[1,4,4] if mechanism=='17.spatial_padding' else None),
                     user_prompt_registry=False, named_variant=mechanism)
     b = current_binding(worker, worker.model_runner.model, mechanism)
+    if action == 'rollback':
+        # Idempotent for ranks that refused attach. Never remove another owner.
+        require(type(payload.get('owner')) is str and payload['owner'], 'PRODUCT_ROLLBACK_OWNER_REQUIRED')
+        if b is not None:
+            require(b.group['owner'] == payload['owner'], 'PRODUCT_ROLLBACK_OWNER_MISMATCH')
+            require(not b.leases, 'PRODUCT_ROLLBACK_RUNTIME_LEASES_REMAIN')
+            if b.warmup_request is not None:
+                b.warmup_request.close()
+                b.warmup_request = None
+            remove_continuous_binding(worker, mechanism)
+        return dict(status='PRODUCT_BINDING_ROLLED_BACK', owner=payload['owner'], resources_zero=True)
     if action == 'attach':
         native_identity=None
         scope = RequestScope(**payload['scope'])
