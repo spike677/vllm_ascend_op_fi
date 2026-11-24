@@ -38,10 +38,19 @@ def census(wrapper,action):
             prof=ExternalProfiler()
         prof.start()
         real=torch_npu.npu_fused_infer_attention_score
+        private=None
+        if os.environ.get('DCAT_CAPTURE_LENGTHS'):
+            from tools.paged33_private_capture import PrivateCapture
+            private=PrivateCapture('/evidence/private-qkv-rank'+str(worker.rank),rank=worker.rank,
+                lengths=json.loads(os.environ['DCAT_CAPTURE_LENGTHS']))
+            worker._paged33_private_capture=private
         def attention(*args,**kwargs):
             out=real(*args,**kwargs)
             query=args[0] if args else kwargs.get('query')
-            if os.environ.get('DCAT_CAPTURE_PRIVATE_QKV')=='1' and query is not None and query.shape[0]==1 and not getattr(worker,'_paged33_qkv_saved',False):
+            if private is not None:
+                actual=dict(zip(('query','key','value'),args));actual.update(kwargs)
+                private.observe(actual,out,list(r.input_batch.req_ids))
+            elif os.environ.get('DCAT_CAPTURE_PRIVATE_QKV')=='1' and query is not None and query.shape[0]==1 and not getattr(worker,'_paged33_qkv_saved',False):
                 q=query;keys=args[1] if len(args)>1 else kwargs['key'];values=args[2] if len(args)>2 else kwargs['value']
                 key=keys if isinstance(keys,torch.Tensor) else keys[0]
                 value=values if isinstance(values,torch.Tensor) else values[0]
@@ -76,7 +85,10 @@ def census(wrapper,action):
     torch.npu.synchronize();mode.__exit__(None,None,None);prof.stop()
     Path('/evidence/native-calls-rank'+str(worker.rank)+'.json').write_text(json.dumps(rows,indent=2))
     del worker._paged33_probe
-    return dict(rank=worker.rank,calls=len(rows),operators=sorted({r['op'] for r in rows}))
+    result=dict(rank=worker.rank,calls=len(rows),operators=sorted({r['op'] for r in rows}))
+    if hasattr(worker,'_paged33_private_capture'):
+        result['private_capture']=worker._paged33_private_capture.finish();del worker._paged33_private_capture
+    return result
 
 
 def main():
@@ -92,7 +104,13 @@ def main():
     params=SamplingParams(temperature=0,max_tokens=4,min_tokens=4,ignore_eos=True)
     llm.generate([dict(prompt_token_ids=tokens)],params,use_tqdm=False)
     start=llm.collective_rpc(census,args=('start',),timeout=120)
-    outputs=llm.generate([dict(prompt_token_ids=tokens)],params,use_tqdm=False)
+    lengths=json.loads(os.environ.get('DCAT_CAPTURE_LENGTHS','[]'))
+    if lengths:
+        outputs=[]
+        for length in lengths:
+            prompt=(tokens*((length+len(tokens)-1)//len(tokens)))[:length-1]
+            outputs.extend(llm.generate([dict(prompt_token_ids=prompt)],params,use_tqdm=False))
+    else:outputs=llm.generate([dict(prompt_token_ids=tokens)],params,use_tqdm=False)
     end=llm.collective_rpc(census,args=('stop',),timeout=180)
     report=dict(status='NATIVE_PROFILE_CAPTURED_NOT_QUALIFICATION',start=start,end=end,
         token_ids=[o.outputs[0].token_ids for o in outputs],input_sha256=hashlib.sha256(bytes(str(tokens),'utf8')).hexdigest())

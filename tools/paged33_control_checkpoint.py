@@ -14,6 +14,28 @@ def validate_spans(spans,length):
         raise ValueError('KEY_GAP_OR_OVERLAP')
 
 
+def reviewed_partitions(review,kv_heads,length):
+    per_head=review.get('per_kv_head_spans')
+    if per_head is not None:
+        if 'spans' in review or not isinstance(per_head,list) or len(per_head)!=kv_heads:
+            raise ValueError('PER_HEAD_PARTITION_SCHEMA')
+        for spans in per_head:validate_spans(spans,length)
+        return per_head
+    validate_spans(review.get('spans'),length)
+    return [review['spans'] for _ in range(kv_heads)]
+
+
+def control_per_head(q,k,v,*,scale,partitions,matmul_mode):
+    import torch
+    from fault_injection.engines.paged33_native_control import split_fuse_control
+    if q.ndim!=3 or k.ndim!=3 or v.shape!=k.shape or k.shape[1]<1 or q.shape[1]%k.shape[1]:
+        raise ValueError('PER_HEAD_CONTROL_GEOMETRY')
+    reviewed_partitions({'per_kv_head_spans':partitions},k.shape[1],k.shape[0])
+    group=q.shape[1]//k.shape[1]
+    return torch.cat([split_fuse_control(q[:,h*group:(h+1)*group],k[:,h:h+1],v[:,h:h+1],
+        scale=scale,split_spans=partitions[h],matmul_mode=matmul_mode) for h in range(k.shape[1])],dim=1)
+
+
 def locate_differences(control,native,spans):
     """Full private mismatch list; output merges cannot name one causal block."""
     import torch
@@ -47,20 +69,20 @@ def main():
     import torch,torch_npu
     from fault_injection.engines.paged33_native_control import split_fuse_control,agreement
     d=torch.load(a.qkv,map_location='cpu',weights_only=True)
-    validate_spans(r['spans'],len(d['k']))
+    partitions=reviewed_partitions(r,d['k'].shape[1],len(d['k']))
     torch.npu.set_device(a.device);torch.npu.matmul.allow_hf32=False
     q,k,v=[d[x].to('npu:'+str(a.device)) for x in ('q','k','v')];native=d['output'].to(q.device)
     if any(not torch.isfinite(t).all().item() for t in (q,k,v,native)):raise ValueError('NONFINITE_NATIVE_INPUT_OR_OUTPUT')
-    values=[split_fuse_control(q,k,v,scale=d['metadata']['scale'],split_spans=r['spans'],matmul_mode='bf16_out_fp32') for _ in range(2)]
+    values=[control_per_head(q,k,v,scale=d['metadata']['scale'],partitions=partitions,matmul_mode='bf16_out_fp32') for _ in range(2)]
     torch.npu.synchronize()
     checks=[agreement(c,native) for c in values];repeat=agreement(*values)
-    differences=dict(runs=[locate_differences(c,native,r['spans']) for c in values],qkv_sha256=sha(raw),
+    differences=dict(runs=[locate_differences(c,native,partitions) for c in values],qkv_sha256=sha(raw),
                      launch_review_sha256=sha(review_raw))
     difference_bytes=(json.dumps(differences,indent=2,allow_nan=False)+'\n').encode('utf-8')
     with Path(a.differences_output).open('xb') as handle:handle.write(difference_bytes)
     passed=all(c['checkpoint_99pct_passed'] for c in checks) and repeat['bitwise_equal']==repeat['elements']
     print(json.dumps(dict(schema='dcat.paged33.checkpoint.v1',passed=passed,qkv_sha256=sha(raw),launch_review_sha256=sha(review_raw),
-        native_checks=checks,repeat=repeat,spans=r['spans'],device=torch.npu.get_device_name(a.device),
+        native_checks=checks,repeat=repeat,per_kv_head_spans=partitions,device=torch.npu.get_device_name(a.device),
         differences=dict(sha256=sha(difference_bytes),bytes=len(difference_bytes),complete=True,
                          counts=[v['count'] for v in differences['runs']]),qualification_granted=False),indent=2))
     return 0 if passed else 2

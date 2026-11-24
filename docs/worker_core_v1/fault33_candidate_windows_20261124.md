@@ -75,7 +75,7 @@ python tools/fault33_candidate_partitions.py "$WORK/decoded-call.json" \
 
 新实例重放相同三组输入，在实际调用边界只读保留各rank的Q、按真实block_table还原的合法K/V及完整原生输出。必须保留mask与序列边界，证明每个合法key恰好一次；私有张量不进入Git。旧单次 `_paged33_qkv_saved` 采集器不能冒充三形状采集。
 
-审核后的每调用 `dcat.paged33.observed_spans.v1` 记录必须含：qkv_sha256、launch_sha256、serializer_sha256、实际spans和算术假设。仅当源码及实际launch支持 `BF16_MM_FP32_OUT_PBF16_LSE_FP32` 时才运行现有控制工具，否则停下修适配，不试多个算法挑最高一致率。
+审核后的每调用 `dcat.paged33.observed_spans.v1` 记录必须含：qkv_sha256、launch_sha256、serializer_sha256、实际spans（所有head一致时）或per_kv_head_spans（逐KV head列出）和算术假设。仅当源码及实际launch支持 `BF16_MM_FP32_OUT_PBF16_LSE_FP32` 时才运行现有控制工具，否则停下修适配，不试多个算法挑最高一致率。
 
 ```bash
 python tools/paged33_control_checkpoint.py "$PRIVATE_QKV" \
@@ -85,7 +85,13 @@ python tools/paged33_control_checkpoint.py "$PRIVATE_QKV" \
 
 每组、每rank均独立达到完整输出逐位一致率≥99%，两次控制重算精确稳定。控制工具现已输出完整私有差异清单：query/head/column、原生值/控制值及BF16原始位；summary仅记录清单SHA、字节数和条数。清单包含全部参与合并的分区。最终输出是这些分区的合并值，不能把某个输出差异归因于单一分区；single_partition_attribution保持null。私有清单不提交Git，不截断以掩盖不一致。3项CPU测试覆盖坐标、符号零和非有限值拒绝。
 
-窗口二仍等待A3真实coreInfo/splitInfo对照、逐head控制重算接线和三形状Q/K/V采集接线，尚不能下达完整实机执行；差异清单工具通过不是A3控制重算通过。
+逐head控制重算与三形状采集接线现已实现，但尚无A3实测。设置 `DCAT_CAPTURE_LENGTHS='[129,513,2305]'` 运行 `paged33_native_probe.py` 时，会依次发送128/512/2304-token prompt，只保存每个rank首次匹配的三组真实decode调用。长度是候选取证矩阵，不是A3分组常量；窗口一不支持该矩阵时停止并重新审查。
+
+新增 `tools/paged33_private_capture.py` 按真实block_table重建key集合、保留尾块、实际请求ID、API调用序号、文件字节数和SHA，私有目录必须新建。mask非空、KV量化、重复页面、越界、缺shape均拒绝；不能默默忽略mask。API序号不是launch序号，manifest中的launch_serial保持null，必须结合完整launch采集及真实调用关联审核后才能生成observed_spans。调用包装只覆盖实际走该Python API的路径；没有捕获到三组时complete=false，不用其他路径的张量补齐。
+
+控制工具显式接受每个KV head独立分区，并核对GQA头组映射、完整key集合和分区覆盖。20项相关CPU测试通过，包括相同分区与旧控制逐位一致、不同head分区、缺口/重复、三形状保存、尾块与mask拒绝。CPU合成张量不计A3三形状证据。
+
+窗口二仍等待A3真实coreInfo/splitInfo、实际调用与launch一一对应，以及算术假设审核。可交付采集工具，不应将该等待写成A3控制已通过；差异清单工具通过也不是A3控制通过。
 
 ## 放行与停止
 
