@@ -11,17 +11,19 @@ def require(value, code):
         raise ValueError(code)
 
 
-def review_directory(directory):
+def review_directory(directory, receipt='product_http_18.json', negative_file='product_control_negative.json'):
     directory = Path(directory)
-    path = directory / 'product_http_18.json'
+    path = directory / receipt
     data = json.loads(path.read_bytes())
     public = review(data)
-    negative = json.loads((directory / 'product_control_negative.json').read_bytes())
+    negative = json.loads((directory / negative_file).read_bytes())
     require(negative['missing_permit_cli']['exit_code'] == 4
         and negative['unknown_profile_cli']['exit_code'] == 4, 'REFERENCE_NEGATIVE_NOT_REJECTED')
     require(data['scopes'][0]['duplicate_enable']['exit_code'] == 4,
         'REFERENCE_DUPLICATE_ENABLE_NOT_REJECTED')
     raw = {}
+    expected_kind={'external.row9_scale_half':'SaturationHalf','external.row9_scale_quarter':'SaturationQuarter',
+        'external.row10_scale_double':'SqueezeDouble','external.row10_scale_quadruple':'SqueezeQuadruple'}[data['mechanism']]
     sidecar_sha = {}
     for rank in range(2):
         file = directory / f'external-input-rank{rank}.jsonl'
@@ -29,6 +31,7 @@ def review_directory(directory):
         sidecar_sha[file.name] = hashlib.sha256(content).hexdigest()
         for line in content.splitlines():
             chunk = json.loads(line)
+            if chunk.get('kind') is not None and chunk['kind'] != expected_kind:continue
             require(chunk['rank'] == rank, 'REFERENCE_SIDECAR_RANK_MISMATCH')
             for event in chunk['events']:
                 require(len(event['request_ids']) == 1, 'REFERENCE_REQUEST_AMBIGUOUS')
@@ -78,8 +81,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('directory')
     parser.add_argument('--output', required=True)
+    parser.add_argument('--receipt', default='product_http_18.json')
+    parser.add_argument('--negative', default='product_control_negative.json')
     args = parser.parse_args()
-    result = review_directory(args.directory)
+    result = review_directory(args.directory,args.receipt,args.negative)
     Path(args.output).write_text(json.dumps(result, indent=2)+'\n')
     print(json.dumps({k: result[k] for k in ('status', 'mechanism', 'effects_by_rank')}))
 

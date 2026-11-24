@@ -41,7 +41,7 @@ class HTTPExecutor:
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--reference',required=True); p.add_argument('--mechanism',nargs='+',choices=['15','18','39','22','28','17','batch','39mr','33','41','26fia','20'],required=True)
+    p=argparse.ArgumentParser();p.add_argument('--reference',required=True,nargs='+'); p.add_argument('--mechanism',nargs='+',choices=['15','18','39','22','28','17','batch','39mr','33','41','26fia','20'],required=True)
     p.add_argument('--negative-regression',action='store_true')
     p.add_argument('--batch-canary-negative',action='store_true')
     p.add_argument('--effect-probe',action='store_true')
@@ -55,7 +55,8 @@ def main():
     p.add_argument('--alias-diagnostics',action='store_true')
     p.add_argument('--image')
     p.add_argument('--native-library');p.add_argument('--native-sha256')
-    a=p.parse_args();a.external_sampling=a.reference.startswith('row12_');a.external_vision=a.reference.startswith(('row16_','row32_'));a.external_example=not (a.external_sampling or a.external_vision);visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
+    a=p.parse_args();a.references=a.reference;a.reference=a.references[0];a.external_sampling=a.reference.startswith('row12_');a.external_vision=a.reference.startswith(('row16_','row32_','row34_'));a.external_example=not (a.external_sampling or a.external_vision);visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
+    if len(a.references)>1 and (a.external_sampling or a.external_vision):p.error('Multiple references require the same text model stage')
     if a.external_vision and not visual:p.error('External vision uses the isolated image scheduler: --mechanism 17')
     if a.external_input and a.mechanism!=['18']:p.error('Input examples require --mechanism 18')
     if a.variance18 and a.mechanism!=['18']:p.error('Variance proxy requires --mechanism 18')
@@ -94,6 +95,8 @@ def main():
         if a.external_vision:mechanisms['17']='external.'+a.reference
         if a.variance18:mechanisms['18']='18.variance_'+a.variance18
         if a.external_input:mechanisms['18']='external.'+a.external_input+'_input_gain'
+        if len(a.references)>1:
+            mechanisms={v:'external.'+v for v in a.references};a.mechanism=list(mechanisms)
         images=[]
         if visual:
             from PIL import Image
@@ -142,7 +145,7 @@ def main():
                 canary=dict(prompt=canary_text,image=a.image if visual else None,max_tokens=4),evidence_directory='/evidence')
             path=root/('deployment-'+key+'.json');path.write_text(json.dumps(config));paths[key]=str(path)
         if a.external_example or a.external_sampling or a.external_vision or a.external_input:
-            ex.collective_rpc('demoncat_acceptance_bootstrap',args=('external_configure',dict(canary_tokens=canary,variant=a.reference)))
+            ex.collective_rpc('demoncat_acceptance_bootstrap',args=('external_configure',dict(canary_tokens=canary,variant=a.references)))
         else:ex.collective_rpc('demoncat_acceptance_bootstrap',args=('configure',dict(paths=list(paths.values()),canary_tokens={mechanisms[k]:canary for k in a.mechanism})))
         for key in a.mechanism:
             mechanism=mechanisms[key];target=root/('product_http_'+key+'.json')
@@ -153,7 +156,7 @@ def main():
             if a.negative_regression:
                 from demoncat.runtime.vllm_ascend.worker_extension.product_errors import ProductContractRefused,product_control_reply
                 negative = dict(mechanism=mechanism, expected_exit=4)
-                target_negative = root/'product_control_negative.json'
+                target_negative = root/('product_control_negative.json' if len(a.references)==1 else 'product_control_negative_'+key+'.json')
                 unknown=ex.collective_rpc('demoncat_product_binding',args=('capabilities',dict(operator='product-acceptance',profile='unknown-profile')))
                 assert all(r['status']=='PRODUCT_BINDING_REFUSED' and r['reason']=='PRODUCT_PROFILE_UNKNOWN' for r in unknown)
                 negative['unknown_profile']=unknown

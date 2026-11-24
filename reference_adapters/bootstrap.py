@@ -14,20 +14,25 @@ def trusted_bootstrap(wrapper, action, options):
     from reference_adapters.logits_mapping import FACTORIES as logits
     from reference_adapters.swiglu import FACTORIES as swiglu
     from reference_adapters.vision_precision import FACTORIES as vision
-    factories = {**quant, **hidden, **logits, **swiglu, **vision}
+    from reference_adapters.matmul_order import FACTORIES as matmul
+    factories = {**quant, **hidden, **logits, **swiglu, **vision, **matmul}
     assert set(options) == {'variant', 'canary_tokens'}
-    factory = factories[options['variant']]
-    stage = 'sampler' if options['variant'] in logits else 'vision' if options['variant'] in vision else 'model'
+    variants=options['variant'] if isinstance(options['variant'],list) else [options['variant']]
+    assert variants and len(variants)==len(set(variants))
     worker = wrapper.worker if isinstance(wrapper, WorkerWrapperBase) else wrapper
     authority = authority_for(worker)
     if authority is None:
         authority = configure_deployment_acceptance(worker, source='BLUE_COMBINATION',
             authorize_operator=lambda principal, operation: principal == 'product-acceptance')
-    mechanism = 'external.' + options['variant']
-    spec = ExternalSite(mechanism, factory, factory_sha256(factory),
-        observe_deployment(worker, worker.model_runner.model), stage=stage, region_kind='transient')
-    result = register_external_site(worker, spec, authority=authority, operator='product-acceptance')
-    configure_product_profiles(worker, profiles={mechanism: dict(mechanism=mechanism,
-        mode='PRODUCT_ACCEPTANCE_ONLY', canary_prompts=[options['canary_tokens']])},
+    results=[];profiles={}
+    for variant in variants:
+        factory=factories[variant]
+        stage='sampler' if variant in logits else 'vision' if variant in vision or variant=='row34_bf16_before_bias' else 'model'
+        mechanism = 'external.' + variant
+        spec = ExternalSite(mechanism, factory, factory_sha256(factory),
+            observe_deployment(worker, worker.model_runner.model), stage=stage, region_kind='transient')
+        results.append(register_external_site(worker, spec, authority=authority, operator='product-acceptance'))
+        profiles[mechanism]=dict(mechanism=mechanism,mode='PRODUCT_ACCEPTANCE_ONLY',canary_prompts=[options['canary_tokens']])
+    configure_product_profiles(worker, profiles=profiles,
         authority=authority, operator='product-acceptance')
-    return result
+    return results
