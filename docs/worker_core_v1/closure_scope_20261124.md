@@ -1,25 +1,30 @@
-# 本阶段收口与登记台账（2026-11-24）
+# 收口台账：2026-11-24最新决定
 
-负责人决定：仅A3 Qwen3.8 TP2为本阶段收口对象；TP1非product_closed必要条件，已有TP1结果保留，TP1 Batch不复测。
-公共13项：11项（18、22、39op、39mr、28、17、Batch、15、41、26fia、20）完成A3产品验收和登记；33放行或经负责人批准结案；8暂缓。
-V4和8均记“暂缓验收（负责人决定）”，不是“不适用”。V2预演/V4 CPU产物保留，不再开发或安排D包/A3单。
-不交付4项为25、26.residual_stomp、28.fa.legal_tiling、28.fia.legal_tiling，历史理由与证据保留。
-15为B档“别名断开语义（ND视图），不含私有格式触发条件”；changed计变化调用次数，changed_elements另报元素数。
-黄区自有16条只引用黄区文字结论，不由公共包目录替其定性或编造最终状态。
+公共13项：18、22、39op、39mr、28 denominator、17、Batch、15、41、26fia、20、33在A3 Qwen3.8 TP2完成注入测试与登记；8在A3 DeepSeek V4-0731 TP8+EP完成。TP1不是必要条件，已有结果保留。
 
-|条件|当前状态/责任|
+不交付4项：25、26 residual、28 FA legal、28 FIA legal。15为B档ND视图别名断开，不含私有格式触发条件；changed为调用次数，changed_elements单列。
+
+|事项|当前结论与下一步|
 |---|---|
-|公共11项A3 TP2产品登记|有汇总回报，尚缺逐份r7.2提取与负例字段；Codex收到后逐份审查|
-|33|关闭，A3完整launch/serializer/99%控制检查待补；负责人决定限时结案|
-|黄区自有16条最终状态|由黄区回传，Codex引用，不另写实现结论|
-|黄区master升级与CLI冒烟|负责人转交；先r7.2后r7.3；开源main快进不等于黄区完成|
-|免许可登记r8|A2/0.26/Qwen3.8社区W8A8/TP2的18映射身份及免许可两个owner正例已通过；只登记该BLUE组合。未冻结/下发，A3登记仍需回传|
-|V4/8|暂缓验收（负责人决定）|
+|r7.3.1|控制拒绝维护与统一效果工具；A2回归后冻结；黄区master从本版直接开始|
+|公共11项黄区r7.2|收到过程汇总，缺逐组合可复算原件提取；不以汇总计数代替登记；正式结果改为r7.3.1一页总结|
+|33|A3尚关闭，必须补齐身份/serializer/sparseMode3/完整捕获及≥99%控制检查；缺材料升级负责人，不再限时结案|
+|外部v1七项|公共模型/采样示例A2已验证；黄区各适配器仍需实际注入测试|
+|外部v2四项|最新批准开发；weight/faulty_requant、weight/param_perturb、kv_update_misdirect、kv_rope_quant_loss；未验收前关闭|
+|四项黄区新增设计|init_routing_cutoff、cp_padding_restore、conv_transpose_padding、faulty_requant_rounding：仅收到源码/CPU检查汇总，无最终注入证据|
+|故障库9/10/13/19/23/34/35/39|逐项探测与最终结论待黄区回传；有真实注入点才注入，不用公共包有无注册代替判定|
+|HCCL与黄区其余条目|仅引用黄区实证；统一工具需要预加载路径真实回执适配，不伪造公共计数|
+|D包/8|V4仅为8与DeepSeek专属黄区项重启；其他公共V4项仍暂缓|
+|r8|最终r7.x+D包+审查通过登记+可信bootstrap+CLI helper+免许可；冻结取决于真实证据，不以A2代A3|
 
-逐份回传审查：extract_sha、版本/许可/完整组合身份、两个owner、rank/owner/调用序号/回执映射、八项计数、消费者、三项恢复、金丝雀、三负例。
-三负例为缺许可exit4+租约零+后续正确许可阳性、未知profile4xx+引擎存活、CLI99 exit4+status/disable/remove_permit完整收尾。
-只看计数相等不足以证明回包对齐；调用序号缺失且不能用独立时间/原件链证明时退补，不补默认值。
-image_digest仍按4.9可空，其余必需字段缺失拒绝。changed<applied不自动失败，耗时不作门禁。
-审查结论限定通过/不通过/需退补；本页不新增YELLOW_DEDICATED_INSTANCE记录，原件保留黄区。
+## 负例口径
 
-反馈分类不变：公共RC缺陷走对应冻结提交的新维护版本；部署不匹配说明边界；接口需求进下一版；黄区接线说明契约。旧标签/包不覆盖。
+产品CLI缺许可、未知profile/名称：exit4并保留拒绝码，引擎存活；直接RPC允许HTTP200+结构化拒绝body。未知profile原HTTP200不能判为缺陷。重复enable不得破坏已有会话；重复disable必须安全。资源清零和同引擎正对照均必要。
+
+## rank1结案
+
+最新黄区回传确认一处为自建rpc_pair脚本把rank1 capabilities与前次probe错误配对；另一次瞬态未复现，后续22轮调用链全部对齐。按“接线问题已定位 + 单次未复现保留记录”结案，不宣称修复了公共ProductClient错位缺陷。蓝区公共路径99次调用/198回包与落盘一致。另做的未捕获异常队列污染实验是独立风险证据，不能套为黄区事件根因。
+
+## 审查
+
+结论只有通过/不通过/需退补。核对组合身份、owner/provider owner、rank、请求与调用关联、八项计数、消费者、三项恢复、原件SHA。changed<applied允许；image_digest按4.9非必需可空；耗时只记录。seq若只是宿主顺序，必须标注，不能当成wire回包对齐证据。当前不新增YELLOW_DEDICATED_INSTANCE记录。

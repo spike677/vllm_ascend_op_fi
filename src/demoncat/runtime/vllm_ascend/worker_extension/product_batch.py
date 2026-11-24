@@ -54,6 +54,7 @@ class AutomaticBatches:
         self.binding=binding;self.runner=binding.worker.model_runner;self.model=binding.model;self.canary=canary
         self.session=None;self.records=[];self.seen=set();self.states={};self.canary_rows={}
         self.completed_canary=False;self.inside=0;self.error=None;self.patches=[];self.hooks=[]
+        self.control_refusal=None
         self.frame=None;self.frame_index=0;self.model_output=None;self.preprocessed=None
         self.request=ContinuousRequest(binding,[],'normal' if canary else 'fault');self.site=None
 
@@ -84,6 +85,35 @@ class AutomaticBatches:
 
     def execute(self,original,scheduler,intermediate_tensors=None):
         self.binding.check();require(self.error is None,'PRODUCT_BATCH_OBSERVER_FAILED')
+        # Canary contract errors belong to the control plane. Reject before
+        # preprocessing/model execution, disarm only our non-injecting observer,
+        # and let the real inference continue exactly once on its original path.
+        # Model/kernel exceptions below are never swallowed or retried.
+        if self.canary:
+            ids=list(scheduler.num_scheduled_tokens)
+            refusal=self.control_refusal
+            if any(r in self.states for r in getattr(scheduler,'finished_req_ids',set())):
+                refusal='PRODUCT_BATCH_CANARY_COMPLETION'
+            elif ids:
+                if self.completed_canary:refusal='PRODUCT_CANARY_EXTRA_REQUEST_BEFORE_DISARM'
+                elif len(ids)!=1 or any(r!=ids[0] for r in self.states):
+                    refusal='PRODUCT_BATCH_CANARY_REQUIRES_SERIAL_B1'
+                elif ids[0] not in self.states:
+                    new=[r for r in scheduler.scheduled_new_reqs if r.req_id==ids[0]]
+                    if len(new)!=1 or tuple(getattr(new[0],'prompt_token_ids',()) or ())!=self.binding.prompts[len(self.canary_rows)]:
+                        refusal='PRODUCT_BATCH_CANARY_PROMPT_ORDER'
+            if refusal:
+                self.control_refusal=refusal
+                require(self.site is None or self.site.pending==0,'PRODUCT_BATCH_CONSUMERS_PENDING')
+                self.request.close()
+                for hook in self.hooks:hook.remove()
+                self.hooks.clear()
+                for name,wrapper in reversed(self.patches):
+                    require(vars(self.runner).get(name) is wrapper,'PRODUCT_BATCH_WRAPPER_OWNER_CHANGED')
+                    delattr(self.runner,name)
+                self.patches.clear()
+                self.states.clear();self.frame=None
+                return original(scheduler,intermediate_tensors)
         for rid in getattr(scheduler,'finished_req_ids',set()):
             if rid in self.states:self.finish(rid,'SCHEDULER_FINISHED_REQUEST')
         if not scheduler.num_scheduled_tokens:return original(scheduler,intermediate_tensors)
@@ -177,7 +207,10 @@ class AutomaticBatches:
             resource_scope='REQUEST_REGIONS_RELEASED_OBSERVER_REMAINS_SCOPE_OWNED',model_baseline_comparison='NOT_PERFORMED_FOR_USER_REQUEST')
         self.records.append(record)
         if self.canary:
-            key=row['prompt'];require(key not in self.canary_rows and row['samples']==4 and completed and not row['reasons'], 'PRODUCT_BATCH_CANARY_COMPLETION')
+            key=row['prompt']
+            if key in self.canary_rows or row['samples']!=4 or not completed or row['reasons']:
+                self.control_refusal='PRODUCT_BATCH_CANARY_COMPLETION'
+                return
             self.canary_rows[key]=row
             if len(self.canary_rows)==len(self.binding.prompts):
                 output=[self.canary_rows[p]['output'] for p in self.binding.prompts]

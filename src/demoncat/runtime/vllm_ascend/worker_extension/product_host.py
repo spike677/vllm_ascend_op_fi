@@ -11,6 +11,7 @@ from .host import HostAdapter, WorkerFaultClient, _GroupIdentity
 from .config import FaultConfig
 from .continuous_binding import digest
 from fault_injection.product_contract import RequestScope
+from .product_errors import ProductContractRefused
 
 
 def released_resources(cleanup):
@@ -78,8 +79,9 @@ class ProductClient:
         rows = sorted(rows,key=lambda r:r['rank'])
         errors = [r for r in rows if r.get('status') in ('PRODUCT_BINDING_REFUSED', 'PRODUCT_BINDING_ERROR')]
         if errors:
-            error_type = ValueError if all(r['status']=='PRODUCT_BINDING_REFUSED' for r in errors) else RuntimeError
-            raise error_type('PRODUCT_BINDING_' + action.upper() + '_FAILED:' + repr(errors))
+            if len(errors)==len(rows) and all(r['status']=='PRODUCT_BINDING_REFUSED' for r in errors):
+                raise ProductContractRefused('PRODUCT_BINDING_' + action.upper() + '_FAILED', rows)
+            raise RuntimeError('PRODUCT_BINDING_' + action.upper() + '_FAILED:' + repr(errors))
         return rows
 
     def attach(self):
@@ -106,14 +108,15 @@ class ProductClient:
         if len(rows) != len(self.members) or not all(r['status'] == expected for r in rows):
             refused = {'PROVIDER_UNAVAILABLE', 'NATIVE_PRELOAD_NOT_ATTACHED', 'REJECTED', 'HOST_REJECTED'}
             def contract_refusal(row):
-                if row['status']==expected:return True
+                if row['status']==expected:return False
                 if row['status'] not in refused:return False
                 reply=row.get('response',{})
                 # Provider construction and host transport bugs remain exit 5.
                 return ('error_type' not in reply or reply.get('provider_code') is not None
                         or reply['error_type'] in ('ValueError','PermissionError','ContextRefused','HostContractError'))
-            error_type = ValueError if all(contract_refusal(r) for r in rows) else RuntimeError
-            raise error_type('PRODUCT_ALL_RANK_' + action.upper() + '_FAILED:' + repr(rows))
+            if rows and len(rows)==len(self.members) and all(contract_refusal(r) for r in rows):
+                raise ProductContractRefused('PRODUCT_ALL_RANK_' + action.upper() + '_FAILED', rows)
+            raise RuntimeError('PRODUCT_ALL_RANK_' + action.upper() + '_FAILED:' + repr(rows))
         compact=[]
         for row in rows:
             state=deepcopy(row.get('response',{}))

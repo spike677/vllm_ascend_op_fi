@@ -1,0 +1,184 @@
+{
+  "attempt": "r731b1124a1",
+  "combination": "A2/Ascend910B4/vLLM0.26/vllm-ascend0.26.0rc1/CANN9.1/Qwen3.8-community-W8A8/TP2",
+  "status": "PRODUCT_BLUE_REVIEW_PASSED",
+  "source_manifest_sha256": "397e2eeeba556fa21bed9f9693aea72420ccd3c42694b6ce5dba2b5bb9b5f013",
+  "negative_cases": {
+    "nonserial_canary": {
+      "status": "PRODUCT_CONTRACT_REFUSED",
+      "exit_code": 4,
+      "code": "PRODUCT_BINDING_CANARY_FAILED",
+      "refusal_codes": [
+        "PRODUCT_BATCH_CANARY_REQUIRES_SERIAL_B1"
+      ],
+      "refusals": [
+        {
+          "rank": 0,
+          "code": "PRODUCT_BATCH_CANARY_REQUIRES_SERIAL_B1",
+          "status": "PRODUCT_BINDING_REFUSED"
+        },
+        {
+          "rank": 1,
+          "code": "PRODUCT_BATCH_CANARY_REQUIRES_SERIAL_B1",
+          "status": "PRODUCT_BINDING_REFUSED"
+        }
+      ],
+      "error_type": "ProductContractRefused",
+      "reason": "PRODUCT_BINDING_CANARY_FAILED:[{'rank': 0, 'code': 'PRODUCT_BATCH_CANARY_REQUIRES_SERIAL_B1', 'status': 'PRODUCT_BINDING_REFUSED'}, {'rank': 1, 'code': 'PRODUCT_BATCH_CANARY_REQUIRES_SERIAL_B1', 'status': 'PRODUCT_BINDING_REFUSED'}]"
+    }
+  },
+  "resources": [
+    {
+      "rank": 0,
+      "leases": 0,
+      "owners": 0,
+      "bindings": 0,
+      "wrappers": 0
+    },
+    {
+      "rank": 1,
+      "leases": 0,
+      "owners": 0,
+      "bindings": 0,
+      "wrappers": 0
+    }
+  ],
+  "scopes": [
+    {
+      "scope": 0,
+      "counts": {
+        "0": {
+          "observed": 7296,
+          "eligible": 2432,
+          "attempted": 2432,
+          "applied": 2432,
+          "changed": 2412,
+          "consumed": 2432,
+          "restored": 2432,
+          "failed": 0
+        },
+        "1": {
+          "observed": 7296,
+          "eligible": 2432,
+          "attempted": 2432,
+          "applied": 2432,
+          "changed": 2412,
+          "consumed": 2432,
+          "restored": 2432,
+          "failed": 0
+        }
+      },
+      "canary_exact": true,
+      "resources_zero": true,
+      "provider_owners": [
+        "7de00ba67c9d57205d7085548f3011e2",
+        "03296d65fac26c589d5188a57397a3ec"
+      ]
+    },
+    {
+      "scope": 1,
+      "counts": {
+        "0": {
+          "observed": 7296,
+          "eligible": 2432,
+          "attempted": 2432,
+          "applied": 2432,
+          "changed": 2412,
+          "consumed": 2432,
+          "restored": 2432,
+          "failed": 0
+        },
+        "1": {
+          "observed": 7296,
+          "eligible": 2432,
+          "attempted": 2432,
+          "applied": 2432,
+          "changed": 2411,
+          "consumed": 2432,
+          "restored": 2432,
+          "failed": 0
+        }
+      },
+      "canary_exact": true,
+      "resources_zero": true,
+      "provider_owners": [
+        "101f5393770f3dfed4ef9578b8fe2ef9",
+        "2c52d7a15fd4b27dedbb055993e78204"
+      ]
+    }
+  ],
+  "window": {
+    "start": "2026-11-24T06:42:51.644378+00:00",
+    "ended": "2026-11-24T06:50:09.762975+00:00",
+    "elapsed_seconds": 438.11862036492676,
+    "cards": [
+      2,
+      5
+    ],
+    "isolation": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+    "isolation_removed": true
+  },
+  "isolation_log": [
+    {
+      "time": "2026-11-24T06:42:51.644587+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "maximum_seconds": 2100,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-24T06:46:21.353215+00:00",
+      "event": "STOP_BEGIN",
+      "container": "/atk-addcmul-local-20261124-064617",
+      "id": "e2138209072fb9810fb159adf886ee564deed5b2fdba5462704c827a3268df8c",
+      "image": "cann:9.0.0-argmin-local-atk26.7.8-20261124",
+      "cards": [
+        5
+      ]
+    },
+    {
+      "time": "2026-11-24T06:46:22.036228+00:00",
+      "event": "STOP_END",
+      "container": "/atk-addcmul-local-20261124-064617",
+      "image": "cann:9.0.0-argmin-local-atk26.7.8-20261124",
+      "returncode": 0,
+      "stdout": "e2138209072fb9810fb159adf886ee564deed5b2fdba5462704c827a3268df8c",
+      "stderr": ""
+    },
+    {
+      "time": "2026-11-24T06:50:09.763070+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ],
+  "originals": {
+    "product_http_batch.json": {
+      "bytes": 15483696,
+      "sha256": "b9909a6e81c08880cb310a3f5688b5be1e01783d7414c1ecc540aec6ff35b930"
+    },
+    "product_batch_canary_negative.json": {
+      "bytes": 2278,
+      "sha256": "b43ee823466979eb24c141adc66848070a76a349e06bcd80baad8f9d47402706"
+    },
+    "controller.json": {
+      "bytes": 63669,
+      "sha256": "bf7b40874443ae9c00bfc257c6bb6c72632b5a4eb9652fd18d5baf106e2fb728"
+    },
+    "isolation.jsonl": {
+      "bytes": 1033,
+      "sha256": "3d36344519c12c580d3ba85773efecf2d6d9244c469b3c9dcbda6dd6b63c954f"
+    }
+  },
+  "limitations": [
+    "Host CLI adapter tested; yellow CLI binary unavailable",
+    "A2 result does not qualify A3",
+    "vLLM process shutdown emitted semaphore/shared_memory resource_tracker warnings; fault leases verified separately"
+  ],
+  "qualification_granted": false
+}

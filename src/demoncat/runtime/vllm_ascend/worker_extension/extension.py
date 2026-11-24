@@ -29,7 +29,13 @@ def _call(worker, action, payload=None):
         if runtime is None or runtime.pid != pid:
             runtime = WorkerFaultRuntime(pid)
             state[_RUNTIME_ATTRIBUTE] = runtime
-    return runtime.invoke(worker, action, payload)
+    try:
+        return runtime.invoke(worker, action, payload)
+    except Exception as error:
+        from .product_errors import product_error_reply
+        body=product_error_reply(error)
+        return dict(body,status='REJECTED' if body['exit_code']==4 else 'CONTROL_ERROR',
+                    recovery_required=body['exit_code']==5)
 
 
 class DemoncatWorkerExtension:
@@ -50,6 +56,7 @@ class DemoncatWorkerExtension:
         # Control-plane refusal is data, never a fatal executor exception.
         # Forward/kernel exceptions are deliberately outside this boundary.
         try:
+            rank=self.demoncat_worker_identity()['worker']['rank']
             result = product_binding_rpc(self, action, payload)
         except (ContextRefused, ValueError, PermissionError) as error:
             result = dict(status='PRODUCT_BINDING_REFUSED', reason=str(error),
@@ -58,7 +65,7 @@ class DemoncatWorkerExtension:
             result = dict(status='PRODUCT_BINDING_ERROR', reason=str(error),
                           error_type=type(error).__name__, exit_code=5,
                           recovery_required=True)
-        return dict(result,rank=self.demoncat_worker_identity()['worker']['rank'])
+        return dict(result,rank=locals().get('rank',getattr(self,'rank',None)))
 
     def demoncat_inspect_readonly(self, offset=0, limit=128):
         from .readonly_inspect import inspect_worker
