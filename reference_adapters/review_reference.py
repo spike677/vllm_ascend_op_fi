@@ -42,6 +42,8 @@ def run(directory,receipt,negative_file):
                     need(all(e[k]==s[k] for k in ('site','changed','changed_elements','before_sha256',
                         'restored_sha256','consumer_operator','consumed','restored')),'REFERENCE_PUBLIC_SIDECAR')
                     need(e['consumed'] and e['restored'] and e['before_sha256']==e['restored_sha256'],'REFERENCE_RESTORE')
+                    need(e['consumer_operator']!='vllm::maybe_chunk_residual',
+                        'REFERENCE_SHAPE_ONLY_WRAPPER_IS_NOT_VALUE_CONSUMER')
                     if variant.startswith('row12_'):
                         need(e['consumer_operator']=='aten::_softmax' and e['consumer_sha256']==e['after_sha256']
                             and e['producer_sha256'],'REFERENCE_REAL_SAMPLER')

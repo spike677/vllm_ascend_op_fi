@@ -7,6 +7,30 @@ from reference_adapters.review_quant import review_directory
 
 
 class ReviewTests(unittest.TestCase):
+    def test_consistent_counters_do_not_prove_a_value_reader(self):
+        from reference_adapters.review_reference import run
+        with tempfile.TemporaryDirectory() as tmp, patch('reference_adapters.review_reference.review',return_value={}):
+            directory=Path(tmp);self.fixture(directory)
+            p=directory/'product_http_18.json';d=json.loads(p.read_bytes())
+            d['mechanism']='external.row7_mlp_last_row_zero'
+            for scope in d['scopes']:
+                for req in scope['requests']:
+                    for rank in req['result']['ranks']:
+                        rank['sites'][0]['consumer_operator']='vllm::maybe_chunk_residual'
+            p.write_text(json.dumps(d))
+            for rank in (0,1):
+                p=directory/f'external-input-rank{rank}.jsonl';lines=[]
+                for line in p.read_text().splitlines():
+                    chunk=json.loads(line);chunk['kind']='MlpContributionLost'
+                    chunk['events'][0]['consumer_operator']='vllm::maybe_chunk_residual'
+                    lines.append(json.dumps(chunk))
+                p.write_text('\n'.join(lines))
+            p=directory/'product_control_negative.json';neg=json.loads(p.read_bytes())
+            neg['missing_permit_cli']['refusal_codes']=['EXTERNAL_CURRENT_ACCEPTANCE_PERMIT_REQUIRED']
+            p.write_text(json.dumps(neg))
+            with self.assertRaisesRegex(ValueError,'SHAPE_ONLY_WRAPPER'):
+                run(directory,'product_http_18.json','product_control_negative.json')
+
     def fixture(self, directory):
         data = dict(mechanism='external.row9_scale_half', scopes=[])
         chunks = {0: [], 1: []}
