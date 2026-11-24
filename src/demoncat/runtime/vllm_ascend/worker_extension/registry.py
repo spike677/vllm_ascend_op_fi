@@ -189,6 +189,9 @@ def create_worker_provider(mechanism, version, worker, model, identity):
     """Public route; research protocols require explicit direct construction."""
     from fault_injection.catalog import resolve
     from .ordinary_admission import require_ordinary_route
+    if mechanism.startswith('external.'):
+        from .external_provider import create_external_provider
+        return create_external_provider(worker, model, identity, mechanism, version)
     resolve(mechanism)
     if mechanism == '25.reduce_scatter':
         require_ordinary_route(mechanism,worker,model)

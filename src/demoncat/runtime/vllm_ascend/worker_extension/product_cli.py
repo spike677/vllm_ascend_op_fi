@@ -10,7 +10,7 @@ def choices_from_clients(clients):
     for profile,client in sorted(clients.items()):
         rows=client.capabilities()
         if not rows or len({r.get('mechanism') for r in rows})!=1:raise ValueError('PRODUCT_CLI_RANK_CAPABILITY_MISMATCH')
-        fields=('mechanism','mode','product_qualified','range','named_variant','registration_sha256','registration_issue')
+        fields=('mechanism','mode','product_qualified','range','named_variant','registration_sha256','registration_issue','external_provider')
         selected={k:rows[0].get(k) for k in fields}
         if any({k:r.get(k) for k in fields}!=selected for r in rows):raise ValueError('PRODUCT_CLI_RANK_CAPABILITY_MISMATCH')
         name=selected['mechanism']
@@ -68,5 +68,10 @@ class TrustedProductSession:
                 recovery=self.active.disable();detached=self.active.detach()
                 self.active=None
                 return response(0,recovery=recovery,detach=detached)
-            except (ValueError,PermissionError) as error:return response(4,error=str(error))
+            except (ValueError,PermissionError) as error:
+                cleanup=getattr(self.active,'recovery',None)
+                if (self.active is not None and not self.active.bound and type(cleanup) is dict
+                        and cleanup.get('enable_rollback') and cleanup.get('resources_zero')):
+                    self.active=None
+                return response(4,error=str(error))
             except Exception as error:return response(5,error=str(error),recovery_required=self.active is not None)

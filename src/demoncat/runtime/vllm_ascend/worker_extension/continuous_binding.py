@@ -77,7 +77,9 @@ def paged_site_type(partition):
 
 
 def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithmetic_device='input',reference_mode='immediate',native_library=None,paged_partition=None):
-    require(mechanism in SUPPORTED,'CONTINUOUS_ADAPTER_NOT_IMPLEMENTED')
+    from .external_provider import external_site
+    external = external_site(worker, mechanism, validate=True)
+    require(mechanism in SUPPORTED or external is not None,'CONTINUOUS_ADAPTER_NOT_IMPLEMENTED')
     require(arithmetic_device in ('input','cpu'),'CONTINUOUS_ARITHMETIC_UNREVIEWED')
     require(reference_mode=='immediate' or (reference_mode=='forward' and mechanism=='quant.batch_shared_scale'
         and arithmetic_device=='input'),'CONTINUOUS_REFERENCE_MODE_UNREVIEWED')
@@ -93,7 +95,7 @@ def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithme
         from .continuous_vision17 import validate_visual_model
         family=validate_visual_model(runner)
     else:family=validate_continuous_model(runner,{'pending-'+str(i):p for i,p in enumerate(prompts)})
-    require(family!='deepseek_v2' or mechanism in ('28.fia.denominator_replay','8.restore_offset','8.allgather_output_row','18.api_half','39.output_proxy','39.matmul_range','quant.batch_shared_scale','22.wrong_row'),'MLA_CONTINUOUS_SITE_NOT_ADAPTED')
+    require(family!='deepseek_v2' or external is not None or mechanism in ('28.fia.denominator_replay','8.restore_offset','8.allgather_output_row','18.api_half','39.output_proxy','39.matmul_range','quant.batch_shared_scale','22.wrong_row'),'MLA_CONTINUOUS_SITE_NOT_ADAPTED')
     if mechanism=='8.allgather_output_row':
         from .deployment_authorization import authority_for
         from fault_injection.environment import _live_soc
@@ -250,7 +252,15 @@ class ContinuousRequest:
     def install_site(self):
         """Shared source-bound sites; request selection belongs to the observer."""
         import torch
-        if self.binding.mechanism=='15.alias_detach':
+        if self.binding.mechanism.startswith('external.'):
+            from .external_provider import make_external_site
+            from fault_injection.engines.region_lease import RegionLeases
+            def complete(stream):
+                event=torch.npu.Event();event.record(stream);event.synchronize()
+            leases=RegionLeases(self.binding.group['owner'], self.binding.group['group_generation'],
+                stream=torch.npu.current_stream, complete=complete)
+            self.site=make_external_site(self.binding, fault=self.phase=='fault', region_leases=leases)
+        elif self.binding.mechanism=='15.alias_detach':
             from fault_injection.sites.alias15 import Alias15Site
             from fault_injection.engines.region_lease import RegionLeases
             def complete(stream):

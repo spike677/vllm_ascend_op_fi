@@ -103,6 +103,14 @@ class ProductRequest(ContinuousRequest):
                     if self.visual: self.install_visual_site(patch)
                     elif self.inject:
                         self.install_site()
+                        if self.binding.mechanism.startswith('external.'):
+                            def external_logits(original,*args,**kwargs):
+                                value=original(*args,**kwargs)
+                                self.site.finish_forward()
+                                require(not self.site.pending and self.site.region_leases.count()==0,
+                                        'EXTERNAL_CONSUMPTION_OR_RESTORE_PENDING')
+                                return value
+                            patch(self.model,'compute_logits',external_logits)
                         if self.binding.mechanism=='18.api_half':
                             def logits(original,*args,**kwargs):
                                 value=original(*args,**kwargs)
@@ -210,6 +218,12 @@ class ProductRequest(ContinuousRequest):
         if self.visual and not self.skip:
             require(self.encoder_calls == 1 and self.embedding_calls >= 1, 'PRODUCT_VISUAL_CONSUMER_UNPROVEN')
         events = self.site.events if self.site is not None else []
+        if self.binding.mechanism.startswith('external.'):
+            for event in events:
+                require(event.get('request_ids') == self.ids, 'EXTERNAL_EVENT_REQUEST_MAPPING_UNPROVEN')
+                require(all(type(event.get(k)) is bool for k in ('eligible','applied','consumed','restored','failed'))
+                        and type(event.get('changed')) is int and event['changed'] >= 0
+                        and (event['applied'] or event['changed']==0), 'EXTERNAL_EVENT_COUNTER_INVALID')
         if self.site is not None:
             require(not self.site.pending and not getattr(self.site, 'uncovered', []), 'PRODUCT_UNRESTORED_OR_UNCOVERED_SITE')
             require(events, 'PRODUCT_NO_ACTUAL_SITE_CALLS')
@@ -236,6 +250,11 @@ class ProductRequest(ContinuousRequest):
                 pending=self.site.pending, runtime_identity=self.binding.alias_runtime_identity)
         if not self.inject:
             report.update(output=list(self.rows),all_finite=bool(self.rows) and all(r['finite'] for r in self.rows))
+        if self.binding.mechanism.startswith('external.'):
+            from .external_provider import external_site
+            spec=external_site(self.binding.worker,self.binding.mechanism,validate=True)
+            report['external_provider']=dict(mechanism=spec.mechanism,source_sha256=spec.source_sha256,
+                                             qualification_granted=False)
         self.close()
         report['resources'] = dict(leases=0, hooks=0, inflight=0)
         return report

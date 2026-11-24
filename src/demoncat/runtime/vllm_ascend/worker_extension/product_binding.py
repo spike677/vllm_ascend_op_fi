@@ -16,11 +16,15 @@ def configure_product_profiles(worker, *, profiles, authority, operator):
             'TRUSTED_PRODUCT_DEPLOYMENT_AUTHORITY_REQUIRED')
     require(type(profiles) is dict and profiles and not hasattr(worker, ATTRIBUTE), 'PRODUCT_PROFILES_ALREADY_SET_OR_EMPTY')
     for name, profile in profiles.items():
+        from .external_provider import external_site
+        external = external_site(worker, profile.get('mechanism'), validate=True)
         native = profile.get('mechanism') in NATIVE_TRIALS
         fields = {'mechanism', 'canary_prompts', 'mode'} | ({'native_library', 'native_source'} if native else set())
         require(type(name) is str and name and set(profile) == fields
-            and profile['mechanism'] in PRODUCT_CANDIDATES + NATIVE_TRIALS
+            and (profile['mechanism'] in PRODUCT_CANDIDATES + NATIVE_TRIALS or external is not None)
             and profile['mode'] in ('PRODUCT_ACCEPTANCE_ONLY','PRODUCT_REGISTERED'), 'PRODUCT_PROFILE_NOT_REVIEWED')
+        if external is not None:
+            require(profile['mode']=='PRODUCT_ACCEPTANCE_ONLY', 'EXTERNAL_PRODUCT_REGISTRATION_NOT_REVIEWED')
         if native:
             validate_blue_native_worker(worker, authority.source)
             require(profile['native_source'] == authority.source, 'PRODUCT_NATIVE_SOURCE_MISMATCH')
@@ -29,17 +33,19 @@ def configure_product_profiles(worker, *, profiles, authority, operator):
 
 
 def product_binding_rpc(worker, action, payload):
+    from .external_provider import external_site
     require(type(payload) is dict, 'PRODUCT_RPC_PAYLOAD_REQUIRED')
     authority = authority_for(worker)
     require(authority is not None and authority.authorize_operator(payload.get('operator'), 'product_binding_rpc') is True,
             'PRODUCT_RPC_OPERATOR_NOT_AUTHORIZED')
     allowed = {'operator', 'profile'} | ({'group_contract', 'scope'} if action == 'attach' else
-              {'cursor'} if action == 'status' else set())
+              {'cursor'} if action == 'status' else {'owner'} if action == 'rollback' else set())
     require(not set(payload) - allowed, 'PRODUCT_RPC_UNKNOWN_FIELD')
     profile = getattr(worker, ATTRIBUTE, {}).get(payload.get('profile'))
     require(profile is not None, 'PRODUCT_PROFILE_UNKNOWN')
     mechanism = profile['mechanism']
     if action == 'capabilities':
+        from .external_provider import external_site
         registration=None;issue=None
         if profile['mode']=='PRODUCT_REGISTERED':
             from .product_registration import registered_for
@@ -50,8 +56,21 @@ def product_binding_rpc(worker, action, payload):
                     registration_sha256=registration['record_sha256'] if registration else None,registration_issue=issue,
                     range=dict(max_context=4096 if mechanism=='33.paged_decode' else 1024, max_tokens=4, max_num_seqs=8 if mechanism=='quant.batch_shared_scale' else 1, single_chunk=True,
                                image_grid=[1,4,4] if mechanism=='17.spatial_padding' else None),
-                    user_prompt_registry=False, named_variant=mechanism)
+                    user_prompt_registry=False, named_variant=mechanism,
+                    external_provider=(dict(source_sha256=external_site(worker,mechanism).source_sha256,
+                        qualification_granted=False) if external_site(worker,mechanism) else None))
     b = current_binding(worker, worker.model_runner.model, mechanism)
+    if action == 'rollback':
+        # Idempotent for ranks that refused attach. Never remove another owner.
+        require(type(payload.get('owner')) is str and payload['owner'], 'PRODUCT_ROLLBACK_OWNER_REQUIRED')
+        if b is not None:
+            require(b.group['owner'] == payload['owner'], 'PRODUCT_ROLLBACK_OWNER_MISMATCH')
+            require(not b.leases, 'PRODUCT_ROLLBACK_RUNTIME_LEASES_REMAIN')
+            if b.warmup_request is not None:
+                b.warmup_request.close()
+                b.warmup_request = None
+            remove_continuous_binding(worker, mechanism)
+        return dict(status='PRODUCT_BINDING_ROLLED_BACK', owner=payload['owner'], resources_zero=True)
     if action == 'attach':
         native_identity=None
         scope = RequestScope(**payload['scope'])
@@ -81,7 +100,9 @@ def product_binding_rpc(worker, action, payload):
         b.product = dict(mode=profile['mode'], scope=dict(mode=scope.mode),
                          profile=payload['profile'])
         if registration:b.product['registration_sha256']=registration['record_sha256']
-        return dict(result, product_mode=True, mode=profile['mode'], registration_sha256=registration['record_sha256'] if registration else None)
+        external=external_site(worker,mechanism)
+        return dict(result, product_mode=True, mode=profile['mode'], registration_sha256=registration['record_sha256'] if registration else None,
+                    external_source_sha256=external.source_sha256 if external else None)
     require(b is not None and b.product is not None, 'PRODUCT_BINDING_NOT_ATTACHED')
     if action == 'arm_canary':
         from .product_observer import make_automatic_observer

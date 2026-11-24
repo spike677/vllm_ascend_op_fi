@@ -14,6 +14,21 @@ def trusted_bootstrap(wrapper, action, options):
         authority_for, configure_deployment_acceptance, install_deployment_acceptance_permit,
         remove_deployment_acceptance_permit)
     authority = authority_for(worker)
+    if action == 'external_configure':
+        from demoncat.runtime.vllm_ascend.worker_extension.external_provider import ExternalSite, register_external_site, factory_sha256
+        from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import observe_deployment
+        from demoncat.runtime.vllm_ascend.worker_extension.product_binding import configure_product_profiles
+        from external_gain_example import ExternalGainSite
+        assert set(options)=={'canary_tokens'}
+        if authority is None:
+            authority=configure_deployment_acceptance(worker,source='BLUE_COMBINATION',
+                authorize_operator=lambda principal,operation:principal=='product-acceptance')
+        mechanism='external.gain_three_quarters'
+        spec=ExternalSite(mechanism,ExternalGainSite,factory_sha256(ExternalGainSite),observe_deployment(worker,worker.model_runner.model))
+        registration=register_external_site(worker,spec,authority=authority,operator='product-acceptance')
+        configure_product_profiles(worker,profiles={mechanism:dict(mechanism=mechanism,mode='PRODUCT_ACCEPTANCE_ONLY',
+            canary_prompts=[options['canary_tokens']])},authority=authority,operator='product-acceptance')
+        return registration
     if action == 'configure':
         from demoncat.runtime.vllm_ascend.worker_extension.product_bootstrap import configure_product_bootstrap, product_bootstrap_rpc
         # Isolated acceptance only. Production supplies its own authenticated callback.
@@ -30,7 +45,10 @@ def trusted_bootstrap(wrapper, action, options):
     if action == 'negative':
         from demoncat.runtime.vllm_ascend.worker_extension.ordinary_admission import ordinary_route_report
         from demoncat.runtime.vllm_ascend.worker_extension.product_binding import product_binding_rpc
-        route=ordinary_route_report(options['mechanism'],worker,worker.model_runner.model)
+        if options['mechanism'].startswith('external.'):
+            from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import deployment_acceptance_report
+            route=deployment_acceptance_report(options['mechanism'],worker,worker.model_runner.model)
+        else:route=ordinary_route_report(options['mechanism'],worker,worker.model_runner.model)
         rejected={}
         for label,payload in [('unknown_profile',dict(operator='product-acceptance',profile='not-a-configured-profile')),
                               ('user_native_path',dict(operator='product-acceptance',profile=options['mechanism'],native_library='/not-allowed.so'))]:

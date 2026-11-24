@@ -1,3 +1,9 @@
+## 2026-11-24：可信外部 provider 示例与控制失败恢复
+
+[外部接口](docs/worker_core_v1/external_provider_v1_20261124.md)在 r8 开发线实现；[A2 TP2 示例](docs/worker_core_v1/external_provider_20261124/README.md)完成同组 Worker 两个 owner，每 rank/owner 1932 次 eligible 全部应用、消费和恢复，failed=0。仅为接口示例，不授予黄区自有机制资格。
+
+[黄区本批审查](docs/worker_core_v1/yellow_intake_20261124_l8.md)更正“公共目录未注册即不支持”的判断。十一项通过仍待逐项提取文本；33 A3 继续关闭。r7.2 独立维护未知 profile 的结构化拒绝及 enable 失败清理，r8 同步该修复；既有冻结发行物不改。
+
 ## 2026-11-23 晚：V2-Lite 产品预演与关闭的 V4 D2 适配
 
 [V2-Lite产品预演](docs/worker_core_v1/v2_product_rehearsal_20261123/README.md)：A2 / 0.26 / CANN9.1 / W8A8 / TP2 / EP关闭，8 AllGather行错位、18、39op、39mr、Batch及28 MLA在各自声明范围完成同组Worker两个owner、负例、真实消费者和恢复。Batch按实际quant apply核对，未调用候选和融合路径外的量化单独列出；28观察上游原有copy到o_proj_input，未添加写入链。结果仅为BLUE_COMBINATION预演，不授予V4/MC2或免许可资格。

@@ -61,6 +61,7 @@ class ProductClient:
         self.requests = []
         self.baseline = None
         self.enabled = self.bound = False
+        self._enable_failure_pending = False
         self.cursor = 0
         self.recovery = None
         self.canary_evidence = None
@@ -74,7 +75,12 @@ class ProductClient:
             args=(action, dict(operator=self.operator, profile=self.profile, **settings)))
         if not rows or any(type(r.get('rank')) is not int for r in rows) or sorted(r['rank'] for r in rows)!=list(range(len(self.members))):
             raise RuntimeError('PRODUCT_BINDING_RANK_SET_CHANGED')
-        return sorted(rows,key=lambda r:r['rank'])
+        rows = sorted(rows,key=lambda r:r['rank'])
+        errors = [r for r in rows if r.get('status') in ('PRODUCT_BINDING_REFUSED', 'PRODUCT_BINDING_ERROR')]
+        if errors:
+            error_type = ValueError if all(r['status']=='PRODUCT_BINDING_REFUSED' for r in errors) else RuntimeError
+            raise error_type('PRODUCT_BINDING_' + action.upper() + '_FAILED:' + repr(errors))
+        return rows
 
     def attach(self):
         if self.clients:
@@ -98,7 +104,16 @@ class ProductClient:
         rows = [getattr(client, action)() for client in self.clients]
         expected = 'QUERY_OK' if action == 'query' else 'DETACHED' if action == 'detach' else 'ACTION_COMPLETED'
         if len(rows) != len(self.members) or not all(r['status'] == expected for r in rows):
-            raise RuntimeError('PRODUCT_ALL_RANK_' + action.upper() + '_FAILED:' + repr(rows))
+            refused = {'PROVIDER_UNAVAILABLE', 'NATIVE_PRELOAD_NOT_ATTACHED', 'REJECTED', 'HOST_REJECTED'}
+            def contract_refusal(row):
+                if row['status']==expected:return True
+                if row['status'] not in refused:return False
+                reply=row.get('response',{})
+                # Provider construction and host transport bugs remain exit 5.
+                return ('error_type' not in reply or reply.get('provider_code') is not None
+                        or reply['error_type'] in ('ValueError','PermissionError','ContextRefused','HostContractError'))
+            error_type = ValueError if all(contract_refusal(r) for r in rows) else RuntimeError
+            raise error_type('PRODUCT_ALL_RANK_' + action.upper() + '_FAILED:' + repr(rows))
         compact=[]
         for row in rows:
             state=deepcopy(row.get('response',{}))
@@ -119,6 +134,60 @@ class ProductClient:
 
     def enable(self, scope=None):
         with self._lock:
+            # A second enable must never roll back an already active session.
+            if not self.clients or self.bound:
+                raise ValueError('PRODUCT_NEW_ATTACHMENT_REQUIRED')
+            if self.recovery and self.recovery.get('enable_rollback') and self.recovery.get('resources_zero'):
+                self.clients = [WorkerFaultClient(HostAdapter(self.executor,
+                    select_worker=lambda c, rows, m=member: m, timeout=self.timeout), self.config,
+                    _group_identity=self.identity, receipt_mode='latest') for member in self.members]
+                self.recovery = None
+            try:
+                return self._enable(scope)
+            except Exception as error:
+                if self.bound:
+                    self._enable_failure_pending = True
+                    try:
+                        self._rollback_enable()
+                    except Exception as cleanup_error:
+                        raise RuntimeError('PRODUCT_ENABLE_RECOVERY_REQUIRED:' + str(error)
+                                           + '; cleanup=' + str(cleanup_error)) from error
+                raise
+
+    def _rollback_enable(self):
+        """Use Runtime tenant cleanup, including prepare without a lease ticket.
+
+        Every rank is attempted even if another rejects cleanup. Ownership stays
+        retained until actual detach acknowledgements and binding removal agree.
+        """
+        self.enabled = False
+        self.drain()
+        rows = []
+        for client in self.clients:
+            try:
+                state = client.snapshot()
+                if state['attachment'] is None and not state['ownership_retained']:
+                    rows.append(dict(status='NOT_ATTACHED', resources_zero=True))
+                else:
+                    rows.append(client.detach())
+            except Exception as error:
+                rows.append(dict(status='CLEANUP_FAILED', reason=str(error)))
+        self.cleanup_evidence = dict(enable_rollback=rows)
+        if not all(r.get('status')=='NOT_ATTACHED' or
+                   (r.get('status')=='DETACHED' and r.get('ownership_retained') is False) for r in rows):
+            raise RuntimeError('PRODUCT_ENABLE_RUNTIME_CLEANUP_INCOMPLETE')
+        removed = self._binding('rollback', owner=self.identity.owner)
+        self.cleanup_evidence['binding_rollback'] = removed
+        if not all(r.get('status')=='PRODUCT_BINDING_ROLLED_BACK' and r.get('resources_zero') is True for r in removed):
+            raise RuntimeError('PRODUCT_ENABLE_BINDING_CLEANUP_INCOMPLETE')
+        self.bound = False
+        self._enable_failure_pending = False
+        # Cleanup is not a successful product acceptance or a canary result.
+        self.recovery = dict(resources_zero=True, enable_rollback=True,
+                             canary_exact=None, restored=False)
+
+    def _enable(self, scope=None):
+        with self._lock:
             if not self.clients or self.bound:
                 raise RuntimeError('PRODUCT_NEW_ATTACHMENT_REQUIRED')
             policy = RequestScope(**(scope or {}))
@@ -127,6 +196,10 @@ class ProductClient:
                 tp=len(self.members), injection_policy='ALL_RANK_EVERY_ELIGIBLE_CALL')
             self.bound = True  # retain cleanup responsibility even if one rank rejects attach
             attached=self._binding('attach', group_contract=contract, scope=dict(mode=policy.mode))
+            if self.config.mechanism.startswith('external.'):
+                sources={r.get('external_source_sha256') for r in attached}
+                if len(sources)!=1 or None in sources:
+                    raise ValueError('EXTERNAL_RANK_SOURCE_IDENTITY_MISMATCH')
             if any(r.get('mode')=='PRODUCT_REGISTERED' for r in attached):
                 ids={r.get('registration_sha256') for r in attached}
                 if any(r.get('mode')!='PRODUCT_REGISTERED' for r in attached) or len(ids)!=1 or None in ids:
@@ -173,6 +246,11 @@ class ProductClient:
 
     def disable(self):
         with self._lock:
+            if self._enable_failure_pending:
+                self._rollback_enable()
+                return self.status()
+            if not self.bound and self.recovery and self.recovery.get('enable_rollback') and self.recovery.get('resources_zero'):
+                return self.status()
             self.enabled = False  # Worker admission ends at the disable RPC control boundary
         self.drain()
         with self._lock:
@@ -199,6 +277,8 @@ class ProductClient:
             return self.status()
 
     def detach(self):
+        if not self.bound and self.recovery and self.recovery.get('enable_rollback') and self.recovery.get('resources_zero'):
+            return dict(status='PRODUCT_DETACHED', recovery=deepcopy(self.recovery))
         if self.enabled or not self.recovery or not self.recovery['restored']:
             raise RuntimeError('PRODUCT_CONFIRMED_RECOVERY_REQUIRED')
         self._binding('detach')

@@ -37,9 +37,11 @@ class HTTPExecutor:
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--mechanism',nargs='+',choices=['8','15','18','39','22','28','17','batch','39mr','33','41','26fia','20'],required=True)
+    p.add_argument('--external-example',action='store_true')
     p.add_argument('--image');p.add_argument('--registered',action='store_true')
     p.add_argument('--native-library');p.add_argument('--native-sha256')
     a=p.parse_args();visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
+    if a.external_example and (a.mechanism!=['18'] or a.registered):p.error('External example uses its own unqualified serial text profile')
     if ('batch' in a.mechanism or '33' in a.mechanism) and len(a.mechanism)!=1:p.error('Batch/33 use their own scheduler profile')
     report=dict(status='STARTED',entry='VLLM_HTTP_API',host_per_request_hooks=False,scopes=[])
     target=root/'product_http.json'
@@ -66,6 +68,7 @@ def main():
         else:raise RuntimeError('HTTP_SERVER_READY_TIMEOUT')
         from demoncat.runtime.vllm_ascend.worker_extension.product_host import ProductClient
         mechanisms={'8':'8.allgather_output_row','15':'15.alias_detach','18':'18.api_half','39':'39.output_proxy','22':'22.wrong_row','28':'28.fia.denominator_replay','17':'17.spatial_padding','batch':'quant.batch_shared_scale','39mr':'39.matmul_range','33':'33.paged_decode','41':'41.tail_column','26fia':'26.fia_destination','20':'20.buffer_substitute'}
+        if a.external_example:mechanisms['18']='external.gain_three_quarters'
         images=[]
         if visual:
             from PIL import Image
@@ -106,12 +109,14 @@ def main():
         for key in a.mechanism:
             number,variant=mechanisms[key].split('.',1)
             config=dict(schema='demoncat.product.deployment.v1',profile=mechanisms[key],
-                fault=dict(fault_id=number if number=="quant" else int(number),variant=variant,implementation_version='1'),model='/model',tp=2,
+                fault=dict(fault_id=number if number in ("quant","external") else int(number),variant=variant,implementation_version='1'),model='/model',tp=2,
                 mode='PRODUCT_REGISTERED' if a.registered else 'PRODUCT_ACCEPTANCE_ONLY',source='BLUE_COMBINATION',source_manifest='/source/source_manifest.json',
                 source_manifest_sha256=source_sha,native_library=a.native_library,native_sha256=a.native_sha256,
                 canary=dict(prompt=canary_text,image=a.image if visual else None,max_tokens=4),evidence_directory='/evidence')
             path=root/('deployment-'+key+'.json');path.write_text(json.dumps(config));paths[key]=str(path)
-        ex.collective_rpc('demoncat_acceptance_bootstrap',args=('configure',dict(paths=list(paths.values()),canary_tokens={mechanisms[k]:canary for k in a.mechanism})))
+        if a.external_example:
+            report['external_registration']=ex.collective_rpc('demoncat_acceptance_bootstrap',args=('external_configure',dict(canary_tokens=canary)))
+        else:ex.collective_rpc('demoncat_acceptance_bootstrap',args=('configure',dict(paths=list(paths.values()),canary_tokens={mechanisms[k]:canary for k in a.mechanism})))
         for key in a.mechanism:
             mechanism=mechanisms[key];target=root/('product_http_'+key+'.json')
             report=dict(status='STARTED',entry='VLLM_HTTP_API',host_per_request_hooks=False,mechanism=mechanism,scopes=[],source_manifest_sha256=source_sha)
@@ -121,9 +126,15 @@ def main():
                 report['visual_input']=visual_identity
                 report['image_pixel_sha256']=[hashlib.sha256(Image.open(io.BytesIO(base64.b64decode(data.split(',',1)[1]))).convert('RGB').tobytes()).hexdigest() for data in images]
             for index in range(2):
-                if not a.registered:ex.collective_rpc('demoncat_product_bootstrap',args=('permit',dict(operator='product-acceptance',mechanisms=[mechanism],attempt='http-'+str(index),source_manifest_sha256=source_sha)))
-                client=ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',
-                    run_canary=lambda spec:[inference(p) for p in spec['prompt']] if batch else inference(spec['prompt']),drain=lambda:None,timeout=120)
+                if a.external_example:
+                    ex.collective_rpc('demoncat_acceptance_bootstrap',args=('permit',dict(mechanisms=[mechanism],attempt='http-'+str(index),source_manifest_sha256=source_sha)))
+                    from demoncat.runtime.vllm_ascend.worker_extension.external_provider import ExternalFaultConfig
+                    client=ProductClient(ex,ExternalFaultConfig('external','gain_three_quarters'),profile=mechanism,
+                        operator='product-acceptance',run_canary=lambda:inference(canary_text),drain=lambda:None,timeout=120)
+                else:
+                    if not a.registered:ex.collective_rpc('demoncat_product_bootstrap',args=('permit',dict(operator='product-acceptance',mechanisms=[mechanism],attempt='http-'+str(index),source_manifest_sha256=source_sha)))
+                    client=ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',
+                        run_canary=lambda spec:[inference(p) for p in spec['prompt']] if batch else inference(spec['prompt']),drain=lambda:None,timeout=120)
                 scope=dict(scope=index,requests=[]);report['scopes'].append(scope)
                 scope['attach']=client.attach();scope['workers']=client.members;scope['capabilities']=client.capabilities();scope['enable']=client.enable();save()
                 if batch:

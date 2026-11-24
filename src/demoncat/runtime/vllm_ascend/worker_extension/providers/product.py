@@ -69,7 +69,9 @@ class ProductProvider(Scope):
             hook_state_available=True, hook_owned=snapshot['owned_hooks']>0, owner=owner, generation=generation,
             native_loaded=False, native_registered=False, registered=self._registered, enabled=active,
             inflight=snapshot['inflight'], leases=snapshot['leases'], owned_hooks=snapshot['owned_hooks'],
-            replay_pending=False, replay_failed=bool(self.error or snapshot['failure']),
+            # Preserve historical failure below; completed close is no longer
+            # an active replay failure. Runtime still verifies every resource.
+            replay_pending=False, replay_failed=bool(self.error or snapshot['failure']) and not self.closed,
             product_mode=True, automatic_scheduler_observer=True, next_phase='complete' if self.closed else 'fault',
             scope=deepcopy(self.binding.product['scope']), request_count=snapshot['request_count'],
             # Detailed records use the dedicated paginated status RPC, not every

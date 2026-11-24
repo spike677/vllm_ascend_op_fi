@@ -1,0 +1,438 @@
+{
+  "attempt": "r8-external-20261124-a1",
+  "source_scope": "preliminary protocol; final cross-rank code SHA and event ownership checks added for a2",
+  "review": {
+    "status": "PRODUCT_BLUE_REVIEW_PASSED",
+    "mechanism": "external.gain_three_quarters",
+    "source_manifest_sha256": "91d149636b0f506cbe304d46ff00b8186e99885709d12836a8b7ae0682563ca2",
+    "scopes": [
+      {
+        "scope": 0,
+        "effects": [
+          {
+            "rank": 0,
+            "request_index": 0,
+            "coverage": {
+              "observed": 644,
+              "eligible": 644,
+              "attempted": 644,
+              "applied": 644,
+              "changed": 642,
+              "consumed": 644,
+              "restored": 644,
+              "failed": 0
+            },
+            "changed_elements": 642,
+            "reasons": [],
+            "consumers": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::unified_attention_with_output"
+            ],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": 0,
+            "nonfinite_after": 0
+          },
+          {
+            "rank": 1,
+            "request_index": 0,
+            "coverage": {
+              "observed": 644,
+              "eligible": 644,
+              "attempted": 644,
+              "applied": 644,
+              "changed": 642,
+              "consumed": 644,
+              "restored": 644,
+              "failed": 0
+            },
+            "changed_elements": 642,
+            "reasons": [],
+            "consumers": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::unified_attention_with_output"
+            ],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": 0,
+            "nonfinite_after": 0
+          },
+          {
+            "rank": 0,
+            "request_index": 1,
+            "coverage": {
+              "observed": 644,
+              "eligible": 644,
+              "attempted": 644,
+              "applied": 644,
+              "changed": 644,
+              "consumed": 644,
+              "restored": 644,
+              "failed": 0
+            },
+            "changed_elements": 644,
+            "reasons": [],
+            "consumers": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::unified_attention_with_output"
+            ],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": 0,
+            "nonfinite_after": 0
+          },
+          {
+            "rank": 1,
+            "request_index": 1,
+            "coverage": {
+              "observed": 644,
+              "eligible": 644,
+              "attempted": 644,
+              "applied": 644,
+              "changed": 644,
+              "consumed": 644,
+              "restored": 644,
+              "failed": 0
+            },
+            "changed_elements": 644,
+            "reasons": [],
+            "consumers": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::unified_attention_with_output"
+            ],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": 0,
+            "nonfinite_after": 0
+          },
+          {
+            "rank": 0,
+            "request_index": 2,
+            "coverage": {
+              "observed": 644,
+              "eligible": 644,
+              "attempted": 644,
+              "applied": 644,
+              "changed": 644,
+              "consumed": 644,
+              "restored": 644,
+              "failed": 0
+            },
+            "changed_elements": 644,
+            "reasons": [],
+            "consumers": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::unified_attention_with_output"
+            ],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": 0,
+            "nonfinite_after": 0
+          },
+          {
+            "rank": 1,
+            "request_index": 2,
+            "coverage": {
+              "observed": 644,
+              "eligible": 644,
+              "attempted": 644,
+              "applied": 644,
+              "changed": 644,
+              "consumed": 644,
+              "restored": 644,
+              "failed": 0
+            },
+            "changed_elements": 644,
+            "reasons": [],
+            "consumers": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::unified_attention_with_output"
+            ],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": 0,
+            "nonfinite_after": 0
+          },
+          {
+            "rank": 0,
+            "request_index": 3,
+            "coverage": {
+              "observed": 0,
+              "eligible": 0,
+              "attempted": 0,
+              "applied": 0,
+              "changed": 0,
+              "consumed": 0,
+              "restored": 0,
+              "failed": 0
+            },
+            "changed_elements": 0,
+            "reasons": [
+              "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+            ],
+            "consumers": [],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 1,
+            "request_index": 3,
+            "coverage": {
+              "observed": 0,
+              "eligible": 0,
+              "attempted": 0,
+              "applied": 0,
+              "changed": 0,
+              "consumed": 0,
+              "restored": 0,
+              "failed": 0
+            },
+            "changed_elements": 0,
+            "reasons": [
+              "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+            ],
+            "consumers": [],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          }
+        ],
+        "batch": null,
+        "canary_exact": true,
+        "all_resources_zero": true
+      },
+      {
+        "scope": 1,
+        "effects": [
+          {
+            "rank": 0,
+            "request_index": 0,
+            "coverage": {
+              "observed": 644,
+              "eligible": 644,
+              "attempted": 644,
+              "applied": 644,
+              "changed": 642,
+              "consumed": 644,
+              "restored": 644,
+              "failed": 0
+            },
+            "changed_elements": 642,
+            "reasons": [],
+            "consumers": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::unified_attention_with_output"
+            ],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": 0,
+            "nonfinite_after": 0
+          },
+          {
+            "rank": 1,
+            "request_index": 0,
+            "coverage": {
+              "observed": 644,
+              "eligible": 644,
+              "attempted": 644,
+              "applied": 644,
+              "changed": 642,
+              "consumed": 644,
+              "restored": 644,
+              "failed": 0
+            },
+            "changed_elements": 642,
+            "reasons": [],
+            "consumers": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::unified_attention_with_output"
+            ],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": 0,
+            "nonfinite_after": 0
+          },
+          {
+            "rank": 0,
+            "request_index": 1,
+            "coverage": {
+              "observed": 644,
+              "eligible": 644,
+              "attempted": 644,
+              "applied": 644,
+              "changed": 644,
+              "consumed": 644,
+              "restored": 644,
+              "failed": 0
+            },
+            "changed_elements": 644,
+            "reasons": [],
+            "consumers": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::unified_attention_with_output"
+            ],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": 0,
+            "nonfinite_after": 0
+          },
+          {
+            "rank": 1,
+            "request_index": 1,
+            "coverage": {
+              "observed": 644,
+              "eligible": 644,
+              "attempted": 644,
+              "applied": 644,
+              "changed": 644,
+              "consumed": 644,
+              "restored": 644,
+              "failed": 0
+            },
+            "changed_elements": 644,
+            "reasons": [],
+            "consumers": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::unified_attention_with_output"
+            ],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": 0,
+            "nonfinite_after": 0
+          },
+          {
+            "rank": 0,
+            "request_index": 2,
+            "coverage": {
+              "observed": 644,
+              "eligible": 644,
+              "attempted": 644,
+              "applied": 644,
+              "changed": 644,
+              "consumed": 644,
+              "restored": 644,
+              "failed": 0
+            },
+            "changed_elements": 644,
+            "reasons": [],
+            "consumers": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::unified_attention_with_output"
+            ],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": 0,
+            "nonfinite_after": 0
+          },
+          {
+            "rank": 1,
+            "request_index": 2,
+            "coverage": {
+              "observed": 644,
+              "eligible": 644,
+              "attempted": 644,
+              "applied": 644,
+              "changed": 644,
+              "consumed": 644,
+              "restored": 644,
+              "failed": 0
+            },
+            "changed_elements": 644,
+            "reasons": [],
+            "consumers": [
+              "aten::index",
+              "npu::npu_dynamic_quant",
+              "vllm::unified_attention_with_output"
+            ],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": 0,
+            "nonfinite_after": 0
+          },
+          {
+            "rank": 0,
+            "request_index": 3,
+            "coverage": {
+              "observed": 0,
+              "eligible": 0,
+              "attempted": 0,
+              "applied": 0,
+              "changed": 0,
+              "consumed": 0,
+              "restored": 0,
+              "failed": 0
+            },
+            "changed_elements": 0,
+            "reasons": [
+              "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+            ],
+            "consumers": [],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          },
+          {
+            "rank": 1,
+            "request_index": 3,
+            "coverage": {
+              "observed": 0,
+              "eligible": 0,
+              "attempted": 0,
+              "applied": 0,
+              "changed": 0,
+              "consumed": 0,
+              "restored": 0,
+              "failed": 0
+            },
+            "changed_elements": 0,
+            "reasons": [
+              "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+            ],
+            "consumers": [],
+            "native_runtime": null,
+            "native_library_sha256": null,
+            "nonfinite_before": null,
+            "nonfinite_after": null
+          }
+        ],
+        "batch": null,
+        "canary_exact": true,
+        "all_resources_zero": true
+      }
+    ],
+    "product_entry": "ProductClient direct constructor",
+    "between_request_cache_reset": null,
+    "deployment_config_sha256": null,
+    "hardware_scope": "A2/0.26/Qwen3.8-community-W8A8/TP2",
+    "yellow_main_project_integration_verified": false,
+    "product_closed": false,
+    "qualification_granted": false
+  },
+  "window": {
+    "status": "FINISHED",
+    "start": "2026-11-24T01:53:07.007369+00:00",
+    "ended": "2026-11-24T01:57:41.286943+00:00",
+    "elapsed_seconds": 274.27958856197074,
+    "isolation_removed": true
+  },
+  "raw_sha256": {
+    "controller.json": "82a62c135db4c90d0636c056015c5f3b75858582430b24461f793737d96fa182",
+    "isolation.jsonl": "6e3f35588e65be496fff89814eaab060368199f7849b8eb34bf2f5669df66c3b",
+    "product_http_18.json": "2b49c67af60b22f8fb3241f1d7fe1a4a4187867d9742a5ad01f3230373d89c1b"
+  }
+}

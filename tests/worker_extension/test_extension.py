@@ -124,8 +124,10 @@ class WorkerExtensionTest(unittest.TestCase):
         self.assertEqual(before['status'], 'WORKER_CONTEXT_NOT_READY')
         self.current.assert_not_called()
         self.worker.load_model()
-        with self.assertRaisesRegex(RuntimeError,'PRODUCT_RPC_OPERATOR_NOT_AUTHORIZED'):
-            self.worker.demoncat_product_binding('attach',{'profile':'user-supplied','operator':'user'})
+        refused=self.worker.demoncat_product_binding('attach',{'profile':'user-supplied','operator':'user'})
+        self.assertEqual(refused['status'],'PRODUCT_BINDING_REFUSED')
+        self.assertEqual(refused['reason'],'PRODUCT_RPC_OPERATOR_NOT_AUTHORIZED')
+        self.assertEqual(refused['exit_code'],4)
         with patch.dict(os.environ, {'ASCEND_RT_VISIBLE_DEVICES': '5,2'}):
             actual = self.worker.demoncat_worker_identity()
             self.assertEqual(actual['status'], 'WORKER_IDENTIFIED')
