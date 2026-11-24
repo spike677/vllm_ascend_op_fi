@@ -78,6 +78,14 @@ class ProductRequest(ContinuousRequest):
                     prompt_embeds=getattr(req, 'prompt_embeds', None) is not None,
                     image_count=sum(f.modality == 'image' for f in features) if isinstance(features, list) else None,
                     video_count=sum(f.modality == 'video' for f in features) if isinstance(features, list) else None)
+                self.external_stage='model'
+                if self.binding.mechanism.startswith('external.'):
+                    from .external_provider import external_site
+                    self.external_stage=external_site(self.binding.worker,self.binding.mechanism,validate=True).stage
+                    if self.inject and self.external_stage=='sampler':
+                        temperature=getattr(getattr(req,'sampling_params',None),'temperature',None)
+                        if not isinstance(temperature,(int,float)) or not 0 < temperature < float('inf'):
+                            self.skip.append('EXTERNAL_SAMPLER_POSITIVE_TEMPERATURE_REQUIRED')
                 self.range_facts = facts
                 external=getattr(req, 'external_req_id', None)
                 if type(external) is str: self.external_request_id=external
@@ -103,6 +111,14 @@ class ProductRequest(ContinuousRequest):
                     if self.visual: self.install_visual_site(patch)
                     elif self.inject:
                         self.install_site()
+                        if self.binding.mechanism.startswith('external.') and self.external_stage=='model':
+                            def external_logits(original,*args,**kwargs):
+                                value=original(*args,**kwargs)
+                                self.site.finish_forward()
+                                require(not self.site.pending and self.site.region_leases.count()==0,
+                                        'EXTERNAL_CONSUMPTION_OR_RESTORE_PENDING')
+                                return value
+                            patch(self.model,'compute_logits',external_logits)
                         if self.binding.mechanism=='18.api_half':
                             def logits(original,*args,**kwargs):
                                 value=original(*args,**kwargs)
@@ -137,7 +153,10 @@ class ProductRequest(ContinuousRequest):
             self.model_output = value
 
         def sample(original, *args, **kwargs):
+            sampling=not self.skip and self.inject and getattr(self,'external_stage','model')=='sampler'
+            if sampling:self.site.begin_sample()
             result = original(*args, **kwargs)
+            if sampling:self.site.finish_sample()
             if not self.skip:
                 require(result.req_ids == self.ids and self.runner.execute_model_state is None,
                         'PRODUCT_SAMPLE_REQUEST_ASSOCIATION')
@@ -210,6 +229,12 @@ class ProductRequest(ContinuousRequest):
         if self.visual and not self.skip:
             require(self.encoder_calls == 1 and self.embedding_calls >= 1, 'PRODUCT_VISUAL_CONSUMER_UNPROVEN')
         events = self.site.events if self.site is not None else []
+        if self.binding.mechanism.startswith('external.'):
+            for event in events:
+                require(event.get('request_ids') == self.ids, 'EXTERNAL_EVENT_REQUEST_MAPPING_UNPROVEN')
+                require(all(type(event.get(k)) is bool for k in ('eligible','applied','consumed','restored','failed'))
+                        and type(event.get('changed')) is int and event['changed'] >= 0
+                        and (event['applied'] or event['changed']==0), 'EXTERNAL_EVENT_COUNTER_INVALID')
         if self.site is not None:
             require(not self.site.pending and not getattr(self.site, 'uncovered', []), 'PRODUCT_UNRESTORED_OR_UNCOVERED_SITE')
             require(events, 'PRODUCT_NO_ACTUAL_SITE_CALLS')
@@ -236,6 +261,11 @@ class ProductRequest(ContinuousRequest):
                 pending=self.site.pending, runtime_identity=self.binding.alias_runtime_identity)
         if not self.inject:
             report.update(output=list(self.rows),all_finite=bool(self.rows) and all(r['finite'] for r in self.rows))
+        if self.binding.mechanism.startswith('external.'):
+            from .external_provider import external_site
+            spec=external_site(self.binding.worker,self.binding.mechanism,validate=True)
+            report['external_provider']=dict(mechanism=spec.mechanism,source_sha256=spec.source_sha256,
+                                             qualification_granted=False)
         self.close()
         report['resources'] = dict(leases=0, hooks=0, inflight=0)
         return report

@@ -2,7 +2,7 @@
 import argparse,hashlib,json,os,subprocess,sys,tarfile,tempfile
 from pathlib import Path
 
-VERSIONS={'demoncatpfi':'0.4.0rc6.post2','demoncat-worker-extension':'0.3.0rc6.post2','demoncat-fault39-core':'0.3.0rc6.post2'}
+VERSIONS={'demoncatpfi':'0.4.0rc6.post3','demoncat-worker-extension':'0.3.0rc6.post3','demoncat-fault39-core':'0.3.0rc6.post3'}
 ROOTS=('src/','fault_injection/','fault39/src/','native_execution_strategy/','engineering_closure/',
        'tools/','tests/','docs/worker_core_v1/')
 EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',
@@ -10,6 +10,8 @@ EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',
        'experiments/worker_core_v11_20261118/continuous_public_probe.py',
        'experiments/worker_core_v11_20261118/product_http_probe.py',
        'experiments/worker_core_v11_20261118/product_mode_probe.py',
+       'experiments/worker_core_v11_20261118/external_gain_example.py',
+       'experiments/worker_core_v11_20261118/rpc_alignment_probe.py',
        'experiments/worker_core_v11_20261118/alias15_readonly_probe.py',
        'experiments/worker_core_v11_20261118/alias15_output_probe.py',
        'experiments/worker_core_v11_20261118/paged33_launch_capture.cpp',
@@ -58,6 +60,11 @@ def build(repo,output):
                           '41/26fia/20':'A2 TP2 product passed; A3 TP1/TP2 acceptance candidate requires reviewed library and verified mapped CANN 9.1; no grant',
                           '8/DeepSeek':'New deployment and product acceptance pending','15.alias_detach':'ND alias detach only; A2 TP2 product reviewed; A3 TP2 trusted acceptance candidate, runtime CANN/source/consumer checks required; no private-format claim'},qualification_granted=False)
         write_json_bytes(output/'source-review.json',review)
+        # Browsable documentation and adapter example alongside the wheels.
+        for row in files:
+            name=row['path']
+            if name.startswith('docs/worker_core_v1/') or name=='experiments/worker_core_v11_20261118/external_gain_example.py':
+                dest=output/name;dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes((stage/name).read_bytes())
         archive=output/(output.name+'.tar.gz')
         with tarfile.open(archive,'w:gz') as tf:
             for row in files:tf.add(stage/row['path'],arcname=row['path'],recursive=False)

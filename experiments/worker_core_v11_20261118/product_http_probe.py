@@ -38,6 +38,8 @@ class HTTPExecutor:
 def main():
     p=argparse.ArgumentParser();p.add_argument('--mechanism',nargs='+',choices=['15','18','39','22','28','17','batch','39mr','33','41','26fia','20'],required=True)
     p.add_argument('--negative-regression',action='store_true')
+    p.add_argument('--external-example',action='store_true')
+    p.add_argument('--external-sampling',action='store_true')
     p.add_argument('--image')
     p.add_argument('--native-library');p.add_argument('--native-sha256')
     a=p.parse_args();visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
@@ -67,6 +69,8 @@ def main():
         else:raise RuntimeError('HTTP_SERVER_READY_TIMEOUT')
         from demoncat.runtime.vllm_ascend.worker_extension.product_host import ProductClient
         mechanisms={'15':'15.alias_detach','18':'18.api_half','39':'39.output_proxy','22':'22.wrong_row','28':'28.fia.denominator_replay','17':'17.spatial_padding','batch':'quant.batch_shared_scale','39mr':'39.matmul_range','33':'33.paged_decode','41':'41.tail_column','26fia':'26.fia_destination','20':'20.buffer_substitute'}
+        if a.external_example:mechanisms['18']='external.gain_three_quarters'
+        if a.external_sampling:mechanisms['18']='external.exponential_perturb'
         images=[]
         if visual:
             from PIL import Image
@@ -77,8 +81,8 @@ def main():
                     image,visual_identity=load_fixed_image(a.image) if a.image else deterministic_image()
                 buf=io.BytesIO();image.save(buf,format='PNG');images.append('data:image/png;base64,'+base64.b64encode(buf.getvalue()).decode())
                 if shift==0:image.save(root/'canary.png')
-        def inference(text,*,image=0,max_tokens=4):
-            common=dict(model='acceptance',temperature=0,max_tokens=max_tokens,min_tokens=max_tokens,ignore_eos=True)
+        def inference(text,*,image=0,max_tokens=4,temperature=0):
+            common=dict(model='acceptance',temperature=temperature,seed=42,max_tokens=max_tokens,min_tokens=max_tokens,ignore_eos=True)
             if visual:
                 payload=dict(common,messages=[dict(role='user',content=[dict(type='image_url',image_url={'url':images[image]}),dict(type='text',text=text)])])
                 endpoint='/v1/chat/completions'
@@ -107,12 +111,14 @@ def main():
         for key in a.mechanism:
             number,variant=mechanisms[key].split('.',1)
             config=dict(schema='demoncat.product.deployment.v1',profile=mechanisms[key],
-                fault=dict(fault_id=number if number=="quant" else int(number),variant=variant,implementation_version='1'),model='/model',tp=2,
+                fault=dict(fault_id=number if number in ("quant","external") else int(number),variant=variant,implementation_version='1'),model='/model',tp=2,
                 mode='PRODUCT_ACCEPTANCE_ONLY',source='BLUE_COMBINATION',source_manifest='/source/source_manifest.json',
                 source_manifest_sha256=source_sha,native_library=a.native_library,native_sha256=a.native_sha256,
                 canary=dict(prompt=canary_text,image=a.image if visual else None,max_tokens=4),evidence_directory='/evidence')
             path=root/('deployment-'+key+'.json');path.write_text(json.dumps(config));paths[key]=str(path)
-        ex.collective_rpc('demoncat_acceptance_bootstrap',args=('configure',dict(paths=list(paths.values()),canary_tokens={mechanisms[k]:canary for k in a.mechanism})))
+        if a.external_example or a.external_sampling:
+            ex.collective_rpc('demoncat_acceptance_bootstrap',args=('external_configure',dict(canary_tokens=canary,sampling=a.external_sampling)))
+        else:ex.collective_rpc('demoncat_acceptance_bootstrap',args=('configure',dict(paths=list(paths.values()),canary_tokens={mechanisms[k]:canary for k in a.mechanism})))
         for key in a.mechanism:
             mechanism=mechanisms[key];target=root/('product_http_'+key+'.json')
             report=dict(status='STARTED',entry='VLLM_HTTP_API',host_per_request_hooks=False,mechanism=mechanism,scopes=[],source_manifest_sha256=source_sha)
@@ -142,11 +148,15 @@ def main():
                 target_negative.write_text(json.dumps(negative,indent=2)+'\n')
             for index in range(2):
                 ex.collective_rpc('demoncat_acceptance_bootstrap',args=('permit',dict(mechanisms=[mechanism],attempt='http-'+str(index),source_manifest_sha256=source_sha)))
-                client=ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',
-                    run_canary=lambda spec:[inference(p) for p in spec['prompt']] if batch else inference(spec['prompt']),drain=lambda:None,timeout=120)
+                if a.external_example or a.external_sampling:
+                    from demoncat.runtime.vllm_ascend.worker_extension.external_provider import ExternalFaultConfig
+                    client=ProductClient(ex,ExternalFaultConfig('external',mechanism.split('.',1)[1]),profile=mechanism,operator='product-acceptance',run_canary=lambda:inference(canary_text),drain=lambda:None,timeout=120)
+                else:
+                    client=ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',
+                        run_canary=lambda spec:[inference(p) for p in spec['prompt']] if batch else inference(spec['prompt']),drain=lambda:None,timeout=120)
                 if a.negative_regression and index==0:client=rejected
                 scope=dict(scope=index,requests=[]);report['scopes'].append(scope)
-                scope['attach']=negative['attach'] if a.negative_regression and index==0 else client.attach();scope['workers']=client.members;scope['enable']=client.enable();save()
+                scope['attach']=negative['attach'] if a.negative_regression and index==0 else client.attach();scope['workers']=client.members;scope['capabilities']=client.capabilities();scope['enable']=client.enable();save()
                 if batch:
                     from concurrent.futures import ThreadPoolExecutor
                     from threading import Barrier
@@ -164,13 +174,13 @@ def main():
                     for text,max_tokens in [('One standalone request should remain unmodified.',4),('This request exceeds the generation scope.',5)]:
                         timing=inference(text,max_tokens=max_tokens);status=client.status();assert len(status['requests'])==seen+1
                         scope['requests'].append(dict(result=status['requests'][-1],scenario='single' if max_tokens==4 else 'range_negative',expected_injection=False,**timing));seen+=1;save()
-                for n,text in ([] if batch else enumerate([long_prompt(t) for t in ['Rivers and cities.','Bicycles and gears.','Numbers and arithmetic.','Outside validated generation.']] if paged else ['Name a city with a river.','Explain how a bicycle moves.','What is seven plus six?','This request exceeds the validated generation budget.'])):
-                    timing=inference(text,image=1+n%2,max_tokens=5 if n==3 else 4)
+                for n,text in ([] if batch else enumerate([long_prompt(t) for t in ['Rivers and cities.','Bicycles and gears.','Numbers and arithmetic.','Outside validated generation.']] if paged else (['Name a city with a river.','Explain how a bicycle moves.','What is seven plus six?','This request exceeds the validated generation budget.']+(['Greedy sampling should not enter exponential noise.'] if a.external_sampling else [])))):
+                    timing=inference(text,image=1+n%2,max_tokens=5 if n==3 else 4,temperature=0.7 if a.external_sampling and n<4 else 0)
                     status=client.status();result=status['requests'][-1]
                     assert len(status['requests'])==n+1
                     for r in result['ranks']:
                         c=r['coverage']
-                        if n==3:assert r['status']=='NOT_INJECTED' and c['applied']==0 and r['reasons']
+                        if n>=3:assert r['status']=='NOT_INJECTED' and c['applied']==0 and r['reasons']
                         else:assert c['eligible']>0 and c['eligible']==c['applied']==c['consumed']==c['restored'] and c['failed']==0
                     scope['requests'].append(dict(result=result,**timing));save()
                 scope['disable']=client.disable();scope['detach']=client.detach()

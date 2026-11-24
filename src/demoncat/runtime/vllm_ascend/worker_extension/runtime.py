@@ -122,6 +122,8 @@ class WorkerFaultRuntime:
             if action == 'capabilities':
                 try:
                     providers = _provider_capabilities()
+                    from .external_provider import external_capabilities
+                    providers += external_capabilities(worker)
                     from .registry import worker_core_manifest
                     core_manifest = worker_core_manifest()
                     from .ordinary_admission import ordinary_route_report

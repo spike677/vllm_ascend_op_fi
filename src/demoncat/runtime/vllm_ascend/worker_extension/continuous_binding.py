@@ -77,7 +77,9 @@ def paged_site_type(partition):
 
 
 def install_continuous_binding(worker,*,mechanism,prompts,group_contract,arithmetic_device='input',reference_mode='immediate',native_library=None,paged_partition=None):
-    require(mechanism in SUPPORTED,'CONTINUOUS_ADAPTER_NOT_IMPLEMENTED')
+    from .external_provider import external_site
+    external=external_site(worker,mechanism,validate=True)
+    require(mechanism in SUPPORTED or external is not None,'CONTINUOUS_ADAPTER_NOT_IMPLEMENTED')
     require(arithmetic_device in ('input','cpu'),'CONTINUOUS_ARITHMETIC_UNREVIEWED')
     require(reference_mode=='immediate' or (reference_mode=='forward' and mechanism=='quant.batch_shared_scale'
         and arithmetic_device=='input'),'CONTINUOUS_REFERENCE_MODE_UNREVIEWED')
@@ -242,7 +244,15 @@ class ContinuousRequest:
     def install_site(self):
         """Shared source-bound sites; request selection belongs to the observer."""
         import torch
-        if self.binding.mechanism=='15.alias_detach':
+        if self.binding.mechanism.startswith('external.'):
+            from .external_provider import make_external_site
+            from fault_injection.engines.region_lease import RegionLeases
+            def complete(stream):
+                event=torch.npu.Event();event.record(stream);event.synchronize()
+            leases=RegionLeases(self.binding.group['owner'], self.binding.group['group_generation'],
+                stream=torch.npu.current_stream, complete=complete)
+            self.site=make_external_site(self.binding, fault=self.phase=='fault', region_leases=leases)
+        elif self.binding.mechanism=='15.alias_detach':
             from fault_injection.sites.alias15 import Alias15Site
             from fault_injection.engines.region_lease import RegionLeases
             def complete(stream):

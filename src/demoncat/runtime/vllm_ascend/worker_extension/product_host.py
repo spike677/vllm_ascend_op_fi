@@ -194,7 +194,10 @@ class ProductClient:
                 members_sha256=digest(self.members), mechanism=self.config.mechanism,
                 tp=len(self.members), injection_policy='ALL_RANK_EVERY_ELIGIBLE_CALL')
             self.bound = True  # retain cleanup responsibility even if one rank rejects attach
-            self._binding('attach', group_contract=contract, scope=dict(mode=policy.mode))
+            attached=self._binding('attach', group_contract=contract, scope=dict(mode=policy.mode))
+            if self.config.mechanism.startswith('external.'):
+                sources={r.get('external_source_sha256') for r in attached}
+                if len(sources)!=1 or None in sources:raise ValueError('EXTERNAL_RANK_SOURCE_IDENTITY_MISMATCH')
             for unused in range(6):
                 observations = self._canary()
                 from .batch_canary import stable
