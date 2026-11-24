@@ -30,6 +30,33 @@ class Visual(torch.nn.Module):
 
 
 class VisionTests(unittest.TestCase):
+    def test_functional_conv_wrapper_uses_actual_dispatch_not_class_name(self):
+        class WrappedConv(torch.nn.Module):
+            def __init__(self):
+                super().__init__();self.weight=torch.nn.Parameter(torch.ones(2,1,1,1,1,dtype=torch.bfloat16));self.bias=None
+            def forward(self,x):return torch.nn.functional.conv3d(x,self.weight)
+        model=torch.nn.Module();model.visual=Visual();model.visual.patch_embed.proj=WrappedConv()
+        leases=RegionLeases('owner',1,stream=lambda:0,complete=lambda s:None)
+        site=ExternalVisionGainSite(model,NS(input_batch=NS(req_ids=['r'])),fault=True,region_leases=leases)
+        site.install();out=model.visual(torch.ones(1,1,2,2,2,dtype=torch.bfloat16));site.finish_forward()
+        self.assertTrue(torch.all(out==1.75));self.assertEqual(site.events[0]['native_operator'],'aten::convolution')
+        self.assertTrue(site.events[0]['native_return_identity']);self.assertEqual(leases.count(),0);site.close()
+
+    def test_five_dimensional_weight_without_conv_is_not_sufficient(self):
+        class FakeConv(torch.nn.Module):
+            def __init__(self):
+                super().__init__();self.weight=torch.nn.Parameter(torch.ones(1,1,1,1,1,dtype=torch.bfloat16))
+            def forward(self,x):return x.clone()
+        model=torch.nn.Module();model.visual=Visual();model.visual.patch_embed.proj=FakeConv()
+        leases=RegionLeases('owner',1,stream=lambda:0,complete=lambda s:None)
+        site=ExternalVisionGainSite(model,NS(input_batch=NS(req_ids=['r'])),fault=True,region_leases=leases)
+        site.install()
+        try:
+            with self.assertRaisesRegex(RuntimeError,'EXTERNAL_ACTUAL_CONV_RETURN_UNPROVEN'):
+                model.visual(torch.ones(1,1,2,2,2,dtype=torch.bfloat16))
+            self.assertEqual(leases.count(),0);self.assertEqual(site.events,[])
+        finally:site.close()
+
     def test_actual_conv_output_consumer_and_readonly_weights(self):
         model=torch.nn.Module();model.visual=Visual()
         runner=NS(input_batch=NS(req_ids=['image-request']))

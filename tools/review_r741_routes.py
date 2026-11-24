@@ -36,6 +36,14 @@ def route_checks(data):
                          and proof.get('embedding_calls',0)>=1 and proof.get('readonly_inputs_weights_unchanged') is True,
                          'EXTERNAL_IMAGE_REAL_CONSUMER_OR_READONLY_UNPROVEN')
                     need(rank.get('restore_kind')=='LIVE_REGION_BYTES','EXTERNAL_IMAGE_BYTE_RESTORE_REQUIRED')
+                    producers=proof.get('native_producers',[])
+                    need(len(producers)==rank['coverage']['applied']>0 and all(
+                         p.get('native_operator') in ('aten::conv3d','aten::convolution')
+                         and p.get('native_return_identity') is True
+                         and p.get('request_ids')==[rank['request_id']]
+                         and len(p.get('input_shape') or [])==5
+                         and len(p.get('weight_shape') or [])==5 for p in producers),
+                         'EXTERNAL_ACTUAL_CONV_PRODUCER_UNPROVEN')
     if mechanism.startswith('external.'):
         need(len(set(data.get('image_pixel_sha256',[])))>=3,'EXTERNAL_CANARY_PLUS_TWO_IMAGES_REQUIRED')
     return dict(route=mechanism,additional_checks='PASSED',qualification_granted=False)

@@ -284,7 +284,9 @@ class ProductRequest(ContinuousRequest):
             if spec.stage=='vision':
                 report['external_provider'].update(stage='vision',encoder_calls=self.encoder_calls,
                     embedding_calls=self.embedding_calls,readonly_inputs_weights_unchanged=
-                    all(e.get('readonly_inputs_weights_unchanged') is True for e in events) if events else None)
+                    all(e.get('readonly_inputs_weights_unchanged') is True for e in events) if events else None,
+                    native_producers=[{k:e.get(k) for k in ('native_operator','native_return_identity',
+                        'input_shape','weight_shape','shape','request_ids')} for e in events])
         self.close()
         report['resources'] = dict(leases=0, hooks=0, inflight=0)
         return report
