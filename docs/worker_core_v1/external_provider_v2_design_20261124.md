@@ -1,6 +1,6 @@
-# 外部 provider v2：持久区域恢复设计（待批准，未实现）
+# 外部 provider v2：持久区域恢复设计（已批准开发）
 
-2026-11-24负责人决定：本稿仅设计，不新增v2实现、公开配置或准入。v1继续拒绝 EXTERNAL_V1_PERSISTENT_WEIGHT_OR_KV_RESTORE_UNPROVEN。
+2026-11-24最新负责人决定已批准开发，覆盖此前“只设计”。首批区域原语见external_persistent_regions.py，10项CPU用例通过；尚未接入实际模型、Ingress排空与组事务，未做A2示例验收。v1继续拒绝 EXTERNAL_V1_PERSISTENT_WEIGHT_OR_KV_RESTORE_UNPROVEN，不能用新原语绕过。
 复用现有Runtime、owner/generation、RegionLeases、request_plan、产品attach/enable/status/disable/detach及多rank控制；不另建状态机。
 本阶段产品收口为A3 Qwen3.8 TP2；以下A2试验是批准后计划，不代表已经验收。
 
@@ -83,4 +83,4 @@ A2/0.26/Qwen3.8 TP2：每机制同组Worker两个owner；先正常稳定基线�
 不自动重新加载全模型清除其他owner；这种全局恢复只能在全实例独占且部署授权下进行。
 风险是备份显存、全局排空时延、不可观测派生副本、page ABA及错误回滚；均通过拒绝门禁控制，不能靠延时sleep假设设备完成。
 
-负责人批准后再确定实现批次与恢复schema。**本稿无v2实现代码、无v2验收结果。**
+最新实施批次：r7.4新增v2；第一步复用RegionLeases实现持久对象/页面代际和恢复原语，第二步接入现有Runtime及可信宿主排空与全rank提交边界，第三步真实weight_scale与KV写入适配器A2 TP2两个owner。共享请求路径若必须修改，逐文件列出受影响复测项，不能宣称“仅新增”来免除复测。当前只有第一步CPU原语证据，**没有v2产品或NPU通过结论**。
