@@ -1,0 +1,122 @@
+{
+  "schema": "dcat.launch.capture.cpu-probe.v1",
+  "npu_calls": 0,
+  "abi": "FAKE_CPU_ONLY_NOT_CANN_ABI_ACCEPTANCE",
+  "source_sha256": "e4f70664ac860c1bc933f8cdce98ef332c47b44c4fb1638081822dc62795cc93",
+  "compiler": "g++ (GCC) 7.3.0",
+  "cases": [
+    {
+      "case": "full_9000",
+      "passed": true,
+      "census": {
+        "schema": "dcat.launch.capture.v2",
+        "pid": 3082551,
+        "config_valid": true,
+        "seen": 9000,
+        "unarmed": 0,
+        "unknown": 0,
+        "filtered": 0,
+        "selected": 9000,
+        "written": 9000,
+        "oversize": 0,
+        "capacity_drop": 0,
+        "open_error": 0,
+        "short_write": 0,
+        "close_error": 0,
+        "map_drop": 0,
+        "copy_error": 0,
+        "reserved_bytes": 792000,
+        "launch_error": 0
+      },
+      "complete": true,
+      "issues": []
+    },
+    {
+      "case": "capacity",
+      "passed": true,
+      "census": {
+        "schema": "dcat.launch.capture.v2",
+        "pid": 3082552,
+        "config_valid": true,
+        "seen": 9000,
+        "unarmed": 0,
+        "unknown": 0,
+        "filtered": 0,
+        "selected": 9000,
+        "written": 16,
+        "oversize": 0,
+        "capacity_drop": 8984,
+        "open_error": 0,
+        "short_write": 0,
+        "close_error": 0,
+        "map_drop": 0,
+        "copy_error": 0,
+        "reserved_bytes": 1408,
+        "launch_error": 0
+      },
+      "complete": false,
+      "issues": [
+        "CAPACITY_DROP",
+        "SELECTED_SERIALS_NOT_COMPLETE"
+      ]
+    },
+    {
+      "case": "oversize",
+      "passed": true,
+      "census": {
+        "schema": "dcat.launch.capture.v2",
+        "pid": 3082553,
+        "config_valid": true,
+        "seen": 9000,
+        "unarmed": 0,
+        "unknown": 0,
+        "filtered": 0,
+        "selected": 9000,
+        "written": 0,
+        "oversize": 9000,
+        "capacity_drop": 0,
+        "open_error": 0,
+        "short_write": 0,
+        "close_error": 0,
+        "map_drop": 0,
+        "copy_error": 0,
+        "reserved_bytes": 0,
+        "launch_error": 0
+      },
+      "complete": false,
+      "issues": [
+        "OVERSIZE",
+        "SELECTED_SERIALS_NOT_COMPLETE"
+      ]
+    },
+    {
+      "case": "unarmed",
+      "passed": true,
+      "census": {
+        "schema": "dcat.launch.capture.v2",
+        "pid": 3082554,
+        "config_valid": true,
+        "seen": 0,
+        "unarmed": 9000,
+        "unknown": 0,
+        "filtered": 0,
+        "selected": 0,
+        "written": 0,
+        "oversize": 0,
+        "capacity_drop": 0,
+        "open_error": 0,
+        "short_write": 0,
+        "close_error": 0,
+        "map_drop": 0,
+        "copy_error": 0,
+        "reserved_bytes": 0,
+        "launch_error": 0
+      },
+      "complete": false,
+      "issues": [
+        "NO_SELECTED_LAUNCHES"
+      ]
+    }
+  ],
+  "passed": true
+}

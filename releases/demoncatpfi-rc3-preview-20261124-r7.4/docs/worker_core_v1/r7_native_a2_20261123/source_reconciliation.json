@@ -1,0 +1,386 @@
+{
+  "commit": "d21ff7a2babca50eb4b64de00476886c9bb0b4ff",
+  "scope": "Tracked Python/JSON runtime and both HTTP probe files; Native C++ reviewed separately",
+  "runs": [
+    {
+      "attempt": "r7-native-all-a2",
+      "source_manifest_sha256": "18bc353c403d3d8b2db152f19c618d84e1f46b5bdd46825a26b7fff0de89d500",
+      "byte_identical": 323,
+      "reviewed_differences": [
+        {
+          "path": "fault_injection/product_contract.py",
+          "tested_sha256": "1c24459a731aaef5781236840c98c5c7dfe9599b8cbd1e31ab77ac4991016134",
+          "committed_sha256": "4a065a366be4d16f5157864dd069ffa822da63da3e27fe38eb875bdc484d8205",
+          "difference": "NATIVE_CANDIDATE_PROMOTION_AFTER_PASSED_TEST",
+          "review": "Only added three names to candidate tuple. Tested product_config/product_binding already allowed these through the BLUE Native union and identical A2/library guards. Eight-candidate regressions use the promoted tuple."
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/attention28_typed_plan.py",
+          "tested_sha256": "e298d83c01d5a3c6b610286fdd5adde1cb4951fa353bf07eced82dcad3e8285e",
+          "committed_sha256": "c53aa3e1e58b6c13b5bbf691a27f03151de8a0da121c40928ca123b2d3adb7c0",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/deployment_authorization.py",
+          "tested_sha256": "5af09f9016d42710f96ee74c35509ce849a45a2ff24e2a54ec53ec41a17a4770",
+          "committed_sha256": "4ae2600cb3a4d5aaed355dd51143b0eb746487ff78eb492ee9da489ceade5e8e",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/kv41_tp2.py",
+          "tested_sha256": "fd43a9766cd958900811f4e16d5d883c14db7be20a9e55b362b704e57678152f",
+          "committed_sha256": "ac70128ddcae593da4f1eb8dcebe88baab276fd77ef108d57b896ea902a7118d",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_binding.py",
+          "tested_sha256": "0fe29478b07070354e5cce76c3c9458e812add4408a87ba84e96b185b74c4279",
+          "committed_sha256": "b7d89398b2153ee066c3218e0d07e1b872152cbff3002dddb78de8feabf22ecd",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_config.py",
+          "tested_sha256": "6da65c2c696c4ef52a6cd52d98fb49336d5f471eb4a45643f2fda328e2072e16",
+          "committed_sha256": "32c68581dc2a410df01e323379a20cc4aa54fd8aa0b7fa4fbe72e9c24782093a",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_native.py",
+          "tested_sha256": "945ddf965b8936089eb5390f7120bab22ecbbe9a8464e70409a28401d70f6a00",
+          "committed_sha256": "fe10dd98a8e3e08e1978bda73bea19aaabc2e500245fc63bed6cf1fbd442d398",
+          "difference": "COMMENTS_ONLY_AST_IDENTICAL"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/serving_quant_projection.py",
+          "tested_sha256": "14ca7a0f6a318d827e1bbd0b404634de0a328d05b4dcb3ad0bbea426c6f7cd47",
+          "committed_sha256": "e2ca1b369b6a84b941bba3727f2a1b2e9a926e9ced24d9aceab1290a7d23b834",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "experiments/worker_core_v11_20261118/product_http_probe.py",
+          "tested_sha256": "e87e6e8d2eb553e75ef772cacd17ba211cc74c42679e17272f1fc514df7072f1",
+          "committed_sha256": "3589ebf558753244958a26ca22332878aac1a510a1f09f96a27c0ce4d4e32aaf",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "experiments/worker_core_v11_20261118/product_mode_probe.py",
+          "tested_sha256": "d4b98efbaf0c80e269c9784663b3bf2d3909457f68622ee4d6e9dbd5d77a1ee8",
+          "committed_sha256": "ecfba3fac06055d281c14b535ce2bdb726cb8922d9efec0d4227eecfcb8ac740",
+          "difference": "LINE_ENDINGS_ONLY"
+        }
+      ]
+    },
+    {
+      "attempt": "r7-regression-text-a1",
+      "source_manifest_sha256": "d243a8b9a1a5941f87b2302e8a942c2cd580a6a6a7d2882bb252799d56577e50",
+      "byte_identical": 323,
+      "reviewed_differences": [
+        {
+          "path": "fault_injection/product_contract.py",
+          "tested_sha256": "3fbf8235bd522bc5c2b18c8e6ecf545088dc35a9a8d59b6390fbdd1c50b3587a",
+          "committed_sha256": "4a065a366be4d16f5157864dd069ffa822da63da3e27fe38eb875bdc484d8205",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/attention28_typed_plan.py",
+          "tested_sha256": "e298d83c01d5a3c6b610286fdd5adde1cb4951fa353bf07eced82dcad3e8285e",
+          "committed_sha256": "c53aa3e1e58b6c13b5bbf691a27f03151de8a0da121c40928ca123b2d3adb7c0",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/deployment_authorization.py",
+          "tested_sha256": "5af09f9016d42710f96ee74c35509ce849a45a2ff24e2a54ec53ec41a17a4770",
+          "committed_sha256": "4ae2600cb3a4d5aaed355dd51143b0eb746487ff78eb492ee9da489ceade5e8e",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/kv41_tp2.py",
+          "tested_sha256": "fd43a9766cd958900811f4e16d5d883c14db7be20a9e55b362b704e57678152f",
+          "committed_sha256": "ac70128ddcae593da4f1eb8dcebe88baab276fd77ef108d57b896ea902a7118d",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_binding.py",
+          "tested_sha256": "0fe29478b07070354e5cce76c3c9458e812add4408a87ba84e96b185b74c4279",
+          "committed_sha256": "b7d89398b2153ee066c3218e0d07e1b872152cbff3002dddb78de8feabf22ecd",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_config.py",
+          "tested_sha256": "6da65c2c696c4ef52a6cd52d98fb49336d5f471eb4a45643f2fda328e2072e16",
+          "committed_sha256": "32c68581dc2a410df01e323379a20cc4aa54fd8aa0b7fa4fbe72e9c24782093a",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_native.py",
+          "tested_sha256": "dcd637996ea5ce41029c69f50c80994845ef79138a989e69e3729d237a6a2daf",
+          "committed_sha256": "fe10dd98a8e3e08e1978bda73bea19aaabc2e500245fc63bed6cf1fbd442d398",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/serving_quant_projection.py",
+          "tested_sha256": "14ca7a0f6a318d827e1bbd0b404634de0a328d05b4dcb3ad0bbea426c6f7cd47",
+          "committed_sha256": "e2ca1b369b6a84b941bba3727f2a1b2e9a926e9ced24d9aceab1290a7d23b834",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "experiments/worker_core_v11_20261118/product_http_probe.py",
+          "tested_sha256": "e87e6e8d2eb553e75ef772cacd17ba211cc74c42679e17272f1fc514df7072f1",
+          "committed_sha256": "3589ebf558753244958a26ca22332878aac1a510a1f09f96a27c0ce4d4e32aaf",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "experiments/worker_core_v11_20261118/product_mode_probe.py",
+          "tested_sha256": "d4b98efbaf0c80e269c9784663b3bf2d3909457f68622ee4d6e9dbd5d77a1ee8",
+          "committed_sha256": "ecfba3fac06055d281c14b535ce2bdb726cb8922d9efec0d4227eecfcb8ac740",
+          "difference": "LINE_ENDINGS_ONLY"
+        }
+      ]
+    },
+    {
+      "attempt": "r7-regression-17-a1",
+      "source_manifest_sha256": "99fed9b1dd7be214e602377af01fdbf9d6141ffdabbd5471f0b37b452c4a0b8b",
+      "byte_identical": 324,
+      "reviewed_differences": [
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/attention28_typed_plan.py",
+          "tested_sha256": "e298d83c01d5a3c6b610286fdd5adde1cb4951fa353bf07eced82dcad3e8285e",
+          "committed_sha256": "c53aa3e1e58b6c13b5bbf691a27f03151de8a0da121c40928ca123b2d3adb7c0",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/deployment_authorization.py",
+          "tested_sha256": "5af09f9016d42710f96ee74c35509ce849a45a2ff24e2a54ec53ec41a17a4770",
+          "committed_sha256": "4ae2600cb3a4d5aaed355dd51143b0eb746487ff78eb492ee9da489ceade5e8e",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/kv41_tp2.py",
+          "tested_sha256": "fd43a9766cd958900811f4e16d5d883c14db7be20a9e55b362b704e57678152f",
+          "committed_sha256": "ac70128ddcae593da4f1eb8dcebe88baab276fd77ef108d57b896ea902a7118d",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_binding.py",
+          "tested_sha256": "0fe29478b07070354e5cce76c3c9458e812add4408a87ba84e96b185b74c4279",
+          "committed_sha256": "b7d89398b2153ee066c3218e0d07e1b872152cbff3002dddb78de8feabf22ecd",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_config.py",
+          "tested_sha256": "6da65c2c696c4ef52a6cd52d98fb49336d5f471eb4a45643f2fda328e2072e16",
+          "committed_sha256": "32c68581dc2a410df01e323379a20cc4aa54fd8aa0b7fa4fbe72e9c24782093a",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_native.py",
+          "tested_sha256": "dcd637996ea5ce41029c69f50c80994845ef79138a989e69e3729d237a6a2daf",
+          "committed_sha256": "fe10dd98a8e3e08e1978bda73bea19aaabc2e500245fc63bed6cf1fbd442d398",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/serving_quant_projection.py",
+          "tested_sha256": "14ca7a0f6a318d827e1bbd0b404634de0a328d05b4dcb3ad0bbea426c6f7cd47",
+          "committed_sha256": "e2ca1b369b6a84b941bba3727f2a1b2e9a926e9ced24d9aceab1290a7d23b834",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "experiments/worker_core_v11_20261118/product_http_probe.py",
+          "tested_sha256": "e87e6e8d2eb553e75ef772cacd17ba211cc74c42679e17272f1fc514df7072f1",
+          "committed_sha256": "3589ebf558753244958a26ca22332878aac1a510a1f09f96a27c0ce4d4e32aaf",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "experiments/worker_core_v11_20261118/product_mode_probe.py",
+          "tested_sha256": "d4b98efbaf0c80e269c9784663b3bf2d3909457f68622ee4d6e9dbd5d77a1ee8",
+          "committed_sha256": "ecfba3fac06055d281c14b535ce2bdb726cb8922d9efec0d4227eecfcb8ac740",
+          "difference": "LINE_ENDINGS_ONLY"
+        }
+      ]
+    },
+    {
+      "attempt": "r7-regression-batch-a1",
+      "source_manifest_sha256": "99fed9b1dd7be214e602377af01fdbf9d6141ffdabbd5471f0b37b452c4a0b8b",
+      "byte_identical": 324,
+      "reviewed_differences": [
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/attention28_typed_plan.py",
+          "tested_sha256": "e298d83c01d5a3c6b610286fdd5adde1cb4951fa353bf07eced82dcad3e8285e",
+          "committed_sha256": "c53aa3e1e58b6c13b5bbf691a27f03151de8a0da121c40928ca123b2d3adb7c0",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/deployment_authorization.py",
+          "tested_sha256": "5af09f9016d42710f96ee74c35509ce849a45a2ff24e2a54ec53ec41a17a4770",
+          "committed_sha256": "4ae2600cb3a4d5aaed355dd51143b0eb746487ff78eb492ee9da489ceade5e8e",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/kv41_tp2.py",
+          "tested_sha256": "fd43a9766cd958900811f4e16d5d883c14db7be20a9e55b362b704e57678152f",
+          "committed_sha256": "ac70128ddcae593da4f1eb8dcebe88baab276fd77ef108d57b896ea902a7118d",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_binding.py",
+          "tested_sha256": "0fe29478b07070354e5cce76c3c9458e812add4408a87ba84e96b185b74c4279",
+          "committed_sha256": "b7d89398b2153ee066c3218e0d07e1b872152cbff3002dddb78de8feabf22ecd",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_config.py",
+          "tested_sha256": "6da65c2c696c4ef52a6cd52d98fb49336d5f471eb4a45643f2fda328e2072e16",
+          "committed_sha256": "32c68581dc2a410df01e323379a20cc4aa54fd8aa0b7fa4fbe72e9c24782093a",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_native.py",
+          "tested_sha256": "dcd637996ea5ce41029c69f50c80994845ef79138a989e69e3729d237a6a2daf",
+          "committed_sha256": "fe10dd98a8e3e08e1978bda73bea19aaabc2e500245fc63bed6cf1fbd442d398",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/serving_quant_projection.py",
+          "tested_sha256": "14ca7a0f6a318d827e1bbd0b404634de0a328d05b4dcb3ad0bbea426c6f7cd47",
+          "committed_sha256": "e2ca1b369b6a84b941bba3727f2a1b2e9a926e9ced24d9aceab1290a7d23b834",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "experiments/worker_core_v11_20261118/product_http_probe.py",
+          "tested_sha256": "e87e6e8d2eb553e75ef772cacd17ba211cc74c42679e17272f1fc514df7072f1",
+          "committed_sha256": "3589ebf558753244958a26ca22332878aac1a510a1f09f96a27c0ce4d4e32aaf",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "experiments/worker_core_v11_20261118/product_mode_probe.py",
+          "tested_sha256": "d4b98efbaf0c80e269c9784663b3bf2d3909457f68622ee4d6e9dbd5d77a1ee8",
+          "committed_sha256": "ecfba3fac06055d281c14b535ce2bdb726cb8922d9efec0d4227eecfcb8ac740",
+          "difference": "LINE_ENDINGS_ONLY"
+        }
+      ]
+    },
+    {
+      "attempt": "r7-regression-39mr-a1",
+      "source_manifest_sha256": "99fed9b1dd7be214e602377af01fdbf9d6141ffdabbd5471f0b37b452c4a0b8b",
+      "byte_identical": 324,
+      "reviewed_differences": [
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/attention28_typed_plan.py",
+          "tested_sha256": "e298d83c01d5a3c6b610286fdd5adde1cb4951fa353bf07eced82dcad3e8285e",
+          "committed_sha256": "c53aa3e1e58b6c13b5bbf691a27f03151de8a0da121c40928ca123b2d3adb7c0",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/deployment_authorization.py",
+          "tested_sha256": "5af09f9016d42710f96ee74c35509ce849a45a2ff24e2a54ec53ec41a17a4770",
+          "committed_sha256": "4ae2600cb3a4d5aaed355dd51143b0eb746487ff78eb492ee9da489ceade5e8e",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/kv41_tp2.py",
+          "tested_sha256": "fd43a9766cd958900811f4e16d5d883c14db7be20a9e55b362b704e57678152f",
+          "committed_sha256": "ac70128ddcae593da4f1eb8dcebe88baab276fd77ef108d57b896ea902a7118d",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_binding.py",
+          "tested_sha256": "0fe29478b07070354e5cce76c3c9458e812add4408a87ba84e96b185b74c4279",
+          "committed_sha256": "b7d89398b2153ee066c3218e0d07e1b872152cbff3002dddb78de8feabf22ecd",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_config.py",
+          "tested_sha256": "6da65c2c696c4ef52a6cd52d98fb49336d5f471eb4a45643f2fda328e2072e16",
+          "committed_sha256": "32c68581dc2a410df01e323379a20cc4aa54fd8aa0b7fa4fbe72e9c24782093a",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_native.py",
+          "tested_sha256": "dcd637996ea5ce41029c69f50c80994845ef79138a989e69e3729d237a6a2daf",
+          "committed_sha256": "fe10dd98a8e3e08e1978bda73bea19aaabc2e500245fc63bed6cf1fbd442d398",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/serving_quant_projection.py",
+          "tested_sha256": "14ca7a0f6a318d827e1bbd0b404634de0a328d05b4dcb3ad0bbea426c6f7cd47",
+          "committed_sha256": "e2ca1b369b6a84b941bba3727f2a1b2e9a926e9ced24d9aceab1290a7d23b834",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "experiments/worker_core_v11_20261118/product_http_probe.py",
+          "tested_sha256": "e87e6e8d2eb553e75ef772cacd17ba211cc74c42679e17272f1fc514df7072f1",
+          "committed_sha256": "3589ebf558753244958a26ca22332878aac1a510a1f09f96a27c0ce4d4e32aaf",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "experiments/worker_core_v11_20261118/product_mode_probe.py",
+          "tested_sha256": "d4b98efbaf0c80e269c9784663b3bf2d3909457f68622ee4d6e9dbd5d77a1ee8",
+          "committed_sha256": "ecfba3fac06055d281c14b535ce2bdb726cb8922d9efec0d4227eecfcb8ac740",
+          "difference": "LINE_ENDINGS_ONLY"
+        }
+      ]
+    },
+    {
+      "attempt": "r7-regression-33-a2",
+      "source_manifest_sha256": "99fed9b1dd7be214e602377af01fdbf9d6141ffdabbd5471f0b37b452c4a0b8b",
+      "byte_identical": 324,
+      "reviewed_differences": [
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/attention28_typed_plan.py",
+          "tested_sha256": "e298d83c01d5a3c6b610286fdd5adde1cb4951fa353bf07eced82dcad3e8285e",
+          "committed_sha256": "c53aa3e1e58b6c13b5bbf691a27f03151de8a0da121c40928ca123b2d3adb7c0",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/deployment_authorization.py",
+          "tested_sha256": "5af09f9016d42710f96ee74c35509ce849a45a2ff24e2a54ec53ec41a17a4770",
+          "committed_sha256": "4ae2600cb3a4d5aaed355dd51143b0eb746487ff78eb492ee9da489ceade5e8e",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/kv41_tp2.py",
+          "tested_sha256": "fd43a9766cd958900811f4e16d5d883c14db7be20a9e55b362b704e57678152f",
+          "committed_sha256": "ac70128ddcae593da4f1eb8dcebe88baab276fd77ef108d57b896ea902a7118d",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_binding.py",
+          "tested_sha256": "0fe29478b07070354e5cce76c3c9458e812add4408a87ba84e96b185b74c4279",
+          "committed_sha256": "b7d89398b2153ee066c3218e0d07e1b872152cbff3002dddb78de8feabf22ecd",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_config.py",
+          "tested_sha256": "6da65c2c696c4ef52a6cd52d98fb49336d5f471eb4a45643f2fda328e2072e16",
+          "committed_sha256": "32c68581dc2a410df01e323379a20cc4aa54fd8aa0b7fa4fbe72e9c24782093a",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_native.py",
+          "tested_sha256": "dcd637996ea5ce41029c69f50c80994845ef79138a989e69e3729d237a6a2daf",
+          "committed_sha256": "fe10dd98a8e3e08e1978bda73bea19aaabc2e500245fc63bed6cf1fbd442d398",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "src/demoncat/runtime/vllm_ascend/worker_extension/serving_quant_projection.py",
+          "tested_sha256": "14ca7a0f6a318d827e1bbd0b404634de0a328d05b4dcb3ad0bbea426c6f7cd47",
+          "committed_sha256": "e2ca1b369b6a84b941bba3727f2a1b2e9a926e9ced24d9aceab1290a7d23b834",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "experiments/worker_core_v11_20261118/product_http_probe.py",
+          "tested_sha256": "e87e6e8d2eb553e75ef772cacd17ba211cc74c42679e17272f1fc514df7072f1",
+          "committed_sha256": "3589ebf558753244958a26ca22332878aac1a510a1f09f96a27c0ce4d4e32aaf",
+          "difference": "LINE_ENDINGS_ONLY"
+        },
+        {
+          "path": "experiments/worker_core_v11_20261118/product_mode_probe.py",
+          "tested_sha256": "d4b98efbaf0c80e269c9784663b3bf2d3909457f68622ee4d6e9dbd5d77a1ee8",
+          "committed_sha256": "ecfba3fac06055d281c14b535ce2bdb726cb8922d9efec0d4227eecfcb8ac740",
+          "difference": "LINE_ENDINGS_ONLY"
+        }
+      ]
+    }
+  ],
+  "qualification_granted": false
+}

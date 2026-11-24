@@ -1,0 +1,7 @@
+# Native研究测试欠账复核
+
+原计划112次失败记录，对应86个不同测试名。本轮运行原七模块全部94个测试，0失败、0错误、0跳过，用时490.516秒；逐项映射见同名JSON。此前失败原因是研究fixture通过已关闭的公共准入选择旧Native provider。
+
+仅在tests/worker_extension/research_native_fixture.py为CPU测试显式选择现有研究provider，白名单41.tail_column/26.residual_stomp/26.fia_destination，并要求test_模块的Worker和CPU参数。原有租约、真实consumer模拟、typed协议、精确恢复、失败保留owner及资源清零断言均保留。没有修改生产准入，没有新增NPU资格，也没有重新纳入residual_stomp交付。
+
+同一运行会包含测试类继承的多个方法，历史失败occurrence不当作新的独立测试数量。另有两个已退休的公共研究选择测试仍按原政策skip，属于r6扩展回归的1096项记录；不是本次112条欠账中的跳过。

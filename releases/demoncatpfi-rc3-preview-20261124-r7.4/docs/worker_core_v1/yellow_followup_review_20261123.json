@@ -1,0 +1,49 @@
+{
+  "schema": "demoncat.yellow_followup_review.v1",
+  "sources": [
+    {
+      "label": "11-23 B/Native followup",
+      "bytes": 8347,
+      "sha256": "e1dfa20731cece037cc332e1e52194f1b1e25e6fb3f952b5edce393a3f69b9e7"
+    },
+    {
+      "label": "11-22 B historical measurements",
+      "bytes": 6395,
+      "sha256": "5d41445aa6106396ce6bec9baaa2aa7448db6bc38dfffd91511166d56b0b718c"
+    }
+  ],
+  "evidence_level": "YELLOW_TEXT_ATTESTED",
+  "blue_npu_run": false,
+  "native_full_extract_received": false,
+  "native_build_approved": false,
+  "reported_decode_counts": {
+    "max_tokens1": 39992,
+    "max_tokens2": 40081,
+    "difference": 89,
+    "operator_kinds": 28,
+    "count_sum": 89,
+    "arithmetic_valid": true,
+    "rank_scope": null,
+    "graph_mode": null,
+    "complete_decode_coverage_proven": false
+  },
+  "logprob_comparison": {
+    "old_p2500_selected_span": 1e-06,
+    "old_p2500_candidate_report_span": 0.999999,
+    "old_p3500_selected_span": 2e-06,
+    "new_aggregate_reported_order": "1e-5",
+    "same_input_identity_proven": false,
+    "same_metric_proven": false,
+    "determinism_change_proven": false,
+    "noise_safety_factor": 1.5
+  },
+  "w4a8_diagnosis": {
+    "tp8_k": 288,
+    "k_mod64": 32,
+    "tp4": "OOM",
+    "inference_completed": false,
+    "new_nan_conclusion": null,
+    "scope": "Reported eight-card deployment only",
+    "status": "DIAGNOSIS_CLOSED"
+  }
+}

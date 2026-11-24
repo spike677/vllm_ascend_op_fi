@@ -1,0 +1,223 @@
+{
+  "attempt": "r731final1124a1",
+  "combination": "A2/Ascend910B4/vLLM0.26/vllm-ascend0.26.0rc1/CANN9.1/Qwen3.8-community-W8A8/TP2",
+  "status": "PRODUCT_BLUE_REVIEW_PASSED",
+  "source_manifest_sha256": "2c43b02f0c66f84a199a67f7438bcd4b28b77422c072e6210fdd63154fe31220",
+  "negative_cases": {
+    "cli_99": {
+      "status": "PRODUCT_CONTRACT_REFUSED",
+      "exit_code": 4,
+      "code": "EXPLICIT_MECHANISM_VARIANT_REQUIRED",
+      "reason": "Choose an explicit mechanism variant: 8.restore_offset, 15.alias_detach, 17.spatial_padding, 18.api_half, 20.buffer_substitute, 22.wrong_row, 25.reduce_scatter, 26.residual_stomp, 26.fia_destination, quant.batch_shared_scale, 28.fa.legal_tiling, 28.fia.legal_tiling, 28.fia.denominator_replay, 33.paged_decode, 39.matmul_range, 39.output_proxy, 41.tail_column",
+      "error_type": "ValueError"
+    },
+    "unknown_profile_cli": {
+      "status": "PRODUCT_CONTRACT_REFUSED",
+      "exit_code": 4,
+      "code": "PRODUCT_BINDING_CAPABILITIES_FAILED",
+      "refusal_codes": [
+        "PRODUCT_PROFILE_UNKNOWN"
+      ],
+      "refusals": [
+        {
+          "rank": 0,
+          "code": "PRODUCT_PROFILE_UNKNOWN",
+          "status": "PRODUCT_BINDING_REFUSED"
+        },
+        {
+          "rank": 1,
+          "code": "PRODUCT_PROFILE_UNKNOWN",
+          "status": "PRODUCT_BINDING_REFUSED"
+        }
+      ],
+      "error_type": "ProductContractRefused",
+      "reason": "PRODUCT_BINDING_CAPABILITIES_FAILED:[{'rank': 0, 'code': 'PRODUCT_PROFILE_UNKNOWN', 'status': 'PRODUCT_BINDING_REFUSED'}, {'rank': 1, 'code': 'PRODUCT_PROFILE_UNKNOWN', 'status': 'PRODUCT_BINDING_REFUSED'}]"
+    },
+    "missing_permit_cli": {
+      "status": "PRODUCT_CONTRACT_REFUSED",
+      "exit_code": 4,
+      "code": "PRODUCT_ALL_RANK_PREPARE_FAILED",
+      "refusal_codes": [
+        "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      ],
+      "refusals": [
+        {
+          "rank": 0,
+          "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+          "status": "PROVIDER_UNAVAILABLE"
+        },
+        {
+          "rank": 1,
+          "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+          "status": "PROVIDER_UNAVAILABLE"
+        }
+      ],
+      "error_type": "ProductContractRefused",
+      "reason": "PRODUCT_ALL_RANK_PREPARE_FAILED:[{'rank': 0, 'code': 'ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT', 'status': 'PROVIDER_UNAVAILABLE'}, {'rank': 1, 'code': 'ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT', 'status': 'PROVIDER_UNAVAILABLE'}]"
+    },
+    "duplicate_enable": {
+      "status": "PRODUCT_CONTRACT_REFUSED",
+      "exit_code": 4,
+      "code": "PRODUCT_NEW_ATTACHMENT_REQUIRED",
+      "reason": "PRODUCT_NEW_ATTACHMENT_REQUIRED",
+      "error_type": "ValueError"
+    },
+    "repeat_disable": {
+      "status": "PRODUCT_CONTRACT_REFUSED",
+      "exit_code": 4,
+      "code": "PRODUCT_ALL_RANK_DISABLE_FAILED",
+      "refusal_codes": [
+        "LEASE_TICKET_REQUIRED_USE_DETACH_FOR_UNCERTAIN_PREPARE"
+      ],
+      "refusals": [
+        {
+          "rank": 0,
+          "code": "LEASE_TICKET_REQUIRED_USE_DETACH_FOR_UNCERTAIN_PREPARE",
+          "status": "HOST_REJECTED"
+        },
+        {
+          "rank": 1,
+          "code": "LEASE_TICKET_REQUIRED_USE_DETACH_FOR_UNCERTAIN_PREPARE",
+          "status": "HOST_REJECTED"
+        }
+      ],
+      "error_type": "ProductContractRefused",
+      "reason": "PRODUCT_ALL_RANK_DISABLE_FAILED:[{'rank': 0, 'code': 'LEASE_TICKET_REQUIRED_USE_DETACH_FOR_UNCERTAIN_PREPARE', 'status': 'HOST_REJECTED'}, {'rank': 1, 'code': 'LEASE_TICKET_REQUIRED_USE_DETACH_FOR_UNCERTAIN_PREPARE', 'status': 'HOST_REJECTED'}]"
+    }
+  },
+  "resources": [
+    {
+      "rank": 0,
+      "leases": 0,
+      "owners": 0,
+      "bindings": 0,
+      "wrappers": 0
+    },
+    {
+      "rank": 1,
+      "leases": 0,
+      "owners": 0,
+      "bindings": 0,
+      "wrappers": 0
+    }
+  ],
+  "scopes": [
+    {
+      "scope": 0,
+      "counts": {
+        "0": {
+          "observed": 1932,
+          "eligible": 1932,
+          "attempted": 1932,
+          "applied": 1932,
+          "changed": 1931,
+          "consumed": 1932,
+          "restored": 1932,
+          "failed": 0
+        },
+        "1": {
+          "observed": 1932,
+          "eligible": 1932,
+          "attempted": 1932,
+          "applied": 1932,
+          "changed": 1931,
+          "consumed": 1932,
+          "restored": 1932,
+          "failed": 0
+        }
+      },
+      "canary_exact": true,
+      "resources_zero": true,
+      "provider_owners": [
+        "3cdf5b35805f7bcc2a9fa4892fd914c6",
+        "8e7df422dad1c77126855f4f4d28feac"
+      ]
+    },
+    {
+      "scope": 1,
+      "counts": {
+        "0": {
+          "observed": 1932,
+          "eligible": 1932,
+          "attempted": 1932,
+          "applied": 1932,
+          "changed": 1931,
+          "consumed": 1932,
+          "restored": 1932,
+          "failed": 0
+        },
+        "1": {
+          "observed": 1932,
+          "eligible": 1932,
+          "attempted": 1932,
+          "applied": 1932,
+          "changed": 1931,
+          "consumed": 1932,
+          "restored": 1932,
+          "failed": 0
+        }
+      },
+      "canary_exact": true,
+      "resources_zero": true,
+      "provider_owners": [
+        "cc42cf12dfab3afc5d7af0797f2a47ef",
+        "18fb2d8f4126d763b623260a583d210b"
+      ]
+    }
+  ],
+  "window": {
+    "start": "2026-11-24T07:05:30.467039+00:00",
+    "ended": "2026-11-24T07:10:11.774351+00:00",
+    "elapsed_seconds": 281.3073381660506,
+    "cards": [
+      2,
+      5
+    ],
+    "isolation": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+    "isolation_removed": true
+  },
+  "isolation_log": [
+    {
+      "time": "2026-11-24T07:05:30.467315+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "maximum_seconds": 2100,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-24T07:10:11.774442+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ],
+  "originals": {
+    "product_http_18.json": {
+      "bytes": 12579473,
+      "sha256": "4bbbb148abd35405dde2b6d48a81506f59f7e93f34d3f63293c7d62c338b78b4"
+    },
+    "product_control_negative.json": {
+      "bytes": 2184777,
+      "sha256": "90909522fe3e7c542b86a7343b3dd26ccda1bf556f8989e5370c6626ed508efd"
+    },
+    "controller.json": {
+      "bytes": 63687,
+      "sha256": "eb5cbf6d370c094f81d3ddeda183d59373b112edab5ab6a20c5c37d2508f15db"
+    },
+    "isolation.jsonl": {
+      "bytes": 490,
+      "sha256": "de9e67fcf20b5ade85745803cd72f9e924b6d575a6469e958a15214e3838d223"
+    }
+  },
+  "limitations": [
+    "Host CLI adapter tested; yellow CLI binary unavailable",
+    "A2 result does not qualify A3",
+    "vLLM process shutdown emitted semaphore/shared_memory resource_tracker warnings; fault leases verified separately"
+  ],
+  "qualification_granted": false
+}

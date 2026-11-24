@@ -1,0 +1,164 @@
+{
+  "attempt": "alias15-readonly-a1",
+  "status": "READONLY_CENSUS_COMPLETED",
+  "start": "2026-11-23T10:18:14.857578+00:00",
+  "elapsed_seconds": 255.36461607692763,
+  "isolation_removed": true,
+  "isolation": [
+    {
+      "time": "2026-11-23T10:18:14.857707+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "maximum_seconds": 2100,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-23T10:22:30.222263+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ],
+  "source_manifest_sha256": "b14d2724ef4b24d09fa2a7bdec3ce23aa86c056ec178073f3ca7a99c0b04c1c7",
+  "receipt_sha256": "86eef32a9dd68e3918a7212ca37079dc1445b705ea6f1f7e3d7d61f90e939c9e",
+  "receipt_bytes": 75316,
+  "token_text_equal": true,
+  "full_hidden_logits_equality_proven": false,
+  "injection_enabled": false,
+  "qualification_granted": false,
+  "ranks": [
+    {
+      "rank": 0,
+      "forwards": 10,
+      "scheduled": [
+        [
+          10
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [],
+        [
+          10
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        []
+      ],
+      "counts": {
+        "dispatch_calls": 19428,
+        "shared_storage_views": 6284,
+        "view_writes": 558,
+        "base_read_after_view_write": 16
+      },
+      "formats": {
+        "ND": 5822,
+        "None": 462
+      },
+      "sample_groups": [
+        {
+          "dtype": "torch.bool",
+          "device": "cpu",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.fill_.Tensor",
+          "consumer": "aten.__and__.Tensor",
+          "count": 8
+        },
+        {
+          "dtype": "torch.int32",
+          "device": "npu:0",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.copy_.default",
+          "consumer": "aten.index.Tensor",
+          "count": 8
+        }
+      ],
+      "hooks_remaining": 0,
+      "execute_wrapper_removed": true
+    },
+    {
+      "rank": 1,
+      "forwards": 10,
+      "scheduled": [
+        [
+          10
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [],
+        [
+          10
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        []
+      ],
+      "counts": {
+        "dispatch_calls": 19428,
+        "shared_storage_views": 6284,
+        "view_writes": 558,
+        "base_read_after_view_write": 16
+      },
+      "formats": {
+        "ND": 5822,
+        "None": 462
+      },
+      "sample_groups": [
+        {
+          "dtype": "torch.bool",
+          "device": "cpu",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.fill_.Tensor",
+          "consumer": "aten.__and__.Tensor",
+          "count": 8
+        },
+        {
+          "dtype": "torch.int32",
+          "device": "npu:1",
+          "writer_module": "",
+          "consumer_module": "",
+          "writer": "aten.copy_.default",
+          "consumer": "aten.index.Tensor",
+          "count": 8
+        }
+      ],
+      "hooks_remaining": 0,
+      "execute_wrapper_removed": true
+    }
+  ]
+}
