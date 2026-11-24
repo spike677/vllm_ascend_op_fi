@@ -24,6 +24,8 @@ def review_directory(directory, receipt='product_http_18.json', negative_file='p
     raw = {}
     expected_kind={'external.row9_scale_half':'SaturationHalf','external.row9_scale_quarter':'SaturationQuarter',
         'external.row10_scale_double':'SqueezeDouble','external.row10_scale_quadruple':'SqueezeQuadruple'}[data['mechanism']]
+    expected_factor={'external.row9_scale_half':.5,'external.row9_scale_quarter':.25,
+        'external.row10_scale_double':2.,'external.row10_scale_quadruple':4.}[data['mechanism']]
     sidecar_sha = {}
     for rank in range(2):
         file = directory / f'external-input-rank{rank}.jsonl'
@@ -53,7 +55,7 @@ def review_directory(directory, receipt='product_http_18.json', negative_file='p
                     require(event['qmm_reads'] > 0 and event['consumer_operator'] == 'npu::npu_quant_matmul'
                         and event['after_sha256'] == event['consumer_sha256']
                         and event['before_sha256'] == event['restored_sha256'], 'REFERENCE_REAL_QMM_PROOF_MISSING')
-                    require(event['scale_multiplier'] in (.25, .5, 2., 4.)
+                    require(event['scale_multiplier'] == expected_factor
                         and event['rounding'] == 'nearest_even' and event['signed_range'] == [-127, 127],
                         'REFERENCE_SCALE_RECIPE_MISMATCH')
                     sums = totals[rank['rank']]

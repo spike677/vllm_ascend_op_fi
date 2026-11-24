@@ -16,6 +16,16 @@ FAMILIES={
            'tests/worker_extension/test_reference_hidden_rows.py']),
  'swiglu':(['row3_gate_fp16_round'],['reference_adapters/swiglu.py',
            'reference_adapters/review_reference.py','tests/worker_extension/test_reference_precision.py']),
+ 'logits':(['row12_logits_columns_rotate'],['reference_adapters/logits_mapping.py',
+           'reference_adapters/review_reference.py','tests/worker_extension/test_reference_logits_mapping.py']),
+ 'vision-compute':(['row16_conv3d_compute_fp16'],['reference_adapters/vision_precision.py',
+           'reference_adapters/review_reference.py','tests/worker_extension/test_reference_precision.py']),
+ 'vision-input':(['row32_conv3d_input_fp16'],['reference_adapters/vision_precision.py',
+           'reference_adapters/review_reference.py','tests/worker_extension/test_reference_precision.py']),
+ 'matmul-order':(['row19_bf16_reverse_splitk'],['reference_adapters/matmul_order.py',
+           'reference_adapters/review_reference.py','tests/worker_extension/test_reference_matmul.py']),
+ 'matmul-bias':(['row34_bf16_before_bias'],['reference_adapters/matmul_order.py',
+           'reference_adapters/review_reference.py','tests/worker_extension/test_reference_matmul.py']),
 }
 DEPENDENCIES=['experiments/worker_core_v11_20261118/external_input_examples.py',
     'fault_injection/sites/norm18_variance.py','fault_injection/sites/norm18.py',
@@ -58,12 +68,17 @@ def build(family,destination):
     recipes=[]
     for variant in variants:
         module=next(f for f in files if f.startswith('reference_adapters/') and '/review_' not in f)
+        actual_sha=sha((ROOT/module).read_bytes())
+        if evidence['variants'][variant].get('factory_sha256',{}).get(Path(module).name)!=actual_sha:
+            raise ValueError('FACTORY_DIFFERS_FROM_A2_REVIEW:'+variant)
+        stage='sampler' if family=='logits' else 'vision' if family.startswith('vision') or family=='matmul-bias' else 'model'
+        key='17' if stage=='vision' else '18'
         recipes.append(dict(variant=variant,factory_module=module[:-3].replace('/','.'),
-            factory_lookup='FACTORIES['+repr(variant)+']',factory_sha256=sha((ROOT/module).read_bytes()),
-            stage='model',region_kind='transient',phenomenon_proxy=True,
-            a2_command='python3 -B reference_adapters/product_probe.py --mechanism 18 --reference '+variant+' --negative-regression',
+            factory_lookup='FACTORIES['+repr(variant)+']',factory_sha256=actual_sha,
+            stage=stage,region_kind='transient',phenomenon_proxy=True,
+            a2_command='python3 -B reference_adapters/product_probe.py --mechanism '+key+' --reference '+variant+' --negative-regression',
             review_command='python3 -B -m reference_adapters.'+('review_quant' if family=='quant' else 'review_reference')+
-                ' /evidence --receipt product_http_18.json --negative product_control_negative.json --output /evidence/reference-review.json'))
+                ' /evidence --receipt product_http_'+key+'.json --negative product_control_negative.json --output /evidence/reference-review.json'))
     blobs['recipes.json']=(json.dumps(recipes,ensure_ascii=False,indent=2)+'\n').encode()
     blobs['dependency-byte-forms.json']=(json.dumps(checkout_forms,indent=2)+'\n').encode()
     result=dict(evidence,variants={v:evidence['variants'][v] for v in variants})

@@ -76,3 +76,11 @@ class ReviewTests(unittest.TestCase):
             chunk['events'][0]['request_ids']=['orphan']
             with file.open('a') as stream:stream.write('\n'+json.dumps(chunk))
             with self.assertRaisesRegex(ValueError,'ORPHAN'):review_directory(directory)
+
+    def test_valid_factor_from_other_variant_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp, patch('reference_adapters.review_quant.review',return_value={}):
+            directory=Path(tmp);self.fixture(directory)
+            p=directory/'external-input-rank0.jsonl';lines=p.read_text().splitlines()
+            c=json.loads(lines[0]);c['events'][0]['scale_multiplier']=.25
+            lines[0]=json.dumps(c);p.write_text('\n'.join(lines))
+            with self.assertRaisesRegex(ValueError,'RECIPE_MISMATCH'):review_directory(directory)

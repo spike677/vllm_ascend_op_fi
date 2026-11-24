@@ -2,7 +2,6 @@ import types
 import unittest
 import torch
 from fault_injection.engines.region_lease import RegionLeases
-from reference_adapters.swiglu import GateFp16Round
 
 LIB=torch.library.Library('dcat_ref_act','DEF')
 LIB.define('swiglu(Tensor x) -> Tensor')
@@ -48,6 +47,7 @@ class PrecisionTests(unittest.TestCase):
                     self.assertEqual(e['changed_elements'],0) # BF16 values are exactly FP16-representable here.
                     self.assertTrue(e['encoder_consumer_operator'])
     def test_actual_swiglu_then_downstream_consumer(self):
+        from reference_adapters.swiglu import GateFp16Round
         model=Mlp();x=torch.linspace(-5,5,256,dtype=torch.bfloat16).reshape(2,128)
         baseline=model(x)
         for generation in (1,2):

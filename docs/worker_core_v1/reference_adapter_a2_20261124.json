@@ -482,7 +482,7 @@
                 "dtype": "torch.bfloat16",
                 "live_config_matches_file": true
               },
-              "recovery": {
+              "unregister_intermediate_recovery": {
                 "bytes_restored": true,
                 "canary_exact": null,
                 "resources_zero": true,
@@ -525,14 +525,20 @@
                 "dtype": "torch.bfloat16",
                 "live_config_matches_file": true
               },
-              "recovery": {
+              "unregister_intermediate_recovery": {
                 "bytes_restored": true,
                 "canary_exact": null,
                 "resources_zero": true,
                 "restored": false
               }
             }
-          ]
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          }
         },
         {
           "scope": 1,
@@ -573,7 +579,7 @@
                 "dtype": "torch.bfloat16",
                 "live_config_matches_file": true
               },
-              "recovery": {
+              "unregister_intermediate_recovery": {
                 "bytes_restored": true,
                 "canary_exact": null,
                 "resources_zero": true,
@@ -616,16 +622,35 @@
                 "dtype": "torch.bfloat16",
                 "live_config_matches_file": true
               },
-              "recovery": {
+              "unregister_intermediate_recovery": {
                 "bytes_restored": true,
                 "canary_exact": null,
                 "resources_zero": true,
                 "restored": false
               }
             }
-          ]
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          }
         }
-      ]
+      ],
+      "attempt": {
+        "case": "refquant1124a3-row9-scale-half",
+        "source_commit": "a97d037a38d3f873cb750e39836e60836e79bb88",
+        "source_manifest_sha256": "9ea015d3c8d4d3cc8b8b3c7d456379e7ba5d705359575e3f0a6a53ca601bc666",
+        "controller_status": "FINISHED",
+        "window_seconds": 318.074417114025,
+        "isolation_removed": true
+      },
+      "reviewer_sha256": "e427e390118ba0dc8a447ac3c339b2fed3859703aa7a626168b930c5bd18566c",
+      "factory_sha256": {
+        "quant_scale.py": "03c49fba20c6380c342664e5f09c96526ecced1b8616c4d1dfa75734c363d98e"
+      },
+      "negative_sha256": "25edf42afc0b67f3d184fd484a0e088accb8e5bd3c7495522ffe25a8d5b635bd"
     },
     "row3_gate_fp16_round": {
       "status": "REFERENCE_A2_TP2_TWO_OWNERS_REVIEWED",
@@ -1264,6 +1289,1926 @@
         "swiglu.py": "a30e1748ee05da20f73571b26dd3ace3da981adeb69a5f301c6ca4c6d8442c05"
       },
       "negative_sha256": "c02a69e6cb962b023434504117f29d4e4a9048bf3a96a8f5f5551148e11c719a"
+    },
+    "row9_scale_quarter": {
+      "status": "REFERENCE_A2_TP2_TWO_OWNERS_REVIEWED",
+      "mechanism": "external.row9_scale_quarter",
+      "semantics": "PHENOMENON_PROXY_NOT_ORIGINAL_MECHANISM",
+      "public_review": {
+        "status": "PRODUCT_BLUE_REVIEW_PASSED",
+        "mechanism": "external.row9_scale_quarter",
+        "source_manifest_sha256": "1c51e10e2cf1fd6421d07a47f8add25cdcbd422a82bf2f0bc8f50acaeafb19f8",
+        "scopes": [
+          {
+            "scope": 0,
+            "effects": [
+              {
+                "rank": 0,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 14776731,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 14886095,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 14817085,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 14916076,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 13297403,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 13383228,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              }
+            ],
+            "batch": null,
+            "canary_exact": true,
+            "all_resources_zero": true
+          },
+          {
+            "scope": 1,
+            "effects": [
+              {
+                "rank": 0,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 14776731,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 14886095,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 14817085,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 14916076,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 13297403,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 13383228,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              }
+            ],
+            "batch": null,
+            "canary_exact": true,
+            "all_resources_zero": true
+          }
+        ],
+        "product_entry": "ProductClient direct constructor",
+        "between_request_cache_reset": null,
+        "deployment_config_sha256": null,
+        "hardware_scope": "A2/0.26/Qwen3.8-community-W8A8/TP2",
+        "yellow_main_project_integration_verified": false,
+        "product_closed": false,
+        "qualification_granted": false
+      },
+      "effects_by_rank": {
+        "0": {
+          "calls": 7296,
+          "changed_calls": 7296,
+          "changed_elements": 85782438,
+          "qmm_reads": 7296,
+          "saturated_elements": 668738,
+          "clipped_elements": 659130,
+          "zero_elements": 10194980,
+          "native_zero_elements": 31723946
+        },
+        "1": {
+          "calls": 7296,
+          "changed_calls": 7296,
+          "changed_elements": 86370798,
+          "qmm_reads": 7296,
+          "saturated_elements": 643716,
+          "clipped_elements": 634264,
+          "zero_elements": 9606580,
+          "native_zero_elements": 30608396
+        }
+      },
+      "sidecar_sha256": {
+        "external-input-rank0.jsonl": "210b13d92b81bd42336d7315d1c41601bc29360c7760fd1f47e45fde5efbb892",
+        "external-input-rank1.jsonl": "23d98f4dadd7d9ab7f73fc9384a6f83c36d3ef68be4fa9c8a7c34db026f02cf2"
+      },
+      "receipt_sha256": "c3172019810713a4b86b780358e947de37e046a9290561c3a41ab33b2cfdea82",
+      "qualification_granted": false,
+      "scope_identities": [
+        {
+          "scope": 0,
+          "ranks": [
+            {
+              "rank": 0,
+              "owner": "f89e60e373fc6162455d1f56f1b706ff",
+              "worker": {
+                "pid": 154,
+                "rank": 0,
+                "model_instance_id": "b86f0a2f053659444d914e6bb49b4dba",
+                "worker_start_identity": "24e5ff2089e8bf16e4c36344ea85659f",
+                "logical_device": 0
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            },
+            {
+              "rank": 1,
+              "owner": "27ecab26216dad46d677e86d32fa8b31",
+              "worker": {
+                "pid": 155,
+                "rank": 1,
+                "model_instance_id": "deec61d4b3aca07ac3189eb531496730",
+                "worker_start_identity": "ced0773298651eb2481b6c33da950f99",
+                "logical_device": 1
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          }
+        },
+        {
+          "scope": 1,
+          "ranks": [
+            {
+              "rank": 0,
+              "owner": "88ceb2fcf84090953f0b17305eecc421",
+              "worker": {
+                "pid": 154,
+                "rank": 0,
+                "model_instance_id": "b86f0a2f053659444d914e6bb49b4dba",
+                "worker_start_identity": "24e5ff2089e8bf16e4c36344ea85659f",
+                "logical_device": 0
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            },
+            {
+              "rank": 1,
+              "owner": "56be93d17d5d891a6060fa46c034a30a",
+              "worker": {
+                "pid": 155,
+                "rank": 1,
+                "model_instance_id": "deec61d4b3aca07ac3189eb531496730",
+                "worker_start_identity": "ced0773298651eb2481b6c33da950f99",
+                "logical_device": 1
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          }
+        }
+      ],
+      "attempt": {
+        "case": "refquant1124a6-row9-scale-quarter",
+        "source_commit": "492d19e71c465b1eaa176919326ed86f8c3b387a",
+        "source_manifest_sha256": "1c51e10e2cf1fd6421d07a47f8add25cdcbd422a82bf2f0bc8f50acaeafb19f8",
+        "controller_status": "FINISHED",
+        "window_seconds": 480.10904614115134,
+        "isolation_removed": true
+      },
+      "reviewer_sha256": "e427e390118ba0dc8a447ac3c339b2fed3859703aa7a626168b930c5bd18566c",
+      "factory_sha256": {
+        "quant_scale.py": "03c49fba20c6380c342664e5f09c96526ecced1b8616c4d1dfa75734c363d98e"
+      },
+      "negative_sha256": "b07c1880d2499ea060df7ea9e7d44d6bf8a8e57bf7560a517c3fbb316d14d805"
+    },
+    "row10_scale_double": {
+      "status": "REFERENCE_A2_TP2_TWO_OWNERS_REVIEWED",
+      "mechanism": "external.row10_scale_double",
+      "semantics": "PHENOMENON_PROXY_NOT_ORIGINAL_MECHANISM",
+      "public_review": {
+        "status": "PRODUCT_BLUE_REVIEW_PASSED",
+        "mechanism": "external.row10_scale_double",
+        "source_manifest_sha256": "1c51e10e2cf1fd6421d07a47f8add25cdcbd422a82bf2f0bc8f50acaeafb19f8",
+        "scopes": [
+          {
+            "scope": 0,
+            "effects": [
+              {
+                "rank": 0,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 10707287,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 10699726,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 10638729,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 10706196,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 9593614,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 9633260,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              }
+            ],
+            "batch": null,
+            "canary_exact": true,
+            "all_resources_zero": true
+          },
+          {
+            "scope": 1,
+            "effects": [
+              {
+                "rank": 0,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 10707287,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 10699726,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 10638729,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 10706196,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 9593614,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 9633260,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              }
+            ],
+            "batch": null,
+            "canary_exact": true,
+            "all_resources_zero": true
+          }
+        ],
+        "product_entry": "ProductClient direct constructor",
+        "between_request_cache_reset": null,
+        "deployment_config_sha256": null,
+        "hardware_scope": "A2/0.26/Qwen3.8-community-W8A8/TP2",
+        "yellow_main_project_integration_verified": false,
+        "product_closed": false,
+        "qualification_granted": false
+      },
+      "effects_by_rank": {
+        "0": {
+          "calls": 7296,
+          "changed_calls": 7296,
+          "changed_elements": 61879260,
+          "qmm_reads": 7296,
+          "saturated_elements": 0,
+          "clipped_elements": 0,
+          "zero_elements": 38080984,
+          "native_zero_elements": 23396934
+        },
+        "1": {
+          "calls": 7296,
+          "changed_calls": 7296,
+          "changed_elements": 62078364,
+          "qmm_reads": 7296,
+          "saturated_elements": 0,
+          "clipped_elements": 0,
+          "zero_elements": 37830284,
+          "native_zero_elements": 23240222
+        }
+      },
+      "sidecar_sha256": {
+        "external-input-rank0.jsonl": "210b13d92b81bd42336d7315d1c41601bc29360c7760fd1f47e45fde5efbb892",
+        "external-input-rank1.jsonl": "23d98f4dadd7d9ab7f73fc9384a6f83c36d3ef68be4fa9c8a7c34db026f02cf2"
+      },
+      "receipt_sha256": "b2e62aa372b5f7df7af5c79188886454c9f52c5c5cfdc5500c59d517bafac870",
+      "qualification_granted": false,
+      "scope_identities": [
+        {
+          "scope": 0,
+          "ranks": [
+            {
+              "rank": 0,
+              "owner": "baf91230e8290874b70d0eecf0ffe83e",
+              "worker": {
+                "pid": 154,
+                "rank": 0,
+                "model_instance_id": "b86f0a2f053659444d914e6bb49b4dba",
+                "worker_start_identity": "24e5ff2089e8bf16e4c36344ea85659f",
+                "logical_device": 0
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            },
+            {
+              "rank": 1,
+              "owner": "9b34590d0b51d6c61785639324753410",
+              "worker": {
+                "pid": 155,
+                "rank": 1,
+                "model_instance_id": "deec61d4b3aca07ac3189eb531496730",
+                "worker_start_identity": "ced0773298651eb2481b6c33da950f99",
+                "logical_device": 1
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          }
+        },
+        {
+          "scope": 1,
+          "ranks": [
+            {
+              "rank": 0,
+              "owner": "46f2f189bf98e039c356397ab2143b8e",
+              "worker": {
+                "pid": 154,
+                "rank": 0,
+                "model_instance_id": "b86f0a2f053659444d914e6bb49b4dba",
+                "worker_start_identity": "24e5ff2089e8bf16e4c36344ea85659f",
+                "logical_device": 0
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            },
+            {
+              "rank": 1,
+              "owner": "828113504f12a09e68046b8dd697d99d",
+              "worker": {
+                "pid": 155,
+                "rank": 1,
+                "model_instance_id": "deec61d4b3aca07ac3189eb531496730",
+                "worker_start_identity": "ced0773298651eb2481b6c33da950f99",
+                "logical_device": 1
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          }
+        }
+      ],
+      "attempt": {
+        "case": "refquant1124a6-row9-scale-quarter",
+        "source_commit": "492d19e71c465b1eaa176919326ed86f8c3b387a",
+        "source_manifest_sha256": "1c51e10e2cf1fd6421d07a47f8add25cdcbd422a82bf2f0bc8f50acaeafb19f8",
+        "controller_status": "FINISHED",
+        "window_seconds": 480.10904614115134,
+        "isolation_removed": true
+      },
+      "reviewer_sha256": "e427e390118ba0dc8a447ac3c339b2fed3859703aa7a626168b930c5bd18566c",
+      "factory_sha256": {
+        "quant_scale.py": "03c49fba20c6380c342664e5f09c96526ecced1b8616c4d1dfa75734c363d98e"
+      },
+      "negative_sha256": "b8243e5f4698f6557444f19244e3acea4650e9123b8cb5a48363989b7ad93f31"
+    },
+    "row10_scale_quadruple": {
+      "status": "REFERENCE_A2_TP2_TWO_OWNERS_REVIEWED",
+      "mechanism": "external.row10_scale_quadruple",
+      "semantics": "PHENOMENON_PROXY_NOT_ORIGINAL_MECHANISM",
+      "public_review": {
+        "status": "PRODUCT_BLUE_REVIEW_PASSED",
+        "mechanism": "external.row10_scale_quadruple",
+        "source_manifest_sha256": "1c51e10e2cf1fd6421d07a47f8add25cdcbd422a82bf2f0bc8f50acaeafb19f8",
+        "scopes": [
+          {
+            "scope": 0,
+            "effects": [
+              {
+                "rank": 0,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 12889808,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 12842877,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 12715200,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 12772931,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 11580679,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 11587989,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              }
+            ],
+            "batch": null,
+            "canary_exact": true,
+            "all_resources_zero": true
+          },
+          {
+            "scope": 1,
+            "effects": [
+              {
+                "rank": 0,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 12889808,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 12842877,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 12715200,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 12772931,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 11580679,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 1216,
+                  "attempted": 1216,
+                  "applied": 1216,
+                  "changed": 1216,
+                  "consumed": 1216,
+                  "restored": 1216,
+                  "failed": 0
+                },
+                "changed_elements": 11587989,
+                "reasons": [],
+                "consumers": [
+                  "npu::npu_quant_matmul"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              }
+            ],
+            "batch": null,
+            "canary_exact": true,
+            "all_resources_zero": true
+          }
+        ],
+        "product_entry": "ProductClient direct constructor",
+        "between_request_cache_reset": null,
+        "deployment_config_sha256": null,
+        "hardware_scope": "A2/0.26/Qwen3.8-community-W8A8/TP2",
+        "yellow_main_project_integration_verified": false,
+        "product_closed": false,
+        "qualification_granted": false
+      },
+      "effects_by_rank": {
+        "0": {
+          "calls": 7296,
+          "changed_calls": 7296,
+          "changed_elements": 74371374,
+          "qmm_reads": 7296,
+          "saturated_elements": 0,
+          "clipped_elements": 0,
+          "zero_elements": 54876430,
+          "native_zero_elements": 21623730
+        },
+        "1": {
+          "calls": 7296,
+          "changed_calls": 7296,
+          "changed_elements": 74407594,
+          "qmm_reads": 7296,
+          "saturated_elements": 0,
+          "clipped_elements": 0,
+          "zero_elements": 54637670,
+          "native_zero_elements": 21587510
+        }
+      },
+      "sidecar_sha256": {
+        "external-input-rank0.jsonl": "210b13d92b81bd42336d7315d1c41601bc29360c7760fd1f47e45fde5efbb892",
+        "external-input-rank1.jsonl": "23d98f4dadd7d9ab7f73fc9384a6f83c36d3ef68be4fa9c8a7c34db026f02cf2"
+      },
+      "receipt_sha256": "5bd83b22c9c5896bde05f244e5c547c1ac2a16c4c7946b65043e8e17d4992eae",
+      "qualification_granted": false,
+      "scope_identities": [
+        {
+          "scope": 0,
+          "ranks": [
+            {
+              "rank": 0,
+              "owner": "972916b55d059f5cc0148e06d5039a99",
+              "worker": {
+                "pid": 154,
+                "rank": 0,
+                "model_instance_id": "b86f0a2f053659444d914e6bb49b4dba",
+                "worker_start_identity": "24e5ff2089e8bf16e4c36344ea85659f",
+                "logical_device": 0
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            },
+            {
+              "rank": 1,
+              "owner": "2e04cc1f00bdb5c5523eb3060df14f9d",
+              "worker": {
+                "pid": 155,
+                "rank": 1,
+                "model_instance_id": "deec61d4b3aca07ac3189eb531496730",
+                "worker_start_identity": "ced0773298651eb2481b6c33da950f99",
+                "logical_device": 1
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          }
+        },
+        {
+          "scope": 1,
+          "ranks": [
+            {
+              "rank": 0,
+              "owner": "12639d8d8699e8fa444835d49e42483e",
+              "worker": {
+                "pid": 154,
+                "rank": 0,
+                "model_instance_id": "b86f0a2f053659444d914e6bb49b4dba",
+                "worker_start_identity": "24e5ff2089e8bf16e4c36344ea85659f",
+                "logical_device": 0
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            },
+            {
+              "rank": 1,
+              "owner": "f1e2a56fa7d379eb473dbae610a3e168",
+              "worker": {
+                "pid": 155,
+                "rank": 1,
+                "model_instance_id": "deec61d4b3aca07ac3189eb531496730",
+                "worker_start_identity": "ced0773298651eb2481b6c33da950f99",
+                "logical_device": 1
+              },
+              "actual": {
+                "hardware_family": "A2",
+                "hardware_device_name": "Ascend910B4",
+                "vllm": "0.26.0",
+                "vllm_ascend": "0.26.0rc1",
+                "torch": "2.10.0+cpu",
+                "torch_npu": "2.10.0.post4",
+                "cann": [
+                  "9.1.0"
+                ],
+                "image_digest": null,
+                "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+                "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+                "safetensors_index_sha256": {
+                  "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+                },
+                "max_model_len": 1024,
+                "max_num_batched_tokens": 1024,
+                "max_num_seqs": 1,
+                "tp": 2,
+                "dp": 1,
+                "pp": 1,
+                "eager": true,
+                "dtype": "torch.bfloat16",
+                "live_config_matches_file": true
+              },
+              "unregister_intermediate_recovery": {
+                "bytes_restored": true,
+                "canary_exact": null,
+                "resources_zero": true,
+                "restored": false
+              }
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          }
+        }
+      ],
+      "attempt": {
+        "case": "refquant1124a6-row9-scale-quarter",
+        "source_commit": "492d19e71c465b1eaa176919326ed86f8c3b387a",
+        "source_manifest_sha256": "1c51e10e2cf1fd6421d07a47f8add25cdcbd422a82bf2f0bc8f50acaeafb19f8",
+        "controller_status": "FINISHED",
+        "window_seconds": 480.10904614115134,
+        "isolation_removed": true
+      },
+      "reviewer_sha256": "e427e390118ba0dc8a447ac3c339b2fed3859703aa7a626168b930c5bd18566c",
+      "factory_sha256": {
+        "quant_scale.py": "03c49fba20c6380c342664e5f09c96526ecced1b8616c4d1dfa75734c363d98e"
+      },
+      "negative_sha256": "b05c8ef77ac45fe658e3dbf840956736934922313aeb8e324eb71a328a4aabba"
     }
   },
   "windows": [
