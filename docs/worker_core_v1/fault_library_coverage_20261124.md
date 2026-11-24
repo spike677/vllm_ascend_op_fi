@@ -21,49 +21,49 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
 
 历史公共证据不等于本轮通过。参考适配器通过 A2 后记 ADAPTER_READY_UNTESTED，标注等待黄区审查；正式测试审查并登记后才记 REGISTERED。第21行按区域寿命选择v1或v2，待黄区确认。
 
-|库行|类|进度|对应能力/变体|机理与范围|部署|证据或待补项|
-|---|---|---|---|---|---|---|
-|1|E|CLOSED_NO_INJECTION|rope_scaling配置|配置说明，不注入|Qwen3.8 A3 TP2（蓝区A2仅验证）|范围决定，不要求注入|
-|2|B|YELLOW_ADAPTER_READY_UNTESTED|黄区weight/faulty_requant、weight/param_perturb（v2）|持久权重/scale；覆盖派生副本与全部读取者|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
-|3|B|ADAPTER_READY_UNTESTED|黄区activation_mismatch/swiglu_divergence；保留配置说明|SwiGLU分支数值差；不是所有模型均有该调用|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row3_gate_fp16_round；回执SHA af269176c362ab2174e6ed3640b9765aa5640536dc2af75e9058dbf083ed689c；原语差异见reference_adapters/README.md|
-|4|E|CLOSED_NO_INJECTION|量化校准数据集分布|校准数据分布影响，非运行时故障|Qwen3.8 A3 TP2（蓝区A2仅验证）|范围决定，不要求注入|
-|5|F|CLOSED_NO_INJECTION|GPT-NeoX RoPE能力缺失|功能缺失，不是可注入故障|当前A3不适用|范围决定，不要求注入|
-|6|C|AWAIT_FORMAL_TEST|公共22 wrong_row|现象：错误cos/sin行；不复现超4096缓存不足|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查|
-|7|C|ADAPTER_READY_UNTESTED|黄区operator_output_value，MLP部分token行置零|现象：贡献丢失；dense模型无MoE超容量|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-hidden-20261124-r1；真实add/rmsnorm消费者，旧metadata-only结果已作废|
-|8|C|ADAPTER_READY_UNTESTED|黄区operator_output_value，激活行替换padding/零|现象：有效激活行被零/padding替换；不证明CP restore索引错误|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-hidden-20261124-r1；真实add/rmsnorm消费者，旧metadata-only结果已作废|
-|9|B|ADAPTER_READY_UNTESTED|黄区fake_requant saturation|须证明真实scale除法及clip；仅改变反量化乘数不等价|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-quant-20261124-r1独立补充件；原始QMM消费、字节恢复、逐位金丝雀和负例通过|
-|10|B|ADAPTER_READY_UNTESTED|黄区fake_requant squeeze；公共Batch已有相关证据|须观测共享/增大scale造成的量化分辨率降低|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-quant-20261124-r1独立补充件；原始QMM消费、字节恢复、逐位金丝雀和负例通过|
-|11|B|YELLOW_ADAPTER_READY_UNTESTED|黄区activation/faulty_requant|重量化语义及真实消费者由黄区确认|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
-|12|C|REFERENCE_ADAPTER_PENDING|黄区operator_output_value：compute_logits列错位/命名坍塌|C类现象复现；原机理为lm_head错误量化/量化误差累积，当前lm_head BF16未量化，不宣称原机理成立|Qwen3.8 A3 TP2（蓝区A2仅验证）|已收到xlsx第12行原文；当前A3词表248320，124160是他模历史值；需真实sampler消费、熵/分布变化与恢复，待黄区正式验收|
-|13|D|V4_D_PACKAGE_PENDING|黄区router量化噪声变体，经D包外部v1|须观测router概率、top-k与真实路由；加噪不等于专家改变|V4 A3 TP8+EP|D0/D1及V4 router原件待回传；V2-Lite仅预演|
-|14|B|YELLOW_ADAPTER_READY_UNTESTED|黄区kv_rope_quant_loss（v2）|KV持久性按请求/页代际恢复|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
-|15|A|AWAIT_FORMAL_TEST|公共15 alias_detach（B档ND）|ND别名断开现象；无私有格式触发条件|Qwen3.8 A3 TP2（蓝区A2仅验证）|最新负责人汇总称A3双owner通过，仍需正式登记回执；15初值风险已完成A2两轮诊断，均未复现历史44次非有限，限制见r741_b1_b6_closure_20261124.md。|
-|16|B|ADAPTER_READY_UNTESTED|黄区conv2d_compute_downcast扩展Conv3d|低精度卷积重算需只读真实输入和权重；Conv2d原语不能直接套3D|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row16_conv3d_compute_fp16；yellow-reference-vision-compute-20261125-r1；真实encoder add消费、恢复/金丝雀/负例通过|
-|17|C|AWAIT_FORMAL_TEST|公共17 spatial_padding（Conv3d）|仅空间位置/边界误差同类现象；不等价于ConvTranspose输出高度减2|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查|
-|18|A|AWAIT_FORMAL_TEST|公共18 api_half|当前api_half只缩放单元素，非FP16强转原机理|Qwen3.8 A3 TP2（蓝区A2仅验证）|最新附件报告A3双owner通过；最终包登记材料待审|
-|19|B|REFERENCE_ADAPTER_PENDING|黄区float_matmul（独立适配，不能并入公共39mr）|B类；累加顺序/精度规则改变需内部计算证据，输出有限微扰只能记现象代理|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区报告需适配；库19/34/39分别记录累加精度差/融合差/溢出，52/56原描述尚无材料，不能猜测或据此登记|
-|20|A|AWAIT_FORMAL_TEST|公共20 buffer_substitute；黄区operator_input_precision_transform|输入内容替换；不声称原kernel地址槽错误。降精度为另一能力|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查|
-|21|B|YELLOW_ADAPTER_READY_UNTESTED|黄区param_perturb（按区域寿命选v1/v2）|若改weight/scale等持久参数必须v2，不能v1局部恢复|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
-|22|A|AWAIT_FORMAL_TEST|公共22 wrong_row|错位置行代理；核对真实rotary消费者|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查|
-|23|C|AWAIT_FORMAL_TEST|公共39 output_proxy|有限值进入消费者前变Inf；不复现baddbmm内部FP16溢出|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查|
-|24|B|YELLOW_ADAPTER_READY_UNTESTED|黄区exponential_perturb（采样site）|修改真实采样噪声，采样除法读取后恢复|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
-|25|B|HCCL_BITWISE_PENDING|黄区独立HCCL工具|独立通信通道；不能伪装成模块v1适配器|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
-|26|A|AWAIT_FORMAL_TEST|公共26 fia_destination|FIA数据写真实residual；不声称kernel真实越界|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查|
-|27|A|AWAIT_FORMAL_TEST|公共15 alias_detach（B档ND）|同公共15能力一次登记，两库行备注|Qwen3.8 A3 TP2（蓝区A2仅验证）|最新负责人汇总称A3双owner通过，仍需正式登记回执；15初值风险已完成A2两轮诊断，均未复现历史44次非有限，限制见r741_b1_b6_closure_20261124.md。|
-|28|A|AWAIT_FORMAL_TEST|公共28 denominator_replay|分母重复贡献为错误归约代理，非合法tiling重排|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查|
-|29|F|CLOSED_NO_INJECTION|310P特有硬件条件|当前A3不具备310P条件|当前A3不适用|范围决定，不要求注入|
-|30|C|AWAIT_FORMAL_TEST|公共18方差误差命名变体（新增）|固定增益1/sqrt(k)的归一化输出代理；非INTraining训练方差实现|Qwen3.8 A3 TP2（蓝区A2仅验证）|18.variance_over4（k=4、gain=0.5）和18.variance_under4（k=0.25、gain=2）均通过A2/0.26/CANN9.1/Qwen3.8 W8A8/TP2两个owner；见r741_b1_b6_closure_20261124.md。A3待验收。|
-|31|B|YELLOW_ADAPTER_READY_UNTESTED|黄区fake/faulty_requant|与黄区重量化能力合并，按命名变体登记|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
-|32|B|REFERENCE_ADAPTER_PENDING|黄区operator_input_precision/compute_downcast扩展Conv3d|输入cast与内部低精度重算须分别记变体；3D/图片待验收|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row32_conv3d_input_fp16：每rank applied/consumed/restored=6，changed=0、changed_elements=0；不额外加扰动|
-|33|A|FAULT33_EVIDENCE_PENDING|公共33 paged_decode|A3实际launch/三形状控制未闭合，关闭|Qwen3.8 A3 TP2（蓝区A2仅验证）|r7.5候选解码工具已提供；A3三形状实际回传待补|
-|34|C|REFERENCE_ADAPTER_PENDING|黄区float_matmul现象变体（独立登记）|C类；eager无原图编译融合，比较MM与加法路径的数值现象，不用公共39mr结果替代黄区适配器验收|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区float_matmul需适配；同一次测试仅在证据逐条支持时备注覆盖多行|
-|35|B|AWAIT_FORMAL_TEST|合并公共28 denominator_replay；黄区finite_perturb历史保留|数学不等价：分母重放不是仅累加序改变，合并只覆盖错误输出现象|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
-|36|F|CLOSED_NO_INJECTION|BIOS硬件配置|不修改BIOS，不作为本工具注入|当前A3不适用|范围决定，不要求注入|
-|37|B|YELLOW_ADAPTER_READY_UNTESTED|黄区rounding_perturb / faulty_requant_rounding；保留配置说明|固定输入与scale，仅改变局部舍入，不全局替换torch.round|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
-|38|B|HCCL_BITWISE_PENDING|黄区独立HCCL工具|独立HCCL通道；引用黄区结论|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
-|39|A|AWAIT_FORMAL_TEST|公共39 matmul_range|需真实非有限结果才覆盖溢出；有限误差只能说明精度损失|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查|
-|40|B|YELLOW_ADAPTER_READY_UNTESTED|黄区kv_update_misdirect（v2）|污染在请求后续token生效，释放/重建边界恢复|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|
-|41|A|AWAIT_FORMAL_TEST|公共20 buffer_substitute|同公共20输入覆盖；一次登记两库行备注|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查|
+|库行|类|进度|对应能力/变体|机理与范围|部署|证据或待补项|当前进度说明|
+|---|---|---|---|---|---|---|---|
+|1|E|CLOSED_NO_INJECTION|rope_scaling配置|配置说明，不注入|Qwen3.8 A3 TP2（蓝区A2仅验证）|范围决定，不要求注入||
+|2|B|YELLOW_ADAPTER_READY_UNTESTED|黄区weight/faulty_requant、weight/param_perturb（v2）|持久权重/scale；覆盖派生副本与全部读取者|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
+|3|B|ADAPTER_READY_UNTESTED|黄区activation_mismatch/swiglu_divergence；保留配置说明|SwiGLU分支数值差；不是所有模型均有该调用|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row3_gate_fp16_round；回执SHA af269176c362ab2174e6ed3640b9765aa5640536dc2af75e9058dbf083ed689c；原语差异见reference_adapters/README.md|codex参考实现，A2同组TP2两个owner通过；等待黄区审查与正式产品测试|
+|4|E|CLOSED_NO_INJECTION|量化校准数据集分布|校准数据分布影响，非运行时故障|Qwen3.8 A3 TP2（蓝区A2仅验证）|范围决定，不要求注入||
+|5|F|CLOSED_NO_INJECTION|GPT-NeoX RoPE能力缺失|功能缺失，不是可注入故障|当前A3不适用|范围决定，不要求注入||
+|6|C|AWAIT_FORMAL_TEST|公共22 wrong_row|现象：错误cos/sin行；不复现超4096缓存不足|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查||
+|7|C|ADAPTER_READY_UNTESTED|黄区operator_output_value，MLP部分token行置零|现象：贡献丢失；dense模型无MoE超容量|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-hidden-20261124-r1；真实add/rmsnorm消费者，旧metadata-only结果已作废|codex参考实现；修正版A2 TP2同组Worker两个owner通过，等待黄区审查|
+|8|C|ADAPTER_READY_UNTESTED|黄区operator_output_value，激活行替换padding/零|现象：有效激活行被零/padding替换；不证明CP restore索引错误|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-hidden-20261124-r1；真实add/rmsnorm消费者，旧metadata-only结果已作废|codex参考实现；修正版A2 TP2同组Worker两个owner通过，等待黄区审查|
+|9|B|ADAPTER_READY_UNTESTED|黄区fake_requant saturation|须证明真实scale除法及clip；仅改变反量化乘数不等价|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-quant-20261124-r1独立补充件；原始QMM消费、字节恢复、逐位金丝雀和负例通过|codex参考实现；两个固定档均在A2 TP2同组Worker两个owner通过，等待黄区审查|
+|10|B|ADAPTER_READY_UNTESTED|黄区fake_requant squeeze；公共Batch已有相关证据|须观测共享/增大scale造成的量化分辨率降低|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-quant-20261124-r1独立补充件；原始QMM消费、字节恢复、逐位金丝雀和负例通过|codex参考实现；两个固定档均在A2 TP2同组Worker两个owner通过，等待黄区审查|
+|11|B|YELLOW_ADAPTER_READY_UNTESTED|黄区activation/faulty_requant|重量化语义及真实消费者由黄区确认|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
+|12|C|REFERENCE_ADAPTER_PENDING|黄区operator_output_value：compute_logits列错位/命名坍塌|C类现象复现；原机理为lm_head错误量化/量化误差累积，当前lm_head BF16未量化，不宣称原机理成立|Qwen3.8 A3 TP2（蓝区A2仅验证）|已收到xlsx第12行原文；当前A3词表248320，124160是他模历史值；需真实sampler消费、熵/分布变化与恢复，待黄区正式验收|codex参考实现；A2两个owner通过后改ADAPTER_READY_UNTESTED，等待黄区审查与正式测试|
+|13|D|V4_D_PACKAGE_PENDING|黄区router量化噪声变体，经D包外部v1|须观测router概率、top-k与真实路由；加噪不等于专家改变|V4 A3 TP8+EP|D0/D1及V4 router原件待回传；V2-Lite仅预演||
+|14|B|YELLOW_ADAPTER_READY_UNTESTED|黄区kv_rope_quant_loss（v2）|KV持久性按请求/页代际恢复|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
+|15|A|AWAIT_FORMAL_TEST|公共15 alias_detach（B档ND）|ND别名断开现象；无私有格式触发条件|Qwen3.8 A3 TP2（蓝区A2仅验证）|最新负责人汇总称A3双owner通过，仍需正式登记回执；15初值风险已完成A2两轮诊断，均未复现历史44次非有限，限制见r741_b1_b6_closure_20261124.md。||
+|16|B|ADAPTER_READY_UNTESTED|黄区conv2d_compute_downcast扩展Conv3d|低精度卷积重算需只读真实输入和权重；Conv2d原语不能直接套3D|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row16_conv3d_compute_fp16；yellow-reference-vision-compute-20261125-r1；真实encoder add消费、恢复/金丝雀/负例通过|codex参考实现；带图请求A2 TP2同组Worker两个owner通过，等待黄区审查|
+|17|C|AWAIT_FORMAL_TEST|公共17 spatial_padding（Conv3d）|仅空间位置/边界误差同类现象；不等价于ConvTranspose输出高度减2|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查||
+|18|A|AWAIT_FORMAL_TEST|公共18 api_half|当前api_half只缩放单元素，非FP16强转原机理|Qwen3.8 A3 TP2（蓝区A2仅验证）|最新附件报告A3双owner通过；最终包登记材料待审||
+|19|B|REFERENCE_ADAPTER_PENDING|黄区float_matmul（独立适配，不能并入公共39mr）|B类；累加顺序/精度规则改变需内部计算证据，输出有限微扰只能记现象代理|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区报告需适配；库19/34/39分别记录累加精度差/融合差/溢出，52/56原描述尚无材料，不能猜测或据此登记|codex参考实现；A2两个owner通过后改ADAPTER_READY_UNTESTED，等待黄区审查与正式测试|
+|20|A|AWAIT_FORMAL_TEST|公共20 buffer_substitute；黄区operator_input_precision_transform|输入内容替换；不声称原kernel地址槽错误。降精度为另一能力|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查||
+|21|B|YELLOW_ADAPTER_READY_UNTESTED|黄区param_perturb（按区域寿命选v1/v2）|若改weight/scale等持久参数必须v2，不能v1局部恢复|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区|v1或v2由区域寿命决定，等待黄区确认|
+|22|A|AWAIT_FORMAL_TEST|公共22 wrong_row|错位置行代理；核对真实rotary消费者|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查||
+|23|C|AWAIT_FORMAL_TEST|公共39 output_proxy|有限值进入消费者前变Inf；不复现baddbmm内部FP16溢出|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查||
+|24|B|YELLOW_ADAPTER_READY_UNTESTED|黄区exponential_perturb（采样site）|修改真实采样噪声，采样除法读取后恢复|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
+|25|B|HCCL_BITWISE_PENDING|黄区独立HCCL工具|独立通信通道；不能伪装成模块v1适配器|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
+|26|A|AWAIT_FORMAL_TEST|公共26 fia_destination|FIA数据写真实residual；不声称kernel真实越界|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查||
+|27|A|AWAIT_FORMAL_TEST|公共15 alias_detach（B档ND）|同公共15能力一次登记，两库行备注|Qwen3.8 A3 TP2（蓝区A2仅验证）|最新负责人汇总称A3双owner通过，仍需正式登记回执；15初值风险已完成A2两轮诊断，均未复现历史44次非有限，限制见r741_b1_b6_closure_20261124.md。||
+|28|A|AWAIT_FORMAL_TEST|公共28 denominator_replay|分母重复贡献为错误归约代理，非合法tiling重排|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查||
+|29|F|CLOSED_NO_INJECTION|310P特有硬件条件|当前A3不具备310P条件|当前A3不适用|范围决定，不要求注入||
+|30|C|AWAIT_FORMAL_TEST|公共18方差误差命名变体（新增）|固定增益1/sqrt(k)的归一化输出代理；非INTraining训练方差实现|Qwen3.8 A3 TP2（蓝区A2仅验证）|18.variance_over4（k=4、gain=0.5）和18.variance_under4（k=0.25、gain=2）均通过A2/0.26/CANN9.1/Qwen3.8 W8A8/TP2两个owner；见r741_b1_b6_closure_20261124.md。A3待验收。||
+|31|B|YELLOW_ADAPTER_READY_UNTESTED|黄区fake/faulty_requant|与黄区重量化能力合并，按命名变体登记|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
+|32|B|REFERENCE_ADAPTER_PENDING|黄区operator_input_precision/compute_downcast扩展Conv3d|输入cast与内部低精度重算须分别记变体；3D/图片待验收|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row32_conv3d_input_fp16：每rank applied/consumed/restored=6，changed=0、changed_elements=0；不额外加扰动|实现与A2两个owner执行恢复已完成；该组合changed=0，未复现数值精度损失，不计正式通过|
+|33|A|FAULT33_EVIDENCE_PENDING|公共33 paged_decode|A3实际launch/三形状控制未闭合，关闭|Qwen3.8 A3 TP2（蓝区A2仅验证）|r7.5候选解码工具已提供；A3三形状实际回传待补||
+|34|C|REFERENCE_ADAPTER_PENDING|黄区float_matmul现象变体（独立登记）|C类；eager无原图编译融合，比较MM与加法路径的数值现象，不用公共39mr结果替代黄区适配器验收|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区float_matmul需适配；同一次测试仅在证据逐条支持时备注覆盖多行|参考factory和CPU测试已写；A2社区权重两个rank无真实BF16带bias视觉候选（REFERENCE_NO_REAL_BF16_WEIGHT）。测试引擎退出，非安全拒绝，不算两个owner通过。当前部署不适用；不授予A3资格。|
+|35|B|AWAIT_FORMAL_TEST|合并公共28 denominator_replay；黄区finite_perturb历史保留|数学不等价：分母重放不是仅累加序改变，合并只覆盖错误输出现象|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
+|36|F|CLOSED_NO_INJECTION|BIOS硬件配置|不修改BIOS，不作为本工具注入|当前A3不适用|范围决定，不要求注入||
+|37|B|YELLOW_ADAPTER_READY_UNTESTED|黄区rounding_perturb / faulty_requant_rounding；保留配置说明|固定输入与scale，仅改变局部舍入，不全局替换torch.round|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
+|38|B|HCCL_BITWISE_PENDING|黄区独立HCCL工具|独立HCCL通道；引用黄区结论|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
+|39|A|AWAIT_FORMAL_TEST|公共39 matmul_range|需真实非有限结果才覆盖溢出；有限误差只能说明精度损失|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查||
+|40|B|YELLOW_ADAPTER_READY_UNTESTED|黄区kv_update_misdirect（v2）|污染在请求后续token生效，释放/重建边界恢复|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
+|41|A|AWAIT_FORMAL_TEST|公共20 buffer_substitute|同公共20输入覆盖；一次登记两库行备注|Qwen3.8 A3 TP2（蓝区A2仅验证）|历史公共结果见证据索引；最终产品登记仍须逐组合审查||
 
 ## 等价性结论与限制
 

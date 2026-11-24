@@ -42,3 +42,8 @@ class LedgerTests(unittest.TestCase):
         self.assertIn('20',str(rows[41]))
         self.assertIn('39',str(rows[39]))
         self.assertIn('ConvTranspose',str(rows[17]))
+
+    def test_progress_notes_are_visible_in_handoff(self):
+        _,data=self.load()
+        data["rows"][33]["progress_note"]="REFERENCE_NO_REAL_BF16_WEIGHT"
+        self.assertIn("REFERENCE_NO_REAL_BF16_WEIGHT",render(data))

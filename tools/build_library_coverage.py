@@ -40,8 +40,8 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
         progress += f'|{state}|{count}|'+ '、'.join(str(r['row']) for r in rows if r['progress_state']==state)+'|\n'
     progress += ('\n历史公共证据不等于本轮通过。参考适配器通过 A2 后记 ADAPTER_READY_UNTESTED，'
         '标注等待黄区审查；正式测试审查并登记后才记 REGISTERED。第21行按区域寿命选择v1或v2，待黄区确认。\n\n'
-        '|库行|类|进度|对应能力/变体|机理与范围|部署|证据或待补项|\n|---|---|---|---|---|---|---|\n')
-    return head+progress+''.join('|'+ '|'.join(str(r[k]).replace('|','／') for k in ('row','category','progress_state','capability','boundary','deployment','evidence'))+'|\n' for r in rows)+data['notes']
+        '|库行|类|进度|对应能力/变体|机理与范围|部署|证据或待补项|当前进度说明|\n|---|---|---|---|---|---|---|---|\n')
+    return head+progress+''.join('|'+ '|'.join(str(r.get(k,'') if k=='progress_note' else r[k]).replace('|','／') for k in ('row','category','progress_state','capability','boundary','deployment','evidence','progress_note'))+'|\n' for r in rows)+data['notes']
 
 
 def main():
