@@ -2,7 +2,7 @@
 
 ## r2勘误：本单必须配套r2采集器
 
-2026-11-24完整报告只作为问题定位和可复用身份/金丝雀的文本证据，不算本单窗口一通过。用`fault33-evidence-candidate-20261124-r2`替代r1及黄区自改版本；冻结的r7.4/r7.4.1产品包不动。完整回传要求见`yellow_intake_20261124_fault33_full.md`。
+K3收到黄区自改采集器diff后，旧窗口一原始文件允许先按 `fault33_n2_existing_capture_20261124.md` 离线补提，不再统一要求重跑。审查和限制见 `yellow_intake_20261124_fault33_window1.md`。以下r2 sidecar门禁适用于新采集；旧文件不伪造sidecar，高位函数名哈希不能用作真实key。冻结的r7.4/r7.4.1及已发布r2 ZIP不变。
 
 r2新增`aclrtBinaryGetFunction`按名句柄登记，每条二进制旁保存`.bin.binding.json`。name-only的header临时key为0，审查输出key=null；它没有真实tiling key，不能进入候选解码。后到的ByEntry只更新之后的launch，早期记录不追补。候选CLI要求sidecar的rank进程内pid/serial/entry与bin一致；不能删除sidecar绕过检查。
 
