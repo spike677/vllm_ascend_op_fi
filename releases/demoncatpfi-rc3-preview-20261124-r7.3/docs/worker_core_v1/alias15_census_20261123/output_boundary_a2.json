@@ -1,0 +1,95 @@
+{
+  "schema": "dcat.alias.output.census.summary.v1",
+  "status": "READONLY_CENSUS_COMPLETED",
+  "injection_enabled": false,
+  "qualification_granted": false,
+  "combination": {
+    "hardware": "Ascend910B4/A2",
+    "stack": "vLLM 0.26 / vllm-ascend 0.26.0rc1 / CANN 9.1.0",
+    "model": "Qwen3.8 W8A8 community",
+    "tp": 2
+  },
+  "attempt": "alias15-output-a2",
+  "raw_sha256": "0c38a0ef0c2a3b6bb32d22c02dee66cff53d399c947c137b36deaceced5fb523",
+  "source_manifest_sha256": "56721f37116592ac71f93796a4068952fb82295cd393e4dda3446b83dde0a104",
+  "seconds": 243.70167102804407,
+  "isolation_removed": true,
+  "started": "2026-11-23T10:52:34.229871+00:00",
+  "ended": "2026-11-23T10:56:37.931515+00:00",
+  "token_text_equal": true,
+  "full_hidden_logits_equality_proven": false,
+  "ranks": [
+    {
+      "rank": 0,
+      "sites": [
+        "language_model.model.layers.3.self_attn.attn",
+        "language_model.model.layers.7.self_attn.attn",
+        "language_model.model.layers.11.self_attn.attn",
+        "language_model.model.layers.15.self_attn.attn",
+        "language_model.model.layers.19.self_attn.attn",
+        "language_model.model.layers.23.self_attn.attn",
+        "language_model.model.layers.27.self_attn.attn",
+        "language_model.model.layers.31.self_attn.attn",
+        "language_model.model.layers.35.self_attn.attn",
+        "language_model.model.layers.39.self_attn.attn",
+        "language_model.model.layers.43.self_attn.attn",
+        "language_model.model.layers.47.self_attn.attn",
+        "language_model.model.layers.51.self_attn.attn",
+        "language_model.model.layers.55.self_attn.attn",
+        "language_model.model.layers.59.self_attn.attn",
+        "language_model.model.layers.63.self_attn.attn"
+      ],
+      "calls": 128,
+      "formats": {
+        "2": 128
+      },
+      "dtype": [
+        "torch.bfloat16"
+      ],
+      "initial_nonfinite_calls": 0,
+      "healthy_writes_changed": 128,
+      "view_and_base_equal": true,
+      "real_gate_consumed_base": true,
+      "projection_reads_gate_output": true,
+      "hooks_remaining": 0,
+      "methods_remaining": 0,
+      "execute_wrapper_removed": true
+    },
+    {
+      "rank": 1,
+      "sites": [
+        "language_model.model.layers.3.self_attn.attn",
+        "language_model.model.layers.7.self_attn.attn",
+        "language_model.model.layers.11.self_attn.attn",
+        "language_model.model.layers.15.self_attn.attn",
+        "language_model.model.layers.19.self_attn.attn",
+        "language_model.model.layers.23.self_attn.attn",
+        "language_model.model.layers.27.self_attn.attn",
+        "language_model.model.layers.31.self_attn.attn",
+        "language_model.model.layers.35.self_attn.attn",
+        "language_model.model.layers.39.self_attn.attn",
+        "language_model.model.layers.43.self_attn.attn",
+        "language_model.model.layers.47.self_attn.attn",
+        "language_model.model.layers.51.self_attn.attn",
+        "language_model.model.layers.55.self_attn.attn",
+        "language_model.model.layers.59.self_attn.attn",
+        "language_model.model.layers.63.self_attn.attn"
+      ],
+      "calls": 128,
+      "formats": {
+        "2": 128
+      },
+      "dtype": [
+        "torch.bfloat16"
+      ],
+      "initial_nonfinite_calls": 0,
+      "healthy_writes_changed": 128,
+      "view_and_base_equal": true,
+      "real_gate_consumed_base": true,
+      "projection_reads_gate_output": true,
+      "hooks_remaining": 0,
+      "methods_remaining": 0,
+      "execute_wrapper_removed": true
+    }
+  ]
+}

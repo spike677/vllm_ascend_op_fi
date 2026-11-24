@@ -1,0 +1,150 @@
+{
+  "schema": "demoncat.output39.single_task_independent_review.v1",
+  "status": "RECORDED_DEPLOYMENT_EFFECT_AND_RECOVERY_CONSISTENT",
+  "review_date": "2026-11-19",
+  "mechanism": "39.output_proxy",
+  "scope": "BLUE_ZONE_SINGLE_TASK_SINGLE_TARGET_QWEN3_0_6B",
+  "source_commit": "134e11886c47f969bd11de498affd73e8ce3c3f3",
+  "source_manifest_sha256": "aa40d9908ebae4b5063f32dadf6fc998a2afcb4b5db4afc182ad4ff6633d15e4",
+  "image_sha256": "35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+  "native": {
+    "build_source": "PREVIOUSLY_REVIEWED_SOURCE101",
+    "build_key": "05e6a510efa3a8ac8f4a7c3f77056af2027137a3d90440cc36ec31f90af1ccbf",
+    "dso_sha256": "9261d0867f822c90d0d179457e41bc9a2b132bc39e643b61fe5d47a3fd81424f",
+    "simulation": false,
+    "finite_original_guard_unchanged": true
+  },
+  "original_metadata": {
+    "probe_result": {
+      "bytes": 72793,
+      "sha256": "c58e42a88d32676037132bb5cc4942a7bafd94a9fc61752e214587af1a7895ae"
+    },
+    "host_receipt": {
+      "bytes": 1561380,
+      "sha256": "42268a8a526cab04008130cafca9cdbb5d4976943956313dd23a32fada2d6e48"
+    },
+    "controller": {
+      "bytes": 62799,
+      "sha256": "c09c59259a845d5a1695a3113dc67e2f10c392f8e17d9f204e228da65544e224"
+    },
+    "raw_published": false
+  },
+  "workload": {
+    "model": "Qwen3-0.6B",
+    "physical_card": 5,
+    "tensor_parallel_size": 1,
+    "dtype": "BF16",
+    "prefill_tokens": 14,
+    "generated_tokens_per_request": 1,
+    "actual_requests": 4,
+    "extra_recovery_requests": 0,
+    "phases": ["normal", "fault", "off", "health"],
+    "distinct_request_ids": true,
+    "same_worker_model_lifetime": true,
+    "input_sha256": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+    "all_inputs_matched": true,
+    "elapsed_seconds": 98.37447747797705
+  },
+  "target": {
+    "module_path": "model.layers.0.mlp.gate_up_proj",
+    "producer_operator": "vllm.unquantized_gemm.default",
+    "shape": [14, 6144],
+    "elements": 86016,
+    "selected_flat_indices": [0],
+    "normal_observed_projection_returns": 3,
+    "fault_observed_projection_returns": 3,
+    "off_observed_projection_returns": 3,
+    "projection_observation_limit": 16,
+    "same_bound_target_normal_fault_off": true,
+    "full_model_census": false
+  },
+  "effect": {
+    "source": "NATIVE_READBACK_OF_SAME_ACTUAL_RETURN",
+    "normal_changed_elements": 0,
+    "fault_changed_elements": 1,
+    "fault_changed_only_selected": true,
+    "before_bf16_hex": "3f77",
+    "before_value": 0.96484375,
+    "after_bf16_hex": "7f80",
+    "after_value_class": "positive_infinity",
+    "finite_to_positive_inf": 1,
+    "finite_to_negative_inf": 0,
+    "finite_to_nan": 0,
+    "normal_and_fault_preimage_sha256": "41a75669a41c95cb8406a61e51b3aa2134b7ffbfb7a25887dfd490b10ae07183",
+    "fault_after_sha256": "f311257630947f09aef984e708a89f2cee2d77696db764f21317c9243505de15",
+    "current_effect_changed_by_phase": [0, 1, null, null],
+    "retained_last_fault_changed_by_phase": [null, 1, 1, 1]
+  },
+  "consumer": {
+    "operator": "npu.npu_swiglu.default",
+    "selected_elements_read": [0],
+    "dim": -1,
+    "dispatch_ordinal": 25,
+    "compute_boundary": "root",
+    "actual_input_matches_current_producer_storage": true,
+    "same_semantics_normal_fault_off": true,
+    "original_returned_once": true,
+    "consumer_output_values_separately_dumped": false
+  },
+  "native_receipts": {
+    "leases_opened": 2,
+    "event_order_each": ["open", "apply", "restore", "release", "live"],
+    "normal": {"generation": 2, "apply_mode": 0, "apply_return_code": 0, "changed_elements": 0, "restore_return_code": 0, "release_return_code": 0, "final_live": false},
+    "fault": {"generation": 3, "apply_mode": 1, "apply_return_code": 0, "changed_elements": 1, "restore_return_code": 0, "release_return_code": 0, "final_live": false},
+    "all_events_join_same_lease_owner_generation_handle": true,
+    "native_owner_recomputed_from_runtime_provider_owner": true,
+    "host_ticket_owner_not_used_as_native_owner": true,
+    "native_open_geometry_matches_current_target": true,
+    "first_failure": null,
+    "off_has_no_native_lease": true,
+    "health_has_no_injection_report": true
+  },
+  "outputs": {
+    "normal": {"tokens": [576], "text": " The"},
+    "fault": {"tokens": [0], "text": "!"},
+    "off": {"tokens": [576], "text": " The"},
+    "health": {"tokens": [576], "text": " The"},
+    "fault_hidden_logits_hash_changed": true,
+    "fault_logits_hash_changed": true,
+    "off_hidden_logits_and_logits_hashes_exact": true,
+    "health_hidden_logits_and_logits_hashes_exact": true,
+    "full_private_arrays_downloaded_for_review": false,
+    "multi_token_generation_tested": false
+  },
+  "recovery_and_cleanup": {
+    "recorded_owned_span_restore_exact": true,
+    "off_health_numerical_recovery_separately_observed": true,
+    "host_actions": 17,
+    "host_actual_request_records_match_result": true,
+    "finish_owned_hooks": 0,
+    "finish_leases": 0,
+    "finish_inflight": 0,
+    "finish_native_lease_list": [],
+    "pending_replay": false,
+    "runtime_ownership_retained": false,
+    "deployment_binding_removed": true,
+    "container_exit_code": 0,
+    "oom_killed": false,
+    "owned_container_removed": true,
+    "container_removal_used_as_numerical_recovery_proof": false,
+    "post_cleanup_gate_idle": true,
+    "post_cleanup_gate_blocker_count": 0
+  },
+  "review": {
+    "method": "READ_ONLY_STDLIB_ORIGINAL_RESULT_HOST_AND_CONTROLLER_CROSS_CHECK",
+    "provider_imported_by_review": false,
+    "probe_success_boolean_used_as_oracle": false,
+    "original_metadata_rewritten": false,
+    "issues_remaining": [],
+    "statistics_or_msprobe_collected": false,
+    "source114_failed_normal_preserved": true
+  },
+  "qualification_granted": false,
+  "C1": false,
+  "C2": false,
+  "C3": false,
+  "E5": false,
+  "main_project_integration": "NOT_VERIFIED",
+  "native_historical_out_of_bounds_reproduction": false,
+  "multi_model_acceptance": false
+}

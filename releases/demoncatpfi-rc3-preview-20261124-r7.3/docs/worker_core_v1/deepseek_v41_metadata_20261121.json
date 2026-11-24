@@ -1,0 +1,335 @@
+{
+  "w4a8": {
+    "model_type": "deepseek_v41",
+    "layers": 40,
+    "heads": 64,
+    "head_dim": 512,
+    "experts": 384,
+    "top_k": 6,
+    "vision": {
+      "count": 262,
+      "types": {
+        "FLOAT": 262
+      }
+    },
+    "main_experts": {
+      "count": 184320,
+      "types": {
+        "W4A8_DYNAMIC": 184320
+      }
+    },
+    "main_wq_b": {
+      "count": 120,
+      "types": {
+        "W8A8_DYNAMIC": 120
+      }
+    },
+    "mtp_wq_b": {
+      "count": 3,
+      "types": {
+        "FLOAT": 3
+      }
+    },
+    "norm": {
+      "count": 248,
+      "types": {
+        "FLOAT": 248
+      }
+    },
+    "embed": {
+      "count": 7,
+      "types": {
+        "FLOAT": 5,
+        "INT8_SYM": 2
+      }
+    },
+    "exceptions": [
+      {
+        "path": "mtp.0.attn.wq_b.weight",
+        "actual": "FLOAT"
+      },
+      {
+        "path": "mtp.1.attn.wq_b.weight",
+        "actual": "FLOAT"
+      },
+      {
+        "path": "mtp.2.attn.wq_b.weight",
+        "actual": "FLOAT"
+      },
+      {
+        "path": "layers.1.engram.embed.quant_type",
+        "actual": "INT8_SYM"
+      },
+      {
+        "path": "layers.14.engram.embed.quant_type",
+        "actual": "INT8_SYM"
+      }
+    ],
+    "qualification_granted": false,
+    "repository": "Eco-Tech/DeepSeek-V4.1-Flash-1017-w4a8",
+    "metadata_directory": "D:\\DemonCATPFI\\intake\\models\\Eco-Tech\\DeepSeek-V4.1-Flash-1017-w4a8\\20261121-875289d09b19",
+    "config_sha256": "43d3b2bc55626893d59275b32e04068c0fc916f5c382eb91de73bdbade9c88f7",
+    "quant_sha256": "1bc65590c213a620738477020127e99a8df5394cfec284198005df33d526178c",
+    "files": [
+      {
+        "path": "DeepSeek-V4.1-Flash_best_practice.yaml",
+        "bytes": 3087,
+        "sha256": "dc2346e5765b84ae22c9b8b4d92d0be7548961e21d756a1b0f29dabac3b23205",
+        "revision": "4fbbf8c78aeed000add9765003bd842099844006",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w4a8/resolve/4fbbf8c78aeed000add9765003bd842099844006/DeepSeek-V4.1-Flash_best_practice.yaml"
+      },
+      {
+        "path": "README.md",
+        "bytes": 1667,
+        "sha256": "eb70ee8314b4cadee9bbb750a1ce1e37dfdff8e211f28d303dfaaf68b0f11a18",
+        "revision": "2701ad74996ab465759ea37e2e7df132709716e9",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w4a8/resolve/2701ad74996ab465759ea37e2e7df132709716e9/README.md"
+      },
+      {
+        "path": "config.json",
+        "bytes": 3355,
+        "sha256": "43d3b2bc55626893d59275b32e04068c0fc916f5c382eb91de73bdbade9c88f7",
+        "revision": "4fbbf8c78aeed000add9765003bd842099844006",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w4a8/resolve/4fbbf8c78aeed000add9765003bd842099844006/config.json"
+      },
+      {
+        "path": "configuration.json",
+        "bytes": 26,
+        "sha256": "563571360b3c5a4cf9b14b09732f686a8ed9da2d0dfcd1728d72140b4aeb1467",
+        "revision": "4fbbf8c78aeed000add9765003bd842099844006",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w4a8/resolve/4fbbf8c78aeed000add9765003bd842099844006/configuration.json"
+      },
+      {
+        "path": "quant_model_description.json",
+        "bytes": 11319112,
+        "sha256": "1bc65590c213a620738477020127e99a8df5394cfec284198005df33d526178c",
+        "revision": "4fbbf8c78aeed000add9765003bd842099844006",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w4a8/resolve/4fbbf8c78aeed000add9765003bd842099844006/quant_model_description.json"
+      },
+      {
+        "path": "quant_model_weights.safetensors.index.json",
+        "bytes": 18068590,
+        "sha256": "112d49737a0ef33105626ffbc47fbc48cf38f463b51ac28cef4bf21f34a75795",
+        "revision": "4fbbf8c78aeed000add9765003bd842099844006",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w4a8/resolve/4fbbf8c78aeed000add9765003bd842099844006/quant_model_weights.safetensors.index.json"
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 6367257,
+        "sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b",
+        "revision": "4fbbf8c78aeed000add9765003bd842099844006",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w4a8/resolve/4fbbf8c78aeed000add9765003bd842099844006/tokenizer.json"
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 801,
+        "sha256": "6ac8c8dc065ed118161d02dd532749ae3f52c243deac27872134fae2f50d8547",
+        "revision": "4fbbf8c78aeed000add9765003bd842099844006",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w4a8/resolve/4fbbf8c78aeed000add9765003bd842099844006/tokenizer_config.json"
+      }
+    ],
+    "total_bytes": 35763895,
+    "fixture": {
+      "layer_ids": [
+        0,
+        2,
+        20
+      ],
+      "leaf_count": 67,
+      "dummy_elements": 67,
+      "compressed_ratios": [
+        0,
+        2,
+        1
+      ],
+      "executed_on": "CPU",
+      "inference": false
+    },
+    "missing_files": [
+      "generation_config.json",
+      "separate visual configuration (embedded in config.json)"
+    ],
+    "yellow_identity": "CONFIG_ASSUMED_SAME_BY_OWNER; OBSERVED_PREFIX_MATCH_ONLY",
+    "runtime_applicability": "UNVERIFIED_DEFAULT_CLOSED"
+  },
+  "w8a8": {
+    "model_type": "deepseek_v41",
+    "layers": 40,
+    "heads": 64,
+    "head_dim": 512,
+    "experts": 384,
+    "top_k": 6,
+    "vision": {
+      "count": 262,
+      "types": {
+        "FLOAT": 262
+      }
+    },
+    "main_experts": {
+      "count": 138240,
+      "types": {
+        "W8A8_DYNAMIC": 138240
+      }
+    },
+    "main_wq_b": {
+      "count": 120,
+      "types": {
+        "W8A8_DYNAMIC": 120
+      }
+    },
+    "mtp_wq_b": {
+      "count": 9,
+      "types": {
+        "W8A8_DYNAMIC": 9
+      }
+    },
+    "norm": {
+      "count": 248,
+      "types": {
+        "FLOAT": 248
+      }
+    },
+    "embed": {
+      "count": 7,
+      "types": {
+        "FLOAT": 5,
+        "INT8_SYM": 2
+      }
+    },
+    "exceptions": [
+      {
+        "path": "layers.1.engram.embed.quant_type",
+        "actual": "INT8_SYM"
+      },
+      {
+        "path": "layers.14.engram.embed.quant_type",
+        "actual": "INT8_SYM"
+      }
+    ],
+    "qualification_granted": false,
+    "repository": "Eco-Tech/DeepSeek-V4.1-Flash-1017-w8a8",
+    "metadata_directory": "D:\\DemonCATPFI\\intake\\models\\Eco-Tech\\DeepSeek-V4.1-Flash-1017-w8a8\\20261121-fe432e3770db",
+    "config_sha256": "43d3b2bc55626893d59275b32e04068c0fc916f5c382eb91de73bdbade9c88f7",
+    "quant_sha256": "2f4020a0a12daa621cfd2ff9d09a2c73e5674af7c624ef47df5c66796c3774bf",
+    "files": [
+      {
+        "path": "DeepSeek-V4.1-Flash_best_practice.yaml",
+        "bytes": 2690,
+        "sha256": "6a14e5460279d8ca9f67ef7bff877c7b02ae61ce5f5150cf6e5da18bbdfa619b",
+        "revision": "334ed3a834e64824814de173b42330cac2607467",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w8a8/resolve/334ed3a834e64824814de173b42330cac2607467/DeepSeek-V4.1-Flash_best_practice.yaml"
+      },
+      {
+        "path": "README.md",
+        "bytes": 960,
+        "sha256": "2667c0496ac565acc1406022e6042e89aa29d4f5d3f4a6e36cfca0440b93d7e9",
+        "revision": "919146d89ff10a9e4684d78986fac7af9d4ecf6c",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w8a8/resolve/919146d89ff10a9e4684d78986fac7af9d4ecf6c/README.md"
+      },
+      {
+        "path": "config.json",
+        "bytes": 3355,
+        "sha256": "43d3b2bc55626893d59275b32e04068c0fc916f5c382eb91de73bdbade9c88f7",
+        "revision": "334ed3a834e64824814de173b42330cac2607467",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w8a8/resolve/334ed3a834e64824814de173b42330cac2607467/config.json"
+      },
+      {
+        "path": "configuration.json",
+        "bytes": 26,
+        "sha256": "563571360b3c5a4cf9b14b09732f686a8ed9da2d0dfcd1728d72140b4aeb1467",
+        "revision": "334ed3a834e64824814de173b42330cac2607467",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w8a8/resolve/334ed3a834e64824814de173b42330cac2607467/configuration.json"
+      },
+      {
+        "path": "quant_model_description.json",
+        "bytes": 8677636,
+        "sha256": "2f4020a0a12daa621cfd2ff9d09a2c73e5674af7c624ef47df5c66796c3774bf",
+        "revision": "334ed3a834e64824814de173b42330cac2607467",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w8a8/resolve/334ed3a834e64824814de173b42330cac2607467/quant_model_description.json"
+      },
+      {
+        "path": "quant_model_weights.safetensors.index.json",
+        "bytes": 13843894,
+        "sha256": "c32977056a3e8bb17d2330d566020f49ff65facb022c25035b8d3fcf5d2af3a2",
+        "revision": "12b85455a58c7df345c1abc43934624a76bac576",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w8a8/resolve/12b85455a58c7df345c1abc43934624a76bac576/quant_model_weights.safetensors.index.json"
+      },
+      {
+        "path": "tokenizer.json",
+        "bytes": 6367257,
+        "sha256": "c90dfa01249db1be4245780a052ede752e1361c612ac6d08e2bdada7d599476b",
+        "revision": "12b85455a58c7df345c1abc43934624a76bac576",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w8a8/resolve/12b85455a58c7df345c1abc43934624a76bac576/tokenizer.json"
+      },
+      {
+        "path": "tokenizer_config.json",
+        "bytes": 801,
+        "sha256": "6ac8c8dc065ed118161d02dd532749ae3f52c243deac27872134fae2f50d8547",
+        "revision": "12b85455a58c7df345c1abc43934624a76bac576",
+        "source_url": "https://modelscope.cn/models/Eco-Tech/DeepSeek-V4.1-Flash-1017-w8a8/resolve/12b85455a58c7df345c1abc43934624a76bac576/tokenizer_config.json"
+      }
+    ],
+    "total_bytes": 28896619,
+    "fixture": {
+      "layer_ids": [
+        0,
+        2,
+        20
+      ],
+      "leaf_count": 67,
+      "dummy_elements": 67,
+      "compressed_ratios": [
+        0,
+        2,
+        1
+      ],
+      "executed_on": "CPU",
+      "inference": false
+    },
+    "missing_files": [
+      "generation_config.json",
+      "separate visual configuration (embedded in config.json)"
+    ],
+    "yellow_identity": "CONFIG_ASSUMED_SAME_BY_OWNER; OBSERVED_PREFIX_MATCH_ONLY",
+    "runtime_applicability": "UNVERIFIED_DEFAULT_CLOSED"
+  },
+  "site_requirements": {
+    "28": [
+      "SparseFlashMla call",
+      "LightningIndexer actual unique key indices",
+      "causal sequence bounds",
+      "consumer"
+    ],
+    "8": [
+      "MoeDistributeDispatchV2/CombineV2 calls",
+      "dynamic token/request map",
+      "actual expert placement"
+    ],
+    "Batch": [
+      "separate DynamicQuant call",
+      "at least two actual requests",
+      "original QMM consumption; exclude fused GroupedMatmul quant"
+    ],
+    "18": [
+      "RmsNorm/RmsNormCast call",
+      "actual dtype",
+      "consumer"
+    ],
+    "22": [
+      "InplacePartialRotaryMul call",
+      "position dimensions",
+      "rotary range and consumer"
+    ],
+    "39": [
+      "MatMulV2/QuantMatmulWeightNz output",
+      "actual BF16 ND",
+      "consumer"
+    ],
+    "41": [
+      "actual MLA cache layout",
+      "live object byte interval",
+      "writer/read stream order",
+      "safe restore boundary"
+    ]
+  }
+}

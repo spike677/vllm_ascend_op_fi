@@ -1,0 +1,115 @@
+{
+  "combination": "BLUE A2/0.26/CANN9.1/Qwen3.8 community W8A8/TP2",
+  "results": [
+    {
+      "mechanism": "41.tail_column",
+      "status": "PRODUCT_BLUE_REVIEW_PASSED",
+      "scopes": 2,
+      "positive_http_requests": 6,
+      "range_negative_requests": 2,
+      "counts_by_rank": {
+        "0": {
+          "observed": 384,
+          "eligible": 288,
+          "attempted": 288,
+          "applied": 288,
+          "changed": 288,
+          "consumed": 288,
+          "restored": 288,
+          "failed": 0
+        },
+        "1": {
+          "observed": 384,
+          "eligible": 288,
+          "attempted": 288,
+          "applied": 288,
+          "changed": 288,
+          "consumed": 288,
+          "restored": 288,
+          "failed": 0
+        }
+      },
+      "consumers": [
+        "npu_fused_infer_attention_score"
+      ],
+      "receipt_sha256": "797d120bec070576f5bbc1a07282b068b9cb0e8e04701a1b5fea5f444464d219",
+      "source_manifest_sha256": "18bc353c403d3d8b2db152f19c618d84e1f46b5bdd46825a26b7fff0de89d500",
+      "canary_exact": true,
+      "resource_zero": true
+    },
+    {
+      "mechanism": "26.fia_destination",
+      "status": "PRODUCT_BLUE_REVIEW_PASSED",
+      "scopes": 2,
+      "positive_http_requests": 6,
+      "range_negative_requests": 2,
+      "counts_by_rank": {
+        "0": {
+          "observed": 384,
+          "eligible": 384,
+          "attempted": 384,
+          "applied": 384,
+          "changed": 384,
+          "consumed": 384,
+          "restored": 384,
+          "failed": 0
+        },
+        "1": {
+          "observed": 384,
+          "eligible": 384,
+          "attempted": 384,
+          "applied": 384,
+          "changed": 384,
+          "consumed": 384,
+          "restored": 384,
+          "failed": 0
+        }
+      },
+      "consumers": [
+        "_C_ascend::npu_add_rms_norm_bias"
+      ],
+      "receipt_sha256": "0f19d2d2b5efafcc9182a634f99ef52c6fe66a5a3225444c71f7974b86b2585d",
+      "source_manifest_sha256": "18bc353c403d3d8b2db152f19c618d84e1f46b5bdd46825a26b7fff0de89d500",
+      "canary_exact": true,
+      "resource_zero": true
+    },
+    {
+      "mechanism": "20.buffer_substitute",
+      "status": "PRODUCT_BLUE_REVIEW_PASSED",
+      "scopes": 2,
+      "positive_http_requests": 6,
+      "range_negative_requests": 2,
+      "counts_by_rank": {
+        "0": {
+          "observed": 7296,
+          "eligible": 7296,
+          "attempted": 7296,
+          "applied": 7296,
+          "changed": 7296,
+          "consumed": 7296,
+          "restored": 7296,
+          "failed": 0
+        },
+        "1": {
+          "observed": 7296,
+          "eligible": 7296,
+          "attempted": 7296,
+          "applied": 7296,
+          "changed": 7296,
+          "consumed": 7296,
+          "restored": 7296,
+          "failed": 0
+        }
+      },
+      "consumers": [
+        "npu_dynamic_quant"
+      ],
+      "receipt_sha256": "c9ee25de1b996ffab5894c6983337f11e2b55e3b1b6e922157d02ea7fa35a9c3",
+      "source_manifest_sha256": "18bc353c403d3d8b2db152f19c618d84e1f46b5bdd46825a26b7fff0de89d500",
+      "canary_exact": true,
+      "resource_zero": true
+    }
+  ],
+  "a3_admitted": false,
+  "cpp_changed": false
+}

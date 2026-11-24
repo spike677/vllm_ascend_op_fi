@@ -1,0 +1,517 @@
+{
+  "review": {
+    "schema": "demoncat.continuous.public_review.v1",
+    "mechanism": "33.paged_decode",
+    "arithmetic_device": "input",
+    "reference_mode": "immediate",
+    "passed": true,
+    "scopes": [
+      {
+        "owner": "worker-group-94fd44da0e42428ab9176f37aada5d69",
+        "rank_effects": {
+          "0": {
+            "coverage": {
+              "applied": 48,
+              "attempted": 48,
+              "changed": 48,
+              "consumed": 48,
+              "eligible": 48,
+              "failed": 0,
+              "observed": 64,
+              "restored": 48
+            },
+            "site_count": 16,
+            "quant_reference": {
+              "backend": "input",
+              "mode": "immediate",
+              "q_sample_difference_fraction": null,
+              "q_sample_differences": 0,
+              "reference_scope": "NOT_APPLIED",
+              "sampled_elements": 0
+            },
+            "hidden_changed": true,
+            "logits_changed": true,
+            "recovered": true,
+            "events_sha256": "e714883c6164b7a434a623876f0a3ff1cc77b1c6de883ce908ba69a760e3532a",
+            "control_min_ratio": 0.9993489583333334,
+            "control_residual_elements": 8,
+            "grouping_changed_elements": 7262,
+            "grouping_changed_calls": 48,
+            "partition_effect": {
+              "calls": 48,
+              "selected_changed_elements": 7261
+            },
+            "projection_effect": {
+              "already_positive_inf_calls": 0,
+              "consumer_operators": [
+                "vllm_ascend.ops.linear.AscendRowParallelLinear.forward"
+              ],
+              "upstream_nonfinite_calls": 0
+            },
+            "structural_candidates_without_call": [],
+            "fault_all_finite": true,
+            "sampled_q_difference_fraction": null
+          },
+          "1": {
+            "coverage": {
+              "applied": 48,
+              "attempted": 48,
+              "changed": 48,
+              "consumed": 48,
+              "eligible": 48,
+              "failed": 0,
+              "observed": 64,
+              "restored": 48
+            },
+            "site_count": 16,
+            "quant_reference": {
+              "backend": "input",
+              "mode": "immediate",
+              "q_sample_difference_fraction": null,
+              "q_sample_differences": 0,
+              "reference_scope": "NOT_APPLIED",
+              "sampled_elements": 0
+            },
+            "hidden_changed": true,
+            "logits_changed": true,
+            "recovered": true,
+            "events_sha256": "e3980697e5404970a346f104d615c6112dda0016ac9e9b12bd36df6de0634abb",
+            "control_min_ratio": 0.9996744791666666,
+            "control_residual_elements": 2,
+            "grouping_changed_elements": 6764,
+            "grouping_changed_calls": 48,
+            "partition_effect": {
+              "calls": 48,
+              "selected_changed_elements": 6765
+            },
+            "projection_effect": {
+              "already_positive_inf_calls": 0,
+              "consumer_operators": [
+                "vllm_ascend.ops.linear.AscendRowParallelLinear.forward"
+              ],
+              "upstream_nonfinite_calls": 0
+            },
+            "structural_candidates_without_call": [],
+            "fault_all_finite": true,
+            "sampled_q_difference_fraction": null
+          }
+        },
+        "deployment": {
+          "0": {
+            "cann": [
+              "9.1.0"
+            ],
+            "dp": 1,
+            "dtype": "torch.bfloat16",
+            "eager": true,
+            "hardware_device_name": "Ascend910B4",
+            "hardware_family": "A2",
+            "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+            "hardware_logical_device": 0,
+            "live_config_matches_file": true,
+            "max_model_len": 4096,
+            "max_num_batched_tokens": 4096,
+            "max_num_seqs": 1,
+            "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+            "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+            "pp": 1,
+            "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+            "safetensors_index_sha256": {
+              "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+            },
+            "torch": "2.10.0+cpu",
+            "torch_npu": "2.10.0.post4",
+            "tp": 2,
+            "vllm": "0.26.0",
+            "vllm_ascend": "0.26.0rc1"
+          },
+          "1": {
+            "cann": [
+              "9.1.0"
+            ],
+            "dp": 1,
+            "dtype": "torch.bfloat16",
+            "eager": true,
+            "hardware_device_name": "Ascend910B4",
+            "hardware_family": "A2",
+            "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+            "hardware_logical_device": 1,
+            "live_config_matches_file": true,
+            "max_model_len": 4096,
+            "max_num_batched_tokens": 4096,
+            "max_num_seqs": 1,
+            "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+            "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+            "pp": 1,
+            "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+            "safetensors_index_sha256": {
+              "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+            },
+            "torch": "2.10.0+cpu",
+            "torch_npu": "2.10.0.post4",
+            "tp": 2,
+            "vllm": "0.26.0",
+            "vllm_ascend": "0.26.0rc1"
+          }
+        },
+        "fault_time_ratio": 1.9013109304108802,
+        "request_plan": {
+          "schema": "demoncat.continuous.request_plan.v1",
+          "mechanism": "33.paged_decode",
+          "phases": [
+            {
+              "phase": "normal",
+              "request_count": 1,
+              "max_tokens": 4,
+              "includes_prefill": true,
+              "includes_decode": true
+            },
+            {
+              "phase": "fault",
+              "request_count": 1,
+              "max_tokens": 4,
+              "includes_prefill": true,
+              "includes_decode": true
+            },
+            {
+              "phase": "off",
+              "request_count": 1,
+              "max_tokens": 4,
+              "includes_prefill": true,
+              "includes_decode": true
+            },
+            {
+              "phase": "health",
+              "request_count": 1,
+              "max_tokens": 4,
+              "includes_prefill": true,
+              "includes_decode": true
+            }
+          ],
+          "unit": "request",
+          "max_iterations": 4,
+          "max_requests": 4,
+          "external_health_required": false,
+          "advance_argument": "request_id",
+          "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+          "qualification_granted": false,
+          "completion": "next_phase == complete AND all rank recovery checks passed"
+        },
+        "recovered": true,
+        "resources_zero": true
+      },
+      {
+        "owner": "worker-group-16f885ae816d46e49118a494272b9f23",
+        "rank_effects": {
+          "0": {
+            "coverage": {
+              "applied": 48,
+              "attempted": 48,
+              "changed": 48,
+              "consumed": 48,
+              "eligible": 48,
+              "failed": 0,
+              "observed": 64,
+              "restored": 48
+            },
+            "site_count": 16,
+            "quant_reference": {
+              "backend": "input",
+              "mode": "immediate",
+              "q_sample_difference_fraction": null,
+              "q_sample_differences": 0,
+              "reference_scope": "NOT_APPLIED",
+              "sampled_elements": 0
+            },
+            "hidden_changed": true,
+            "logits_changed": true,
+            "recovered": true,
+            "events_sha256": "dbad13c6d8f15bf7c329c855bb481702918f11c8645b9c9da78347b962f4789a",
+            "control_min_ratio": 0.9993489583333334,
+            "control_residual_elements": 8,
+            "grouping_changed_elements": 7262,
+            "grouping_changed_calls": 48,
+            "partition_effect": {
+              "calls": 48,
+              "selected_changed_elements": 7261
+            },
+            "projection_effect": {
+              "already_positive_inf_calls": 0,
+              "consumer_operators": [
+                "vllm_ascend.ops.linear.AscendRowParallelLinear.forward"
+              ],
+              "upstream_nonfinite_calls": 0
+            },
+            "structural_candidates_without_call": [],
+            "fault_all_finite": true,
+            "sampled_q_difference_fraction": null
+          },
+          "1": {
+            "coverage": {
+              "applied": 48,
+              "attempted": 48,
+              "changed": 48,
+              "consumed": 48,
+              "eligible": 48,
+              "failed": 0,
+              "observed": 64,
+              "restored": 48
+            },
+            "site_count": 16,
+            "quant_reference": {
+              "backend": "input",
+              "mode": "immediate",
+              "q_sample_difference_fraction": null,
+              "q_sample_differences": 0,
+              "reference_scope": "NOT_APPLIED",
+              "sampled_elements": 0
+            },
+            "hidden_changed": true,
+            "logits_changed": true,
+            "recovered": true,
+            "events_sha256": "53ad122b192b5e100166e302613e98ad9d4968d07df03ff6ebec5b5880f125bc",
+            "control_min_ratio": 0.9996744791666666,
+            "control_residual_elements": 2,
+            "grouping_changed_elements": 6764,
+            "grouping_changed_calls": 48,
+            "partition_effect": {
+              "calls": 48,
+              "selected_changed_elements": 6765
+            },
+            "projection_effect": {
+              "already_positive_inf_calls": 0,
+              "consumer_operators": [
+                "vllm_ascend.ops.linear.AscendRowParallelLinear.forward"
+              ],
+              "upstream_nonfinite_calls": 0
+            },
+            "structural_candidates_without_call": [],
+            "fault_all_finite": true,
+            "sampled_q_difference_fraction": null
+          }
+        },
+        "deployment": {
+          "0": {
+            "cann": [
+              "9.1.0"
+            ],
+            "dp": 1,
+            "dtype": "torch.bfloat16",
+            "eager": true,
+            "hardware_device_name": "Ascend910B4",
+            "hardware_family": "A2",
+            "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+            "hardware_logical_device": 0,
+            "live_config_matches_file": true,
+            "max_model_len": 4096,
+            "max_num_batched_tokens": 4096,
+            "max_num_seqs": 1,
+            "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+            "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+            "pp": 1,
+            "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+            "safetensors_index_sha256": {
+              "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+            },
+            "torch": "2.10.0+cpu",
+            "torch_npu": "2.10.0.post4",
+            "tp": 2,
+            "vllm": "0.26.0",
+            "vllm_ascend": "0.26.0rc1"
+          },
+          "1": {
+            "cann": [
+              "9.1.0"
+            ],
+            "dp": 1,
+            "dtype": "torch.bfloat16",
+            "eager": true,
+            "hardware_device_name": "Ascend910B4",
+            "hardware_family": "A2",
+            "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+            "hardware_logical_device": 1,
+            "live_config_matches_file": true,
+            "max_model_len": 4096,
+            "max_num_batched_tokens": 4096,
+            "max_num_seqs": 1,
+            "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+            "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+            "pp": 1,
+            "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+            "safetensors_index_sha256": {
+              "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+            },
+            "torch": "2.10.0+cpu",
+            "torch_npu": "2.10.0.post4",
+            "tp": 2,
+            "vllm": "0.26.0",
+            "vllm_ascend": "0.26.0rc1"
+          }
+        },
+        "fault_time_ratio": 1.754630997516295,
+        "request_plan": {
+          "schema": "demoncat.continuous.request_plan.v1",
+          "mechanism": "33.paged_decode",
+          "phases": [
+            {
+              "phase": "normal",
+              "request_count": 1,
+              "max_tokens": 4,
+              "includes_prefill": true,
+              "includes_decode": true
+            },
+            {
+              "phase": "fault",
+              "request_count": 1,
+              "max_tokens": 4,
+              "includes_prefill": true,
+              "includes_decode": true
+            },
+            {
+              "phase": "off",
+              "request_count": 1,
+              "max_tokens": 4,
+              "includes_prefill": true,
+              "includes_decode": true
+            },
+            {
+              "phase": "health",
+              "request_count": 1,
+              "max_tokens": 4,
+              "includes_prefill": true,
+              "includes_decode": true
+            }
+          ],
+          "unit": "request",
+          "max_iterations": 4,
+          "max_requests": 4,
+          "external_health_required": false,
+          "advance_argument": "request_id",
+          "injection_policy": "ALL_RANK_EVERY_ELIGIBLE_CALL",
+          "qualification_granted": false,
+          "completion": "next_phase == complete AND all rank recovery checks passed"
+        },
+        "recovered": true,
+        "resources_zero": true
+      }
+    ],
+    "negative_creation_verified": true,
+    "acceptance_scope": "REFERENCE_ONLY_NO_MC2_OR_DEPLOYMENT_GRANT",
+    "reference_variant": "A2_BF16_SPLITFUSE_512_TO_256",
+    "qualification_granted": false,
+    "source_receipt_sha256": "55f3e0ba4dadd0b441e01fb46d832a0201cfec1a3aec4961fe684a78f8fe3506",
+    "reviewer_sha256": "0e972d41f303baa306e7dd81ebe577884e9401ebe0a219d971cc9ce67b33968a"
+  },
+  "launch": {
+    "schema": "demoncat.paged33.launch_projection.v1",
+    "prefill_launches": 384,
+    "decode_launches": 1152,
+    "decoded_template_matches": true,
+    "process_count": 2,
+    "process_records": [
+      {
+        "records": 768,
+        "max_serial": 767,
+        "contiguous": true,
+        "limit_reached": false
+      },
+      {
+        "records": 768,
+        "max_serial": 767,
+        "contiguous": true,
+        "limit_reached": false
+      }
+    ],
+    "all_within_capture_limit": true,
+    "decoded_variants": [
+      {
+        "fields": {
+          "batch": 1,
+          "blockSize": 128,
+          "embeddingSize": 256,
+          "embeddingSizeV": 256,
+          "endS2": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "kvHeads": 2,
+          "needCoreNum": 10,
+          "numHeads": 12,
+          "scaleValue": 0.0625,
+          "sparseMode": 3,
+          "splitNum": [
+            5,
+            5
+          ],
+          "startN1": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1,
+            1
+          ],
+          "startS2": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            0,
+            1,
+            2,
+            3,
+            4
+          ],
+          "totalSplitNodeNum": 2
+        },
+        "calls": 1152
+      }
+    ],
+    "ordered_capture_sha256": "daece17b23cb8659855d98e02b73191321f6322a21ae51d51576f2bca67d5606",
+    "projection_status": "OBSERVED_FIELDS_CHECKED_NOT_FULL_ABI_PROOF",
+    "raw_arguments_private": true,
+    "qualification_granted": false
+  },
+  "window": {
+    "status": "FINISHED",
+    "start": "2026-11-22T13:59:21.973573+00:00",
+    "ended": "2026-11-22T14:07:28.011074+00:00",
+    "elapsed_seconds": 486.03753069392405,
+    "isolation_removed": true,
+    "isolation": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER"
+  },
+  "isolation": [
+    {
+      "time": "2026-11-22T13:59:21.973699+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "maximum_seconds": 2100,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-22T14:07:28.011171+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ],
+  "receipt_bytes": 339233716
+}
