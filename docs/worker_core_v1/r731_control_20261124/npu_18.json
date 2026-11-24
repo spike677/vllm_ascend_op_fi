@@ -1,0 +1,232 @@
+{
+  "attempt": "r731neg1124a1",
+  "combination": "A2/Ascend910B4/vLLM0.26/vllm-ascend0.26.0rc1/CANN9.1/Qwen3.8-community-W8A8/TP2",
+  "status": "PRODUCT_BLUE_REVIEW_PASSED",
+  "source_manifest_sha256": "397e2eeeba556fa21bed9f9693aea72420ccd3c42694b6ce5dba2b5bb9b5f013",
+  "negative_cases": {
+    "cli_99": {
+      "status": "PRODUCT_CONTRACT_REFUSED",
+      "exit_code": 4,
+      "code": "ValueError",
+      "reason": "Choose an explicit mechanism variant: 8.restore_offset, 15.alias_detach, 17.spatial_padding, 18.api_half, 20.buffer_substitute, 22.wrong_row, 25.reduce_scatter, 26.residual_stomp, 26.fia_destination, quant.batch_shared_scale, 28.fa.legal_tiling, 28.fia.legal_tiling, 28.fia.denominator_replay, 33.paged_decode, 39.matmul_range, 39.output_proxy, 41.tail_column",
+      "error_type": "ValueError"
+    },
+    "unknown_profile_cli": {
+      "status": "PRODUCT_CONTRACT_REFUSED",
+      "exit_code": 4,
+      "code": "PRODUCT_BINDING_CAPABILITIES_FAILED",
+      "refusal_codes": [
+        "PRODUCT_PROFILE_UNKNOWN"
+      ],
+      "refusals": [
+        {
+          "rank": 0,
+          "code": "PRODUCT_PROFILE_UNKNOWN",
+          "status": "PRODUCT_BINDING_REFUSED"
+        },
+        {
+          "rank": 1,
+          "code": "PRODUCT_PROFILE_UNKNOWN",
+          "status": "PRODUCT_BINDING_REFUSED"
+        }
+      ],
+      "error_type": "ProductContractRefused",
+      "reason": "PRODUCT_BINDING_CAPABILITIES_FAILED:[{'rank': 0, 'code': 'PRODUCT_PROFILE_UNKNOWN', 'status': 'PRODUCT_BINDING_REFUSED'}, {'rank': 1, 'code': 'PRODUCT_PROFILE_UNKNOWN', 'status': 'PRODUCT_BINDING_REFUSED'}]"
+    },
+    "missing_permit_cli": {
+      "status": "PRODUCT_CONTRACT_REFUSED",
+      "exit_code": 4,
+      "code": "PRODUCT_ALL_RANK_PREPARE_FAILED",
+      "refusal_codes": [
+        "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT"
+      ],
+      "refusals": [
+        {
+          "rank": 0,
+          "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+          "status": "PROVIDER_UNAVAILABLE"
+        },
+        {
+          "rank": 1,
+          "code": "ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT",
+          "status": "PROVIDER_UNAVAILABLE"
+        }
+      ],
+      "error_type": "ProductContractRefused",
+      "reason": "PRODUCT_ALL_RANK_PREPARE_FAILED:[{'rank': 0, 'code': 'ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT', 'status': 'PROVIDER_UNAVAILABLE'}, {'rank': 1, 'code': 'ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT', 'status': 'PROVIDER_UNAVAILABLE'}]"
+    }
+  },
+  "resources": [
+    {
+      "rank": 0,
+      "leases": 0,
+      "owners": 0,
+      "bindings": 0,
+      "wrappers": 0
+    },
+    {
+      "rank": 1,
+      "leases": 0,
+      "owners": 0,
+      "bindings": 0,
+      "wrappers": 0
+    }
+  ],
+  "scopes": [
+    {
+      "scope": 0,
+      "counts": {
+        "0": {
+          "observed": 1932,
+          "eligible": 1932,
+          "attempted": 1932,
+          "applied": 1932,
+          "changed": 1931,
+          "consumed": 1932,
+          "restored": 1932,
+          "failed": 0
+        },
+        "1": {
+          "observed": 1932,
+          "eligible": 1932,
+          "attempted": 1932,
+          "applied": 1932,
+          "changed": 1931,
+          "consumed": 1932,
+          "restored": 1932,
+          "failed": 0
+        }
+      },
+      "canary_exact": true,
+      "resources_zero": true,
+      "provider_owners": [
+        "1f23a01e66c8d452074ffc85b23f9327",
+        "7987f2382a7c0548287ba1f92b261af9"
+      ]
+    },
+    {
+      "scope": 1,
+      "counts": {
+        "0": {
+          "observed": 1932,
+          "eligible": 1932,
+          "attempted": 1932,
+          "applied": 1932,
+          "changed": 1931,
+          "consumed": 1932,
+          "restored": 1932,
+          "failed": 0
+        },
+        "1": {
+          "observed": 1932,
+          "eligible": 1932,
+          "attempted": 1932,
+          "applied": 1932,
+          "changed": 1931,
+          "consumed": 1932,
+          "restored": 1932,
+          "failed": 0
+        }
+      },
+      "canary_exact": true,
+      "resources_zero": true,
+      "provider_owners": [
+        "aa40fb114aa46e06fb37e07668770765",
+        "f1653c1f974b552ba20bb1cbd1063090"
+      ]
+    }
+  ],
+  "window": {
+    "start": "2026-11-24T06:38:01.938475+00:00",
+    "ended": "2026-11-24T06:42:51.633280+00:00",
+    "elapsed_seconds": 289.69485644903034,
+    "cards": [
+      2,
+      5
+    ],
+    "isolation": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+    "isolation_removed": true
+  },
+  "isolation_log": [
+    {
+      "time": "2026-11-24T06:38:01.938556+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "maximum_seconds": 2100,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-24T06:38:02.100510+00:00",
+      "event": "STOP_BEGIN",
+      "container": "/atk-addcmul-local-20261124-063356",
+      "id": "bb0df462d9139412c8123c8f52e591c9ea88a3056b4abb792d9dab9bee3e8258",
+      "image": "cann:9.0.0-argmin-local-atk26.7.8-20261124",
+      "cards": [
+        2
+      ]
+    },
+    {
+      "time": "2026-11-24T06:38:05.466386+00:00",
+      "event": "STOP_END",
+      "container": "/atk-addcmul-local-20261124-063356",
+      "image": "cann:9.0.0-argmin-local-atk26.7.8-20261124",
+      "returncode": 0,
+      "stdout": "bb0df462d9139412c8123c8f52e591c9ea88a3056b4abb792d9dab9bee3e8258",
+      "stderr": ""
+    },
+    {
+      "time": "2026-11-24T06:41:35.048129+00:00",
+      "event": "STOP_BEGIN",
+      "container": "/atk-addcmul-local-20261124-064131",
+      "id": "6d09936827587ad3436efaf66586b36e98ddc6e9e9ad20fcc9f5cf74baa7a49e",
+      "image": "cann:9.0.0-argmin-local-atk26.7.8-20261124",
+      "cards": [
+        2
+      ]
+    },
+    {
+      "time": "2026-11-24T06:41:35.741916+00:00",
+      "event": "STOP_END",
+      "container": "/atk-addcmul-local-20261124-064131",
+      "image": "cann:9.0.0-argmin-local-atk26.7.8-20261124",
+      "returncode": 0,
+      "stdout": "6d09936827587ad3436efaf66586b36e98ddc6e9e9ad20fcc9f5cf74baa7a49e",
+      "stderr": ""
+    },
+    {
+      "time": "2026-11-24T06:42:51.633413+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ],
+  "originals": {
+    "product_http_18.json": {
+      "bytes": 12578290,
+      "sha256": "a9a4d2d1ebb590d70b634a6ceba9d67ec9a7a46bc4e075697f73e0412bf9a384"
+    },
+    "product_control_negative.json": {
+      "bytes": 2184752,
+      "sha256": "e16584bce36b6d34c6b7d1187297b722f185dc1d9e00e767fbd77c7b9d230727"
+    },
+    "controller.json": {
+      "bytes": 63676,
+      "sha256": "c3166e7087f796ee94cc49b139cf27c4736fc337dd11ea0f557b6b6ed96e0aad"
+    },
+    "isolation.jsonl": {
+      "bytes": 1576,
+      "sha256": "dc189b20802ce729f496722fd8cfa267e36d0b39fd16716ebc8574547cd7aac0"
+    }
+  },
+  "limitations": [
+    "Host CLI adapter tested; yellow CLI binary unavailable",
+    "A2 result does not qualify A3",
+    "vLLM process shutdown emitted semaphore/shared_memory resource_tracker warnings; fault leases verified separately"
+  ],
+  "qualification_granted": false
+}

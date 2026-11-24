@@ -83,15 +83,26 @@ class ProductBatchTests(BatchSiteTests):
 
     def test_concurrent_canary_refuses_before_any_injection(self):
         m,r,b=self.make(canary=True)
-        with self.assertRaisesRegex(RuntimeError,'SERIAL_B1'):
-            self.step(r,['a','b'],new={'a':[1,2],'b':[10,20]})
+        self.step(r,['a','b'],new={'a':[1,2],'b':[10,20]})
+        self.assertEqual(m.control_refusal,'PRODUCT_BATCH_CANARY_REQUIRES_SERIAL_B1')
+        self.assertEqual(r.steps,{'a':1,'b':1})
+        self.assertEqual(m.snapshot()['owned_hooks'],0)
+        self.step(r,['a','b'])
+        self.assertEqual(r.steps,{'a':2,'b':2})
         self.assertTrue(all(not e.get('applied') for e in m.site.events))
         # A diagnostic failure must not be presented as a completed canary.
         self.assertFalse(m.completed_canary)
-        m.canary=False;m.close()
+        m.close()
     def test_scope_disable_is_not_user_completion(self):
         m,r,b=self.make();self.step(r,['a','b'],new={'a':[1,2],'b':[10,20]});self.step(r,['a','b'])
         m.close();self.assertTrue(all(not row['completed'] and row['bytes_restored'] for row in m.records))
+    def test_incomplete_canary_is_a_control_refusal_not_engine_exception(self):
+        m,r,b=self.make(canary=True)
+        self.step(r,['a'],new={'a':[1,2]})
+        m.close()
+        self.assertEqual(m.control_refusal,'PRODUCT_BATCH_CANARY_COMPLETION')
+        self.assertFalse(m.completed_canary)
+        self.assertEqual(m.snapshot()['owned_hooks'],0)
     def test_mapping_mixed_and_unsupported_policy(self):
         rows=[dict(id='a',computed=10,prompt_length=10,reasons=[]),dict(id='b',computed=20,prompt_length=20,reasons=[])]
         self.assertTrue(classify_batch(rows,{'a':1,'b':1})[0])

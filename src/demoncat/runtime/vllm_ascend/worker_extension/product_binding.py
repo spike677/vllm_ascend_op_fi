@@ -95,6 +95,8 @@ def product_binding_rpc(worker, action, payload):
         b.warmup_request.install()
         return dict(status='CANARY_OBSERVER_ARMED',rank=b.identity['rank'])
     if action == 'canary':
+        refusal=getattr(b.warmup_request,'control_refusal',None)
+        require(refusal is None,refusal)
         require(b.warmup_request is not None and b.warmup_request.completed_canary, 'PRODUCT_CANARY_NOT_OBSERVED')
         b.warmup_request.close();b.warmup_request=None
         return dict(rank=b.identity['rank'],warmup_valid=b.warmup_valid,attempts=len(b.warmups),

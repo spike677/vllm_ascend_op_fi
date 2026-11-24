@@ -38,11 +38,14 @@ class HTTPExecutor:
 def main():
     p=argparse.ArgumentParser();p.add_argument('--mechanism',nargs='+',choices=['15','18','39','22','28','17','batch','39mr','33','41','26fia','20'],required=True)
     p.add_argument('--negative-regression',action='store_true')
+    p.add_argument('--batch-canary-negative',action='store_true')
+    p.add_argument('--effect-probe',action='store_true')
     p.add_argument('--external-example',action='store_true')
     p.add_argument('--external-sampling',action='store_true')
     p.add_argument('--image')
     p.add_argument('--native-library');p.add_argument('--native-sha256')
     a=p.parse_args();visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
+    if a.batch_canary_negative and not batch:p.error('Nonserial canary negative requires Batch')
     if ('batch' in a.mechanism or '33' in a.mechanism) and len(a.mechanism)!=1:p.error('Batch/33 use their own scheduler profile')
     report=dict(status='STARTED',entry='VLLM_HTTP_API',host_per_request_hooks=False,scopes=[])
     target=root/'product_http.json'
@@ -126,18 +129,28 @@ def main():
                 report['visual_input']=visual_identity
                 report['image_pixel_sha256']=[hashlib.sha256(Image.open(io.BytesIO(base64.b64decode(data.split(',',1)[1]))).convert('RGB').tobytes()).hexdigest() for data in images]
             if a.negative_regression:
+                from demoncat.runtime.vllm_ascend.worker_extension.product_errors import ProductContractRefused,product_control_reply
                 negative = dict(mechanism=mechanism, expected_exit=4)
                 target_negative = root/'product_control_negative.json'
                 unknown=ex.collective_rpc('demoncat_product_binding',args=('capabilities',dict(operator='product-acceptance',profile='unknown-profile')))
                 assert all(r['status']=='PRODUCT_BINDING_REFUSED' and r['reason']=='PRODUCT_PROFILE_UNKNOWN' for r in unknown)
                 negative['unknown_profile']=unknown
+                unknown_client=ProductClient(ex,__import__('demoncat.runtime.vllm_ascend.worker_extension.config',fromlist=['FaultConfig']).FaultConfig(18,'api_half'),profile='unknown-profile',operator='product-acceptance',run_canary=lambda:None,drain=lambda:None)
+                negative['unknown_profile_cli']=product_control_reply(unknown_client.capabilities)
+                assert negative['unknown_profile_cli']['exit_code']==4 and 'PRODUCT_PROFILE_UNKNOWN' in negative['unknown_profile_cli']['refusal_codes']
+                # capabilities census acquired no Runtime attachment or lease.
+                assert not unknown_client.bound
+                from demoncat.runtime.vllm_ascend.worker_extension.config import FaultConfig
+                negative['cli_99']=product_control_reply(lambda:FaultConfig(99,'unknown'))
+                assert negative['cli_99']['exit_code']==4
                 negative['healthy_after_unknown']=inference(canary_text)
                 rejected=ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',
                     run_canary=lambda spec:inference(spec['prompt']),drain=lambda:None,timeout=120)
                 negative['attach']=rejected.attach()
-                try:rejected.enable()
-                except ValueError as error:negative['missing_permit']=str(error)
-                else:raise AssertionError('MISSING_PERMIT_NOT_REJECTED')
+                negative['missing_permit_cli']=product_control_reply(rejected.enable)
+                assert negative['missing_permit_cli']['exit_code']==4 and negative['missing_permit_cli']['error_type']=='ProductContractRefused'
+                assert 'ORDINARY_ROUTE_NOT_ACCEPTED_FOR_DEPLOYMENT' in negative['missing_permit_cli']['refusal_codes']
+                negative['missing_permit']=negative['missing_permit_cli']['reason']
                 assert not rejected.bound and rejected.recovery['resources_zero']
                 negative['rollback']=rejected.cleanup_evidence
                 negative['disable_after_rollback']=rejected.disable()
@@ -146,6 +159,21 @@ def main():
                 negative['resources']=ex.collective_rpc('demoncat_acceptance_bootstrap',args=('audit',{}))
                 assert all(r['leases']==r['owners']==r['bindings']==r['wrappers']==0 for r in negative['resources'])
                 target_negative.write_text(json.dumps(negative,indent=2)+'\n')
+            if a.batch_canary_negative:
+                from demoncat.runtime.vllm_ascend.worker_extension.product_errors import product_control_reply
+                negative=dict(mechanism=mechanism,expected_exit=4)
+                rejected=ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',run_canary=lambda spec:inference(spec['prompt']),drain=lambda:None,timeout=120)
+                negative['attach']=rejected.attach()
+                negative['nonserial_canary']=product_control_reply(rejected.enable)
+                assert negative['nonserial_canary']['exit_code']==4 and 'PRODUCT_BATCH_CANARY_REQUIRES_SERIAL_B1' in negative['nonserial_canary']['refusal_codes']
+                negative['rollback']=rejected.cleanup_evidence
+                assert not rejected.bound and rejected.recovery['resources_zero']
+                negative['healthy_inference_after_refusal']=inference(canary_text[0])
+                with urllib.request.urlopen(ex.base+'/health',timeout=10) as response:negative['health_http']=response.status
+                negative['resources']=ex.collective_rpc('demoncat_acceptance_bootstrap',args=('audit',{}))
+                assert negative['health_http']==200 and all(r['leases']==r['owners']==r['bindings']==r['wrappers']==0 for r in negative['resources'])
+                (root/'product_batch_canary_negative.json').write_text(json.dumps(negative,indent=2)+'\n')
+                rejected.run_canary=lambda:[inference(p) for p in canary_text]
             for index in range(2):
                 ex.collective_rpc('demoncat_acceptance_bootstrap',args=('permit',dict(mechanisms=[mechanism],attempt='http-'+str(index),source_manifest_sha256=source_sha)))
                 if a.external_example or a.external_sampling:
@@ -154,9 +182,12 @@ def main():
                 else:
                     client=ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',
                         run_canary=lambda spec:[inference(p) for p in spec['prompt']] if batch else inference(spec['prompt']),drain=lambda:None,timeout=120)
-                if a.negative_regression and index==0:client=rejected
+                if (a.negative_regression or a.batch_canary_negative) and index==0:client=rejected
                 scope=dict(scope=index,requests=[]);report['scopes'].append(scope)
-                scope['attach']=negative['attach'] if a.negative_regression and index==0 else client.attach();scope['workers']=client.members;scope['capabilities']=client.capabilities();scope['enable']=client.enable();save()
+                scope['attach']=negative['attach'] if (a.negative_regression or a.batch_canary_negative) and index==0 else client.attach();scope['workers']=client.members;scope['capabilities']=client.capabilities();scope['enable']=client.enable();save()
+                if a.negative_regression and index==0:
+                    scope['duplicate_enable']=product_control_reply(client.enable)
+                    assert scope['duplicate_enable']['exit_code']==4 and client.enabled and client.bound
                 if batch:
                     from concurrent.futures import ThreadPoolExecutor
                     from threading import Barrier
@@ -184,10 +215,37 @@ def main():
                         else:assert c['eligible']>0 and c['eligible']==c['applied']==c['consumed']==c['restored'] and c['failed']==0
                     scope['requests'].append(dict(result=result,**timing));save()
                 scope['disable']=client.disable();scope['detach']=client.detach()
+                if a.negative_regression and index==0:
+                    scope['repeat_disable']=product_control_reply(client.disable)
+                    assert scope['repeat_disable']['exit_code'] in (0,4) and client.recovery['restored'] and not client.enabled
                 scope['cleanup']=ex.collective_rpc('demoncat_acceptance_bootstrap',args=('remove_permit',{}));save()
                 assert all(r['leases']==r['owners']==0 for r in scope['cleanup'])
                 scope['negative_controls']=ex.collective_rpc('demoncat_acceptance_bootstrap',args=('negative',dict(mechanism=mechanism)));save()
             report['status']='HTTP_PRODUCT_TWO_SCOPES_PENDING_REVIEW';save()
+            if a.effect_probe:
+                from tools.product_effect_probe import run as effect_run,summarize,canonical,verify
+                from tools.product_effect_adapter import ProductAdapter
+                assert not visual and not a.external_sampling,'Use the trusted image/sampling adapter for those sites'
+                ex.collective_rpc('demoncat_acceptance_bootstrap',args=('permit',dict(mechanisms=[mechanism],attempt='effect',source_manifest_sha256=source_sha)))
+                actual=report['scopes'][-1]['disable']['cleanup']['unregister'][0]['response']['provider_state']['deployment_acceptance_use']['actual']
+                from tools.extract_registration_record import DEPLOYMENT
+                identity={k:actual.get(k) for k in DEPLOYMENT}
+                identity.update(mechanism=mechanism,source_manifest_sha256=source_sha)
+                def factory():
+                    return ProductClient.from_deployment(ex,paths[key],operator='product-acceptance',
+                        run_canary=lambda spec:[inference(p) for p in spec['prompt']] if batch else inference(spec['prompt']),drain=lambda:None,timeout=120)
+                def send_effect(prompts,sampling):
+                    return ex.post('/v1/completions',dict(sampling,model='acceptance',prompt=prompts,
+                        min_tokens=sampling['max_tokens'],ignore_eos=True))
+                prompts=['Name a city with a river.','Explain how a bicycle moves.','What is seven plus six?']
+                if batch:prompts=['Explain briefly '+t for t in ['weather','cities','plants','rivers','physics','music','bikes','oceans']]
+                target_effect=root/('effect_'+key+'.json')
+                effect=effect_run(ProductAdapter(factory,send_effect,identity),prompts,
+                    checkpoint=lambda raw:target_effect.write_bytes(canonical(raw)+b'\n'))
+                raw=canonical(effect)+b'\n';target_effect.write_bytes(raw)
+                page=summarize(effect,raw);verify(page)
+                (root/('effect_'+key+'_page.json')).write_bytes(canonical(page)+b'\n')
+                ex.collective_rpc('demoncat_acceptance_bootstrap',args=('remove_permit',{}))
     except BaseException as error:
         report.update(status='FAILED',error=repr(error),traceback=traceback.format_exc());save()
     finally:
