@@ -7,6 +7,9 @@ from demoncat.runtime.vllm_ascend.controller import DemoncatWorkerExtension
 class AcceptanceExtension(DemoncatWorkerExtension):
     def demoncat_acceptance_bootstrap(self,action,options):
         from product_mode_probe import trusted_bootstrap
+        if action=='alias_diagnostics':
+            from alias15_finiteness_probe import install
+            return install(self)
         if action=='capture_start':
             runner=self.model_runner
             assert 'execute_model' not in vars(runner)
@@ -47,6 +50,7 @@ def main():
     p.add_argument('--variance18',action='store_true')
     p.add_argument('--status-diagnostics',action='store_true')
     p.add_argument('--drain-stress',action='store_true')
+    p.add_argument('--alias-diagnostics',action='store_true')
     p.add_argument('--image')
     p.add_argument('--native-library');p.add_argument('--native-sha256')
     a=p.parse_args();visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
@@ -106,6 +110,8 @@ def main():
             else:payload=dict(common,prompt=text);endpoint='/v1/completions'
             start=time.monotonic();reply=ex.post(endpoint,payload)
             return dict(seconds=time.monotonic()-start,api_id=reply.get('id'),choices=reply['choices'])
+        if a.alias_diagnostics:
+            ex.collective_rpc('demoncat_acceptance_bootstrap',args=('alias_diagnostics',{}))
         canary_text='Describe this image briefly.' if visual else 'Explain briefly why the sky appears blue.'
         if batch:canary_text=['Explain briefly this subject: '+t for t in ['rain','rivers','clouds','wind','bicycles','forests','mountains','ocean']]
         if paged:
