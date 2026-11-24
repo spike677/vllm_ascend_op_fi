@@ -1,0 +1,65 @@
+import unittest
+import torch
+from fault_injection.engines.region_lease import RegionLeases
+from demoncat.runtime.vllm_ascend.worker_extension.external_persistent_regions import PersistentRegions,PersistentRegion
+
+
+class PersistentTests(unittest.TestCase):
+    def setUp(self):
+        self.bound=dict(dedicated_instance=True,accepting=False,inflight=0,device_readers_complete=True,
+            prefix_cache=False,kv_connector=False,offload=False,shared_pages=False,
+            ended_request_generations=[],before_page_release=False)
+        self.generation=1;self.request=7;self.tensor=torch.arange(8,dtype=torch.float32)
+        self.leases=RegionLeases('owner',1,stream=lambda:0,complete=lambda s:None)
+        self.regions=PersistentRegions(self.leases,boundary=lambda:self.bound,maximum_bytes=128)
+    def region(self,kind='persistent_weight',**kw):
+        d=dict(name='weight',tensor=self.tensor,region_kind=kind,allocation_generation=1,
+            observe_generation=lambda:self.generation,consumers=('real_qmm',),derived_copies=())
+        if kind=='kv_cache':d.update(request_generation=7,observe_request_generation=lambda:self.request)
+        d.update(kw);return PersistentRegion(**d)
+    def test_weight_consumer_and_restore_same_generation(self):
+        original=self.tensor.clone();self.regions.prepare([self.region()]);self.regions.write('weight',self.tensor*2)
+        self.regions.consumed('weight','real_qmm',request_generation=3)
+        self.regions.restore('weight');self.assertTrue(torch.equal(original,self.tensor));self.assertFalse(self.leases.active)
+        self.assertEqual(self.regions.events[0]['changed_elements'],7)
+    def test_ingress_and_inflight_block_write(self):
+        for key,value in [('accepting',True),('inflight',1),('device_readers_complete',False)]:
+            old=self.bound[key];self.bound[key]=value
+            with self.assertRaisesRegex(RuntimeError,'DRAINED'):self.regions.prepare([self.region()])
+            self.bound[key]=old
+        self.assertFalse(self.leases.active)
+    def test_unknown_derivative_and_budget_refuse(self):
+        for region in [self.region(derived_copies=None),self.region(derived_copies=('missing',))]:
+            with self.assertRaisesRegex(RuntimeError,'DERIVED'):self.regions.prepare([region])
+        self.regions.maximum_bytes=1
+        with self.assertRaisesRegex(RuntimeError,'BUDGET'):self.regions.prepare([self.region()])
+    def test_overlap_refused_before_backup(self):
+        with self.assertRaisesRegex(RuntimeError,'OVERLAPPING'):
+            self.regions.prepare([self.region(),self.region(name='alias',tensor=self.tensor[1:])])
+        self.assertFalse(self.leases.active)
+    def test_generation_change_keeps_recovery_owner(self):
+        self.regions.prepare([self.region()]);self.regions.write('weight',self.tensor+1);self.generation=2
+        with self.assertRaisesRegex(RuntimeError,'GENERATION_CHANGED'):self.regions.restore('weight')
+        self.assertEqual(len(self.leases.active),1)
+    def test_unobserved_legal_weight_update_never_overwritten(self):
+        self.regions.prepare([self.region()]);self.regions.write('weight',self.tensor+1)
+        self.regions.consumed('weight','real_qmm',request_generation=3);self.tensor.add_(2);now=self.tensor.clone()
+        with self.assertRaisesRegex(RuntimeError,'LEGAL_UPDATE'):self.regions.restore('weight')
+        self.assertTrue(torch.equal(now,self.tensor));self.assertEqual(self.regions.events[0]['failed'],1)
+    def test_kv_end_before_recycle_only(self):
+        original=self.tensor.clone();self.regions.prepare([self.region('kv_cache')]);self.regions.write('weight',self.tensor+1)
+        self.regions.consumed('weight','real_qmm',request_generation=7)
+        with self.assertRaisesRegex(RuntimeError,'SAFE_END'):self.regions.restore('weight')
+        self.tensor.add_(1);self.regions.observe_kv_legal_write('weight',request_generation=7)
+        self.bound.update(ended_request_generations=[7],before_page_release=True)
+        self.regions.restore('weight');self.assertTrue(torch.equal(original,self.tensor))
+    def test_kv_page_reuse_or_shared_rejected(self):
+        self.bound['shared_pages']=True
+        with self.assertRaisesRegex(RuntimeError,'PRIVATE_KV'):self.regions.prepare([self.region('kv_cache')])
+        self.bound['shared_pages']=False;self.regions.prepare([self.region('kv_cache')]);self.request=8
+        with self.assertRaisesRegex(RuntimeError,'PAGE_OWNER_CHANGED'):self.regions.write('weight',self.tensor+1)
+    def test_unwritten_partial_prepare_cleanup(self):
+        self.regions.prepare([self.region()]);self.regions.release_unwritten('weight');self.assertFalse(self.leases.active)
+    def test_zero_new_value_change_is_applied(self):
+        self.regions.prepare([self.region()]);self.regions.write('weight',self.tensor.clone())
+        self.assertEqual((self.regions.events[0]['applied'],self.regions.events[0]['changed']),(1,0))
