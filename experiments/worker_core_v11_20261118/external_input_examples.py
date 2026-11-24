@@ -72,7 +72,8 @@ class ExternalModuleInputSite(BaseSite):
         visual=getattr(self.model,'visual',None)
         excluded={id(m) for m in visual.modules()} if visual is not None else set()
         for name, module in self.model.named_modules():
-            if id(module) in excluded or not hasattr(module,'quant_method'):continue
+            if id(module) in excluded or not all(hasattr(module,k) for k in
+                    ('quant_method','input_size','output_size')):continue
             weight=getattr(module,'weight',None)
             if not isinstance(weight,torch.Tensor) or weight.ndim != 2:continue
             self.sites.append(name)

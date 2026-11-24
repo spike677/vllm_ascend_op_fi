@@ -8,7 +8,7 @@ from experiments.worker_core_v11_20261118.external_input_examples import (
 
 class Projection(torch.nn.Module):
     def __init__(self):
-        super().__init__(); self.quant_method=object()
+        super().__init__(); self.quant_method=object();self.input_size=4;self.output_size=4
         self.weight=torch.nn.Parameter(torch.eye(4,dtype=torch.bfloat16))
     def forward(self,x):return x @ self.weight
 
@@ -41,6 +41,12 @@ class InputSiteTests(unittest.TestCase):
     def test_dispatch_operand_two_owners(self):self.exercise(ExternalDispatchInputSite)
     def test_no_candidate_refused(self):
         site=ExternalModuleInputSite(torch.nn.Identity(),NS(),fault=True,
+            region_leases=RegionLeases('a',1,stream=lambda:0,complete=lambda s:None))
+        with self.assertRaisesRegex(RuntimeError,'NO_PROJECTION_INPUT'):site.install()
+        site.close()
+    def test_embedding_weight_and_quant_method_are_not_projection_proof(self):
+        embedding=torch.nn.Embedding(12,4);embedding.quant_method=object()
+        site=ExternalModuleInputSite(embedding,NS(),fault=True,
             region_leases=RegionLeases('a',1,stream=lambda:0,complete=lambda s:None))
         with self.assertRaisesRegex(RuntimeError,'NO_PROJECTION_INPUT'):site.install()
         site.close()
