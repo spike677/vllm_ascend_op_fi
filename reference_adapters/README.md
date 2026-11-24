@@ -43,3 +43,9 @@ python3 -B -m reference_adapters.review_quant /evidence \
 本轮A2社区量化描述SHA为 `ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b`。实际读取到1843项W8A8_DYNAMIC、585项FLOAT（另有元数据）；`linear_attn.out_proj`、`self_attn.o_proj`、`linear_attn.in_proj_a/in_proj_b` 和视觉block的投影权重均标为W8A8_DYNAMIC。FLOAT矩阵候选排除norm、conv、embed后只有 `lm_head.weight`。
 
 这不同于黄区曾报告的1321/759项以及BF16 `linear_attn.out_proj`。库19只匹配实际BF16权重和真实dispatch操作数，不能把社区量化out_proj写成BF16。库34要求自然带bias的BF16矩阵乘；若社区视觉路径没有此候选，必须标当前部署不适用，不能把int8权重解量化、添加假的bias/residual或改量化配置来制造验收。最终范围以实际调用回执为准。
+
+## 第19行的独立效果判定
+
+分别报告 native→正序参考（control）、正序→逆序（rule）、native→实际替换值（changed）的Hamming元素计数，不把控制漂移称为顺序效应。由逐调用计数得出可归于顺序变化的实际改写元素下界 `max(0, rule-control)`；同时校验 `abs(rule-control) <= changed <= rule+control`。每个owner都需有正下界，所有rank仍须完成应用、消费和恢复；分片数据不同，不要求每rank都出现新的数值变化。下界不是精确交集计数。
+
+A2实测每rank24调用。rank0：changed=2、control=2、rule=0；rank1：changed=4、control=6、rule=8，可归因下界2（两个owner各1）。因此现象很小且只在rank1证明，不能写成所有rank均存在顺序差异。全rank执行和恢复通过；不授予A3资格。

@@ -106,6 +106,17 @@ class ReviewTests(unittest.TestCase):
             self.assertEqual(result['status'],'EXECUTION_RECOVERY_PASSED_NO_NUMERIC_PHENOMENON')
             self.assertEqual(result['effects_by_rank'][0]['changed_elements'],12)
             self.assertEqual(result['effects_by_rank'][0]['rule_changed_elements'],0)
+            # Other rank may remain numerically unchanged; each owner must
+            # still have an attributable order effect, with all ranks applied.
+            p=directory/'external-input-rank1.jsonl';lines=[]
+            for line in p.read_text().splitlines():
+                chunk=json.loads(line);chunk['events'][0]['rule_changed_elements']=3
+                lines.append(json.dumps(chunk))
+            p.write_text('\n'.join(lines))
+            result=run(directory,'product_http_18.json','product_control_negative.json')
+            self.assertEqual(result['status'],'REFERENCE_A2_TP2_TWO_OWNERS_REVIEWED')
+            self.assertEqual(result['effects_by_rank'][0]['rule_effect_lower_bound'],0)
+            self.assertTrue(all(s['rule_effect_lower_bound']==3 for s in result['scope_rule_effects']))
             p=directory/'external-input-rank0.jsonl';lines=p.read_text().splitlines()
             chunk=json.loads(lines[0]);del chunk['events'][0]['rule_changed_elements']
             lines[0]=json.dumps(chunk);p.write_text('\n'.join(lines))

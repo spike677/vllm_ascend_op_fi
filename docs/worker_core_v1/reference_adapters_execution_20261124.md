@@ -20,6 +20,7 @@ K文档和正式测试分阶段交接已提交；`releases/qwen-r741-phased-hand
 |`releases/yellow-reference-quant-20261124-r1`|9、10，各两档|`dbcb1da1346f02d39ca921dfa78c517fece9f179d9704da937ef14f5aaf61cf3`|
 |`releases/yellow-reference-hidden-20261124-r1`|7、8|`c3aed8dd84bb533adc45276cff55882c81b09b628e9bde14a0eaec5aa592b246`|
 |`releases/yellow-reference-vision-compute-20261125-r1`|16|`83145839a481d1a111ebb78b62c566e421f61ea2a459cb03a0d8d69d348d6da3`|
+|`releases/yellow-reference-matmul-order-20261125-r1`|19|`579d6838fe10973322df80f9c227ebb00156aa4e3bfe00efa5012bf3da5de76e`|
 
 以上ZIP逐文件bytes/SHA及归档SHA均重新校验通过。
 
@@ -38,6 +39,8 @@ K文档和正式测试分阶段交接已提交；`releases/qwen-r741-phased-hand
 
 - 第34行两个rank均报 `REFERENCE_NO_REAL_BF16_WEIGHT`，引擎随后退出。已确认社区视觉矩阵权重为int8，当前自然BF16带bias点位不适用。未完成两个owner，不能称为安全拒绝或产品通过；不解量化权重、不添加假bias/residual。失败日志SHA保留在A2结果JSON。
 
+- 第19行前1024列复核通过，但效果必须分rank披露：每rank24次，rank0 changed=2/control=2/rule=0，rank1 changed=4/control=6/rule=8。独立审查按每owner的Hamming计数下界 `max(0,rule-control)` 证明至少1元素的顺序效应；两owner合计下界2，仅rank1。初版复核器额外要求每rank均有顺序差异，已改为每owner必须有可归因效果、所有rank应用/消费/恢复完整；这遵循changed<applied不是失败的口径，不把rank0控制漂移算作顺序效应。原始回执和侧录没有修改，独立审查器SHA另存。
+
 ## 资源窗口
 
 本轮使用项目锁、每case预算和有界只读设备监视。没有停止外部容器，没有修改调度器或Docker入口。窗口结束停止监视线程并释放锁；记录中的 `isolation_removed` 表示本项目监视已结束，不表示修改过外部调度器。
@@ -48,6 +51,8 @@ K文档和正式测试分阶段交接已提交；`releases/qwen-r741-phased-hand
 - `refs1124b1`：含旧7/8、第12行失败及第3行通过；总窗口1059.537秒。中途空分配解析拒绝后已退出；旧7/8不能作为通过证据。
 
 - `refs1124b4`：UTC 15:58:15.140706 → 16:24:13.450883，1558.310秒；12失败、16通过、32/19无数值现象、34无合格候选。只读监视已结束、卡锁已释放。
+
+- `refmatmul1125c2`：334.035秒，两个owner完成，监视已结束、卡锁已释放。
 
 这些是验收窗口墙钟时间，包含加载、预热、HTTP和取证开销，不冒充纯NPU计算时间。`unregister` 中间状态尚未执行最终金丝雀；恢复结论读取 `disable.recovery` 和独立审查的 `canary_exact/all_resources_zero`。
 

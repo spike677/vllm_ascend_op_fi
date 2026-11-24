@@ -231,9 +231,9 @@
       "capability": "黄区float_matmul（独立适配，不能并入公共39mr）",
       "boundary": "B类；累加顺序/精度规则改变需内部计算证据，输出有限微扰只能记现象代理",
       "deployment": "Qwen3.8 A3 TP2（蓝区A2仅验证）",
-      "evidence": "黄区报告需适配；库19/34/39分别记录累加精度差/融合差/溢出，52/56原描述尚无材料，不能猜测或据此登记",
-      "progress_state": "REFERENCE_ADAPTER_PENDING",
-      "progress_note": "codex参考实现；A2两个owner通过后改ADAPTER_READY_UNTESTED，等待黄区审查与正式测试"
+      "evidence": "A2/0.26/CANN9.1/社区Qwen3.8 W8A8 TP2，同Worker两个owner；reference_adapter_a2_20261124.json row19_bf16_reverse_splitk。每rank24调用，真实all_gather消费，字节/金丝雀恢复及负例通过。",
+      "progress_state": "ADAPTER_READY_UNTESTED",
+      "progress_note": "现象复现；rank0仅原生/参考漂移2元素，未观察到顺序效应；rank1每owner至少1元素可归于逆序累加（合计下界2），不伪称精确交集数。changed 2/24和4/24不是失败。等待黄区审查和正式测试。"
     },
     {
       "row": 20,

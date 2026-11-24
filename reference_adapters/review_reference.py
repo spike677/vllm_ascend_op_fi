@@ -32,9 +32,10 @@ def run(directory,receipt,negative_file):
                 need(len(e['request_ids'])==1,'REFERENCE_AMBIGUOUS_REQUEST')
                 raw.setdefault((rank,e['request_ids'][0]),[]).append(e)
     totals={r:dict(calls=0,changed_calls=0,changed_elements=0,consumers=set(),distribution_l1=0.,
-        rule_changed_elements=0,control_changed_elements=0) for r in range(2)}
-    seen=set()
+        rule_changed_elements=0,control_changed_elements=0,rule_effect_lower_bound=0) for r in range(2)}
+    seen=set();scope_rule_effects=[]
     for scope in data['scopes']:
+        scope_rule_effect=0
         for request in scope['requests'][:3]:
             for rank in request['result']['ranks']:
                 key=(rank['rank'],rank['request_id']);seen.add(key);events=raw[key]
@@ -57,22 +58,36 @@ def run(directory,receipt,negative_file):
                         need(e['control_passed'] and e['bf16_operands'] and not e['quantized_operand_recomputed'],'REFERENCE_BF16_CONTROL')
                         need(type(e.get('rule_changed_elements')) is int and type(e.get('control_changed_elements')) is int,
                             'REFERENCE_RULE_CONTROL_SEPARATION_REQUIRED')
+                        rule=e['rule_changed_elements'];control=e['control_changed_elements'];actual=e['changed_elements']
+                        need(rule>=0 and control>=0 and abs(rule-control)<=actual<=rule+control,
+                            'REFERENCE_HAMMING_COUNTS_INCONSISTENT')
+                        # At least rule-control positions differ from BOTH the
+                        # forward reference and native output. This is a lower
+                        # bound, not an invented exact intersection count.
+                        bound=max(0,rule-control)
+                        scope_rule_effect+=bound
+                        totals[rank['rank']]['rule_effect_lower_bound']+=bound
                         if variant.startswith('row34_'):need(e['early_bf16_before_real_bias'],'REFERENCE_REAL_BIAS')
                     t=totals[rank['rank']];t['calls']+=1;t['changed_calls']+=e['changed']
                     t['changed_elements']+=e['changed_elements'];t['consumers'].add(e['consumer_operator'])
                     t['distribution_l1']+=e.get('distribution_l1',0.)
                     t['rule_changed_elements']+=e.get('rule_changed_elements',0)
                     t['control_changed_elements']+=e.get('control_changed_elements',0)
+        scope_rule_effects.append(dict(scope=scope.get('scope'),rule_effect_lower_bound=scope_rule_effect))
     need(seen==set(raw),'REFERENCE_ORPHAN_REQUEST')
     changed=all(t['changed_calls']>0 for t in totals.values())
     if variant.startswith(('row19_','row34_')):
         # A native-vs-reference discrepancy alone does not establish that the
         # named change in accumulation order/rounding point made a difference.
-        changed=changed and all(t['rule_changed_elements']>0 for t in totals.values())
+        # All ranks must apply/consume/restore, but unchanged values are not
+        # failures. Sharded operands can expose the numerical effect on only
+        # one rank. Require attributable effect in EACH independent owner.
+        changed=(all(t['calls']>0 for t in totals.values()) and len(scope_rule_effects)==2
+            and all(s['rule_effect_lower_bound']>0 for s in scope_rule_effects))
     for t in totals.values():t['consumers']=sorted(t['consumers'])
     return dict(status='REFERENCE_A2_TP2_TWO_OWNERS_REVIEWED' if changed else 'EXECUTION_RECOVERY_PASSED_NO_NUMERIC_PHENOMENON',
         mechanism=data['mechanism'],semantics='PHENOMENON_PROXY_NOT_ORIGINAL_MECHANISM',qualification_granted=False,
-        public_review=public,effects_by_rank=totals,receipt_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),sidecar_sha256=hashes)
+        public_review=public,effects_by_rank=totals,scope_rule_effects=scope_rule_effects,receipt_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),sidecar_sha256=hashes)
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('directory');p.add_argument('--receipt',required=True)
