@@ -19,12 +19,16 @@ def trusted_bootstrap(wrapper, action, options):
         from demoncat.runtime.vllm_ascend.worker_extension.deployment_acceptance import observe_deployment
         from demoncat.runtime.vllm_ascend.worker_extension.product_binding import configure_product_profiles
         from external_gain_example import ExternalGainSite
-        assert set(options) in ({'canary_tokens','sampling'}, {'canary_tokens','sampling','vision'})
+        assert set(options) in ({'canary_tokens','sampling'}, {'canary_tokens','sampling','vision'}, {'canary_tokens','sampling','vision','input_site'})
         assert not (options['sampling'] and options.get('vision'))
         if authority is None:
             authority=configure_deployment_acceptance(worker,source='BLUE_COMBINATION',
                 authorize_operator=lambda principal,operation:principal=='product-acceptance')
-        if options.get('vision'):
+        if options.get('input_site'):
+            from external_input_examples import ExternalModuleInputSite, ExternalDispatchInputSite
+            factories={'module':ExternalModuleInputSite,'dispatch':ExternalDispatchInputSite}
+            factory=factories[options['input_site']];mechanism='external.'+options['input_site']+'_input_gain';stage='model'
+        elif options.get('vision'):
             from external_vision_example import ExternalVisionGainSite
             factory=ExternalVisionGainSite;mechanism='external.conv3d_output_gain';stage='vision'
         elif options['sampling']:

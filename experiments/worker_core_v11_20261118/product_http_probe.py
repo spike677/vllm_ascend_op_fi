@@ -43,14 +43,17 @@ def main():
     p.add_argument('--external-example',action='store_true')
     p.add_argument('--external-sampling',action='store_true')
     p.add_argument('--external-vision',action='store_true')
+    p.add_argument('--external-input',choices=['module','dispatch'])
     p.add_argument('--variance18',action='store_true')
     p.add_argument('--status-diagnostics',action='store_true')
+    p.add_argument('--drain-stress',action='store_true')
     p.add_argument('--image')
     p.add_argument('--native-library');p.add_argument('--native-sha256')
     a=p.parse_args();visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
     if a.external_vision and not visual:p.error('External vision uses the isolated image scheduler: --mechanism 17')
+    if a.external_input and a.mechanism!=['18']:p.error('Input examples require --mechanism 18')
     if a.variance18 and a.mechanism!=['18']:p.error('Variance proxy requires --mechanism 18')
-    if sum((a.external_example,a.external_sampling,a.external_vision,a.variance18))>1:p.error('Choose one adapter variant')
+    if sum((a.external_example,a.external_sampling,a.external_vision,bool(a.external_input),a.variance18))>1:p.error('Choose one adapter variant')
     if a.batch_canary_negative and not batch:p.error('Nonserial canary negative requires Batch')
     if ('batch' in a.mechanism or '33' in a.mechanism) and len(a.mechanism)!=1:p.error('Batch/33 use their own scheduler profile')
     report=dict(status='STARTED',entry='VLLM_HTTP_API',host_per_request_hooks=False,scopes=[])
@@ -84,6 +87,7 @@ def main():
         if a.external_sampling:mechanisms['18']='external.exponential_perturb'
         if a.external_vision:mechanisms['17']='external.conv3d_output_gain'
         if a.variance18:mechanisms['18']='18.variance_over4'
+        if a.external_input:mechanisms['18']='external.'+a.external_input+'_input_gain'
         images=[]
         if visual:
             from PIL import Image
@@ -129,8 +133,8 @@ def main():
                 source_manifest_sha256=source_sha,native_library=a.native_library,native_sha256=a.native_sha256,
                 canary=dict(prompt=canary_text,image=a.image if visual else None,max_tokens=4),evidence_directory='/evidence')
             path=root/('deployment-'+key+'.json');path.write_text(json.dumps(config));paths[key]=str(path)
-        if a.external_example or a.external_sampling or a.external_vision:
-            ex.collective_rpc('demoncat_acceptance_bootstrap',args=('external_configure',dict(canary_tokens=canary,sampling=a.external_sampling,vision=a.external_vision)))
+        if a.external_example or a.external_sampling or a.external_vision or a.external_input:
+            ex.collective_rpc('demoncat_acceptance_bootstrap',args=('external_configure',dict(canary_tokens=canary,sampling=a.external_sampling,vision=a.external_vision,input_site=a.external_input)))
         else:ex.collective_rpc('demoncat_acceptance_bootstrap',args=('configure',dict(paths=list(paths.values()),canary_tokens={mechanisms[k]:canary for k in a.mechanism})))
         for key in a.mechanism:
             mechanism=mechanisms[key];target=root/('product_http_'+key+'.json')
@@ -186,7 +190,7 @@ def main():
                 rejected.run_canary=lambda:[inference(p) for p in canary_text]
             for index in range(2):
                 ex.collective_rpc('demoncat_acceptance_bootstrap',args=('permit',dict(mechanisms=[mechanism],attempt='http-'+str(index),source_manifest_sha256=source_sha)))
-                if a.external_example or a.external_sampling or a.external_vision:
+                if a.external_example or a.external_sampling or a.external_vision or a.external_input:
                     from demoncat.runtime.vllm_ascend.worker_extension.external_provider import ExternalFaultConfig
                     client=ProductClient(ex,ExternalFaultConfig('external',mechanism.split('.',1)[1]),profile=mechanism,operator='product-acceptance',run_canary=lambda:inference(canary_text),drain=lambda:None,timeout=120)
                 else:
@@ -224,7 +228,23 @@ def main():
                         if n>=3:assert r['status']=='NOT_INJECTED' and c['applied']==0 and r['reasons']
                         else:assert c['eligible']>0 and c['eligible']==c['applied']==c['consumed']==c['restored'] and c['failed']==0
                     scope['requests'].append(dict(result=result,**timing));save()
+                if a.drain_stress:
+                    from concurrent.futures import ThreadPoolExecutor
+                    pool=ThreadPoolExecutor(max_workers=2)
+                    pending=[pool.submit(inference,t) for t in ('Explain a river briefly.','Explain the gears of a bicycle briefly.')]
+                    scope['drain_stress']=dict(submitted=2,pending_at_disable=sum(not f.done() for f in pending))
+                    def drain_pending():
+                        scope['drain_stress']['http_results']=[f.result(timeout=900) for f in pending]
+                    client.drain=drain_pending
                 scope['disable']=client.disable();scope['detach']=client.detach()
+                if a.drain_stress:
+                    pool.shutdown(wait=True)
+                    scope['drain_stress']['completed_requests']=client.requests[-2:]
+                    scope['drain_stress']['status_failures']=getattr(client,'status_failures',[])
+                    assert len(client.requests)==6 and not scope['drain_stress']['status_failures']
+                    assert all(len(r['ranks'])==2 and len({p['request_id'] for p in r['ranks']})==1
+                               for r in client.requests)
+                    assert scope['drain_stress']['pending_at_disable']>0
                 if a.negative_regression and index==0:
                     scope['repeat_disable']=product_control_reply(client.disable)
                     assert scope['repeat_disable']['exit_code'] in (0,4) and client.recovery['restored'] and not client.enabled
