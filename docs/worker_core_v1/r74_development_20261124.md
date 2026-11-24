@@ -36,3 +36,5 @@ weight示例独立审查见[r74_weight_example_review_20261124.json](r74_weight_
 external_kv_engine_plugin.py与external_kv_page_probe.py为隔离实例的只读探测入口，使用任务目录中的私有general-plugin元数据，不改vLLM源码或宿主安装。此探测不写KV；回执中的read_only_no_injection和page_injection_executed=false必须保留。review_kv_page_probe.py独立核对两rank的请求、序号、代际和释放通知，不能把零租约解释为真实注入恢复通过。
 
 本轮定向CPU门禁52项全通过，见r74_kv_incremental_cpu_20261124.json，其中8项页面屏障、4项只读回执审查。重新核对原有414个源码文件无改动。KV真正的writer窗口、消费者值核验、两个owner及取消负例仍待实机完成；当前不冻结r7.4。
+
+实机队列v2-kv-page-20261124-a1等待卡2/5共享锁900秒后以PROJECT_LOCK_WAIT_TIMEOUT退出；precision-liv/fla的独立租约持续续期。NPU用时0、隔离未启动、没有停止外部容器，控制器已退出。见r74_kv_window_blocked_20261124.json。已请求协调释放共享租约，不绕过同一把锁并发运行。
