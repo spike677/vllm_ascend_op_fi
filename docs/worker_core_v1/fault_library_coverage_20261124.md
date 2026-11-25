@@ -13,11 +13,11 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
 |CLOSED_NO_INJECTION|5|1、4、5、29、36|
 |AWAIT_FORMAL_TEST|14|6、15、17、18、20、22、23、26、27、28、30、35、39、41|
 |YELLOW_ADAPTER_READY_UNTESTED|8|2、11、14、21、24、31、37、40|
-|REFERENCE_ADAPTER_PENDING|3|12、32、34|
+|REFERENCE_ADAPTER_PENDING|1|12|
 |HCCL_BITWISE_PENDING|2|25、38|
 |FAULT33_EVIDENCE_PENDING|1|33|
 |V4_D_PACKAGE_PENDING|1|13|
-|ADAPTER_READY_UNTESTED|7|3、7、8、9、10、16、19|
+|ADAPTER_READY_UNTESTED|9|3、7、8、9、10、16、19、32、34|
 
 历史公共证据不等于本轮通过。参考适配器通过 A2 后记 ADAPTER_READY_UNTESTED，标注等待黄区审查；正式测试审查并登记后才记 REGISTERED。第21行按区域寿命选择v1或v2，待黄区确认。
 
@@ -54,9 +54,9 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
 |29|F|CLOSED_NO_INJECTION|310P特有硬件条件|当前A3不具备310P条件|当前A3不适用|范围决定，不要求注入||
 |30|C|AWAIT_FORMAL_TEST|公共18方差误差命名变体（新增）|固定增益1/sqrt(k)的归一化输出代理；非INTraining训练方差实现|Qwen3.8 A3 TP2（蓝区A2仅验证）|18.variance_over4（k=4、gain=0.5）和18.variance_under4（k=0.25、gain=2）均通过A2/0.26/CANN9.1/Qwen3.8 W8A8/TP2两个owner；见r741_b1_b6_closure_20261124.md。A3待验收。||
 |31|B|YELLOW_ADAPTER_READY_UNTESTED|黄区fake/faulty_requant|与黄区重量化能力合并，按命名变体登记|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
-|32|B|REFERENCE_ADAPTER_PENDING|row32_conv3d_input_e4m3 / row32_conv3d_input_e5m2|Conv3d input FP8-like rounding phenomenon proxy; original operator dtype preserved; old FP16 round-trip retained as zero-effect history|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row32_conv3d_input_e4m3|E4M3: A2/0.26/CANN9.1/Qwen3.8 community W8A8/TP2 two owners reviewed, each rank 6 changed/consumed/restored calls; E5M2 still queued. A3 pending. No REGISTERED claim.|
-|33|A|FAULT33_EVIDENCE_PENDING|公共33 paged_decode|A3实际launch/三形状控制未闭合，关闭|Qwen3.8 A3 TP2（蓝区A2仅验证）|r7.5候选解码工具已提供；A3三形状实际回传待补||
-|34|C|REFERENCE_ADAPTER_PENDING|row34_projection_mantissa5 / row34_projection_mantissa3|real BF16 down_proj output mantissa truncation before actual fused add_rms_norm_bias consumer; phenomenon proxy; old bias path retained|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row34_projection_mantissa5|mantissa5: A2/0.26/CANN9.1/Qwen3.8 community W8A8/TP2 two owners reviewed, each rank1536 changed/consumed/restored calls; mantissa3 queued. A3 pending. No REGISTERED claim.|
+|32|B|ADAPTER_READY_UNTESTED|row32_conv3d_input_e4m3 / row32_conv3d_input_e5m2|Conv3d input FP8-like rounding phenomenon proxy; original operator dtype preserved; old FP16 round-trip retained as zero-effect history|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row32_conv3d_input_e4m3 + row32_conv3d_input_e5m2; releases/yellow-reference-vision-fp8-20261125-r1|Codex reference: E4M3 and E5M2 both A2/0.26/CANN9.1/community Qwen3.8 W8A8/TP2, same Workers two owners, all-rank changed/consumer/byte restore/canary/negative review passed. Await yellow review and formal A3 test; not REGISTERED.|
+|33|A|FAULT33_EVIDENCE_PENDING|公共33 paged_decode|A3实际launch/三形状控制未闭合，关闭|Qwen3.8 A3 TP2（蓝区A2仅验证）|yellow_intake_20261125_fault33_n2.md: three-shape API summary received; launch/tiling identity and one-rank capture completeness still incomplete||
+|34|C|ADAPTER_READY_UNTESTED|row34_projection_mantissa5 / row34_projection_mantissa3|real BF16 down_proj output mantissa truncation before actual fused add_rms_norm_bias consumer; phenomenon proxy; old bias path retained|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row34_projection_mantissa5 + row34_projection_mantissa3; releases/yellow-reference-projection-round-20261125-r1|Codex reference: mantissa5 and mantissa3 both A2/0.26/CANN9.1/community Qwen3.8 W8A8/TP2, same Workers two owners, actual fused add_rms_norm_bias consumer, exact restore/canary and negatives passed. Await yellow review and formal A3 test; not REGISTERED.|
 |35|B|AWAIT_FORMAL_TEST|合并公共28 denominator_replay；黄区finite_perturb历史保留|数学不等价：分母重放不是仅累加序改变，合并只覆盖错误输出现象|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
 |36|F|CLOSED_NO_INJECTION|BIOS硬件配置|不修改BIOS，不作为本工具注入|当前A3不适用|范围决定，不要求注入||
 |37|B|YELLOW_ADAPTER_READY_UNTESTED|黄区rounding_perturb / faulty_requant_rounding；保留配置说明|固定输入与scale，仅改变局部舍入，不全局替换torch.round|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||

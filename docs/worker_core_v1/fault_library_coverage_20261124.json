@@ -350,9 +350,9 @@
       "capability": "row32_conv3d_input_e4m3 / row32_conv3d_input_e5m2",
       "boundary": "Conv3d input FP8-like rounding phenomenon proxy; original operator dtype preserved; old FP16 round-trip retained as zero-effect history",
       "deployment": "Qwen3.8 A3 TP2（蓝区A2仅验证）",
-      "evidence": "reference_adapter_a2_20261124.json#row32_conv3d_input_e4m3",
-      "progress_state": "REFERENCE_ADAPTER_PENDING",
-      "progress_note": "E4M3: A2/0.26/CANN9.1/Qwen3.8 community W8A8/TP2 two owners reviewed, each rank 6 changed/consumed/restored calls; E5M2 still queued. A3 pending. No REGISTERED claim."
+      "evidence": "reference_adapter_a2_20261124.json#row32_conv3d_input_e4m3 + row32_conv3d_input_e5m2; releases/yellow-reference-vision-fp8-20261125-r1",
+      "progress_state": "ADAPTER_READY_UNTESTED",
+      "progress_note": "Codex reference: E4M3 and E5M2 both A2/0.26/CANN9.1/community Qwen3.8 W8A8/TP2, same Workers two owners, all-rank changed/consumer/byte restore/canary/negative review passed. Await yellow review and formal A3 test; not REGISTERED."
     },
     {
       "row": 33,
@@ -360,7 +360,7 @@
       "capability": "公共33 paged_decode",
       "boundary": "A3实际launch/三形状控制未闭合，关闭",
       "deployment": "Qwen3.8 A3 TP2（蓝区A2仅验证）",
-      "evidence": "r7.5候选解码工具已提供；A3三形状实际回传待补",
+      "evidence": "yellow_intake_20261125_fault33_n2.md: three-shape API summary received; launch/tiling identity and one-rank capture completeness still incomplete",
       "progress_state": "FAULT33_EVIDENCE_PENDING"
     },
     {
@@ -369,9 +369,9 @@
       "capability": "row34_projection_mantissa5 / row34_projection_mantissa3",
       "boundary": "real BF16 down_proj output mantissa truncation before actual fused add_rms_norm_bias consumer; phenomenon proxy; old bias path retained",
       "deployment": "Qwen3.8 A3 TP2（蓝区A2仅验证）",
-      "evidence": "reference_adapter_a2_20261124.json#row34_projection_mantissa5",
-      "progress_state": "REFERENCE_ADAPTER_PENDING",
-      "progress_note": "mantissa5: A2/0.26/CANN9.1/Qwen3.8 community W8A8/TP2 two owners reviewed, each rank1536 changed/consumed/restored calls; mantissa3 queued. A3 pending. No REGISTERED claim."
+      "evidence": "reference_adapter_a2_20261124.json#row34_projection_mantissa5 + row34_projection_mantissa3; releases/yellow-reference-projection-round-20261125-r1",
+      "progress_state": "ADAPTER_READY_UNTESTED",
+      "progress_note": "Codex reference: mantissa5 and mantissa3 both A2/0.26/CANN9.1/community Qwen3.8 W8A8/TP2, same Workers two owners, actual fused add_rms_norm_bias consumer, exact restore/canary and negatives passed. Await yellow review and formal A3 test; not REGISTERED."
     },
     {
       "row": 35,
