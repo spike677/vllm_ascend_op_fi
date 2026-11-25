@@ -1,0 +1,63 @@
+{
+  "start": "2026-11-25T13:13:02.268545+00:00",
+  "ended": "2026-11-25T13:18:26.417256+00:00",
+  "elapsed_seconds": 324.14880730398,
+  "isolation_removed": true,
+  "events": [
+    {
+      "time": "2026-11-25T13:13:02.268621+00:00",
+      "event": "ISOLATION_START",
+      "cards": [
+        2,
+        5
+      ],
+      "method": "BOUNDED_CARD2_5_TTK_GATING_STOP_MONITOR",
+      "maximum_seconds": 1800,
+      "dispatcher_or_docker_configuration_changed": false
+    },
+    {
+      "time": "2026-11-25T13:13:02.396339+00:00",
+      "event": "AUTHORIZED_STOP_BEGIN",
+      "container": "/ttk_q_init-routing-v6_dev5_slot0_5809dde0",
+      "image": "cann:9.3.0-910b-ttk",
+      "cards": [
+        5
+      ],
+      "authorization": "2026-11-25 explicit30minute authorization, all external ATK/TTK under newly approved strict-guard smoke window, only cards2/5"
+    },
+    {
+      "time": "2026-11-25T13:13:03.330891+00:00",
+      "event": "AUTHORIZED_STOP_END",
+      "container": "/ttk_q_init-routing-v6_dev5_slot0_5809dde0",
+      "image": "cann:9.3.0-910b-ttk",
+      "exit_code": 0
+    },
+    {
+      "time": "2026-11-25T13:13:03.331093+00:00",
+      "event": "AUTHORIZED_STOP_BEGIN",
+      "container": "/ttk_q_gating-softmax-v4_dev2_slot0_a5e25c16",
+      "image": "cann:9.3.0-910b-ttk",
+      "cards": [
+        2
+      ],
+      "authorization": "2026-11-25 explicit30minute authorization, all external ATK/TTK under newly approved strict-guard smoke window, only cards2/5"
+    },
+    {
+      "time": "2026-11-25T13:13:04.015683+00:00",
+      "event": "AUTHORIZED_STOP_END",
+      "container": "/ttk_q_gating-softmax-v4_dev2_slot0_a5e25c16",
+      "image": "cann:9.3.0-910b-ttk",
+      "exit_code": 0
+    },
+    {
+      "time": "2026-11-25T13:18:26.417358+00:00",
+      "event": "ISOLATION_END",
+      "cleaner_stopped": true,
+      "dispatch_ability_restored": true,
+      "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+    }
+  ],
+  "configuration_changed": false,
+  "external_containers_deleted": false,
+  "own_container_remaining": false
+}
