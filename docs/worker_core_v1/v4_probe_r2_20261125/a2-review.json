@@ -1,0 +1,158 @@
+{
+  "schema": "dcat.probe.a2.smoke.v2",
+  "status": "PASSED",
+  "combination": {
+    "hardware": "Ascend910B4/A2",
+    "vllm": "0.26.0",
+    "vllm_ascend": "0.26.0rc1",
+    "cann": "9.1.0",
+    "model": "Qwen3.8-27B-W8A8 community",
+    "tp": 2
+  },
+  "original_receipt": {
+    "bytes": 81840243,
+    "sha256": "3eae025f37cdfcfdb29f7c99a4c766443720a5debe52f7995e36fb4f88706b81"
+  },
+  "source_manifest_sha256": "c877ca5edb784d163bbeae21a46d87d96a46f5a5b8a7a2311159ca91cb8923d3",
+  "probe_files": {
+    "fault_injection/dsv4_noise.py": "29c406954dc00690978607f560f407ef7ef3afd711d9087355052a62ae2b2d4b",
+    "fault_injection/dsv4_noise_v030.py": "da8aab463626201d4893f32fe3529a2ead3a75e94659bc0179ea1e83ef40e25d",
+    "fault_injection/sites/dsv4_observer.py": "2df2df49ca47d580cfe942665fbd5add89353b3c234b44dd81d6806b25a2642f",
+    "fault_injection/sites/dsv4_request_rows.py": "61ffcb3bd65bc8f97fc5b4c3a96f9897f793850a5eaaeb3df9fb79f907432e4e",
+    "experiments/worker_core_v11_20261118/dsv4_noise_capture.py": "e7c483d317c409a29f732b94e874c1129014e3b3b4171316279308bad751b881",
+    "experiments/worker_core_v11_20261118/dsv4_observe_probe.py": "23018ca6031d2235b2e1ae75a0c7be0c38446c00886bb48c8bfe1dc2031df3b8",
+    "experiments/worker_core_v11_20261118/dsv4_probe_extension.py": "18c81becf626368bd81c2ae77c51865f3ddd14d7a1cf92980d98602bcbeb3a44",
+    "experiments/worker_core_v11_20261118/dsv4_probe_journal.py": "5e513bfc7384841cf5f111872a140b32ff5a6fd000bb296efcc4e715b000e7c8",
+    "experiments/worker_core_v11_20261118/dsv4_probe_smoke.py": "2859cbe187c4441bcfdfcfd0463efa9f8625a0e2a821cf04c4a14b6aa0ba5086",
+    "experiments/worker_core_v11_20261118/dsv4_probe_support.py": "420542785fc16929017c80e8205731bc7667bb970c2ee5893b02c84d72dc3f48"
+  },
+  "ranks": [
+    {
+      "tool": "observe",
+      "rank": 0,
+      "original_method_objects_restored": true,
+      "methods": [
+        {
+          "name": "execute_model",
+          "exact_identity": true
+        },
+        {
+          "name": "sample_tokens",
+          "exact_identity": true
+        },
+        {
+          "name": "compute_logits",
+          "exact_identity": true
+        }
+      ],
+      "calls": 3012,
+      "steps": 5,
+      "errors": [],
+      "truncated": false,
+      "capture_valid": null,
+      "sample_join_proven": null,
+      "removed": true,
+      "output_identical_before_during_after": true
+    },
+    {
+      "tool": "observe",
+      "rank": 1,
+      "original_method_objects_restored": true,
+      "methods": [
+        {
+          "name": "execute_model",
+          "exact_identity": true
+        },
+        {
+          "name": "sample_tokens",
+          "exact_identity": true
+        },
+        {
+          "name": "compute_logits",
+          "exact_identity": true
+        }
+      ],
+      "calls": 3012,
+      "steps": 5,
+      "errors": [],
+      "truncated": false,
+      "capture_valid": null,
+      "sample_join_proven": null,
+      "removed": true,
+      "output_identical_before_during_after": true
+    },
+    {
+      "tool": "capture",
+      "rank": 0,
+      "original_method_objects_restored": true,
+      "methods": [
+        {
+          "name": "execute_model",
+          "exact_identity": true
+        },
+        {
+          "name": "sample_tokens",
+          "exact_identity": true
+        },
+        {
+          "name": "compute_logits",
+          "exact_identity": true
+        }
+      ],
+      "calls": 0,
+      "steps": 4,
+      "errors": [],
+      "truncated": null,
+      "capture_valid": true,
+      "sample_join_proven": true,
+      "removed": true,
+      "output_identical_before_during_after": true
+    },
+    {
+      "tool": "capture",
+      "rank": 1,
+      "original_method_objects_restored": true,
+      "methods": [
+        {
+          "name": "execute_model",
+          "exact_identity": true
+        },
+        {
+          "name": "sample_tokens",
+          "exact_identity": true
+        },
+        {
+          "name": "compute_logits",
+          "exact_identity": true
+        }
+      ],
+      "calls": 0,
+      "steps": 4,
+      "errors": [],
+      "truncated": null,
+      "capture_valid": true,
+      "sample_join_proven": true,
+      "removed": true,
+      "output_identical_before_during_after": true
+    }
+  ],
+  "unknown_baseline_refused": true,
+  "duplicate_refused": true,
+  "initial_instance_override": {
+    "0": {
+      "execute_model": false,
+      "sample_tokens": false,
+      "compute_logits": false
+    },
+    "1": {
+      "execute_model": false,
+      "sample_tokens": false,
+      "compute_logits": false
+    }
+  },
+  "partial_rank_failure_rollback": true,
+  "binding_policy": "EXACT_CLASS_BOUND_METHOD_ONLY_NO_APPROVAL_BYPASS",
+  "scenario": "Actual 0.26 runner/model objects; isolated smoke rebinds the SAME original bound methods as instance attributes, not a claim of natural 0.30 initialization.",
+  "qualification_granted": false,
+  "limitation": "No V4 or EP mechanism qualification; shutdown resource_tracker warnings retained, not a host IPC cleanup certification."
+}

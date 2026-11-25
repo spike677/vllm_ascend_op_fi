@@ -22,6 +22,24 @@ def pages(kind,path):
                 safety_factor=data.get('safety_factor'),maxima=rows(maximum),bounds=rows(bounds),
                 finite=data.get('all_finite'),token_stable=data.get('tokens_stable'),
                 limitation='Summary fields missing remain null; finite/token stability requires local raw recheck.'))
+    elif kind=='binding':
+        reports=data if isinstance(data,list) else [data]
+        for report in reports:
+            rpc=report if report.get('schema')=='dcat.probe.rpc.v2' else {}
+            if rpc:report=rpc.get('binding') or rpc.get('result',{})
+            if report.get('schema')!='dcat.probe.bindings.v2':raise ValueError('BINDING_SCHEMA')
+            common=dict(rank=report.get('rank'),rpc_status=rpc.get('status'),rpc_code=rpc.get('code'),
+                observer_state_present=report.get('observer_state_present'),capture_state_present=report.get('capture_state_present'),read_only=report.get('read_only'))
+            for key,value in report.get('objects',{}).items():
+                payloads.append(dict(common,object_name=key,identity=value,target_paths=report.get('target_paths')))
+            for key,value in report.get('bindings',{}).items():
+                if value is None:payloads.append(dict(common,method=key,identity=None));continue
+                compact={k:v for k,v in value.items() if k not in ('callable_chain','pinned_original_candidates')}
+                payloads.append(dict(common,method=key,identity=compact))
+                for index,item in enumerate(value.get('callable_chain',[])):
+                    payloads.append(dict(common,method=key,chain_index=index,callable=item))
+                for index,item in enumerate(value.get('pinned_original_candidates',[])):
+                    payloads.append(dict(common,method=key,pin_index=index,pinned_original=item))
     elif kind=='identity':
         reports=data if isinstance(data,list) else [data]
         for report in reports:
@@ -74,7 +92,7 @@ def pages(kind,path):
     return output
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('kind',choices=['noise','observe','identity']);p.add_argument('input');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('kind',choices=['noise','observe','identity','binding']);p.add_argument('input');a=p.parse_args()
     # Validate all pages before emitting any.
     result=pages(a.kind,a.input)
     for page in result:sys.stdout.buffer.write(canonical(page)+b'\n')

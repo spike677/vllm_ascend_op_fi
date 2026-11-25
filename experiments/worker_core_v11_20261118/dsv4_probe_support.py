@@ -10,6 +10,12 @@ class ProbeRefused(ValueError):
     pass
 
 
+def same_callable(left,right):
+    if inspect.ismethod(left) or inspect.ismethod(right):
+        return inspect.ismethod(left) and inspect.ismethod(right) and left.__func__ is right.__func__ and left.__self__ is right.__self__
+    return left is right
+
+
 def source(value):
     fn = getattr(value, '__func__', value)
     try:
@@ -17,7 +23,10 @@ def source(value):
         raw = Path(file).read_bytes() if file else None
     except (TypeError, OSError):
         file, raw = None, None
-    return dict(type=type(value).__module__+'.'+type(value).__qualname__,
+    try: line=inspect.getsourcelines(fn)[1]
+    except (TypeError,OSError): line=None
+    return dict(type=type(value).__module__+'.'+type(value).__qualname__,line=line,
+                package=(getattr(fn,'__module__','') or '').split('.')[0] or None,
                 module=getattr(fn, '__module__', None), qualname=getattr(fn, '__qualname__', None),
                 file=file, sha256=hashlib.sha256(raw).hexdigest() if raw is not None else None)
 
@@ -30,22 +39,23 @@ def callable_identity(obj, name):
         chain.append(dict(source(item), func_id=id(getattr(item,'__func__',item)),
                           bound_self_id=id(item.__self__) if getattr(item,'__self__',None) is not None else None))
         item = getattr(item, '__wrapped__', None)
+    cls_value=inspect.getattr_static(type(obj),name,None)
     record = dict(name=name, instance_override=name in vars(obj), object_class=source(type(obj)),
                   callable_chain=chain, wrapped_chain_complete=item is None,
-                  bound_to_target=getattr(current, '__self__', None) is obj)
+                  bound_to_target=getattr(current, '__self__', None) is obj,
+                  ordinary_bound_method=inspect.ismethod(current),class_callable=source(cls_value),
+                  same_class_function=getattr(current,'__func__',None) is cls_value and cls_value is not None)
     encoded=json.dumps(record, sort_keys=True, separators=(',', ':')).encode()
     return dict(record, fingerprint=hashlib.sha256(encoded).hexdigest(), object_id=id(obj),
                 callable_id=id(current), func_id=id(getattr(current, '__func__', current)))
 
 
 class MethodLease:
-    """An explicit trusted baseline receipt is required for an instance override.
+    """Only the exact class function bound to this object is admissible.
 
-    Identity merely inventories a callable; it NEVER approves its own fingerprint.
-    The deployment reviews the source chain and supplies approved_baselines via
-    its authenticated control plane. Unknown wrappers remain refused.
+    No source fingerprint, module name or deployment receipt can allow a wrapper.
     """
-    def __init__(self, obj, name, approved_baselines=None):
+    def __init__(self, obj, name):
         self.obj, self.name = obj, name
         self.original = getattr(obj, name)
         self.had_instance = name in vars(obj)
@@ -55,17 +65,13 @@ class MethodLease:
         if not callable(self.original): raise ProbeRefused('PROBE_CALLABLE_REQUIRED:'+name)
         if getattr(self.original, '_dcat_probe_owner', None) is not None:
             raise ProbeRefused('PROBE_BOUNDARY_ALREADY_OWNED:'+name)
-        if self.had_instance or hasattr(self.original, '__wrapped__'):
-            if (approved_baselines or {}).get(name) != self.identity['fingerprint']:
-                raise ProbeRefused('PROBE_FRAMEWORK_BASELINE_REVIEW_REQUIRED:'+name)
-            if not self.identity['wrapped_chain_complete'] or any(not x['sha256'] for x in self.identity['callable_chain']):
-                raise ProbeRefused('PROBE_SOURCE_CHAIN_UNPROVEN:'+name)
-        elif not (getattr(self.original, '__self__', None) is obj and inspect.ismethod(self.original)):
-            raise ProbeRefused('PROBE_CLASS_METHOD_BASELINE_REQUIRED:'+name)
+        if not (self.identity['ordinary_bound_method'] and self.identity['bound_to_target'] and self.identity['same_class_function']):
+            code='PROBE_INSTANCE_NOT_CLASS_BOUND_METHOD' if self.had_instance else 'PROBE_CLASS_METHOD_BASELINE_REQUIRED'
+            raise ProbeRefused(code+':'+name)
 
     def install(self, wrapper):
         current=getattr(self.obj,self.name)
-        same = current is self.original if self.had_instance else (
+        same = same_callable(current,self.original) if self.had_instance else (
             self.name not in vars(self.obj) and getattr(current,'__func__',None) is getattr(self.original,'__func__',None)
             and getattr(current,'__self__',None) is self.obj)
         if not same: raise ProbeRefused('PROBE_BASELINE_CHANGED:'+self.name)
@@ -89,6 +95,66 @@ def restore_all(leases):
     if any(x.wrapper is not None and not x.owned() for x in leases):
         raise ProbeRefused('PROBE_OWNER_CHANGED')
     for lease in reversed(leases): lease.restore()
+
+
+INNER_NAMES=('runnable','model','_inner','__wrapped__')
+
+
+def object_details(obj):
+    if obj is None:return None
+    cls=type(obj);attrs=vars(obj) if hasattr(obj,'__dict__') else {};modules=attrs.get('_modules',{})
+    refs=[]
+    for name in INNER_NAMES:
+        value=attrs.get(name,modules.get(name) if isinstance(modules,dict) else None)
+        if value is not None and value is not obj:
+            refs.append(dict(attribute=name,object_id=id(value),class_name=type(value).__module__+'.'+type(value).__qualname__))
+    return dict(object_id=id(obj),class_name=cls.__module__+'.'+cls.__qualname__,
+                mro=[c.__module__+'.'+c.__qualname__ for c in cls.__mro__],inner_references=refs,
+                wrapper_status='INNER_REFERENCES_PRESENT_NOT_PROOF_OF_PROXY' if refs else 'NO_DIRECT_INNER_REFERENCE_OBSERVED')
+
+
+def probe_targets(worker,options=None):
+    paths=(options or {}).get('target_paths',{})
+    if not isinstance(paths,dict) or set(paths)-{'runner','model'}:raise ProbeRefused('PROBE_TARGET_PATH_INVALID')
+    def resolve(obj,path):
+        if not isinstance(path,list) or len(path)>4:raise ProbeRefused('PROBE_TARGET_PATH_INVALID')
+        seen={id(obj)}
+        for name in path:
+            if name not in INNER_NAMES:raise ProbeRefused('PROBE_TARGET_PATH_INVALID')
+            attrs=vars(obj) if hasattr(obj,'__dict__') else {};modules=attrs.get('_modules',{})
+            obj=attrs.get(name,modules.get(name) if isinstance(modules,dict) else None)
+            if obj is None or id(obj) in seen:raise ProbeRefused('PROBE_TARGET_REFERENCE_UNPROVEN')
+            seen.add(id(obj))
+        return obj
+    runner=resolve(worker.model_runner,paths.get('runner',[]))
+    model=resolve(getattr(runner,'model',None),paths.get('model',[]))
+    return runner,model
+
+
+def inspect_binding(worker,options=None):
+    runner,model=probe_targets(worker,options);result={}
+    for label,obj,name in (('execute_model',runner,'execute_model'),('sample_tokens',runner,'sample_tokens'),('compute_logits',model,'compute_logits')):
+        if obj is None or not hasattr(obj,name):result[label]=None;continue
+        row=callable_identity(obj,name);current=getattr(obj,name);pins=[]
+        fn=getattr(current,'__func__',current)
+        # Read closure cells and object dictionaries only; never invoke a pin or descriptor.
+        candidates=[]
+        for key,cell in zip(getattr(getattr(fn,'__code__',None),'co_freevars',()),getattr(fn,'__closure__',()) or ()):
+            try:candidates.append((key,cell.cell_contents))
+            except ValueError:pass
+        candidates += list(getattr(current,'__dict__',{}).items())
+        for key,value in candidates[:32]:
+            if callable(value):pins.append(dict(binding=key,original=source(value)))
+            if hasattr(value,'__dict__'):
+                for attr,original in list(vars(value).items())[:64]:
+                    if callable(original) and any(s in attr.lower() for s in ('original','orig','func','method','saved','old')):
+                        pins.append(dict(binding=key,holder_class=source(type(value)),attribute=attr,original=source(original)))
+        row['pinned_original_candidates']=pins[:32];result[label]=row
+    return dict(schema='dcat.probe.bindings.v2',rank=getattr(worker,'rank',None),bindings=result,
+                objects=dict(root_runner=object_details(worker.model_runner),root_model=object_details(getattr(worker.model_runner,'model',None)),
+                    selected_runner=object_details(runner),selected_model=object_details(model)),target_paths=(options or {}).get('target_paths',{}),
+                observer_state_present=hasattr(worker,'_dcat_dsv4_observer'),capture_state_present=hasattr(worker,'_dcat_noise_capture'),
+                read_only=True,qualification_granted=False)
 
 
 def plain(value):
@@ -119,7 +185,7 @@ def deployment_identity(worker):
     except ImportError: groups={k:dict(size=None,members=None,reason='VLLM_UNAVAILABLE') for k in ('tp','dp','ep')}
     objects={}
     for name,obj in (('runner',runner),('model',model),('sampler',getattr(runner,'sampler',None)),('model_sampler',getattr(model,'sampler',None))):
-        objects[name]=None if obj is None else dict(object_id=id(obj),class_identity=source(type(obj)))
+        objects[name]=None if obj is None else dict(object_details(obj),class_identity=source(type(obj)))
     methods={}
     for label,obj,name in (('execute_model',runner,'execute_model'),('sample_tokens',runner,'sample_tokens'),('compute_logits',model,'compute_logits')):
         if obj is not None and hasattr(obj,name):methods[label]=callable_identity(obj,name)
@@ -142,6 +208,8 @@ def scheduler_rows(runner,scheduler):
     except (TypeError,AttributeError):offsets=None
     computed=getattr(batch,'num_computed_tokens_cpu',None)
     result=[];issue=None
+    if {rid for rid in ids if rid is not None and rid in counts} != {rid for rid,count in counts.items() if count>0}:
+        issue='SCHEDULED_REQUEST_INPUT_BATCH_JOIN_INCOMPLETE'
     for i,rid in enumerate(ids):
         if rid is None or rid not in counts:continue
         try:

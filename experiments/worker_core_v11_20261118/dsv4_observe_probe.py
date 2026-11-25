@@ -2,7 +2,7 @@
 from pathlib import Path
 import hashlib, importlib
 from fault_injection.sites.dsv4_observer import empty_report, export_report
-from experiments.worker_core_v11_20261118.dsv4_probe_support import MethodLease, restore_all, deployment_identity, ProbeRefused
+from experiments.worker_core_v11_20261118.dsv4_probe_support import MethodLease, restore_all, deployment_identity, inspect_binding, probe_targets, ProbeRefused
 from experiments.worker_core_v11_20261118.dsv4_probe_journal import CallJournal
 
 
@@ -19,19 +19,25 @@ def source_fingerprints(paths):
 
 
 def observe(wrapper,action,options=None):
-    worker=getattr(wrapper,'worker',wrapper);runner=worker.model_runner;options=options or {}
+    worker=getattr(wrapper,'worker',wrapper);options=options or {}
+    if action=='inspect_binding':return inspect_binding(worker,options)
     if action=='identity':return deployment_identity(worker)
     if action=='source':return dict(rank=worker.rank,files=source_fingerprints(options['paths']))
     if action=='start':
-        if hasattr(worker,'_dcat_dsv4_observer'):raise ProbeRefused('OBSERVE_BOUNDARY_ALREADY_OWNED')
+        if hasattr(worker,'_dcat_dsv4_observer'):raise ProbeRefused('OBSERVE_WORKER_STATE_PRESENT')
+        runner,model=probe_targets(worker,options)
         max_calls=options.get('max_calls',4096);integer_budget=options.get('integer_budget',262144)
         if type(max_calls) is not int or not 1<=max_calls<=16384 or type(integer_budget) is not int or not 0<=integer_budget<=4194304:
             raise ProbeRefused('PROBE_CAPTURE_BUDGET_OUT_OF_RANGE')
-        lease=MethodLease(runner,'execute_model',options.get('approved_baselines'))
+        lease=MethodLease(runner,'execute_model')
         identity=deployment_identity(worker)
+        modules={id(m):n for n,m in model.named_modules()} if hasattr(model,'named_modules') else {}
+        target_layers=options.get('target_layers',[])
+        if not isinstance(target_layers,list) or len(target_layers)>64 or any(type(n) is not str or n not in modules.values() for n in target_layers):
+            raise ProbeRefused('PROBE_TARGET_LAYER_UNOBSERVED')
         state=dict(report=empty_report(),lease=lease,inside=0,steps=0,unknown_phase=0,calls=[],dispatches=[],
-                   truncated=False,errors=[],max_calls=max_calls,integer_budget_remaining=integer_budget,identity=identity)
-        modules={id(m):n for n,m in runner.model.named_modules()} if hasattr(runner.model,'named_modules') else {}
+                   truncated=False,errors=[],max_calls=max_calls,integer_budget_remaining=integer_budget,identity=identity,
+                   target_layers=target_layers,filtered_calls=0)
         def execute(*args,**kwargs):
             scheduler=args[0] if args else kwargs.get('scheduler_output',kwargs.get('scheduler'))
             state['inside']+=1;state['steps']+=1
@@ -63,6 +69,7 @@ def observe(wrapper,action,options=None):
     if state['inside']:raise ProbeRefused('OBSERVE_REQUEST_INFLIGHT')
     result=export_report(state['report'],worker.rank)
     result.update(steps=state['steps'],unknown_phase_steps=state['unknown_phase'],calls=state['calls'],
+                  target_layers=state['target_layers'],filtered_calls=state['filtered_calls'],
                   truncated=state['truncated'],observation_errors=state['errors'],identity=state['identity'],
                   installed=True,combine_output_row_join='COMBINE_OUTPUT_ROW_JOIN_UNPROVEN')
     if action=='stop':

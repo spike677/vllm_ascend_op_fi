@@ -2,7 +2,7 @@
 import json,os,subprocess,sys,time,traceback,urllib.request
 from pathlib import Path
 from experiments.worker_core_v11_20261118.dsv4_probe_extension import Dsv4ProbeExtension
-from experiments.worker_core_v11_20261118.dsv4_probe_support import callable_identity
+from experiments.worker_core_v11_20261118.dsv4_probe_support import callable_identity, same_callable
 
 class SmokeExtension(Dsv4ProbeExtension):
     def probe_smoke_binding(self,*,action):
@@ -10,13 +10,28 @@ class SmokeExtension(Dsv4ProbeExtension):
         if action=='bind':
             if hasattr(self,'_probe_smoke_originals'):raise ValueError('SMOKE_ALREADY_BOUND')
             self._probe_smoke_originals=[(o,n,n in vars(o),vars(o).get(n),getattr(o,n)) for o,n in targets]
-            # Same genuine bound method, no surrogate implementation. Models the
-            # framework's instance storage pattern; not a claim about 0.30 code.
+            # Synthetic storage fixture of the same genuine class-bound method;
+            # not evidence that any framework creates instance overrides.
             for o,n,had,old,fn in self._probe_smoke_originals:setattr(o,n,fn)
             return dict(rank=self.rank,methods={n:callable_identity(o,n) for o,n in targets})
         if action=='check':
-            rows=[dict(name=n,exact_identity=getattr(o,n) is fn) for o,n,had,old,fn in self._probe_smoke_originals]
+            rows=[dict(name=n,exact_identity=same_callable(getattr(o,n),fn)) for o,n,had,old,fn in self._probe_smoke_originals]
             return dict(rank=self.rank,methods=rows,passed=all(x['exact_identity'] for x in rows))
+        if action in ('foreign_start','foreign_rank1_start'):
+            if action=='foreign_rank1_start' and self.rank!=1:return dict(rank=self.rank,fixture_installed=False)
+            original=r.execute_model
+            def foreign(*args,**kwargs):return original(*args,**kwargs)
+            self._probe_smoke_foreign=(original,foreign);r.execute_model=foreign
+            return dict(rank=self.rank,fixture_installed=True)
+        if action=='foreign_stop':
+            if not hasattr(self,'_probe_smoke_foreign'):return dict(rank=self.rank,fixture_removed=False)
+            original,foreign=self._probe_smoke_foreign
+            assert r.execute_model is foreign
+            r.execute_model=original;del self._probe_smoke_foreign
+            return dict(rank=self.rank,fixture_removed=True)
+        if action=='foreign_check':
+            return dict(rank=self.rank,foreign_preserved=not hasattr(self,'_probe_smoke_foreign') or r.execute_model is self._probe_smoke_foreign[1],
+                        probe_state_clear=not hasattr(self,'_dcat_dsv4_observer'))
         if action=='restore':
             rows=self.probe_smoke_binding(action='check')
             if not rows['passed']:raise ValueError('SMOKE_FRAMEWORK_BASELINE_CHANGED')
@@ -55,13 +70,21 @@ def main():
         report['identity']=probe('identity','read');report['idle']=probe('observe','status');save()
         report['warmups']=[infer() for _ in range(3)];assert report['warmups'][-1]==report['warmups'][-2]
         report['bound']=rpc('probe_smoke_binding',action='bind');save()
-        # Fingerprints reviewed only for this deliberately assigned exact original
-        # function identity, not a generic approve-whatever-D0-reports workflow.
-        approved_by_rank={str(r['rank']):{n:v['fingerprint'] for n,v in r['methods'].items()} for r in report['bound']}
+        report['binding_inspection']=probe('identity','inspect_binding')
+        rpc('probe_smoke_binding',action='foreign_start')
         report['unknown_refused']=probe('observe','start')
-        assert all(r['exit_code']==4 and r['code']=='PROBE_FRAMEWORK_BASELINE_REVIEW_REQUIRED' for r in report['unknown_refused'])
+        assert all(r['exit_code']==4 and r['code']=='PROBE_INSTANCE_NOT_CLASS_BOUND_METHOD' for r in report['unknown_refused'])
+        rpc('probe_smoke_binding',action='foreign_stop')
+        rpc('probe_smoke_binding',action='foreign_rank1_start')
+        report['partial_install']=probe('observe','start')
+        assert {r['rank']:r['exit_code'] for r in report['partial_install']}=={0:0,1:4}
+        report['partial_cleanup']=probe('observe','stop')
+        assert all(r['exit_code']==0 for r in report['partial_cleanup'])
+        report['partial_foreign_check']=rpc('probe_smoke_binding',action='foreign_check')
+        assert all(r['foreign_preserved'] and r['probe_state_clear'] for r in report['partial_foreign_check'])
+        rpc('probe_smoke_binding',action='foreign_stop')
         for tool in ('observe','capture'):
-            options=dict(approved_baselines_by_rank=approved_by_rank)
+            options={}
             report[tool+'_start']=probe(tool,'start',options)
             assert all(r['exit_code']==0 for r in report[tool+'_start']),report[tool+'_start']
             report[tool+'_duplicate']=probe(tool,'start',options)

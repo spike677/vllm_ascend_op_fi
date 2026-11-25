@@ -20,14 +20,13 @@ class ProbeTests(unittest.TestCase):
         w=self.worker();self.assertFalse(observe(w,'status')['installed'])
         observe(w,'start');observe(w,'stop');self.assertNotIn('execute_model',vars(w.model_runner))
         self.assertFalse(capture(w,'status')['installed'])
-    def test_reviewed_instance_callable_exact_restoration(self):
+    def test_class_bound_instance_callable_exact_restoration(self):
         w=self.worker();r=w.model_runner;r.execute_model=r.execute_model;old=r.execute_model
-        receipt=callable_identity(r,'execute_model')
-        observe(w,'start',{'approved_baselines':{'execute_model':receipt['fingerprint']}})
-        observe(w,'stop');self.assertIs(r.execute_model,old)
+        observe(w,'start')
+        observe(w,'stop');self.assertIs(r.execute_model.__func__,old.__func__);self.assertIs(r.execute_model.__self__,old.__self__)
     def test_unknown_instance_and_wrapped_refused(self):
         w=self.worker();w.model_runner.execute_model=lambda *a,**k:1
-        with self.assertRaisesRegex(ProbeRefused,'BASELINE_REVIEW'):observe(w,'start')
+        with self.assertRaisesRegex(ProbeRefused,'INSTANCE_NOT_CLASS_BOUND_METHOD'):observe(w,'start')
         self.assertFalse(hasattr(w,'_dcat_dsv4_observer'))
 
     def test_review_receipt_cannot_be_reused_for_another_wrapped_object(self):
@@ -39,15 +38,89 @@ class ProbeTests(unittest.TestCase):
             return wrapper
         r.execute_model=factory();receipt=callable_identity(r,'execute_model')
         r.execute_model=factory()  # same source/qualname/__wrapped__, different live object
-        with self.assertRaisesRegex(ProbeRefused,'BASELINE_REVIEW'):
+        with self.assertRaisesRegex(ProbeRefused,'INSTANCE_NOT_CLASS_BOUND_METHOD'):
             observe(w,'start',{'approved_baselines':{'execute_model':receipt['fingerprint']}})
-        receipt=callable_identity(r,'execute_model');actual=r.execute_model
-        observe(w,'start',{'approved_baselines':{'execute_model':receipt['fingerprint']}})
-        observe(w,'stop');self.assertIs(r.execute_model,actual)
+        receipt=callable_identity(r,'execute_model')
+        with self.assertRaisesRegex(ProbeRefused,'INSTANCE_NOT_CLASS_BOUND_METHOD'):
+            observe(w,'start',{'approved_baselines':{'execute_model':receipt['fingerprint']}})
     def test_duplicate_does_not_stack(self):
         w=self.worker();observe(w,'start');fn=w.model_runner.execute_model
-        with self.assertRaisesRegex(ProbeRefused,'ALREADY_OWNED'):observe(w,'start')
+        with self.assertRaisesRegex(ProbeRefused,'WORKER_STATE_PRESENT'):observe(w,'start')
         self.assertIs(fn,w.model_runner.execute_model);observe(w,'stop')
+
+    def test_bound_method_comparison_uses_function_and_self(self):
+        from experiments.worker_core_v11_20261118.dsv4_probe_support import same_callable
+        r=Runner();first=r.execute_model;second=r.execute_model
+        self.assertIsNot(first,second);self.assertTrue(same_callable(first,second))
+        self.assertFalse(same_callable(first,Runner().execute_model))
+
+    def test_partial_and_different_bound_function_refused(self):
+        import functools,types
+        for replacement in (lambda r:functools.partial(r.execute_model),
+                            lambda r:types.MethodType(lambda self,*a,**kw:None,r),
+                            lambda r:Runner().execute_model):
+            w=self.worker();w.model_runner.execute_model=replacement(w.model_runner)
+            with self.assertRaisesRegex(ProbeRefused,'INSTANCE_NOT_CLASS_BOUND_METHOD'):observe(w,'start')
+            self.assertFalse(hasattr(w,'_dcat_dsv4_observer'))
+
+    def test_inspect_method_pin_readonly_and_split_errors(self):
+        from experiments.worker_core_v11_20261118.dsv4_probe_support import inspect_binding
+        class MethodPin:
+            def __init__(self,original):self.original=original
+        w=self.worker();pin=MethodPin(w.model_runner.execute_model)
+        def wrapper(*args,**kwargs):return pin.original(*args,**kwargs)
+        w.model_runner.execute_model=wrapper;before=dict(vars(w.model_runner))
+        report=inspect_binding(w);self.assertEqual(before,vars(w.model_runner))
+        row=report['bindings']['execute_model']
+        self.assertTrue(row['pinned_original_candidates']);self.assertFalse(row['same_class_function'])
+        call=lambda **kw:Dsv4ProbeExtension.demoncat_dsv4_probe(w,**kw)
+        denied=call(tool='observe',action='start')
+        self.assertEqual(denied['code'],'PROBE_INSTANCE_NOT_CLASS_BOUND_METHOD')
+        self.assertIn('pinned_original_candidates',denied['binding']['bindings']['execute_model'])
+        del w.model_runner.execute_model;w._dcat_dsv4_observer={}
+        denied=call(tool='observe',action='start')
+        self.assertEqual(denied['code'],'OBSERVE_WORKER_STATE_PRESENT')
+        self.assertTrue(denied['binding']['observer_state_present'])
+        self.assertFalse(denied['binding']['bindings']['execute_model']['instance_override'])
+
+    def test_rpc_fingerprint_override_option_refused(self):
+        w=self.worker()
+        reply=Dsv4ProbeExtension.demoncat_dsv4_probe(w,tool='observe',action='start',options={'approved_baselines_by_rank':{'0':{}}})
+        self.assertEqual(reply['code'],'PROBE_BASELINE_OVERRIDE_FORBIDDEN')
+        self.assertFalse(hasattr(w,'_dcat_dsv4_observer'))
+
+    def test_proxy_requires_explicit_actual_target_and_restores_inner_only(self):
+        from experiments.worker_core_v11_20261118.dsv4_probe_support import inspect_binding
+        class Proxy:
+            def __init__(self,inner):self.runnable=inner
+            def __getattr__(self,name):return getattr(self.runnable,name)
+        w=self.worker();inner=w.model_runner;w.model_runner=Proxy(inner)
+        info=inspect_binding(w)
+        self.assertIn('Proxy',info['objects']['root_runner']['class_name'])
+        self.assertTrue(info['objects']['root_runner']['mro'])
+        self.assertEqual(info['objects']['root_runner']['inner_references'][0]['attribute'],'runnable')
+        with self.assertRaisesRegex(ProbeRefused,'CLASS_METHOD_BASELINE_REQUIRED'):observe(w,'start')
+        options={'target_paths':{'runner':['runnable']}}
+        observe(w,'start',options);marker=object()
+        self.assertIs(w.model_runner.execute_model(NS(num_scheduled_tokens={},scheduled_new_reqs=[]),marker=marker),marker)
+        self.assertIn('execute_model',vars(inner));self.assertNotIn('execute_model',vars(w.model_runner))
+        observe(w,'stop');self.assertNotIn('execute_model',vars(inner))
+        capture(w,'start',options=options)
+        for i in range(4):w.model_runner.model.compute_logits(torch.ones(1,6));w.model_runner.sample_tokens()
+        self.assertTrue(capture(w,'stop')['capture_valid'])
+        self.assertNotIn('compute_logits',vars(inner.model));self.assertNotIn('sample_tokens',vars(inner))
+
+    def test_bad_inner_reference_never_guessed(self):
+        w=self.worker()
+        for path in (['missing'],['runnable'],['model']*5):
+            with self.assertRaises(ProbeRefused):observe(w,'start',{'target_paths':{'runner':path}})
+        self.assertFalse(hasattr(w,'_dcat_dsv4_observer'))
+
+    def test_target_layer_must_exist_before_install(self):
+        w=self.worker()
+        with self.assertRaisesRegex(ProbeRefused,'PROBE_TARGET_LAYER_UNOBSERVED'):
+            observe(w,'start',{'target_layers':['invented.layer']})
+        self.assertNotIn('execute_model',vars(w.model_runner))
 
     def test_budget_can_be_bounded_without_restart(self):
         w=self.worker()
@@ -94,6 +167,12 @@ class ProbeTests(unittest.TestCase):
         result=deployment_identity(w)
         self.assertIsNone(result['parallel_configs'][0]['values']['enable_expert_parallel'])
         self.assertFalse(result['baseline_approved'])
+
+    def test_missing_scheduled_request_never_claims_complete_row_join(self):
+        from experiments.worker_core_v11_20261118.dsv4_probe_support import scheduler_rows
+        r=self.worker().model_runner;r.query_start_loc_cpu=[0,1]
+        result=scheduler_rows(r,NS(num_scheduled_tokens={'r':1,'missing':1}))
+        self.assertFalse(result['complete']);self.assertEqual(result['reason'],'SCHEDULED_REQUEST_INPUT_BATCH_JOIN_INCOMPLETE')
     def test_nonfinite_and_missing_steps_return_evidence_without_changing_result(self):
         w=self.worker();capture(w,'start');x=torch.tensor([[float('inf'),1,2,3,4,5.]])
         self.assertTrue(torch.isinf(w.model_runner.model.compute_logits(x)[0,0]))
@@ -158,6 +237,10 @@ class ProbeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             p=Path(tmp)/'identity.json';p.write_text(json.dumps([reply]))
             rows=pages('identity',p);self.assertEqual(rows,pages('identity',p))
+            self.assertTrue(all(len(canonical(x))+1<=4096 for x in rows))
+            binding=Dsv4ProbeExtension.demoncat_dsv4_probe(w,tool='identity',action='inspect_binding')
+            p.write_text(json.dumps([binding]))
+            rows=pages('binding',p);self.assertEqual(rows,pages('binding',p))
             self.assertTrue(all(len(canonical(x))+1<=4096 for x in rows))
         capture(w,'start');x=torch.arange(6.).reshape(1,6)
         for unused in range(4):w.model_runner.model.compute_logits(x);w.model_runner.sample_tokens()

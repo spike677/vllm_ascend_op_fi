@@ -1,17 +1,17 @@
 """Full numeric capture with exact callable restoration and explicit sample linkage."""
 import os, math
 import torch
-from experiments.worker_core_v11_20261118.dsv4_probe_support import MethodLease, restore_all, ProbeRefused
+from experiments.worker_core_v11_20261118.dsv4_probe_support import MethodLease, restore_all, probe_targets, ProbeRefused
 
 
 def capture(wrapper,action,*,phase='calibration',options=None):
     if phase not in ('calibration','normal','fault','off','health'):raise ValueError('NOISE_CAPTURE_PHASE')
-    worker=getattr(wrapper,'worker',wrapper);runner=worker.model_runner;model=runner.model;options=options or {}
+    worker=getattr(wrapper,'worker',wrapper);options=options or {}
     if action=='start':
-        if hasattr(worker,'_dcat_noise_capture'):raise ProbeRefused('NOISE_CAPTURE_BOUNDARY_OWNED')
-        approved=options.get('approved_baselines')
-        leases=[MethodLease(model,'compute_logits',approved)]
-        if hasattr(runner,'sample_tokens'):leases.append(MethodLease(runner,'sample_tokens',approved))
+        if hasattr(worker,'_dcat_noise_capture'):raise ProbeRefused('NOISE_CAPTURE_WORKER_STATE_PRESENT')
+        runner,model=probe_targets(worker,options)
+        leases=[MethodLease(model,'compute_logits')]
+        if hasattr(runner,'sample_tokens'):leases.append(MethodLease(runner,'sample_tokens'))
         state=dict(leases=leases,steps=[],samples=[],inside=0,phase=phase,errors=[],pending=[],sample_inside=None)
         def logits(*args,**kwargs):
             hidden=args[0] if args else kwargs.get('hidden_states');state['inside']+=1

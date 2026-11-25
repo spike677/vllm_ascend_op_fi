@@ -38,6 +38,11 @@ class CallJournal(TorchDispatchMode):
         moe=any(x in name.lower() for x in ('moe_distribute_dispatch','moe_distribute_combine','moe_init_routing','moe_finalize_routing'))
         matched=[m for m,p in PATTERNS.items() if match(name,p)]
         selected=moe or bool(matched)
+        if selected and self.state.get('target_layers'):
+            layers={self.modules.get(id(frame.frame.f_locals.get('self'))) for frame in inspect.stack(context=0)[1:24]}
+            if not layers.intersection(self.state['target_layers']):
+                self.state['filtered_calls']+=1
+                selected=False
         before=None
         if selected and len(self.state['calls'])<self.state['max_calls']:
             try:
