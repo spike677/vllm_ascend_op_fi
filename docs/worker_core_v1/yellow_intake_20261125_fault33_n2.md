@@ -12,6 +12,8 @@
 
 ## 审查结论：需退补
 
+11-25复核澄清：黄区已生成六条N2 API记录，不再记为“尚未采集”。蓝区收到的是原文摘要和真实源结构 `shapes[0..2].attention`，未收到六条launch对应的规范提取文本。当前待办是从已有原件补提/核对，而非重复采集六条API。负责人补充的三点（真实键pointer映射、80字节header与未知项null、r2-k3工具来源）已写入 `fault33_n2_existing_capture_20261124.md`；原文没有这些字段不算采集内容已具备，不以手工默认值补齐。
+
 1. 六条各选同一 full attention 模块的一个 Q1 decode；回传原 API 调用序号、模块名、rank、有效 block_table 页面范围、实际序列边界。不能只有各形状的总调用数。
 2. 按 `fault33_n2_existing_capture_20261124.md` 的工具从既有原件提取：capture header 原始 key/blockDim/serial、host 字节数/SHA、API→launch 唯一关联及证据来源。窗口与rank映射必须来自日志关联，不按运行先后猜测。
 3. 公开候选 serializer、sparseMode3 分支、实际加载库、SDK布局及相关文件需要完整 SHA。当前 `attention_v1.py` 和 manifest 仅给 SHA 前缀；不能用于严格身份核对。tiling区间未审核前继续为null，不套A2偏移或长度。

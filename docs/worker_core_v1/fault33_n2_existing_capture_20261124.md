@@ -4,6 +4,16 @@
 
 ## 六条记录与字段
 
+### 11-25 提取勘误：真实键、header和工具来源
+
+负责人已补充：API JSON 本身没有 `pointers` 字段。`pointers` 是另建的 `n2-map.json` 中的字段映射，不是要求原 JSON 自带路径。已收到的来源结构是 `shapes[0..2].attention`；每个形状在列表中按实际 rank 和 Q1 decode 记录选择索引，再把映射指向该记录内真实存在的键。原材料使用 `atten_mask`、`asl`、`aslkv`、`sparse_mode` 等名称，不得机械套用下方示例中的同名占位路径。Q/K/V 的嵌套键仍须以原 JSON 为准，蓝区不猜路径，也不手填预期值到原件。
+
+- API JSON 没有 blockDim、host区间或已审定tiling。blockDim、host长度等元数据从 `capture/launch-<pid>-<serial>.bin` 的80字节header读取；host内容是紧随header的区间，host SHA由该内容计算，不是header SHA，也不是tiling SHA。
+- tiling未审定：映射中省略 `tiling` 或写 `null`；工具输出的tiling长度、偏移和SHA保持null。block_table只有shape/dtype/stride时，有效范围保持null：省略 `block_table_valid_range` 的pointer或指向原件已有null，不从shape推导实际页号范围。这会产生缺项标记，属于如实提取，不代表应伪造字段或全部重跑。
+- 黄区已有 `fault33/tools/review_launch_capture_v2.py`。核对冻结ZIP：**r2只带review工具；`extract_fault33_existing.py`在r2-k3补充件中**，r2-k3也带对应review工具。解压r2-k3到独立目录，从该目录设置PYTHONPATH并运行下方命令，参数指向既有原件；不用覆盖现役工具或修改原采集文件。
+
+六条API记录“已产出”与六条launch/tiling关联“已核验”分开记账。缺少真实关联时继续输出null/问题码，不能把最近serial或按运行顺序推定的窗口关系当作证据。
+
 每组 prompt 128/512/2304，各 rank0/rank1，选择同一 full attention 模块的一个 Q1 paged decode。保留原窗口、rank→PID、模块名和 API 调用序号。
 
 |字段|来源|缺失处理|
