@@ -4,6 +4,7 @@ import hashlib, importlib
 from fault_injection.sites.dsv4_observer import empty_report, export_report
 from experiments.worker_core_v11_20261118.dsv4_probe_support import MethodLease, restore_all, deployment_identity, inspect_binding, probe_targets, ProbeRefused
 from experiments.worker_core_v11_20261118.dsv4_probe_journal import CallJournal
+from experiments.worker_core_v11_20261118.dsv4_probe_targeted import TargetedJournal, options_checked, export_targeted
 
 
 def source_fingerprints(paths):
@@ -35,9 +36,12 @@ def observe(wrapper,action,options=None):
         target_layers=options.get('target_layers',[])
         if not isinstance(target_layers,list) or len(target_layers)>64 or any(type(n) is not str or n not in modules.values() for n in target_layers):
             raise ProbeRefused('PROBE_TARGET_LAYER_UNOBSERVED')
+        if options.get('targeted_observation') is not None and hasattr(worker,'_dcat_noise_capture'):
+            raise ProbeRefused('TARGETED_CAPTURE_MUST_BE_IDLE')
+        targeted=options_checked(options,model)
         state=dict(report=empty_report(),lease=lease,inside=0,steps=0,unknown_phase=0,calls=[],dispatches=[],
                    truncated=False,errors=[],max_calls=max_calls,integer_budget_remaining=integer_budget,identity=identity,
-                   target_layers=target_layers,filtered_calls=0)
+                   target_layers=target_layers,filtered_calls=0,targeted=targeted)
         def execute(*args,**kwargs):
             scheduler=args[0] if args else kwargs.get('scheduler_output',kwargs.get('scheduler'))
             state['inside']+=1;state['steps']+=1
@@ -50,7 +54,7 @@ def observe(wrapper,action,options=None):
                     phases.append('prefill' if rid in new else 'unknown' if computed is None or tokens is None else 'decode' if computed>=len(tokens) else 'prefill')
                 label=phases[0] if phases and len(set(phases))==1 else 'mixed_or_unknown'
                 state['unknown_phase']+=int(label in ('unknown','mixed_or_unknown'))
-                mode=CallJournal(state,runner,scheduler,worker.rank,identity['groups'],modules,requests=ids,phase=label)
+                mode=(TargetedJournal if targeted is not None else CallJournal)(state,runner,scheduler,worker.rank,identity['groups'],modules,requests=ids,phase=label)
             except Exception as error:
                 state['errors'].append(dict(stage='scheduler_observation',error=repr(error)));mode=None
             try:
@@ -72,6 +76,7 @@ def observe(wrapper,action,options=None):
                   target_layers=state['target_layers'],filtered_calls=state['filtered_calls'],
                   truncated=state['truncated'],observation_errors=state['errors'],identity=state['identity'],
                   installed=True,combine_output_row_join='COMBINE_OUTPUT_ROW_JOIN_UNPROVEN')
+    result['targeted_observation']=export_targeted(state.get('targeted'))
     if action=='stop':
         restore_all([state['lease']]);del worker._dcat_dsv4_observer
         result.update(observer_removed=True,installed=False)
