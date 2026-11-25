@@ -25,7 +25,7 @@ class ConvMode(InputReadMode):
                 input_shape=list(x.shape),weight_shape=list(w.shape),native_return_identity=True)
             token=None
             if site.input_only and site.fault:
-                value=x.half().to(x.dtype)
+                value=site.transform_input(x)
                 require(x.is_contiguous(),'REFERENCE_CONV_INPUT_NOT_CONTIGUOUS')
                 token=site.region_leases.acquire(x)
                 event.update(before_sha256=fingerprint(x),changed_elements=changed(x,value))
@@ -92,7 +92,23 @@ class VisionPrecisionSite(BaseSite):
 class ConvInputFp16RoundTrip(VisionPrecisionSite):
     input_only=True
     variant='row32_conv3d_input_fp16'
+    def transform_input(self,x):return x.half().to(x.dtype)
+
+
+class ConvInputE4M3(ConvInputFp16RoundTrip):
+    variant='row32_conv3d_input_e4m3'
+    format_name='e4m3'
+    def transform_input(self,x):
+        from reference_adapters.precision_rules import fp8_like
+        return fp8_like(x,self.format_name)
+
+
+class ConvInputE5M2(ConvInputE4M3):
+    variant='row32_conv3d_input_e5m2'
+    format_name='e5m2'
 
 
 FACTORIES={'row16_conv3d_compute_fp16':VisionPrecisionSite,
-           'row32_conv3d_input_fp16':ConvInputFp16RoundTrip}
+           'row32_conv3d_input_fp16':ConvInputFp16RoundTrip,
+           'row32_conv3d_input_e4m3':ConvInputE4M3,
+           'row32_conv3d_input_e5m2':ConvInputE5M2}

@@ -25,8 +25,9 @@ def trusted_bootstrap(wrapper, action, options):
             authorize_operator=lambda principal, operation: principal == 'product-acceptance')
     results=[];profiles={}
     for variant in variants:
-        factory=importlib.import_module('reference_adapters.'+modules[variant.split('_')[0]]).FACTORIES[variant]
-        stage='sampler' if variant.startswith('row12_') else 'vision' if variant.startswith(('row16_','row32_','row34_')) else 'model'
+        module='projection_round' if variant.startswith('row34_projection_') else modules[variant.split('_')[0]]
+        factory=importlib.import_module('reference_adapters.'+module).FACTORIES[variant]
+        stage='sampler' if variant.startswith('row12_') else 'vision' if variant.startswith(('row16_','row32_','row34_bf16_')) else 'model'
         mechanism = 'external.' + variant
         spec = ExternalSite(mechanism, factory, factory_sha256(factory),
             observe_deployment(worker, worker.model_runner.model), stage=stage, region_kind='transient')

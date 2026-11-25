@@ -8,7 +8,9 @@ from tools.review_product_mode import review
 KINDS={'row7_mlp_last_row_zero':'MlpContributionLost','row8_decoder_last_row_zero':'DecoderPaddingRow',
     'row12_logits_columns_rotate':'LogitsColumnsRotate','row3_gate_fp16_round':'GateFp16Round',
     'row16_conv3d_compute_fp16':'VisionPrecisionSite','row32_conv3d_input_fp16':'ConvInputFp16RoundTrip',
-    'row19_bf16_reverse_splitk':'ReverseSplitK','row34_bf16_before_bias':'EarlyBiasRound'}
+    'row19_bf16_reverse_splitk':'ReverseSplitK','row34_bf16_before_bias':'EarlyBiasRound',
+    'row32_conv3d_input_e4m3':'ConvInputE4M3','row32_conv3d_input_e5m2':'ConvInputE5M2',
+    'row34_projection_mantissa5':'ProjectionMantissa5','row34_projection_mantissa3':'ProjectionMantissa3'}
 
 def need(value,code):
     if not value:raise ValueError(code)
@@ -54,7 +56,12 @@ def run(directory,receipt,negative_file):
                     if variant.startswith(('row16_','row32_')):
                         need(e['readonly_inputs_weights_unchanged'] and e['native_return_identity'],'REFERENCE_READONLY_CONV')
                         if variant.startswith('row32_'):need(e['encoder_consumer_operator'],'REFERENCE_ENCODER')
-                    if variant.startswith(('row19_','row34_')):
+                    if variant.startswith('row34_projection_'):
+                        need(e['consumer_operator']=='_C_ascend::npu_add_rms_norm_bias'
+                             and e['actual_projection_return_identity']
+                             and e['fraction_bits']==(5 if variant.endswith('5') else 3),
+                             'REFERENCE_ACTUAL_FUSED_PROJECTION_CONSUMER')
+                    if variant.startswith(('row19_','row34_bf16_')):
                         need(e['control_passed'] and e['bf16_operands'] and not e['quantized_operand_recomputed'],'REFERENCE_BF16_CONTROL')
                         need(type(e.get('rule_changed_elements')) is int and type(e.get('control_changed_elements')) is int,
                             'REFERENCE_RULE_CONTROL_SEPARATION_REQUIRED')
@@ -76,7 +83,7 @@ def run(directory,receipt,negative_file):
         scope_rule_effects.append(dict(scope=scope.get('scope'),rule_effect_lower_bound=scope_rule_effect))
     need(seen==set(raw),'REFERENCE_ORPHAN_REQUEST')
     changed=all(t['changed_calls']>0 for t in totals.values())
-    if variant.startswith(('row19_','row34_')):
+    if variant.startswith(('row19_','row34_bf16_')):
         # A native-vs-reference discrepancy alone does not establish that the
         # named change in accumulation order/rounding point made a difference.
         # All ranks must apply/consume/restore, but unchanged values are not

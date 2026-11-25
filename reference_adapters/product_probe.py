@@ -60,7 +60,7 @@ def main():
     p.add_argument('--alias-diagnostics',action='store_true')
     p.add_argument('--image')
     p.add_argument('--native-library');p.add_argument('--native-sha256')
-    a=p.parse_args();a.references=a.reference;a.reference=a.references[0];a.external_sampling=a.reference.startswith('row12_');a.external_vision=a.reference.startswith(('row16_','row32_','row34_'));a.external_example=not (a.external_sampling or a.external_vision);visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
+    a=p.parse_args();a.references=a.reference;a.reference=a.references[0];a.external_sampling=a.reference.startswith('row12_');a.external_vision=a.reference.startswith(('row16_','row32_','row34_bf16_'));a.external_example=not (a.external_sampling or a.external_vision);visual=a.mechanism==['17'];batch=a.mechanism==['batch'];paged=a.mechanism==['33'];root=Path('/evidence')
     if len(a.references)>1 and (a.external_sampling or a.external_vision):p.error('Multiple references require the same text model stage')
     if a.external_vision and not visual:p.error('External vision uses the isolated image scheduler: --mechanism 17')
     if a.external_input and a.mechanism!=['18']:p.error('Input examples require --mechanism 18')

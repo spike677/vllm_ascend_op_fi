@@ -55,5 +55,7 @@ def run(ex,inference,root,variant):
             canary_exact=after==before,engine_alive=True))
         (root/'reference_refusal.json').write_text(json.dumps(report,indent=2))
         assert reply['exit_code']==4 and before==after
+        assert len(audit)==2 and sorted(r['rank'] for r in audit)==[0,1]
+        assert all(all(r[k]==0 for k in ('leases','owners','bindings','wrappers')) for r in audit)
     client.detach();report['status']='REFERENCE_CONTROL_REFUSAL_A2_PASSED'
     (root/'reference_refusal.json').write_text(json.dumps(report,indent=2))
