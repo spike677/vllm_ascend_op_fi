@@ -9,6 +9,7 @@ from reference_adapters.lm_head_rows import LmHeadRows,RowAdmission
 class LmHeadCollapseProvider(Scope):
     variant='row12_lm_head_collapse'
     persistent_protocol_version=2
+    region_kind='persistent_weight'
     continuous_protocol=True
     execution_boundary='python_hook'
     def __init__(self,worker,model,worker_identity,*,mechanism,region_kind):
