@@ -664,6 +664,95 @@
           "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
         }
       ]
+    },
+    {
+      "window": "r8canon1125a1",
+      "start_utc": "2026-11-25T16:01:28.131690+00:00",
+      "ended_utc": "2026-11-25T16:06:08.969910+00:00",
+      "status": "FINISHED",
+      "cards": [
+        2,
+        5
+      ],
+      "isolation_removed": true,
+      "automatic_end_utc": "2026-11-26T01:00:00+00:00",
+      "method": "R8_REGRESSION_ONLY_CARD2_5_STOP_MONITOR",
+      "controller_sha256": "326028aa26047325bb2833bda069aab5afa661b3597514119a304202672661b2",
+      "events_sha256": "878f0495f1735327cbdeec35fc6f8026df4701eb141e7dc9e09e091d4ae1c39b",
+      "events": [
+        {
+          "time": "2026-11-25T16:01:28.131776+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "R8_REGRESSION_ONLY_CARD2_5_STOP_MONITOR",
+          "automatic_end_utc": "2026-11-26T01:00:00+00:00",
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-25T16:05:28.709621+00:00",
+          "event": "CLEANER_ERROR",
+          "error": "CalledProcessError(1, ['docker', 'inspect', '2d0684e7bf51', '89e5409a8737', 'e55c62ed7220'])"
+        },
+        {
+          "time": "2026-11-25T16:06:07.944078+00:00",
+          "event": "REGRESSION_CASE_END",
+          "case": "r8canon1125a1",
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "time": "2026-11-25T16:06:08.969998+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ]
+    },
+    {
+      "window": "r8canon1125r1",
+      "start_utc": "2026-11-25T16:13:10.477748+00:00",
+      "ended_utc": "2026-11-25T16:17:57.107714+00:00",
+      "status": "FINISHED",
+      "cards": [
+        2,
+        5
+      ],
+      "isolation_removed": true,
+      "automatic_end_utc": "2026-11-26T01:00:00+00:00",
+      "method": "R8_REGRESSION_ONLY_CARD2_5_STOP_MONITOR",
+      "controller_sha256": "a9b013b16a01e3e5f8009fcecc421368b337d4058bbb4f67a9561778f67ea8fc",
+      "events_sha256": "9f29a3e135a459fab02eec816e27ecf00533dabf6f948401c27752dc48c9c6e9",
+      "events": [
+        {
+          "time": "2026-11-25T16:13:10.477828+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "R8_REGRESSION_ONLY_CARD2_5_STOP_MONITOR",
+          "automatic_end_utc": "2026-11-26T01:00:00+00:00",
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-25T16:17:56.085508+00:00",
+          "event": "REGRESSION_CASE_END",
+          "case": "r8canon1125r1",
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "time": "2026-11-25T16:17:57.107806+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ]
     }
   ]
 }

@@ -25,7 +25,7 @@
 |externaldq|通过|285.500|7296 / 7296|[记录](r8full1125a1-externaldq-review.json)|
 |externalvision|通过|325.008|6 / 6|[记录](r8full1125a1-externalvision-review.json)|
 
-Batch首轮在scope1 enable时API收到终止信号，失败原件保留；若同源码复测通过，表内使用复测的完整双owner记录，不拼接两轮作用域。详见batch-first-attempt-analysis.json。
+Batch首轮在scope1 enable时API收到终止信号，失败原件保留；同源码完整复测通过，表内使用复测的完整双owner记录，不拼接两轮作用域。详见batch-first-attempt-analysis.json。
 
 changed小于applied表示部分写入值相同，不自动判失败；failed必须为0，eligible必须与attempted/applied/consumed/restored一致。18方差档按各自命名变体验收，不能合并成一次18结果。
 
@@ -34,3 +34,7 @@ changed小于applied表示部分写入值相同，不自动判失败；failed必
 抢占：本轮负责人允许卡2/5持续保护，包括改名任务。仅停止实际独占这两卡的非项目容器；共享其它卡的容器保留。每批结束停止监控，不改派发器配置、不删除外部容器或数据。完整隔离审计在窗口结束后补入，运行中不宣称已解除。
 
 CPU首轮1360项/1358通过/2项带理由跳过。发行规范字节的全量CPU及最终安装验证另附；当前记录不代替最后一次冻结门禁。
+
+安装后候选身份验收也已通过（[记录](r8canon1125a1-review.json)）；据其实际运行身份刷新BLUE 18.api_half登记。更新候选81643582的三个wheel无设备安装检查通过，406个文件逐字节一致（[安装检查](registered-candidate-install-check.json)）。与前候选唯一运行时差异为登记JSON，所有Python/机制字节不变（[对比](candidate-a2-runtime-comparison.json)）。免许可最终实测通过（[记录](r8canon1125r1-review.json)）：18.api_half同组Worker两owner、无临时许可；未登记22负例exit4、引擎健康；未知机制及未鉴权helper负例exit4；区域/资源/精确金丝雀恢复通过。
+
+五个验证窗口累计占卡墙钟时间5693.097秒（含启动、失败、恢复和完整重跑，非kernel时间），成功停止仅占卡2/5的外部容器25次。所有窗口均已结束、监控已撤销；[最终检查](isolation-final-check.json)确认无本轮控制器或测试容器存活。窗口内隔离开始/结束绝对时间、被停容器名和镜像均保留在[审计](isolation-audit.json)。没有修改派发器配置、Docker入口、驱动或CANN，也未删除外部数据。

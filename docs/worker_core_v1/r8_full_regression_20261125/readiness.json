@@ -1,0 +1,41 @@
+{
+  "schema": "dcat.r8.readiness.v1",
+  "status": "BLUE_READY_A3_EVIDENCE_PENDING_NOT_FROZEN",
+  "candidate_source_commit": "81643582d2983b574b97208ddb3530312b167f07",
+  "release_source_manifest_sha256": "8568f8a4b59fbfc98060238bbd4acf526f0056d67ddd8eb2f91835dddcc311f5",
+  "npu_manifest_sha256": "3e786be9d50d932e893afdee79ebf881f6dbcf2df957053ac534c515fefefc01",
+  "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+  "a2_regression": {
+    "planned": 16,
+    "passed": 16,
+    "batch_first_failure_retained": true
+  },
+  "cpu": {
+    "tests": 1360,
+    "passed": 1358,
+    "reasoned_skips": 2,
+    "registration_update_tests": 18,
+    "registration_update_passed": 18
+  },
+  "installation_files": 406,
+  "registered_blue_mechanisms": [
+    "18.api_half"
+  ],
+  "registered_a3_mechanisms": [],
+  "isolation_wall_seconds": 5693.096906,
+  "external_stop_operations": 25,
+  "checks": {
+    "progress.json": "d7fbfaf673c1879481d1d87f90f6468d7d309af48b547c5f3d2a062f4cdf8917",
+    "canonical-cpu.json": "b34289147558a9f054b5cb2e3c4ec9f8d755a68eb8d7898dd6cb9477175852dc",
+    "registered-candidate-install-check.json": "812f5dcee70b5a2b0a2d05dc1a21b55f0503b78da5d1fa81b3510f2cec38a7b3",
+    "candidate-a2-runtime-comparison.json": "d4274fbbcd93e66b86fbeedbb4e18794a73609ada024c9b7801a04f20417650c",
+    "r8canon1125r1-review.json": "7019a30e98a281569ef0c2d7a482c0208c5aa7346a0586169ed302f724372851",
+    "isolation-final-check.json": "1dcb2f9f0aac880451a49ce33dfbea7a064983322deeb92c6576221031f974e8"
+  },
+  "remaining": [
+    "A3 formal one-page evidence review and registration",
+    "Same-run yellow 39op/Batch/26fia classification",
+    "Final release source/release/tag and final gate artifacts",
+    "Second batch N2/ABI/layout, D0/D1/noise and yellow diff evidence"
+  ]
+}
