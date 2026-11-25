@@ -1,0 +1,159 @@
+{
+  "schema": "dcat.probe.a2.smoke.v3",
+  "status": "PASSED",
+  "combination": {
+    "hardware": "Ascend910B4/A2",
+    "vllm": "0.26.0",
+    "vllm_ascend": "0.26.0rc1",
+    "cann": "9.1.0",
+    "model": "Qwen3.8-27B-W8A8 community",
+    "tp": 2
+  },
+  "source_manifest_sha256": "1518830652bce91d38e3c775a8ead6d4e488972af11d24b25c49d12e8efd4062",
+  "original_receipt": {
+    "bytes": 83266832,
+    "sha256": "5c0aa6a72b7365ed3d586a133c005bb131f9e29c2419cf3021d21d8403be0e84"
+  },
+  "ranks": [
+    {
+      "tool": "observe",
+      "rank": 0,
+      "method_identity_restored": true,
+      "output_identical": true,
+      "calls": 3012,
+      "steps": 5
+    },
+    {
+      "tool": "observe",
+      "rank": 1,
+      "method_identity_restored": true,
+      "output_identical": true,
+      "calls": 3012,
+      "steps": 5
+    },
+    {
+      "tool": "capture",
+      "rank": 0,
+      "method_identity_restored": true,
+      "output_identical": true,
+      "capture_valid": true,
+      "sample_join_proven": true,
+      "steps": 4
+    },
+    {
+      "tool": "capture",
+      "rank": 1,
+      "method_identity_restored": true,
+      "output_identical": true,
+      "capture_valid": true,
+      "sample_join_proven": true,
+      "steps": 4
+    },
+    {
+      "tool": "targeted",
+      "rank": 0,
+      "method_identity_restored": true,
+      "output_identical": true,
+      "calls": 8,
+      "steps": 5,
+      "operations": 20,
+      "consumer_candidates": 16,
+      "completed_events": 20,
+      "float_samples": 12316,
+      "error_count": 0,
+      "truncated": false,
+      "target_layers": [
+        "language_model.model.layers.0.linear_attn.out_proj"
+      ],
+      "runtime_groups": {
+        "get_tp_group": {
+          "ranks": [
+            0,
+            1
+          ],
+          "rank_in_group": 0,
+          "world_size": 2,
+          "unique_name": "tp:0",
+          "source": "vllm.distributed.parallel_state.get_tp_group",
+          "type": "vllm_ascend.patch.worker.patch_distributed.GroupCoordinatorPatch"
+        },
+        "get_ep_group": {
+          "unavailable": "AssertionError",
+          "reason": "expert parallel group is not initialized. EP group is only created for MoE models with num_experts > 0. This function should only be called for MoE models."
+        },
+        "get_mc2_group": {
+          "ranks": [
+            0,
+            1
+          ],
+          "rank_in_group": 0,
+          "world_size": 2,
+          "unique_name": "mc2:0",
+          "source": "vllm_ascend.distributed.parallel_state.get_mc2_group",
+          "type": "vllm_ascend.patch.worker.patch_distributed.GroupCoordinatorPatch"
+        }
+      }
+    },
+    {
+      "tool": "targeted",
+      "rank": 1,
+      "method_identity_restored": true,
+      "output_identical": true,
+      "calls": 8,
+      "steps": 5,
+      "operations": 20,
+      "consumer_candidates": 16,
+      "completed_events": 20,
+      "float_samples": 12316,
+      "error_count": 0,
+      "truncated": false,
+      "target_layers": [
+        "language_model.model.layers.0.linear_attn.out_proj"
+      ],
+      "runtime_groups": {
+        "get_tp_group": {
+          "ranks": [
+            0,
+            1
+          ],
+          "rank_in_group": 1,
+          "world_size": 2,
+          "unique_name": "tp:0",
+          "source": "vllm.distributed.parallel_state.get_tp_group",
+          "type": "vllm_ascend.patch.worker.patch_distributed.GroupCoordinatorPatch"
+        },
+        "get_ep_group": {
+          "unavailable": "AssertionError",
+          "reason": "expert parallel group is not initialized. EP group is only created for MoE models with num_experts > 0. This function should only be called for MoE models."
+        },
+        "get_mc2_group": {
+          "ranks": [
+            0,
+            1
+          ],
+          "rank_in_group": 1,
+          "world_size": 2,
+          "unique_name": "mc2:0",
+          "source": "vllm_ascend.distributed.parallel_state.get_mc2_group",
+          "type": "vllm_ascend.patch.worker.patch_distributed.GroupCoordinatorPatch"
+        }
+      }
+    }
+  ],
+  "unknown_binding_refused": true,
+  "partial_rank_rollback": true,
+  "extraction": {
+    "verified": true,
+    "pages": 548,
+    "deterministic": true,
+    "bytes": 359121,
+    "sha256": "0b372dad147d2eb3d537ac96b53952969da74f38660ca299c8c6a01dbb2f2a13",
+    "max_page_bytes": 1634
+  },
+  "qualification_granted": false,
+  "limitations": [
+    "A2 projection consumer observation only, not V4 TP8/EP combine ownership or router qualification",
+    "Current-stream events require source review for custom-op internal streams",
+    "First diagnostic source superseded, not final evidence"
+  ]
+}
