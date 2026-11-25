@@ -77,3 +77,22 @@ NPU只使用有时间边界的已授权窗口。上一窗口北京时间12:52:44
 准入只接受当前对象的同名类bound method，未知包装拒绝并返回inspect_binding。不再以框架基线/来源指纹放行包装。后续黄区回传说明旧部署组件未加载、MethodPin不赋值；实际包装来源仍待绑定检查，不能据此改39op的产品保护。r8机制与运行时未因本工具修改。
 
 黄区按交接单先D0/绑定/D1/G0，再连续重启G1；仅观察到profiler来源时允许限定插件回退。正式/金丝雀prompt需现场绑定真实原件与token SHA。COMBINE_OUTPUT_ROW_JOIN_UNPROVEN保持，D包待证。黄区diff四段收到后补审查，不阻塞已交付工具。其它Qwen测试不停止。
+
+
+## P0审视与P1准备补充（2026-11-25夜）
+
+来源为负责人本轮文字回传；蓝区未重新读取黄区安装文件，以下P0结论按黄区文字证据记录，不新增产品资格。P0合格，可进入P1的r4.1包校验；当前实例保持健康，按既定计划完成准备后再重启，不中止其它测试。
+
+黄区报告observability/base_metrics与ms_service_profiler配置列出execute_model，但未列compute_logits；实例未设置profiler相关环境变量；已查到的profiler替换发生在类上而非实例上。因此不能认定它解释了当前实例属性，也不能保证禁用插件能解决问题。未设置环境变量不单独证明插件未加载。实际来源仍以重启后的inspect_binding类/MRO、实例属性、__module__、文件位置和wrapped链为依据。
+
+负责人扩大的是**回退触发来源**，不是准入条件：
+
+- 实际绑定或可追溯包装链来自vllm_ascend.observability、ms_service_profiler，或有证据表明来自ascend_service_profiling/msserviceprofiler入口加载的模块，按profiler类处理。保留来源证据和启动差异，使用已交付白名单，再重启一次，无需重新请示。
+- 其他来源或无法确认来源：停止安装并回传identity/binding提取文本，不猜测、不删除实例属性、不继续扩展白名单。
+- 回退后再次逐rank检查，仍须满足bound method的__self__为目标对象、__func__与同名类函数一致。此结构关系本身不证明类函数未经第三方替换；类上setattr也要保留源码来源审查，不把“与当前类一致”写成“原生框架已证明”。不新增按来源指纹放行的规则。
+
+回退值不变：`VLLM_PLUGINS=ascend,ascend_kv_connector,ascend_model_loader,ascend_model`。两份启动差异及扩展类路径按黄区P0已核对一致；不更改冻结补件，本文为补充执行记录。
+
+重启前另需选定正式验收和金丝雀两份prompt原文，并完成prompt-manifest：文件字节SHA、实际token列表SHA、真实长度、固定顺序及参数；G0前所有占位符必须替换为实际值。文件SHA不等于token SHA，不以字符数推断token数。两份输入各2500–4092 token、生成4 token、单chunk；G0/G1使用同一原件及同一顺序，各组每份prompt至少5个合格样本。P1文件校验可先做，但prompt-manifest未完成不得开始G0。
+
+公共8仍需combine输出处的请求归属、有效行/padding、组/rank语义及真实消费者。候选关联不等于闭环；等待D1后做源码与语义审查，缺证时列最小定点补采，不预先承诺D包可执行。黄区diff后补审查。r8公共运行时、所有冻结标签/包均未改。
