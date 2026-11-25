@@ -1,0 +1,39 @@
+{
+  "schema": "dcat.reference.refusal.review.v1",
+  "passed": true,
+  "issues": [],
+  "checks": [
+    {
+      "kind": "missing_site",
+      "exit_code": 4,
+      "canary_exact": true
+    },
+    {
+      "kind": "identity_drift",
+      "exit_code": 4,
+      "canary_exact": true
+    },
+    {
+      "kind": "range",
+      "exit_code": 4,
+      "canary_exact": true
+    },
+    {
+      "kind": "missing_site_repeat",
+      "exit_code": 4,
+      "canary_exact": true
+    }
+  ],
+  "qualification_granted": false,
+  "receipt_sha256": "22b27d00502efc8573216c89196a8d35fd31062dbac7702212b45db85751cb56",
+  "source_commit": "16f25855f8c0c440142053b0ae01cb0a0885c07b",
+  "source_manifest_sha256": "6a874345f2e00d3951ff7d1c91788be69ac8870a945a8da95126826dbc97ad68",
+  "combination": {
+    "hardware": "Ascend910B4/A2",
+    "stack": "vLLM0.26/CANN9.1",
+    "model": "community Qwen3.8 W8A8",
+    "tp": 2
+  },
+  "window_seconds": 331.23835865897126,
+  "raw_receipt_retained_on_124": true
+}
