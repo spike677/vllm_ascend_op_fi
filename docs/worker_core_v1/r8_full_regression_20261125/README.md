@@ -4,7 +4,7 @@
 
 结果仅为当前共享产品路径的BLUE回归，不是A3登记或黄区CLI验收。通过项均另审原始回执、实际消费者、覆盖计数、区域字节/资源/精确金丝雀恢复及范围负例。Batch按唯一调用计数，不把每个请求参与次数相加冒充实际调用。
 
-当前完成14/16，独立审查通过13项。等待或运行中的项不借历史结果。耗时为模型启动、请求、恢复和退出总用时，不是kernel计时或性能倍数。
+当前完成16/16，独立审查通过16项。等待或运行中的项不借历史结果。耗时为模型启动、请求、恢复和退出总用时，不是kernel计时或性能倍数。
 
 |用例|当前结果|窗口用时/秒|两个owner合计applied（rank0 / rank1）|独立审查|
 |---|---|---:|---:|---|
@@ -16,14 +16,16 @@
 |39mr|通过|288.024|4224 / 4224|[记录](r8full1125a1-39mr-review.json)|
 |28|通过|261.568|384 / 384|[记录](r8full1125a1-28-review.json)|
 |17|通过|325.483|6 / 6|[记录](r8full1125a1-17-review.json)|
-|batch|未通过|423.678|0 / 0|[记录](r8full1125a1-batch-review.json)|
+|batch|通过|437.729|4864 / 4864|[记录](r8batch1125r1-review.json)|
 |15|通过|257.267|384 / 384|[记录](r8full1125a1-15-review.json)|
 |41|通过|255.970|288 / 288|[记录](r8full1125a1-41-review.json)|
 |26fia|通过|255.807|384 / 384|[记录](r8full1125a1-26fia-review.json)|
 |20|通过|287.630|7296 / 7296|[记录](r8full1125a1-20-review.json)|
 |externalmod|通过|286.573|7296 / 7296|[记录](r8full1125a1-externalmod-review.json)|
-|externaldq|等待/运行中|—|—|—|
-|externalvision|等待/运行中|—|—|—|
+|externaldq|通过|285.500|7296 / 7296|[记录](r8full1125a1-externaldq-review.json)|
+|externalvision|通过|325.008|6 / 6|[记录](r8full1125a1-externalvision-review.json)|
+
+Batch首轮在scope1 enable时API收到终止信号，失败原件保留；若同源码复测通过，表内使用复测的完整双owner记录，不拼接两轮作用域。详见batch-first-attempt-analysis.json。
 
 changed小于applied表示部分写入值相同，不自动判失败；failed必须为0，eligible必须与attempted/applied/consumed/restored一致。18方差档按各自命名变体验收，不能合并成一次18结果。
 

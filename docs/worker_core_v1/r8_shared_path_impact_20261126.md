@@ -2,7 +2,9 @@
 
 基线为r7.4.1发行提交 `59f6aea5`。当前实机候选 `3d4c9e39`；后续 `dd625aa3` 只增加文档、审查记录和发行准备，未改变该候选运行时Python。最终发行时必须再次核对，不将本页当作未来提交的自动批准。
 
-[字节清单](r8_full_regression_20261125/shared-byte-comparison.json)覆盖基线481个原有运行时文件，其中474个Git字节相同、以下7个共享文件变化。机制算法、实际site、observer和Native原语没有变化。当前NPU使用工作树字节，清单同时列出工作树SHA；最终wheel使用Git字节，CRLF/LF差异单独证明，不称为字节相同。没有确诊的Y1公共机制修复被偷偷混入。
+[字节清单](r8_full_regression_20261125/shared-byte-comparison.json)覆盖基线481个原有运行时文件，其中474个Git字节相同、以下7个共享文件变化。机制算法、实际site、observer和Native原语没有变化。当前NPU使用工作树快照，wheel使用Git字节，不能仅据提交号宣称两者相同。
+
+[实测快照到规范源码的逐文件核对](r8_full_regression_20261125/npu-to-canonical-comparison.json)另外检查449个运行时、实际HTTP探针和审查器文件：448个逐字节相同，唯一差异为`src/pyproject.toml`的wheel版本号；没有执行代码或换行差异。两个源码清单的文件范围不同，清单SHA不相等，分别保留。后续只读登记JSON更新仍须单独核对，并完成最终安装字节的免许可正例。没有确诊的Y1公共机制修复被混入本轮。
 
 ## 七个既有文件
 

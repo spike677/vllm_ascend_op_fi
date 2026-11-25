@@ -61,7 +61,27 @@
     "ordering": "API shutdown log at 15:20:15 precedes FAILED receipt write at 15:21:16; probe finally server.terminate follows that save. Initial shutdown is not explained by this final cleanup. Sender still unproven."
   },
   "classification": "API process termination observed; origin not proven. No public-runtime fix or yellow equivalence claimed.",
-  "retry": "Unchanged source, own API/probe signal tracing only; queued after main cases",
+  "retry": {
+    "status": "PASSED",
+    "attempt": "r8batch1125r1",
+    "source_unchanged": true,
+    "source_manifest_sha256": "b87aced01c6bc4ad438f03118cb933e18d5ae0b02ab39962cdc5726318079c0e",
+    "review_sha256": "4199c66ac21431108aebad5827df7d473df2f8bafc5583934cf734c2840f46e5",
+    "same_workers_two_owners": true,
+    "signal_observation": "Only terminal cleanup: probe kill(72,SIGTERM) at epoch1795622484.804926; API receives it at1795622484.805106 from namespace pid71. No earlier SIGINT/SIGTERM in attached API trace.",
+    "trace_limit": "Only own API and probe main threads traced; not a retrospective identification of the first failure sender.",
+    "trace_files": {
+      "signals-2187981.log": {
+        "bytes": 84,
+        "sha256": "b2700efd4635686eb312ef9deed3a6913e59a6b9d8381fd9bd084590eeab7de6"
+      },
+      "signals-2188006.log": {
+        "bytes": 743,
+        "sha256": "66579bcd806ace9148436a70cec5c94908ea6427ce0ef0b1c2ae472edecf03ca"
+      }
+    },
+    "yellow_failure_resolved": false
+  },
   "originals": {
     "product_http_batch.json": {
       "bytes": 7750327,
