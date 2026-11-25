@@ -118,7 +118,7 @@ class WorkerExtensionTest(unittest.TestCase):
         self.assertEqual(
             sorted(name for name in vars(DemoncatWorkerExtension) if not name.startswith('__')),
             ['demoncat_attach', 'demoncat_capabilities', 'demoncat_census', 'demoncat_detach', 'demoncat_discover', 'demoncat_fault_query',
-             'demoncat_fault_rpc', 'demoncat_inspect_readonly', 'demoncat_product_binding', 'demoncat_worker_identity'],
+             'demoncat_fault_rpc', 'demoncat_inspect_readonly', 'demoncat_product_binding', 'demoncat_product_bootstrap', 'demoncat_worker_identity'],
         )
         before = self.worker.demoncat_worker_identity()
         self.assertEqual(before['status'], 'WORKER_CONTEXT_NOT_READY')

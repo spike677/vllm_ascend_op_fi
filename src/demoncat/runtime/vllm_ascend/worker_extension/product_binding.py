@@ -15,14 +15,16 @@ def configure_product_profiles(worker, *, profiles, authority, operator):
     require(authority_for(worker) is authority and authority.authorize_operator(operator, 'configure_product_profiles') is True,
             'TRUSTED_PRODUCT_DEPLOYMENT_AUTHORITY_REQUIRED')
     require(type(profiles) is dict and profiles and not hasattr(worker, ATTRIBUTE), 'PRODUCT_PROFILES_ALREADY_SET_OR_EMPTY')
-    from .external_provider import external_site
     for name, profile in profiles.items():
-        external=external_site(worker,profile.get('mechanism'),validate=True)
+        from .external_provider import external_site
+        external = external_site(worker, profile.get('mechanism'), validate=True)
         native = profile.get('mechanism') in NATIVE_TRIALS
         fields = {'mechanism', 'canary_prompts', 'mode'} | ({'native_library', 'native_source'} if native else set())
         require(type(name) is str and name and set(profile) == fields
             and (profile['mechanism'] in PRODUCT_CANDIDATES + NATIVE_TRIALS or external is not None)
-            and profile['mode'] == 'PRODUCT_ACCEPTANCE_ONLY', 'PRODUCT_PROFILE_NOT_REVIEWED')
+            and profile['mode'] in ('PRODUCT_ACCEPTANCE_ONLY','PRODUCT_REGISTERED'), 'PRODUCT_PROFILE_NOT_REVIEWED')
+        if external is not None:
+            require(profile['mode']=='PRODUCT_ACCEPTANCE_ONLY', 'EXTERNAL_PRODUCT_REGISTRATION_NOT_REVIEWED')
         if native:
             validate_blue_native_worker(worker, authority.source)
             require(profile['native_source'] == authority.source, 'PRODUCT_NATIVE_SOURCE_MISMATCH')
@@ -31,6 +33,7 @@ def configure_product_profiles(worker, *, profiles, authority, operator):
 
 
 def product_binding_rpc(worker, action, payload):
+    from .external_provider import external_site
     require(type(payload) is dict, 'PRODUCT_RPC_PAYLOAD_REQUIRED')
     authority = authority_for(worker)
     require(authority is not None and authority.authorize_operator(payload.get('operator'), 'product_binding_rpc') is True,
@@ -41,11 +44,17 @@ def product_binding_rpc(worker, action, payload):
     profile = getattr(worker, ATTRIBUTE, {}).get(payload.get('profile'))
     require(profile is not None, 'PRODUCT_PROFILE_UNKNOWN')
     mechanism = profile['mechanism']
-    from .external_provider import external_site
     external=external_site(worker,mechanism,validate=True)
     if action == 'capabilities':
-        return dict(status='PRODUCT_CANDIDATE', mechanism=mechanism,
-                    mode='PRODUCT_ACCEPTANCE_ONLY', product_qualified=False,
+        from .external_provider import external_site
+        registration=None;issue=None
+        if profile['mode']=='PRODUCT_REGISTERED':
+            from .product_registration import registered_for
+            try:registration=registered_for(worker,mechanism,profile)
+            except ValueError as error:issue=str(error)
+        return dict(status='PRODUCT_REGISTERED' if registration else 'PRODUCT_REGISTRATION_REFUSED' if issue else 'PRODUCT_CANDIDATE', mechanism=mechanism,
+                    mode=profile['mode'], product_qualified=registration is not None,
+                    registration_sha256=registration['record_sha256'] if registration else None,registration_issue=issue,
                     range=dict(max_context=4096 if mechanism=='33.paged_decode' else 1024, max_tokens=4, max_num_seqs=8 if mechanism=='quant.batch_shared_scale' else 1, single_chunk=True,
                                image_grid=[1,4,4] if mechanism=='17.spatial_padding' or external is not None and external.stage=='vision' else None),
                     user_prompt_registry=False, named_variant=mechanism,
@@ -65,6 +74,10 @@ def product_binding_rpc(worker, action, payload):
     if action == 'attach':
         native_identity=None
         scope = RequestScope(**payload['scope'])
+        registration=None
+        if profile['mode']=='PRODUCT_REGISTERED':
+            from .product_registration import registered_for
+            registration=registered_for(worker,mechanism,profile)
         if mechanism=='15.alias_detach':
             require(worker.model_runner.vllm_config.parallel_config.tensor_parallel_size == 2,
                     'ALIAS15_TP2_ACCEPTANCE_ONLY')
@@ -84,9 +97,12 @@ def product_binding_rpc(worker, action, payload):
         b = current_binding(worker, worker.model_runner.model, mechanism)
         if mechanism == '15.alias_detach':b.alias_runtime_identity=alias_identity
         if mechanism in NATIVE_TRIALS:b.native_runtime_identity=native_identity
-        b.product = dict(mode='PRODUCT_ACCEPTANCE_ONLY', scope=dict(mode=scope.mode),
+        b.product = dict(mode=profile['mode'], scope=dict(mode=scope.mode),
                          profile=payload['profile'])
-        return dict(result, product_mode=True,external_source_sha256=external.source_sha256 if external else None)
+        if registration:b.product['registration_sha256']=registration['record_sha256']
+        external=external_site(worker,mechanism)
+        return dict(result, product_mode=True, mode=profile['mode'], registration_sha256=registration['record_sha256'] if registration else None,
+                    external_source_sha256=external.source_sha256 if external else None)
     require(b is not None and b.product is not None, 'PRODUCT_BINDING_NOT_ATTACHED')
     if action == 'arm_canary':
         from .product_observer import make_automatic_observer

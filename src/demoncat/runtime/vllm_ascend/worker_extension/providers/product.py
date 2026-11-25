@@ -14,6 +14,7 @@ class ProductProvider(Scope):
 
     def __init__(self, worker, model, identity, mechanism):
         super().__init__(worker, model, identity)
+        self.mechanism = mechanism
         self.binding = current_binding(worker, model, mechanism)
         require(self.binding is not None and self.binding.product is not None, 'PRODUCT_BINDING_REQUIRED')
         self.policy = RequestScope(**self.binding.product['scope'])
@@ -24,7 +25,9 @@ class ProductProvider(Scope):
         self.error = None
 
     def dispatch(self, action, settings, *, owner, generation):
-        if action == 'prepare':
+        # Admission may refuse before prepare dispatch. A newly constructed,
+        # unbound provider still needs an owner-bound, inert cleanup path.
+        if action == 'prepare' or (self._ticket is None and action in ('disable', 'unregister', 'clean', 'abort', 'recover', 'finish')):
             self.bind(owner, generation)
         self.verify(owner, generation)
         self.binding.check()

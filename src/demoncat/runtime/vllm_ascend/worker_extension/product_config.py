@@ -19,7 +19,7 @@ def load_product_deployment(path):
     fault = FaultConfig.from_dict(config['fault'])
     if fault.mechanism not in PRODUCT_CANDIDATES + NATIVE_TRIALS or fault.implementation_version != '1':
         raise ValueError('PRODUCT_VARIANT_NOT_ADAPTED')
-    if config['mode'] != 'PRODUCT_ACCEPTANCE_ONLY' or config['source'] not in ('BLUE_COMBINATION','YELLOW_DEDICATED_INSTANCE'):
+    if config['mode'] not in ('PRODUCT_ACCEPTANCE_ONLY','PRODUCT_REGISTERED') or config['source'] not in ('BLUE_COMBINATION','YELLOW_DEDICATED_INSTANCE'):
         raise ValueError('PRODUCT_COMBINATION_NOT_REGISTERED')
     if type(config['tp']) is not int or config['tp'] not in (1,2):
         raise ValueError('PRODUCT_TP_NOT_REVIEWED')
@@ -81,8 +81,9 @@ def configure_product_deployments(worker, paths, *, authority, operator, canary_
         if mechanism in NATIVE_TRIALS:
             validate_blue_native_worker(worker, authority.source)
             profiles[name].update(native_library=(deployment['native_library'], deployment['native_sha256']), native_source=authority.source)
-        permits.append(dict(profile=name, mechanisms=[mechanism], source=deployment['source'],
-                            source_manifest_sha256=deployment['source_manifest_sha256']))
+        if deployment['mode']=='PRODUCT_ACCEPTANCE_ONLY':
+            permits.append(dict(profile=name, mechanisms=[mechanism], source=deployment['source'],
+                                source_manifest_sha256=deployment['source_manifest_sha256']))
     if set(canary_tokens) != set(profiles):
         raise ValueError('PRODUCT_CANARY_PROFILE_SET_MISMATCH')
     configure_product_profiles(worker, profiles=profiles, authority=authority, operator=operator)

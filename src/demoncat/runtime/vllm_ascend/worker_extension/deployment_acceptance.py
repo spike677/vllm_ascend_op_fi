@@ -196,6 +196,13 @@ def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=
                 checks=[expectation('deployment_identity','accepted_continuous_combination.'+k,v,actual.get(k),
                     'CONTINUOUS_COMBINATION_NOT_MATCHED') for k,v in expected.items()]
                 break
+    registered=None
+    if continuous is not None and continuous.product is not None and continuous.product['mode']=='PRODUCT_REGISTERED':
+        from .product_registration import registered_for
+        profile=getattr(worker,'_demoncat_product_profiles',{}).get(continuous.product['profile'])
+        registered=registered_for(worker,mechanism,profile,expected_sha=continuous.product['registration_sha256'])
+        accepted=True;actual=registered['actual'];expected=dict(actual)
+        record=(actual['model_config_sha256'],actual['model_class'],registered['record_sha256'])
     permit=getattr(worker,_BLUE,None)
     blue=(type(permit) is BlueAcceptancePermit and permit.worker is worker and permit.model is model
         and worker.model_runner.model is model and mechanism in permit.mechanisms
@@ -207,8 +214,9 @@ def deployment_acceptance_report(mechanism,worker=None,model=None,*,implemented=
     return dict(schema='demoncat.deployment_acceptance.v1',status=status,accepted=accepted,
         # Continuous preview still requires a scoped trusted permit even for a
         # reviewed blue combination. Acceptance is evidence, not a user bypass.
-        can_prepare=bool(implemented and (blue if continuous is not None else accepted or blue or cpu)),
-        mode='CPU_FIXTURE_ONLY' if cpu else ('BLUE_ACCEPTANCE_ONLY' if source=='BLUE_COMBINATION' else 'DEPLOYMENT_ACCEPTANCE_ONLY') if blue else 'DEFAULT',
+        can_prepare=bool(implemented and ((registered is not None or blue) if continuous is not None else accepted or blue or cpu)),
+        product_registration=registered,
+        mode='PRODUCT_REGISTERED' if registered else 'CPU_FIXTURE_ONLY' if cpu else ('BLUE_ACCEPTANCE_ONLY' if source=='BLUE_COMBINATION' else 'DEPLOYMENT_ACCEPTANCE_ONLY') if blue else 'DEFAULT',
         registration_source=source,
         acceptance_permit=(dict(permit_id=permit.permit_id,source=permit.source,operator=permit.operator,
             attempt=permit.attempt,source_manifest_sha256=permit.source_manifest_sha256,pid=permit.pid,thread=permit.thread,

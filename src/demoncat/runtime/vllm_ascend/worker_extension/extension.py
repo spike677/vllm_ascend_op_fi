@@ -39,6 +39,17 @@ def _call(worker, action, payload=None):
 
 
 class DemoncatWorkerExtension:
+    def demoncat_product_bootstrap(self, action, payload):
+        from .product_bootstrap import product_bootstrap_rpc
+        from .serving_context import ContextRefused
+        try:
+            return product_bootstrap_rpc(self, action, payload)
+        except (ContextRefused, ValueError, PermissionError) as error:
+            return dict(status='PRODUCT_BOOTSTRAP_REFUSED', reason=str(error), exit_code=4)
+        except Exception as error:
+            return dict(status='PRODUCT_BOOTSTRAP_ERROR', reason=str(error),
+                        exit_code=5, recovery_required=True)
+
     def demoncat_product_binding(self, action, payload):
         from .product_binding import product_binding_rpc
         from .serving_context import ContextRefused
