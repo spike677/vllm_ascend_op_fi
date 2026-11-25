@@ -137,9 +137,12 @@ def main():
                 from demoncat.runtime.vllm_ascend.worker_extension.product_errors import product_control_reply
                 rejected=ProductClient.from_deployment(ex,paths['22'],operator='product-acceptance',run_canary=lambda spec:inference(spec['prompt']),drain=lambda:None,timeout=120)
                 negative=dict(capabilities=rejected.capabilities())
-                negative['attach']=product_control_reply(rejected.attach)
-                assert negative['attach']['exit_code']==4 and 'PRODUCT_COMBINATION_NOT_REGISTERED' in negative['attach']['refusal_codes']
-                assert not rejected.bound
+                negative['enable']=product_control_reply(rejected.enable)
+                assert negative['enable']['exit_code']==4 and 'PRODUCT_COMBINATION_NOT_REGISTERED' in negative['enable']['refusal_codes']
+                assert not rejected.bound and rejected.recovery['resources_zero']
+                negative['rollback']=rejected.cleanup_evidence
+                negative['disable']=rejected.disable()
+                negative['detach']=rejected.detach()
                 negative['healthy_inference']=inference(canary_text)
                 negative['resources']=ex.collective_rpc('demoncat_acceptance_bootstrap',args=('audit',{}))
                 assert all(all(r[k]==0 for k in ('leases','owners','bindings','wrappers')) for r in negative['resources'])
