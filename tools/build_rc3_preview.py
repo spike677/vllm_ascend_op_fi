@@ -2,7 +2,7 @@
 import argparse,hashlib,json,os,subprocess,sys,tarfile,tempfile
 from pathlib import Path
 
-VERSIONS={'demoncatpfi':'0.4.0rc6.post6','demoncat-worker-extension':'0.3.0rc6.post6','demoncat-fault39-core':'0.3.0rc6.post6'}
+VERSIONS={'demoncatpfi':'0.4.0rc7','demoncat-worker-extension':'0.3.0rc7','demoncat-fault39-core':'0.3.0rc7'}
 ROOTS=('src/','fault_injection/','fault39/src/','native_execution_strategy/','engineering_closure/',
        'tools/','tests/','docs/worker_core_v1/')
 EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',
@@ -10,6 +10,8 @@ EXACT=('pyproject.toml','fault39/pyproject.toml','README.md',
        'experiments/worker_core_v11_20261118/continuous_public_probe.py',
        'experiments/worker_core_v11_20261118/product_http_probe.py',
        'experiments/worker_core_v11_20261118/product_mode_probe.py',
+       'experiments/worker_core_v11_20261118/registered_http_probe.py',
+       'experiments/worker_core_v11_20261118/registered_mode_probe.py',
        'experiments/worker_core_v11_20261118/external_gain_example.py',
        'experiments/worker_core_v11_20261118/external_vision_example.py',
        'experiments/worker_core_v11_20261118/external_input_examples.py',
@@ -89,7 +91,7 @@ def build(repo,output):
     if len(list(wheels.glob('*.whl')))!=3:raise RuntimeError('THREE_WHEELS_REQUIRED')
     manifest=dict(schema='demoncat.rc3_preview.release.v1',source_commit=commit,versions=VERSIONS,
         source_manifest_file='source-review.json',source_manifest_sha256=sha((output/'source-review.json').read_bytes()),
-        target='YELLOW_DEDICATED_INSTANCE / A3 / Qwen3.8 W8A8 / TP1 and TP2 independently / acceptance pending',
+        target='YELLOW_DEDICATED_INSTANCE / A3 / Qwen3.8 W8A8 / TP2 / only explicitly reviewed exact registered combinations',
         blue_results_are_not_a3_acceptance=True,files=[])
     for p in sorted(output.rglob('*')):
         if p.is_file():manifest['files'].append(dict(path=p.relative_to(output).as_posix(),bytes=p.stat().st_size,sha256=sha(p.read_bytes())))

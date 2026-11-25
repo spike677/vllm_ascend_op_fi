@@ -23,9 +23,9 @@ class R6PackagingTests(unittest.TestCase):
     def test_observation_sources_packaged_and_versions_bumped(self):
         self.assertIn('experiments/worker_core_v11_20261118/paged33_launch_capture.cpp',EXACT)
         self.assertIn('experiments/worker_core_v11_20261118/paged33_native_probe.py',EXACT)
-        for name in ('external_input_examples.py','external_vision_example.py','external_quant_argument_example.py','alias15_finiteness_probe.py'):
+        for name in ('external_input_examples.py','external_vision_example.py','external_quant_argument_example.py','alias15_finiteness_probe.py','registered_http_probe.py','registered_mode_probe.py'):
             self.assertIn('experiments/worker_core_v11_20261118/'+name,EXACT)
-        self.assertEqual(set(VERSIONS.values()),{'0.4.0rc6.post6','0.3.0rc6.post6'})
+        self.assertEqual(set(VERSIONS.values()),{'0.4.0rc7','0.3.0rc7'})
 
     def test_frozen_r5_reviewer_is_still_exact(self):
         import hashlib
