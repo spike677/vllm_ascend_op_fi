@@ -15,7 +15,8 @@ class LmHeadCollapseProvider(Scope):
         super().__init__(worker,model,worker_identity)
         require(region_kind=='persistent_weight','ROW12_PERSISTENT_WEIGHT_REQUIRED')
         self.context=worker._reference_lm_context
-        require(self.context['reader_calls']>0,'ROW12_ACTUAL_READER_NOT_OBSERVED')
+        require(self.context['reader_calls']>0 and not self.context.get('reader_failure'),
+                'ROW12_ACTUAL_READER_NOT_OBSERVED:'+str(self.context.get('reader_failure')))
         require(self.context.get('provider') is None,'ROW12_ALREADY_OWNED')
         self.site=None;self.enabled=False;self.failure=None;self.readers=[]
     def boundary(self):

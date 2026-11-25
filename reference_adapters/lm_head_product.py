@@ -3,10 +3,11 @@ import hashlib,inspect,os
 from pathlib import Path
 import torch
 from torch.utils._python_dispatch import TorchDispatchMode
-from experiments.worker_core_v11_20261118.external_persistent_product_probe import PersistentExampleExtension,main
+from experiments.worker_core_v11_20261118.external_persistent_product_probe import PersistentExampleExtension
+from reference_adapters.persistent_probe import main
 from demoncat.runtime.vllm_ascend.worker_extension.serving_context import require
 from fault_injection.sites.mla28 import fingerprint
-from reference_adapters.lm_head_rows import TOKEN_IDS,VARIANTS
+from reference_adapters.lm_head_rows import TOKEN_IDS,VARIANTS,is_weight_reader
 
 PINS={
  'vllm.model_executor.layers.vocab_parallel_embedding':'60b116e260d5438513c9bb60370306eed5e9b0ce612bfbe0a3885e64fdf0587b',
@@ -68,27 +69,32 @@ class LmHeadExtension(PersistentExampleExtension):
             self._row12_rows=[];self._row12_pending=[];self._row12_all=[]
             original=model.compute_logits;worker=self
             class Reader(TorchDispatchMode):
-                def __init__(self):super().__init__();self.matches=0
+                def __init__(self):super().__init__();self.matches=[];self.names=[]
                 def __torch_dispatch__(self,func,types,args=(),kwargs=None):
-                    match=(func._schema.name=='aten::mm' and len(args)==2
-                        and isinstance(args[1],torch.Tensor)
-                        and args[1].untyped_storage()._cdata==m.weight.untyped_storage()._cdata
-                        and args[1].shape==m.weight.t().shape and args[1].stride()==m.weight.t().stride())
+                    name=func._schema.name;self.names.append(name)
+                    match=is_weight_reader(name,args,m.weight)
                     result=func(*args,**(kwargs or {}))
-                    if match:self.matches+=1
+                    if match:self.matches.append(name)
                     return result
             def compute(hidden,*args,**kwargs):
                 trace=Reader()
                 with trace:result=original(hidden,*args,**kwargs)
-                require(trace.matches==1,'ROW12_DIRECT_WEIGHT_MM_NOT_OBSERVED')
-                context['reader_calls']+=1
+                # A read-only census must not kill inference merely because a
+                # candidate was absent. Refuse at provider construction later.
+                if len(trace.matches)==1:
+                    context['reader_calls']+=1
+                    context['admission']['actual_weight_consumer']=trace.matches[0]+':lm_head_weight'
+                else:context['reader_failure']=dict(reason='ROW12_DIRECT_WEIGHT_READER_NOT_OBSERVED',operators=trace.names)
                 ids=list(worker.model_runner.input_batch.req_ids)
                 require(len(ids)==1,'ROW12_SERIAL_REQUEST_REQUIRED')
                 provider=context.get('provider')
-                if provider:provider.consumed(ids[0])
+                if provider:
+                    require(len(trace.matches)==1,'ROW12_ADMITTED_READER_CHANGED')
+                    provider.consumed(ids[0])
                 row=dict(hidden_sha256=fingerprint(hidden),logits_sha256=None if result is None else fingerprint(result),
                     finite=bool(torch.isfinite(hidden).all().item()) and (result is None or bool(torch.isfinite(result).all().item())),
-                    tokens=list(TOKEN_IDS),target_logits=None,target_probabilities=None,sampler_consumed=False)
+                    tokens=list(TOKEN_IDS),target_logits=None,target_probabilities=None,sampler_consumed=False,
+                    weight_readers=trace.matches)
                 if result is not None:
                     require(result.ndim==2 and result.shape[-1]==admission['vocabulary_size'],
                             'ROW12_FULL_LOGITS_REQUIRED_REDUCE_SAMPLE_UNSUPPORTED')

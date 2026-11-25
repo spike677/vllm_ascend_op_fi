@@ -15,6 +15,17 @@ TOKEN_IDS=(10,11,12)
 VARIANTS=('row12_lm_head_collapse','row12_lm_head_swap')
 
 
+def is_weight_reader(name,args,weight):
+    if name not in ('aten::mm','aten::linear','npu::npu_linear','vllm::unquantized_gemm') or len(args)<2:
+        return False
+    w=args[1]
+    if not isinstance(w,torch.Tensor) or w.dtype!=weight.dtype or w.storage_offset()!=weight.storage_offset():
+        return False
+    expected=weight.t() if name=='aten::mm' else weight
+    return (w.untyped_storage()._cdata==weight.untyped_storage()._cdata
+            and w.shape==expected.shape and w.stride()==expected.stride())
+
+
 @dataclass(frozen=True)
 class RowAdmission:
     """Filled only by a source-reviewed, actual-call census on the Worker."""

@@ -1,11 +1,19 @@
 import dataclasses
 import unittest
 import torch
-from reference_adapters.lm_head_rows import LmHeadRows,RowAdmission,VARIANTS
+from reference_adapters.lm_head_rows import LmHeadRows,RowAdmission,VARIANTS,is_weight_reader
 from fault_injection.engines.region_lease import RegionLeases,exact
 
 
 class RowTests(unittest.TestCase):
+    def test_reader_accepts_actual_linear_and_mm_but_not_copies_or_slices(self):
+        w=torch.ones(16,8,dtype=torch.bfloat16);x=torch.ones(1,8,dtype=w.dtype)
+        self.assertTrue(is_weight_reader('aten::mm',(x,w.t()),w))
+        for name in ('aten::linear','npu::npu_linear','vllm::unquantized_gemm'):
+            self.assertTrue(is_weight_reader(name,(x,w),w))
+            self.assertFalse(is_weight_reader(name,(x,w.clone()),w))
+            self.assertFalse(is_weight_reader(name,(x,w[:8]),w))
+        self.assertFalse(is_weight_reader('aten::t',(w,),w))
     def make(self,variant,start=0,end=16,**changes):
         weight=torch.arange(start*8,end*8,dtype=torch.float32).reshape(end-start,8).to(torch.bfloat16)
         admission=RowAdmission(32,start,end,start,end,(),False,'a'*64,'aten::mm:weight')
