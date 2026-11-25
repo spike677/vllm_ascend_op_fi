@@ -22,9 +22,19 @@ def pages(kind,path):
                 safety_factor=data.get('safety_factor'),maxima=rows(maximum),bounds=rows(bounds),
                 finite=data.get('all_finite'),token_stable=data.get('tokens_stable'),
                 limitation='Summary fields missing remain null; finite/token stability requires local raw recheck.'))
+    elif kind=='identity':
+        reports=data if isinstance(data,list) else [data]
+        for report in reports:
+            if report.get('schema')=='dcat.probe.rpc.v2':report=report.get('result',{})
+            if report.get('schema')!='dcat.probe.d0.v2':raise ValueError('IDENTITY_SCHEMA')
+            common=dict(rank=report.get('rank'),worker_pid=report.get('worker_pid'),baseline_approved=False)
+            payloads.append(dict(common,parallel_configs=report.get('parallel_configs'),groups=report.get('groups')))
+            for key,value in report.get('objects',{}).items():payloads.append(dict(common,object_name=key,identity=value))
+            for key,value in report.get('methods',{}).items():payloads.append(dict(common,method=key,identity=value))
     else:
         reports=data if isinstance(data,list) else [data]
         for report in reports:
+            if report.get('schema')=='dcat.probe.rpc.v2':report=report.get('result',{})
             if 'files' in report:
                 for item in report['files']:payloads.append(dict(rank=report.get('rank'),source_file=item))
                 continue
@@ -40,6 +50,21 @@ def pages(kind,path):
                     ids=site.get('request_ids');compact['request_association']=[len(ids),sha(canonical(ids))] if isinstance(ids,list) else None
                     payloads.append(dict(common,site_index=i,site_count=len(sites),site=compact))
                 if not sites:payloads.append(dict(common,site_count=0,site=None))
+            if 'calls' in report:
+                payloads.append(dict(rank=report.get('rank'),calls=len(report['calls']),truncated=report.get('truncated'),
+                    observation_errors=report.get('observation_errors'),combine_output_row_join=report.get('combine_output_row_join')))
+                for call in report['calls']:
+                    if not any(x in call['operator'].lower() for x in ('dispatch','combine','routing')):continue
+                    compact={k:call.get(k) for k in ('sequence','step','operator','layer','phase','rank','groups','padding','valid_output_rows','dispatch_candidates','combine_output_row_join','join_reason')}
+                    rows=call.get('input_rows',{})
+                    compact['input_rows']=dict(complete=rows.get('complete'),reason=rows.get('reason'),
+                        count=len(rows.get('rows',[])),sha256=sha(canonical(rows.get('rows'))))
+                    payloads.append(dict(rank=report.get('rank'),call=compact))
+                    for side in ('inputs','outputs'):
+                        for tensor in call.get(side) or []:
+                            item={k:v for k,v in tensor.items() if k not in ('values',)}
+                            item['values_recorded']=tensor.get('values') is not None
+                            payloads.append(dict(rank=report.get('rank'),call_sequence=call['sequence'],side=side,tensor=item))
     if not payloads:raise ValueError('NO_EXTRACTABLE_RECORDS')
     output=[]
     for i,payload in enumerate(payloads):
@@ -49,7 +74,7 @@ def pages(kind,path):
     return output
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('kind',choices=['noise','observe']);p.add_argument('input');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('kind',choices=['noise','observe','identity']);p.add_argument('input');a=p.parse_args()
     # Validate all pages before emitting any.
     result=pages(a.kind,a.input)
     for page in result:sys.stdout.buffer.write(canonical(page)+b'\n')

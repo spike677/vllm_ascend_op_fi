@@ -17,16 +17,18 @@ class CaptureTests(unittest.TestCase):
     def test_nonfinite_fault_only_and_abort(self):
         w=self.worker();x=torch.tensor([[float('inf'),1,2,3,4,5.]])
         m.capture(w,'start')
-        with self.assertRaisesRegex(RuntimeError,'NONFINITE'):w.model_runner.model.compute_logits(x)
+        w.model_runner.model.compute_logits(x)
+        self.assertFalse(m.capture(w,'status')['capture_valid'])
         m.capture(w,'abort');m.capture(w,'start',phase='fault')
         for _ in range(4):w.model_runner.model.compute_logits(x)
         r=m.capture(w,'stop');self.assertEqual(r['steps'][0]['logits'][0],'+inf');json.dumps(r,allow_nan=False)
     def test_missing_observations_cleanup(self):
         w=self.worker();m.capture(w,'start')
-        with self.assertRaisesRegex(RuntimeError,'FOUR_FORWARDS'):m.capture(w,'stop')
+        result=m.capture(w,'stop');self.assertFalse(result['capture_valid'])
+        self.assertTrue(any('FOUR_FORWARDS' in e['error'] for e in result['errors']))
         self.assertFalse(hasattr(w,'_dcat_noise_capture'))
     def test_foreign_owner_not_removed(self):
         w=self.worker();m.capture(w,'start');other=lambda x:x;w.model_runner.model.compute_logits=other
-        with self.assertRaisesRegex(RuntimeError,'OWNER_CHANGED'):m.capture(w,'abort')
+        with self.assertRaisesRegex(ValueError,'OWNER_CHANGED'):m.capture(w,'abort')
         self.assertIs(w.model_runner.model.compute_logits,other)
 if __name__=='__main__':unittest.main()
