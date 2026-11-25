@@ -14,6 +14,24 @@
 
 ## 每项的宿主顺序
 
+下表给出 `MECHANISM` 的准确取值。只执行最终登记清单已放行的行；这是命令映射，不是资格清单。18 的三个变体使用三个独立登记键。
+
+|能力|`--fault-id`|
+|---|---|
+|18 基础档|`18.api_half`|
+|18 方差放大档|`18.variance_over4`|
+|18 方差缩小档|`18.variance_under4`|
+|22|`22.wrong_row`|
+|39op|`39.output_proxy`|
+|39mr|`39.matmul_range`|
+|28|`28.fia.denominator_replay`|
+|17|`17.spatial_padding`|
+|Batch|`quant.batch_shared_scale`|
+|15|`15.alias_detach`|
+|41|`41.tail_column`|
+|26fia|`26.fia_destination`|
+|20|`20.buffer_substitute`|
+
 同一服务不重启，两个 owner 不复用同一会话。按环境模板确认旧 API/Worker 已退出，新健康检查确实对应新进程。使用黄区已有 CLI，命令名不改：
 
 ```bash

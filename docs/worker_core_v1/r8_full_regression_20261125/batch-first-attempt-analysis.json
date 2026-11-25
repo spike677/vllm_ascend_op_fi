@@ -1,0 +1,83 @@
+{
+  "status": "INCOMPLETE_NOT_QUALIFIED",
+  "scope": "A2/0.26/CANN9.1/community Qwen3.8 W8A8/TP2",
+  "source_manifest_sha256": "b87aced01c6bc4ad438f03118cb933e18d5ae0b02ab39962cdc5726318079c0e",
+  "failure_phase": "scope1 enable / warmup canary before injection",
+  "error": "RuntimeError('PRODUCT_ENABLE_RECOVERY_REQUIRED:Remote end closed connection without response; cleanup=<urlopen error [Errno 111] Connection refused>')",
+  "scope0_recovery": {
+    "bytes_restored": true,
+    "resources_zero": true,
+    "canary_exact": true,
+    "restored": true
+  },
+  "scope0_cleanup": [
+    {
+      "status": "PERMIT_REMOVED",
+      "leases": 0,
+      "owners": 0
+    },
+    {
+      "status": "PERMIT_REMOVED",
+      "leases": 0,
+      "owners": 0
+    }
+  ],
+  "nonserial_negative": {
+    "exit_code": 4,
+    "refusal_codes": [
+      "PRODUCT_BATCH_CANARY_REQUIRES_SERIAL_B1"
+    ],
+    "health_http": 200,
+    "resources": [
+      {
+        "rank": 0,
+        "leases": 0,
+        "owners": 0,
+        "bindings": 0,
+        "wrappers": 0
+      },
+      {
+        "rank": 1,
+        "leases": 0,
+        "owners": 0,
+        "bindings": 0,
+        "wrappers": 0
+      }
+    ]
+  },
+  "termination_evidence": {
+    "time_utc": "2026-11-25T15:20:15Z",
+    "api": "shutdown triggered",
+    "engine": "SIGTERM",
+    "sender": "UNPROVEN",
+    "container_oom_killed": false,
+    "our_isolation_stop_of_project_container": false,
+    "same_image_launcher_source_check": {
+      "api_shutdown_trigger": "signal_handler registered for SIGINT and SIGTERM",
+      "source_copy_sha256": "9e68fa5293c429219f5d636cc4f08d3a2751434f99f15b833d0035b42025e130",
+      "sender_not_identified": true
+    },
+    "failed_receipt_mtime_utc": "2026-11-25T15:21:16.278506+00:00",
+    "ordering": "API shutdown log at 15:20:15 precedes FAILED receipt write at 15:21:16; probe finally server.terminate follows that save. Initial shutdown is not explained by this final cleanup. Sender still unproven."
+  },
+  "classification": "API process termination observed; origin not proven. No public-runtime fix or yellow equivalence claimed.",
+  "retry": "Unchanged source, own API/probe signal tracing only; queued after main cases",
+  "originals": {
+    "product_http_batch.json": {
+      "bytes": 7750327,
+      "sha256": "71011f0037152e187ae65ae49e233a37623ce85ab0b35b4f7f3d983b254f937e"
+    },
+    "product_batch_canary_negative.json": {
+      "bytes": 2278,
+      "sha256": "6875bd6b498f64378efbb98aa58bcb2fc3235891b21bd6aa9e044fb7ecc6319f"
+    },
+    "http-server.log": {
+      "bytes": 53747,
+      "sha256": "e28532937ff8d9912d8d2b4da43a1a580655719c2fe83d07efc14f821711eae0"
+    },
+    "process.log": {
+      "bytes": 499,
+      "sha256": "985b7daa1b4b8d407e1dd61b67b289b89e4f2cffbd434d913f8716369e0093d4"
+    }
+  }
+}
