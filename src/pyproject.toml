@@ -9,6 +9,9 @@ description = "DemonCATPFI attachment for an existing vLLM-Ascend worker"
 requires-python = ">=3.10"
 dependencies = []
 
+[project.scripts]
+dcatpfi-product = "demoncat.runtime.vllm_ascend.worker_extension.product_cli_entry:main"
+
 [tool.setuptools.packages.find]
 include = ["demoncat.runtime*"]
 namespaces = true
