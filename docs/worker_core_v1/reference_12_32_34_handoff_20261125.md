@@ -12,6 +12,8 @@
 
 每owner的第一token必须对比同一hidden下正常/故障目标logits：坍塌档三列等于原首列；交换档等于原对应两列交换。记录完整logits SHA、目标概率、真实sampler读取同一logits对象的证据。token可以不变，必须有目标分布变化。两个owner用同组Worker；缺许可、超范围、重复enable应结构化exit4。OFF字节恢复、资源清零、新请求hidden/logits逐位金丝雀三项分别通过。
 
+本轮辅助概率在NPU上计算；设备日志明确提示double请求回退float，因此不宣称CPU-FP64概率。它只用于报告目标分布变化；真实采样消费由sampler输入对象及原logits SHA的对应证明。审查还按真实0.26的HTTP ID→内部请求后缀逐rank对齐。框架的group owner和随机rank-local provider owner本来不同，必须通过ticket/Worker/generation及enable→status→disable链核对，不能比较两个owner字符串是否相等。
+
 隔离A2执行入口（完整源码及已审查模型挂载由执行器提供）：
 
 ```bash

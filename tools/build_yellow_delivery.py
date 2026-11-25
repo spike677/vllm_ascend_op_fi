@@ -24,6 +24,10 @@ def build(name):
       'docs/worker_core_v1/product_effect_test_20261124.md','docs/worker_core_v1/yellow_intake_20261125_delivery.md',
       'docs/worker_core_v1/fault33_n2_existing_capture_20261124.md']]
     selections += [('T6','docs/worker_core_v1/v4_d0_d1_v030_handoff_20261125.md','V4 0.30新目标，只读；旧0.32噪声审查不能借用')]
+    selections += [('T6','releases/v4-v030-noise-tools-20261125-r1','0.30独立只读审查/提取工具，CPU验证，非D2资格')]
+    selections += [('T4/T5','releases/REFERENCE-32-34-20261125.md','四个固定档A2两owner实测结论'),
+      ('T3/T4/T5','docs/worker_core_v1/reference_12_32_34_handoff_20261125.md','持久权重行/FP8输入/投影输出的接线边界'),
+      ('T7','docs/worker_core_v1/yellow_intake_20261125_fault33_n2.md','新N2摘要退补审查，33未放行')]
     # Read tracked Git blobs, not platform-dependent working-tree line endings.
     packed=subprocess.check_output(['git','archive','--format=tar','HEAD','--',*[x[1] for x in selections]],cwd=ROOT)
     with tarfile.open(fileobj=io.BytesIO(packed),mode='r:') as t:
@@ -56,7 +60,7 @@ def build(name):
     base='https://github.com/spike677/vllm_ascend_op_fi/blob/'+name+'/'
     text='# 黄区统一交付入口 '+name+'\n\n'
     text+='PC拉取本分支/同名冻结标签后，将汇总ZIP和SHA256SUMS转入黄区。Codex不直接向黄区发送。旧索引和发行不改；后续交付使用新索引文件和新标签，禁止覆盖本标签。\n\n'
-    text+='本包不自动登记、不授予A3资格。r7.4.1仍是Qwen正式包；补充件按manifest分别审查。第12/32/34行新变体及T2安全拒绝修复尚未在此快照交付，不可把旧失败工厂当作通过项。V4只读步骤已改0.30，D包尚待证据。\n\n'
+    text+='本包不自动登记、不授予A3资格。r7.4.1仍是Qwen正式包；参考补充件只按各自manifest明确列出的档位和a2-review审查，开发目录不是可执行资格。T2控制拒绝修复独立交付；第12/32/34行的新旧路径不得混同。V4只读步骤和工具为0.30，D2包仍待证据；33 N2仍需补齐launch/tiling关联。\n\n'
     text+='|汇总文件|字节数|SHA256|\n|---|---:|---|\n'
     for p in [archive,folder/'manifest.json',folder/'SHA256SUMS']:
       raw=p.read_bytes();key=p.relative_to(ROOT).as_posix();text+=f'|[{key}]({base}{key})|{len(raw)}|`{sha(raw)}`|\n'

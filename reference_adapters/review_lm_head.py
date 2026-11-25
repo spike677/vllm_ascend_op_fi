@@ -1,11 +1,14 @@
 """Independent persistent-row review: compare normal/fault first-token logits."""
-import argparse,hashlib,json
+import argparse,hashlib,json,re
 from pathlib import Path
-from reference_adapters.lm_head_rows import VARIANTS,TOKEN_IDS
+# Independent fixed contract; reviewing receipts must not load torch/NPU or the
+# provider implementation merely to obtain the two names and deployment IDs.
+VARIANTS=('row12_lm_head_collapse','row12_lm_head_swap')
+TOKEN_IDS=(10,11,12)
 
 
 def review(d):
-    issues=[];effects=[];workers_before=None
+    issues=[];effects=[];workers_before=None;native_owners=set()
     mode=d.get('mode','').removeprefix('persistent_').removesuffix('_example')
     if mode not in VARIANTS:issues.append('UNKNOWN_VARIANT')
     expected='TWO_OWNER_'+mode.upper()+'_EXAMPLE_COMPLETE_NOT_RELEASE_QUALIFICATION'
@@ -13,6 +16,8 @@ def review(d):
     scopes=d.get('scopes',[])
     if len(scopes)!=2 or len({s.get('owner') for s in scopes})!=2:issues.append('TWO_OWNERS_REQUIRED')
     if d.get('missing_permit',{}).get('exit_code')!=4:issues.append('MISSING_PERMIT_NEGATIVE')
+    if d.get('observer_cleanup')!=[dict(rank=r,status='EXAMPLE_OBSERVER_REMOVED') for r in (0,1)]:
+        issues.append('OBSERVER_CLEANUP_REQUIRED')
     for s in scopes:
         disabled=s.get('disable',{});recovery=disabled.get('recovery',{})
         if not all(recovery.get(k) is True for k in ('bytes_restored','resources_zero','canary_exact','restored')):
@@ -50,11 +55,38 @@ def review(d):
         workers=[r.get('worker') for r in stopped]
         if len(workers)!=2 or [w.get('rank') for w in workers if isinstance(w,dict)]!=[0,1]:issues.append('WORKER_IDENTITIES')
         if workers_before is not None and workers!=workers_before:issues.append('WORKERS_CHANGED')
-        workers_before=workers;owners=0
-        for row in stopped:
+        workers_before=workers;owners=0;request_ids=[]
+        http=s.get('fault_http',{});http_id=http.get('id')
+        if (not isinstance(http_id,str) or not http_id or http.get('usage',{}).get('completion_tokens')!=4
+                or not http.get('choices') or any(c.get('finish_reason')!='length' for c in http['choices'])):
+            issues.append('HTTP_FOUR_TOKEN_COMPLETION_REQUIRED')
+        for index,row in enumerate(stopped):
             state=row.get('response',{}).get('provider_state',{});adapter=state.get('row_adapter',{})
             events=state.get('events',[])
-            if state.get('owner')!=s.get('owner'):issues.append('OWNER_MISMATCH')
+            # Runtime intentionally generates a separate random provider owner.
+            # Bind it to the group through stable ticket/worker/generation and
+            # the enable -> status -> disable records, not string equality.
+            ticket=row.get('ticket',{});local_owner=state.get('owner')
+            if (ticket.get('owner')!=s.get('owner') or ticket.get('worker')!=row.get('worker')
+                    or ticket.get('generation')!=state.get('generation')
+                    or not isinstance(local_owner,str) or not local_owner or local_owner in native_owners):
+                issues.append('OWNER_MISMATCH')
+            native_owners.add(local_owner)
+            for phase in ('enable','status'):
+                peers=s.get(phase,{}).get('ranks',[])
+                if index>=len(peers):issues.append('OWNER_CHAIN_MISSING');continue
+                peer=peers[index];ps=peer.get('response',{}).get('provider_state',{})
+                if (peer.get('worker')!=row.get('worker') or peer.get('ticket')!=ticket
+                        or ps.get('owner')!=local_owner or ps.get('generation')!=state.get('generation')):
+                    issues.append('OWNER_CHAIN_MISMATCH')
+            readers=state.get('readers',[]);ids={r.get('request_id') for r in readers}
+            if len(readers)!=4 or len(ids)!=1 or any(r.get('weight_read') is not True for r in readers):
+                issues.append('FOUR_ACTUAL_READERS_REQUIRED')
+            else:
+                rid=next(iter(ids));request_ids.append(rid)
+                # 0.26 API request -> single completion index -> scheduler suffix.
+                if not isinstance(rid,str) or not re.fullmatch(re.escape(http_id or '')+r'-0-[0-9a-f]+',rid):
+                    issues.append('HTTP_INTERNAL_REQUEST_ASSOCIATION')
             if adapter.get('owns_rows') is True:
                 owners+=1
                 if len(events)!=1:issues.append('ONE_PERSISTENT_WRITE_LEASE_REQUIRED')
@@ -69,6 +101,7 @@ def review(d):
                 if events or adapter.get('nonowner_guard_reads')!=4:issues.append('NONOWNER_GUARD')
             else:issues.append('OWNERSHIP_NOT_PROVEN')
         if owners!=1:issues.append('EXACTLY_ONE_VOCAB_SHARD_OWNER_REQUIRED')
+        if len(request_ids)!=2 or len(set(request_ids))!=1:issues.append('RANK_REQUEST_ASSOCIATION')
         cleanup=s.get('cleanup',[])
         if len(cleanup)!=2 or any(r.get(k)!=0 for r in cleanup for k in ('leases','owners')):issues.append('RESOURCES_REMAIN')
         effects.append(dict(owner=s.get('owner'),sampler_ranks=effect_ranks,weight_owner_ranks=owners))
