@@ -1,5 +1,5 @@
 """Immutable aggregate handoff; never rewrites an earlier index or release."""
-import argparse,hashlib,json,subprocess,zipfile
+import argparse,hashlib,io,json,subprocess,tarfile,zipfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 LIMIT=100_000_000
@@ -24,14 +24,18 @@ def build(name):
       'docs/worker_core_v1/product_effect_test_20261124.md','docs/worker_core_v1/yellow_intake_20261125_delivery.md',
       'docs/worker_core_v1/fault33_n2_existing_capture_20261124.md']]
     selections += [('T6','docs/worker_core_v1/v4_d0_d1_v030_handoff_20261125.md','V4 0.30新目标，只读；旧0.32噪声审查不能借用')]
-    blobs={};records={}
+    # Read tracked Git blobs, not platform-dependent working-tree line endings.
+    packed=subprocess.check_output(['git','archive','--format=tar','HEAD','--',*[x[1] for x in selections]],cwd=ROOT)
+    with tarfile.open(fileobj=io.BytesIO(packed),mode='r:') as t:
+      git_blobs={m.name:t.extractfile(m).read() for m in t.getmembers() if m.isfile()}
+    blobs={};records={} 
     for task,name0,purpose in selections:
       p=ROOT/name0
       if not p.exists():raise ValueError('MISSING:'+name0)
       for f in sorted(p.rglob('*')) if p.is_dir() else [p]:
         if f.is_dir():continue
         if f.is_symlink():raise ValueError('SYMLINK_NOT_ALLOWED')
-        key=f.relative_to(ROOT).as_posix();raw=f.read_bytes()
+        key=f.relative_to(ROOT).as_posix();raw=git_blobs[key]
         if len(raw)>=LIMIT:raise ValueError('GITHUB_FILE_LIMIT:'+key)
         blobs[key]=raw;records[key]=dict(bytes=len(raw),sha256=sha(raw),task=task,purpose=purpose)
     manifest=dict(schema='dcat.yellow.aggregate.v1',delivery=name,
