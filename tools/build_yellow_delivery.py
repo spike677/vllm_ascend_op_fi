@@ -26,6 +26,10 @@ def build(name):
     selections += [('T6','docs/worker_core_v1/v4_d0_d1_v030_handoff_20261125.md','V4 0.30新目标，只读；旧0.32噪声审查不能借用')]
     selections += [('T6','releases/v4-v030-noise-tools-20261125-r1','0.30独立只读审查/提取工具，CPU验证，非D2资格')]
     selections += [('T4/T5','releases/REFERENCE-32-34-20261125.md','四个固定档A2两owner实测结论'),
+      ('T3','releases/REFERENCE-12-20261125.md','持久lm_head两档A2两owner实测及独立复核'),
+      ('T6','releases/V4-V030-NOISE-TOOLS-20261125.md','0.30只读工具安装与提取说明'),
+      ('T1','docs/worker_core_v1/reference_completion_20261125.md','本轮完成范围和未闭环项'),
+      ('T1','docs/worker_core_v1/reference_npu_windows_20261125.json','有界抢占窗口、停止与恢复记录'),
       ('T3/T4/T5','docs/worker_core_v1/reference_12_32_34_handoff_20261125.md','持久权重行/FP8输入/投影输出的接线边界'),
       ('T7','docs/worker_core_v1/yellow_intake_20261125_fault33_n2.md','新N2摘要退补审查，33未放行')]
     # Read tracked Git blobs, not platform-dependent working-tree line endings.

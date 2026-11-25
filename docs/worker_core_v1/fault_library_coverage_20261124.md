@@ -13,11 +13,10 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
 |CLOSED_NO_INJECTION|5|1、4、5、29、36|
 |AWAIT_FORMAL_TEST|14|6、15、17、18、20、22、23、26、27、28、30、35、39、41|
 |YELLOW_ADAPTER_READY_UNTESTED|8|2、11、14、21、24、31、37、40|
-|REFERENCE_ADAPTER_PENDING|1|12|
 |HCCL_BITWISE_PENDING|2|25、38|
 |FAULT33_EVIDENCE_PENDING|1|33|
 |V4_D_PACKAGE_PENDING|1|13|
-|ADAPTER_READY_UNTESTED|9|3、7、8、9、10、16、19、32、34|
+|ADAPTER_READY_UNTESTED|10|3、7、8、9、10、12、16、19、32、34|
 
 历史公共证据不等于本轮通过。参考适配器通过 A2 后记 ADAPTER_READY_UNTESTED，标注等待黄区审查；正式测试审查并登记后才记 REGISTERED。第21行按区域寿命选择v1或v2，待黄区确认。
 
@@ -34,7 +33,7 @@ A公共交付10行；B黄区已有原语17行；C现象复现8行（新纳入30�
 |9|B|ADAPTER_READY_UNTESTED|黄区fake_requant saturation|须证明真实scale除法及clip；仅改变反量化乘数不等价|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-quant-20261124-r1独立补充件；原始QMM消费、字节恢复、逐位金丝雀和负例通过|codex参考实现；两个固定档均在A2 TP2同组Worker两个owner通过，等待黄区审查|
 |10|B|ADAPTER_READY_UNTESTED|黄区fake_requant squeeze；公共Batch已有相关证据|须观测共享/增大scale造成的量化分辨率降低|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json；yellow-reference-quant-20261124-r1独立补充件；原始QMM消费、字节恢复、逐位金丝雀和负例通过|codex参考实现；两个固定档均在A2 TP2同组Worker两个owner通过，等待黄区审查|
 |11|B|YELLOW_ADAPTER_READY_UNTESTED|黄区activation/faulty_requant|重量化语义及真实消费者由黄区确认|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
-|12|C|REFERENCE_ADAPTER_PENDING|v2 persistent_weight: row12_lm_head_collapse / row12_lm_head_swap|lm_head fixed token weight-row construction; explicit derived-copy/tied-weight refusal; old transient logits rotation excluded|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapters/lm_head_rows.py; lm_head_product.py; review_lm_head.py|CPU 21-test related suite passed. A2 first attempt rejected after read-only reader census missed actual linear; fixed exact weight-reader matching, real sampler proof and two-owner negatives pending rerun. Not qualified.|
+|12|C|ADAPTER_READY_UNTESTED|v2 persistent_weight: row12_lm_head_collapse / row12_lm_head_swap|lm_head fixed token weight-row construction; explicit derived-copy/tied-weight refusal; old transient logits rotation excluded|Qwen3.8 A3 TP2（蓝区A2仅验证）|reference_adapter_a2_20261124.json#row12_lm_head_collapse + row12_lm_head_swap; releases/yellow-reference-lm-head-20261125-r1|Codex reference v2: fixed lm_head token rows collapse/swap both passed A2/0.26/CANN9.1/community Qwen3.8 W8A8/TP2, same Workers two owners, actual weight-reader and sampler, exact byte restore/canary, nonowner guard and negatives. Old reviewer group/local-owner mismatch corrected independently; raw receipts unchanged. Await yellow review/formal A3; not REGISTERED.|
 |13|D|V4_D_PACKAGE_PENDING|黄区router量化噪声变体，经D包外部v1|须观测router概率、top-k与真实路由；加噪不等于专家改变|V4 A3 TP8+EP|D0/D1及V4 router原件待回传；V2-Lite仅预演||
 |14|B|YELLOW_ADAPTER_READY_UNTESTED|黄区kv_rope_quant_loss（v2）|KV持久性按请求/页代际恢复|Qwen3.8 A3 TP2（蓝区A2仅验证）|黄区归属表声明已有原语；当前模型适配、产品回执待黄区||
 |15|A|AWAIT_FORMAL_TEST|公共15 alias_detach（B档ND）|ND别名断开现象；无私有格式触发条件|Qwen3.8 A3 TP2（蓝区A2仅验证）|最新负责人汇总称A3双owner通过，仍需正式登记回执；15初值风险已完成A2两轮诊断，均未复现历史44次非有限，限制见r741_b1_b6_closure_20261124.md。||

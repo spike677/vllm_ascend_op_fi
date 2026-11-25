@@ -1,0 +1,386 @@
+{
+  "schema": "dcat.reference.npu.windows.v1",
+  "raw_journal_summary_sha256": "6bb4d1e4c0cee994ae515e508a0331b53bff14e6853b6003e2d6ac56a0363ae6",
+  "combination": "A2 / vLLM0.26 / CANN9.1 / community Qwen3.8 W8A8 / TP2",
+  "windows": [
+    {
+      "status": "FINISHED",
+      "start": "2026-11-25T01:47:31.410633+00:00",
+      "ended": "2026-11-25T01:53:02.648977+00:00",
+      "elapsed_seconds": 331.23835865897126,
+      "isolation": "BOUNDED_READONLY_DEVICE_MONITOR",
+      "isolation_removed": true,
+      "window": "refguard1125a2",
+      "events": [
+        {
+          "time": "2026-11-25T01:47:31.410716+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_READONLY_DEVICE_MONITOR",
+          "maximum_seconds": 1590,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-25T01:53:02.649067+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ],
+      "cases": [
+        {
+          "case": "refguard1125a2-row34-bf16-before-bias",
+          "exit_code": 0,
+          "container_seconds": 326.068967,
+          "started": "2026-11-25T01:47:34.77400907Z",
+          "finished": "2026-11-25T01:53:00.842976961Z"
+        }
+      ],
+      "container_wall_seconds": 326.068967
+    },
+    {
+      "status": "CASE_FAILED",
+      "start": "2026-11-25T01:57:54.895547+00:00",
+      "ended": "2026-11-25T02:12:41.413088+00:00",
+      "elapsed_seconds": 886.5175571769942,
+      "isolation": "BOUNDED_SAME_IM2COL_BATCH_STOP_MONITOR",
+      "isolation_removed": true,
+      "window": "refs1125b1",
+      "events": [
+        {
+          "time": "2026-11-25T01:57:54.895629+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_SAME_IM2COL_BATCH_STOP_MONITOR",
+          "maximum_seconds": 4590,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-25T02:01:29.730740+00:00",
+          "event": "BLOCKED_OTHER_DEVICE_OWNER",
+          "container": "/atk_q_ops-nn-v910-aclnnL1Loss-a300be668d534554_dev2_slot0_3d3fc5b8",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-25T02:12:41.413177+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ],
+      "cases": [
+        {
+          "case": "refs1125b1-row12-lm-head-collapse",
+          "exit_code": 1,
+          "container_seconds": 253.511315,
+          "started": "2026-11-25T01:57:58.05326791Z",
+          "finished": "2026-11-25T02:02:11.564582757Z"
+        },
+        {
+          "case": "refs1125b1-row32-conv3d-input-e4m3",
+          "exit_code": 0,
+          "container_seconds": 340.011213,
+          "started": "2026-11-25T02:02:14.651993679Z",
+          "finished": "2026-11-25T02:07:54.663206787Z"
+        },
+        {
+          "case": "refs1125b1-row34-projection-mantissa5",
+          "exit_code": 0,
+          "container_seconds": 282.209034,
+          "started": "2026-11-25T02:07:57.493533781Z",
+          "finished": "2026-11-25T02:12:39.702567743Z"
+        }
+      ],
+      "container_wall_seconds": 875.7315619999999
+    },
+    {
+      "status": "STARTED",
+      "start": "2026-11-25T02:12:41.424919+00:00",
+      "ended": "2026-11-25T02:12:41.542439+00:00",
+      "elapsed_seconds": 0.11754138791002333,
+      "isolation": "BOUNDED_SAME_IM2COL_BATCH_STOP_MONITOR",
+      "isolation_removed": true,
+      "window": "refs1125b2",
+      "events": [
+        {
+          "time": "2026-11-25T02:12:41.425144+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_SAME_IM2COL_BATCH_STOP_MONITOR",
+          "maximum_seconds": 6090,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-25T02:12:41.542319+00:00",
+          "event": "BLOCKED_OTHER_DEVICE_OWNER",
+          "container": "/atk_q_ops-nn-v910-aclnnScatterAdd-c1cc631db5f04151_dev2_slot0_30c60a9e",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-25T02:12:41.542510+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ],
+      "cases": [],
+      "container_wall_seconds": 0,
+      "interpretation": "Blocked before NPU by an unrelated ATK batch; preserved until explicit authorization."
+    },
+    {
+      "status": "STARTED",
+      "start": "2026-11-25T02:14:13.896343+00:00",
+      "ended": "2026-11-25T02:14:14.023964+00:00",
+      "elapsed_seconds": 0.12763261189684272,
+      "isolation": "BOUNDED_IM2COL_SCATTERADD_BATCH_STOP_MONITOR",
+      "isolation_removed": true,
+      "window": "refs1125b3",
+      "events": [
+        {
+          "time": "2026-11-25T02:14:13.896435+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_IM2COL_SCATTERADD_BATCH_STOP_MONITOR",
+          "maximum_seconds": 6090,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-25T02:14:14.023825+00:00",
+          "event": "BLOCKED_OTHER_DEVICE_OWNER",
+          "container": "/atk-isinscalartensor-20261124-d5",
+          "image": "cann:9.0.0-argmin-local-atk26.7.8-20261124",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-25T02:14:14.024039+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ],
+      "cases": [],
+      "container_wall_seconds": 0,
+      "interpretation": "Blocked before NPU by an unrelated ATK batch; preserved until explicit authorization."
+    },
+    {
+      "status": "CASE_FAILED",
+      "start": "2026-11-25T02:16:03.215252+00:00",
+      "ended": "2026-11-25T02:32:41.848625+00:00",
+      "elapsed_seconds": 998.6333890848327,
+      "isolation": "BOUNDED_CARD2_5_ATK_STOP_MONITOR",
+      "isolation_removed": true,
+      "window": "refs1125b4",
+      "events": [
+        {
+          "time": "2026-11-25T02:16:03.215338+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_CARD2_5_ATK_STOP_MONITOR",
+          "maximum_seconds": 6000,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-25T02:16:03.328212+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/atk-isneginf-20261124-d5",
+          "image": "cann:9.0.0-argmin-local-atk26.7.8-20261124",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 user: 先占用; 2026-11-25 explicit all ATK instances on cards2/5 only, maximum100minutes"
+        },
+        {
+          "time": "2026-11-25T02:16:04.447625+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/atk-isneginf-20261124-d5",
+          "image": "cann:9.0.0-argmin-local-atk26.7.8-20261124",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T02:16:04.447832+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/atk_q_ops-nn-v910-aclnnScatterAdd-c1cc631db5f04151_dev2_slot0_30c60a9e",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 user: 先占用; 2026-11-25 explicit all ATK instances on cards2/5 only, maximum100minutes"
+        },
+        {
+          "time": "2026-11-25T02:16:05.459148+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/atk_q_ops-nn-v910-aclnnScatterAdd-c1cc631db5f04151_dev2_slot0_30c60a9e",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T02:22:18.666721+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/atk-isneginf-20261124-d2",
+          "image": "cann:9.0.0-argmin-local-atk26.7.8-20261124",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 user: 先占用; 2026-11-25 explicit all ATK instances on cards2/5 only, maximum100minutes"
+        },
+        {
+          "time": "2026-11-25T02:22:19.329003+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/atk-isneginf-20261124-d2",
+          "image": "cann:9.0.0-argmin-local-atk26.7.8-20261124",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T02:31:05.926609+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/atk_q_ops-nn-v910-aclnnL1Loss-62dcfc0a_dev5_slot0_17af7187",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 user: 先占用; 2026-11-25 explicit all ATK instances on cards2/5 only, maximum100minutes"
+        },
+        {
+          "time": "2026-11-25T02:31:06.543866+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/atk_q_ops-nn-v910-aclnnL1Loss-62dcfc0a_dev5_slot0_17af7187",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T02:32:41.848722+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ],
+      "cases": [
+        {
+          "case": "refs1125b4-row12-lm-head-collapse",
+          "exit_code": 1,
+          "container_seconds": 258.525341,
+          "started": "2026-11-25T02:16:08.569297121Z",
+          "finished": "2026-11-25T02:20:27.094638402Z"
+        },
+        {
+          "case": "refs1125b4-row12-lm-head-swap",
+          "exit_code": 137,
+          "container_seconds": 100.170489,
+          "started": "2026-11-25T02:20:29.86363513Z",
+          "finished": "2026-11-25T02:22:10.034124256Z"
+        },
+        {
+          "case": "refs1125b4-row32-conv3d-input-e5m2",
+          "exit_code": 0,
+          "container_seconds": 344.848956,
+          "started": "2026-11-25T02:22:12.948435748Z",
+          "finished": "2026-11-25T02:27:57.797391288Z"
+        },
+        {
+          "case": "refs1125b4-row34-projection-mantissa3",
+          "exit_code": 0,
+          "container_seconds": 279.675699,
+          "started": "2026-11-25T02:28:00.441328419Z",
+          "finished": "2026-11-25T02:32:40.117027561Z"
+        }
+      ],
+      "container_wall_seconds": 983.220485,
+      "interpretation": "row12 missing region_kind refused before weight write; swap own container deliberately stopped to avoid known duplicate. row32/34 passed."
+    },
+    {
+      "status": "CASE_FAILED",
+      "start": "2026-11-25T02:32:41.858508+00:00",
+      "ended": "2026-11-25T02:42:17.974632+00:00",
+      "elapsed_seconds": 576.116169651039,
+      "isolation": "BOUNDED_CARD2_5_ATK_STOP_MONITOR",
+      "isolation_removed": true,
+      "window": "refs1125b5",
+      "events": [
+        {
+          "time": "2026-11-25T02:32:41.858715+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_CARD2_5_ATK_STOP_MONITOR",
+          "maximum_seconds": 3090,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-25T02:37:33.396719+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/atk-isneginf-20261124-d5",
+          "image": "cann:9.0.0-argmin-local-atk26.7.8-20261124",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 user: 先占用; 2026-11-25 explicit all ATK instances on cards2/5 only, maximum100minutes"
+        },
+        {
+          "time": "2026-11-25T02:37:34.035552+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/atk-isneginf-20261124-d5",
+          "image": "cann:9.0.0-argmin-local-atk26.7.8-20261124",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T02:42:17.974726+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ],
+      "cases": [
+        {
+          "case": "refs1125b5-row12-lm-head-collapse",
+          "exit_code": 1,
+          "container_seconds": 284.914326,
+          "started": "2026-11-25T02:32:45.055892067Z",
+          "finished": "2026-11-25T02:37:29.970218452Z"
+        },
+        {
+          "case": "refs1125b5-row12-lm-head-swap",
+          "exit_code": 1,
+          "container_seconds": 283.351814,
+          "started": "2026-11-25T02:37:32.835703183Z",
+          "finished": "2026-11-25T02:42:16.187517031Z"
+        }
+      ],
+      "container_wall_seconds": 568.26614,
+      "interpretation": "Both model runs completed two owners; original independent reviewer incorrectly equated group/local owner. Corrected CPU review passed unchanged receipts; original exit1 preserved."
+    }
+  ],
+  "all_isolation_removed": true,
+  "container_wall_seconds": 2753.287154,
+  "scope": "Only cards2/5; no Docker entry/driver/CANN/dispatcher configuration changed; no external data/container/image deleted. Monitor ended before the original100-minute authorization endpoint."
+}

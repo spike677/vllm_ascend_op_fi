@@ -166,9 +166,9 @@
       "capability": "v2 persistent_weight: row12_lm_head_collapse / row12_lm_head_swap",
       "boundary": "lm_head fixed token weight-row construction; explicit derived-copy/tied-weight refusal; old transient logits rotation excluded",
       "deployment": "Qwen3.8 A3 TP2（蓝区A2仅验证）",
-      "evidence": "reference_adapters/lm_head_rows.py; lm_head_product.py; review_lm_head.py",
-      "progress_state": "REFERENCE_ADAPTER_PENDING",
-      "progress_note": "CPU 21-test related suite passed. A2 first attempt rejected after read-only reader census missed actual linear; fixed exact weight-reader matching, real sampler proof and two-owner negatives pending rerun. Not qualified."
+      "evidence": "reference_adapter_a2_20261124.json#row12_lm_head_collapse + row12_lm_head_swap; releases/yellow-reference-lm-head-20261125-r1",
+      "progress_state": "ADAPTER_READY_UNTESTED",
+      "progress_note": "Codex reference v2: fixed lm_head token rows collapse/swap both passed A2/0.26/CANN9.1/community Qwen3.8 W8A8/TP2, same Workers two owners, actual weight-reader and sampler, exact byte restore/canary, nonowner guard and negatives. Old reviewer group/local-owner mismatch corrected independently; raw receipts unchanged. Await yellow review/formal A3; not REGISTERED."
     },
     {
       "row": 13,

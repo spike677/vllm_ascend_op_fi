@@ -9541,6 +9541,626 @@
         "reference_adapters/vision_precision.py": "416e39a7865c0763d3c08576adc6163cf60aa083dbbece96b84628285dcbda75"
       },
       "negative_sha256": "e2f27a591e49bcfc44a3df8bcd0eefea48c16b06a76d14848d6da5571ec99d04"
+    },
+    "row12_lm_head_collapse": {
+      "schema": "dcat.reference.lm_head.review.v1",
+      "passed": true,
+      "issues": [],
+      "variant": "row12_lm_head_collapse",
+      "semantics": "ORIGINAL_DESCRIBED_WEIGHT_VECTOR_CONSTRUCTION",
+      "effects": [
+        {
+          "owner": "worker-group-2de3e5dd16244e1588a472b72201757f",
+          "sampler_ranks": 2,
+          "weight_owner_ranks": 1
+        },
+        {
+          "owner": "worker-group-7669dfe6333e46f2b260ed14bdba4924",
+          "sampler_ranks": 2,
+          "weight_owner_ranks": 1
+        }
+      ],
+      "qualification_granted": false,
+      "review_correction": {
+        "original_review_sha256": "efcfbb7524e76e4651ae2183cc3f66549703ef2273dad4ed13458bfc743a7dcf",
+        "original_process_exit": 1,
+        "reason": "Old reviewer equated group owner with random provider owner; new review verifies complete ticket/worker/generation chain and HTTP request mapping.",
+        "original_receipt_unchanged": true
+      },
+      "receipt_sha256": "18c54d278f0629e6101fff577a1bddbb82810e0e5c3dd1258fffe1dc9b64c1fe",
+      "source_commit": "c660a68c3465ef0ac2c9895104704f4afd275c03",
+      "source_manifest_sha256": "a246b34fbe90aa5f9e9dbccdbce1ea33a11d2a9e555fab74dba8dd064c15f372",
+      "configuration": [
+        {
+          "rank": 0,
+          "status": "ROW12_CONFIGURED_NOT_QUALIFIED",
+          "deployment": {
+            "torch": "2.10.0+cpu",
+            "torch_npu": "2.10.0.post4",
+            "vllm": "0.26.0",
+            "vllm_ascend": "0.26.0rc1",
+            "cann": [
+              "9.1.0"
+            ],
+            "hardware_family": "A2",
+            "hardware_device_name": "Ascend910B4",
+            "hardware_logical_device": 0,
+            "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+            "dtype": "torch.bfloat16",
+            "tp": 2,
+            "pp": 1,
+            "dp": 1,
+            "eager": true,
+            "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+            "safetensors_index_sha256": {
+              "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+            },
+            "max_model_len": 1024,
+            "max_num_batched_tokens": 1024,
+            "max_num_seqs": 1,
+            "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+            "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+            "live_config_matches_file": true
+          },
+          "admission": {
+            "vocabulary_size": 248320,
+            "vocabulary_start": 0,
+            "vocabulary_end": 124160,
+            "padded_start": 0,
+            "padded_end": 124160,
+            "derived_copies": [],
+            "tied_embedding": false,
+            "source_sha256": "60b116e260d5438513c9bb60370306eed5e9b0ce612bfbe0a3885e64fdf0587b",
+            "actual_weight_consumer": "aten::mm:lm_head_weight"
+          }
+        },
+        {
+          "rank": 1,
+          "status": "ROW12_CONFIGURED_NOT_QUALIFIED",
+          "deployment": {
+            "torch": "2.10.0+cpu",
+            "torch_npu": "2.10.0.post4",
+            "vllm": "0.26.0",
+            "vllm_ascend": "0.26.0rc1",
+            "cann": [
+              "9.1.0"
+            ],
+            "hardware_family": "A2",
+            "hardware_device_name": "Ascend910B4",
+            "hardware_logical_device": 1,
+            "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+            "dtype": "torch.bfloat16",
+            "tp": 2,
+            "pp": 1,
+            "dp": 1,
+            "eager": true,
+            "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+            "safetensors_index_sha256": {
+              "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+            },
+            "max_model_len": 1024,
+            "max_num_batched_tokens": 1024,
+            "max_num_seqs": 1,
+            "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+            "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+            "live_config_matches_file": true
+          },
+          "admission": {
+            "vocabulary_size": 248320,
+            "vocabulary_start": 124160,
+            "vocabulary_end": 248320,
+            "padded_start": 124160,
+            "padded_end": 248320,
+            "derived_copies": [],
+            "tied_embedding": false,
+            "source_sha256": "60b116e260d5438513c9bb60370306eed5e9b0ce612bfbe0a3885e64fdf0587b",
+            "actual_weight_consumer": "aten::mm:lm_head_weight"
+          }
+        }
+      ],
+      "window_seconds": 576.116169651039,
+      "isolation_removed": true,
+      "raw_receipt_retained_on_124": true,
+      "reviewer_sha256": "70702714f46fa35d48e131ba5ffaa1d4375c8401c269485f9e94acb98a552b44",
+      "status": "REFERENCE_A2_TP2_TWO_OWNERS_REVIEWED",
+      "scope_identities": [
+        {
+          "owner": "worker-group-2de3e5dd16244e1588a472b72201757f",
+          "ranks": [
+            {
+              "rank": 0,
+              "worker": {
+                "configured_logical_device": 0,
+                "extension_version": "1",
+                "logical_device": 0,
+                "model_instance_id": "0742184bbb8260ffae3feb9cabb240a0",
+                "observed_logical_device": 0,
+                "pid": 160,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:160:122503670",
+                "rank": 0,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "vllm_ascend_version": "0.26.0rc1",
+                "vllm_version": "0.26.0+empty",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "worker_start_identity": "100bff03cf8416bbae449e610075cb67"
+              },
+              "provider_owner": "32adbef31bcf92e2b5086cd00f2df1dc",
+              "group_owner": "worker-group-2de3e5dd16244e1588a472b72201757f",
+              "generation": 1,
+              "events": [
+                {
+                  "applied": 1,
+                  "attempted": 1,
+                  "changed": 1,
+                  "changed_elements": 10227,
+                  "consumed": 1,
+                  "eligible": 1,
+                  "failed": 0,
+                  "observed": 1,
+                  "region": "token_rows",
+                  "region_kind": "persistent_weight",
+                  "restore_kind": "BYTE_EXACT_SAME_ALLOCATION_GENERATION",
+                  "restored": 1
+                }
+              ],
+              "readers": 4,
+              "nonowner_guard_reads": 0
+            },
+            {
+              "rank": 1,
+              "worker": {
+                "configured_logical_device": 1,
+                "extension_version": "1",
+                "logical_device": 1,
+                "model_instance_id": "f24c02376a1b4e3ee2cb301a49db140c",
+                "observed_logical_device": 1,
+                "pid": 161,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:161:122503670",
+                "rank": 1,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "vllm_ascend_version": "0.26.0rc1",
+                "vllm_version": "0.26.0+empty",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "worker_start_identity": "24767946b0108faaeeef3bdbc75a0233"
+              },
+              "provider_owner": "10eb151f581d41c0a6e5fac37df4d11b",
+              "group_owner": "worker-group-2de3e5dd16244e1588a472b72201757f",
+              "generation": 1,
+              "events": [],
+              "readers": 0,
+              "nonowner_guard_reads": 4
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "first_target_logits": {
+            "baseline": [
+              [
+                6.4375,
+                7.875,
+                7.5
+              ]
+            ],
+            "fault": [
+              [
+                6.4375,
+                6.4375,
+                6.4375
+              ]
+            ]
+          },
+          "sampler_consumed_all_steps": true
+        },
+        {
+          "owner": "worker-group-7669dfe6333e46f2b260ed14bdba4924",
+          "ranks": [
+            {
+              "rank": 0,
+              "worker": {
+                "configured_logical_device": 0,
+                "extension_version": "1",
+                "logical_device": 0,
+                "model_instance_id": "0742184bbb8260ffae3feb9cabb240a0",
+                "observed_logical_device": 0,
+                "pid": 160,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:160:122503670",
+                "rank": 0,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "vllm_ascend_version": "0.26.0rc1",
+                "vllm_version": "0.26.0+empty",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "worker_start_identity": "100bff03cf8416bbae449e610075cb67"
+              },
+              "provider_owner": "6661722fe4bb663fb75c098f890f8740",
+              "group_owner": "worker-group-7669dfe6333e46f2b260ed14bdba4924",
+              "generation": 2,
+              "events": [
+                {
+                  "applied": 1,
+                  "attempted": 1,
+                  "changed": 1,
+                  "changed_elements": 10227,
+                  "consumed": 1,
+                  "eligible": 1,
+                  "failed": 0,
+                  "observed": 1,
+                  "region": "token_rows",
+                  "region_kind": "persistent_weight",
+                  "restore_kind": "BYTE_EXACT_SAME_ALLOCATION_GENERATION",
+                  "restored": 1
+                }
+              ],
+              "readers": 4,
+              "nonowner_guard_reads": 0
+            },
+            {
+              "rank": 1,
+              "worker": {
+                "configured_logical_device": 1,
+                "extension_version": "1",
+                "logical_device": 1,
+                "model_instance_id": "f24c02376a1b4e3ee2cb301a49db140c",
+                "observed_logical_device": 1,
+                "pid": 161,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:161:122503670",
+                "rank": 1,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "vllm_ascend_version": "0.26.0rc1",
+                "vllm_version": "0.26.0+empty",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "worker_start_identity": "24767946b0108faaeeef3bdbc75a0233"
+              },
+              "provider_owner": "ce979ede38dcd4e0df12bcffcbbfa00e",
+              "group_owner": "worker-group-7669dfe6333e46f2b260ed14bdba4924",
+              "generation": 2,
+              "events": [],
+              "readers": 0,
+              "nonowner_guard_reads": 4
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "first_target_logits": {
+            "baseline": [
+              [
+                6.4375,
+                7.875,
+                7.5
+              ]
+            ],
+            "fault": [
+              [
+                6.4375,
+                6.4375,
+                6.4375
+              ]
+            ]
+          },
+          "sampler_consumed_all_steps": true
+        }
+      ]
+    },
+    "row12_lm_head_swap": {
+      "schema": "dcat.reference.lm_head.review.v1",
+      "passed": true,
+      "issues": [],
+      "variant": "row12_lm_head_swap",
+      "semantics": "ORIGINAL_DESCRIBED_WEIGHT_VECTOR_CONSTRUCTION",
+      "effects": [
+        {
+          "owner": "worker-group-1db29c3ca7494939926b7ad38c6b9293",
+          "sampler_ranks": 2,
+          "weight_owner_ranks": 1
+        },
+        {
+          "owner": "worker-group-a13619371d63482085fbdabd79862557",
+          "sampler_ranks": 2,
+          "weight_owner_ranks": 1
+        }
+      ],
+      "qualification_granted": false,
+      "review_correction": {
+        "original_review_sha256": "68084f15565632dd0fe981259a97035a43847d83584245d577c0d4276ebcbfb7",
+        "original_process_exit": 1,
+        "reason": "Old reviewer equated group owner with random provider owner; new review verifies complete ticket/worker/generation chain and HTTP request mapping.",
+        "original_receipt_unchanged": true
+      },
+      "receipt_sha256": "da3733b2b16099ddca1bf328a71fdeb505e3bb90d8b68397a19d601f88c1215c",
+      "source_commit": "c660a68c3465ef0ac2c9895104704f4afd275c03",
+      "source_manifest_sha256": "a246b34fbe90aa5f9e9dbccdbce1ea33a11d2a9e555fab74dba8dd064c15f372",
+      "configuration": [
+        {
+          "rank": 0,
+          "status": "ROW12_CONFIGURED_NOT_QUALIFIED",
+          "deployment": {
+            "torch": "2.10.0+cpu",
+            "torch_npu": "2.10.0.post4",
+            "vllm": "0.26.0",
+            "vllm_ascend": "0.26.0rc1",
+            "cann": [
+              "9.1.0"
+            ],
+            "hardware_family": "A2",
+            "hardware_device_name": "Ascend910B4",
+            "hardware_logical_device": 0,
+            "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+            "dtype": "torch.bfloat16",
+            "tp": 2,
+            "pp": 1,
+            "dp": 1,
+            "eager": true,
+            "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+            "safetensors_index_sha256": {
+              "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+            },
+            "max_model_len": 1024,
+            "max_num_batched_tokens": 1024,
+            "max_num_seqs": 1,
+            "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+            "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+            "live_config_matches_file": true
+          },
+          "admission": {
+            "vocabulary_size": 248320,
+            "vocabulary_start": 0,
+            "vocabulary_end": 124160,
+            "padded_start": 0,
+            "padded_end": 124160,
+            "derived_copies": [],
+            "tied_embedding": false,
+            "source_sha256": "60b116e260d5438513c9bb60370306eed5e9b0ce612bfbe0a3885e64fdf0587b",
+            "actual_weight_consumer": "aten::mm:lm_head_weight"
+          }
+        },
+        {
+          "rank": 1,
+          "status": "ROW12_CONFIGURED_NOT_QUALIFIED",
+          "deployment": {
+            "torch": "2.10.0+cpu",
+            "torch_npu": "2.10.0.post4",
+            "vllm": "0.26.0",
+            "vllm_ascend": "0.26.0rc1",
+            "cann": [
+              "9.1.0"
+            ],
+            "hardware_family": "A2",
+            "hardware_device_name": "Ascend910B4",
+            "hardware_logical_device": 1,
+            "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+            "dtype": "torch.bfloat16",
+            "tp": 2,
+            "pp": 1,
+            "dp": 1,
+            "eager": true,
+            "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+            "safetensors_index_sha256": {
+              "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+            },
+            "max_model_len": 1024,
+            "max_num_batched_tokens": 1024,
+            "max_num_seqs": 1,
+            "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+            "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+            "live_config_matches_file": true
+          },
+          "admission": {
+            "vocabulary_size": 248320,
+            "vocabulary_start": 124160,
+            "vocabulary_end": 248320,
+            "padded_start": 124160,
+            "padded_end": 248320,
+            "derived_copies": [],
+            "tied_embedding": false,
+            "source_sha256": "60b116e260d5438513c9bb60370306eed5e9b0ce612bfbe0a3885e64fdf0587b",
+            "actual_weight_consumer": "aten::mm:lm_head_weight"
+          }
+        }
+      ],
+      "window_seconds": 576.116169651039,
+      "isolation_removed": true,
+      "raw_receipt_retained_on_124": true,
+      "reviewer_sha256": "70702714f46fa35d48e131ba5ffaa1d4375c8401c269485f9e94acb98a552b44",
+      "status": "REFERENCE_A2_TP2_TWO_OWNERS_REVIEWED",
+      "scope_identities": [
+        {
+          "owner": "worker-group-1db29c3ca7494939926b7ad38c6b9293",
+          "ranks": [
+            {
+              "rank": 0,
+              "worker": {
+                "configured_logical_device": 0,
+                "extension_version": "1",
+                "logical_device": 0,
+                "model_instance_id": "1291776689d60153d2f7622ef8c51792",
+                "observed_logical_device": 0,
+                "pid": 161,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:161:122532556",
+                "rank": 0,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "vllm_ascend_version": "0.26.0rc1",
+                "vllm_version": "0.26.0+empty",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "worker_start_identity": "93d7b3242b5be01a130fcb1a15da39f4"
+              },
+              "provider_owner": "f3ae581e0455110ff13d61fd3ef522b4",
+              "group_owner": "worker-group-1db29c3ca7494939926b7ad38c6b9293",
+              "generation": 1,
+              "events": [
+                {
+                  "applied": 1,
+                  "attempted": 1,
+                  "changed": 1,
+                  "changed_elements": 10232,
+                  "consumed": 1,
+                  "eligible": 1,
+                  "failed": 0,
+                  "observed": 1,
+                  "region": "token_rows",
+                  "region_kind": "persistent_weight",
+                  "restore_kind": "BYTE_EXACT_SAME_ALLOCATION_GENERATION",
+                  "restored": 1
+                }
+              ],
+              "readers": 4,
+              "nonowner_guard_reads": 0
+            },
+            {
+              "rank": 1,
+              "worker": {
+                "configured_logical_device": 1,
+                "extension_version": "1",
+                "logical_device": 1,
+                "model_instance_id": "ff99aa6da374767a7cef65a129bd115d",
+                "observed_logical_device": 1,
+                "pid": 162,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:162:122532556",
+                "rank": 1,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "vllm_ascend_version": "0.26.0rc1",
+                "vllm_version": "0.26.0+empty",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "worker_start_identity": "a3b5af937a01b5222c53155965596b02"
+              },
+              "provider_owner": "3b46ceef6ce0259ad5b6c8c9114ed53f",
+              "group_owner": "worker-group-1db29c3ca7494939926b7ad38c6b9293",
+              "generation": 1,
+              "events": [],
+              "readers": 0,
+              "nonowner_guard_reads": 4
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "first_target_logits": {
+            "baseline": [
+              [
+                6.4375,
+                7.875,
+                7.5
+              ]
+            ],
+            "fault": [
+              [
+                7.875,
+                6.4375,
+                7.5
+              ]
+            ]
+          },
+          "sampler_consumed_all_steps": true
+        },
+        {
+          "owner": "worker-group-a13619371d63482085fbdabd79862557",
+          "ranks": [
+            {
+              "rank": 0,
+              "worker": {
+                "configured_logical_device": 0,
+                "extension_version": "1",
+                "logical_device": 0,
+                "model_instance_id": "1291776689d60153d2f7622ef8c51792",
+                "observed_logical_device": 0,
+                "pid": 161,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:161:122532556",
+                "rank": 0,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "vllm_ascend_version": "0.26.0rc1",
+                "vllm_version": "0.26.0+empty",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "worker_start_identity": "93d7b3242b5be01a130fcb1a15da39f4"
+              },
+              "provider_owner": "e56f55e441e66a615f4411f0ee6f4adf",
+              "group_owner": "worker-group-a13619371d63482085fbdabd79862557",
+              "generation": 2,
+              "events": [
+                {
+                  "applied": 1,
+                  "attempted": 1,
+                  "changed": 1,
+                  "changed_elements": 10232,
+                  "consumed": 1,
+                  "eligible": 1,
+                  "failed": 0,
+                  "observed": 1,
+                  "region": "token_rows",
+                  "region_kind": "persistent_weight",
+                  "restore_kind": "BYTE_EXACT_SAME_ALLOCATION_GENERATION",
+                  "restored": 1
+                }
+              ],
+              "readers": 4,
+              "nonowner_guard_reads": 0
+            },
+            {
+              "rank": 1,
+              "worker": {
+                "configured_logical_device": 1,
+                "extension_version": "1",
+                "logical_device": 1,
+                "model_instance_id": "ff99aa6da374767a7cef65a129bd115d",
+                "observed_logical_device": 1,
+                "pid": 162,
+                "process_start_identity": "proc:e15e1842-4541-4ec5-a763-0666d2cf3ed1:162:122532556",
+                "rank": 1,
+                "visible_devices": null,
+                "visible_devices_source": null,
+                "vllm_ascend_version": "0.26.0rc1",
+                "vllm_version": "0.26.0+empty",
+                "worker_class": "vllm_ascend.worker.worker.NPUWorker",
+                "worker_start_identity": "a3b5af937a01b5222c53155965596b02"
+              },
+              "provider_owner": "de224ad74973d79a0a001c298cec2a98",
+              "group_owner": "worker-group-a13619371d63482085fbdabd79862557",
+              "generation": 2,
+              "events": [],
+              "readers": 0,
+              "nonowner_guard_reads": 4
+            }
+          ],
+          "final_recovery": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "first_target_logits": {
+            "baseline": [
+              [
+                6.4375,
+                7.875,
+                7.5
+              ]
+            ],
+            "fault": [
+              [
+                7.875,
+                6.4375,
+                7.5
+              ]
+            ]
+          },
+          "sampler_consumed_all_steps": true
+        }
+      ]
     }
   },
   "windows": [
