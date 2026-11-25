@@ -72,3 +72,13 @@ python tools/extract_dsv4_targeted_record.py --verify targeted-extract.jsonl
 
 共同参考：[定点补采单](v4_d1_targeted_capture_20261125.md)、[公共8审查方案](v4_public8_d1_review_plan_20261125.md)、[库行13独立放行](v4_d13_independent_release_20261125.md)。其中B档的观测实现由本r3承接；正式D产品适配与资格仍单独门禁。D13优先，不等待公共8。
 
+## 最终验证
+
+CPU55/55；独立解压、PYTHONPATH只指向工具目录时55/55。A2/Ascend910B4、0.26/0.26rc1、CANN9.1、社区Qwen3.8 W8A8、TP2：原observe每rank3012调用无错误/截断；capture每rank四步完整、采样关联通过。定点观测在真实linear_attn.out_proj上每rank20条算子记录、16条消费者候选、20个完成事件、12316个浮点样本值；无错误或截断，观测前/中/后结果逐位相同，原方法身份恢复。Qwen本例没有EP，按实际缺失记录，不能替代V4 TP8+EP资格。
+
+实机定点回执两次提取逐字节相同，548段、最大1634字节，verify通过。完整文本留本地；黄区只按需要回传相关段。
+
+最终窗口22:13:16–22:20:55（北京时间），458.882秒，监控已撤销。首轮22:07起诊断因inference_mode版本计数修正主动中止，351.441秒，不计为最终验证；两轮均在同一22:37:06截止授权内，仅停止明确仅占卡2/5的ATK/TTK，未删除外部容器或修改派发器配置。详细动作见isolation.json。
+
+最终源码清单SHA：1518830652bce91d38e3c775a8ead6d4e488972af11d24b25c49d12e8efd4062。CPU、独立CPU、最终A2及包内清单必须一致。旧诊断清单不沿用。
+

@@ -21,13 +21,17 @@ def build(destination):
     for item in manifest['files']:
         assert sha(blobs[item['path']])==item['sha256'],item['path']
     cpu=json.loads((evidence/'cpu.json').read_bytes());a2=json.loads((evidence/'a2-review.json').read_bytes())
+    isolated=json.loads((evidence/'cpu-isolated.json').read_bytes())
     assert cpu['passed'] and a2['status']=='PASSED'
+    assert isolated['passed'] and isolated['source_manifest_sha256']==sha(mraw)
     assert cpu['source_manifest_sha256']==a2['source_manifest_sha256']==sha(mraw)
     comparison=json.loads((evidence/'shared-byte-comparison.json').read_bytes())
     for name,b in base.items():
         if name.endswith('.py') and name not in CHANGED:assert b==blobs[name],name
     for name in DOCS:blobs['docs/worker_core_v1/'+name]=(ROOT/'docs/worker_core_v1'/name).read_bytes()
-    for name in ('cpu.json','a2-review.json','isolation.json','shared-byte-comparison.json'):
+    blobs['tool-diff.patch']=subprocess.check_output(
+        ['git','diff','yellow-delivery-20261125-r4.1','HEAD','--',*CHANGED],cwd=ROOT)
+    for name in ('cpu.json','cpu-isolated.json','a2-review.json','isolation.json','shared-byte-comparison.json'):
         blobs[name]=(evidence/name).read_bytes()
     blobs['source_manifest.json']=mraw
     blobs['HANDOFF.md']=blobs['docs/worker_core_v1/v4_v030_probe_r3_handoff_20261125.md']
@@ -46,7 +50,7 @@ def build(destination):
     with zipfile.ZipFile(out) as z:
         assert z.testzip() is None
         for n,b in blobs.items():assert z.read(n)==b,n
-    for name in ('manifest.json','source_manifest.json','cpu.json','a2-review.json','isolation.json','shared-byte-comparison.json'):
+    for name in ('manifest.json','source_manifest.json','cpu.json','cpu-isolated.json','a2-review.json','isolation.json','shared-byte-comparison.json'):
         (destination/name).write_bytes(blobs[name])
     (destination/'SHA256SUMS').write_bytes(''.join(sha(p.read_bytes())+'  '+p.name+'\n' for p in sorted(destination.iterdir())).encode())
     return dict(path=str(out),bytes=out.stat().st_size,sha256=sha(out.read_bytes()),source_manifest_sha256=sha(mraw),files=len(blobs))
