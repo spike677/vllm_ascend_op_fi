@@ -1,9 +1,10 @@
 """Exercise the real v2 factory admission, not a replacement provider double."""
-import unittest
+import unittest,torch
 from types import SimpleNamespace
 from unittest.mock import patch
 from reference_adapters.lm_head_provider import LmHeadCollapseProvider,LmHeadSwapProvider
 from demoncat.runtime.vllm_ascend.worker_extension import external_persistent_runtime as v2
+import test_reference_lm_head_rows as row_fixtures
 
 class ProviderContractTests(unittest.TestCase):
     def make(self,factory,**context):
@@ -28,3 +29,27 @@ class ProviderContractTests(unittest.TestCase):
         worker,model=self.make(LmHeadCollapseProvider,reader_failure={'operators':['aten::t']})
         with self.assertRaisesRegex(RuntimeError,'ROW12_ACTUAL_READER_NOT_OBSERVED'):
             LmHeadCollapseProvider(worker,model,{'rank':0},mechanism='external.test',region_kind='persistent_weight')
+
+    def test_actual_provider_lifecycle_two_scopes_both_shard_roles(self):
+        stream=SimpleNamespace(synchronize=lambda:None)
+        with patch.object(torch,'npu',SimpleNamespace(current_stream=lambda:stream),create=True):
+            for factory in (LmHeadCollapseProvider,LmHeadSwapProvider):
+                for rank,start in ((0,0),(1,16)):
+                    site,weight,holder,boundary=row_fixtures.RowTests().make(factory.variant,start=start,end=start+16)
+                    original=weight.clone();module=SimpleNamespace(weight=weight)
+                    context=dict(module=module,admission=vars(site.admission),provider=None,
+                                 reader_calls=4,boundary=lambda:boundary)
+                    worker=SimpleNamespace(_reference_lm_context=context)
+                    for i in range(2):
+                        p=factory(worker,object(),{'rank':rank},mechanism='external.test',region_kind='persistent_weight')
+                        for action in ('prepare','register','check','enable'):
+                            p.dispatch(action,{},owner=str(i),generation=i+1)
+                        for step in range(4):
+                            torch.nn.functional.linear(torch.ones(1,8,dtype=weight.dtype),weight)
+                            p.consumed('request-'+str(i))
+                        for action in ('disable','unregister'):
+                            state=p.dispatch(action,{},owner=str(i),generation=i+1)
+                        self.assertTrue(state['recovery']['bytes_restored'])
+                        self.assertTrue(state['recovery']['resources_zero'])
+                        self.assertEqual(state['reader_observations'],4 if rank==0 else 0)
+                        self.assertTrue(torch.equal(weight,original));self.assertIsNone(context['provider'])

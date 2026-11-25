@@ -76,6 +76,15 @@ def build(family,destination):
     blobs={f:(ROOT/f).read_bytes() for f in ['reference_adapters/__init__.py','reference_adapters/README.md',
         'reference_adapters/bootstrap.py','reference_adapters/product_probe.py',
         'reference_adapters/control_guard.py','reference_adapters/refusal_probe.py',*files]}
+    if family in ('vision-fp8','projection-round'):
+        # Factory SHA alone is insufficient: helpers implement the numeric rule
+        # and the public control preflight. Pin every shipped executable module.
+        for variant in variants:
+            observed=evidence['variants'][variant].get('execution_source_sha256',{})
+            for file,raw in blobs.items():
+                if file.startswith('reference_adapters/') and file.endswith('.py'):
+                    if observed.get(file)!=sha(raw):
+                        raise ValueError('EXECUTION_SOURCE_DIFFERS_FROM_A2_REVIEW:'+variant+':'+file)
     # Embedded test files may import sibling factories; do not advertise CPU
     # commands requiring absent modules. A2 product commands are per variant.
     recipes=[]
