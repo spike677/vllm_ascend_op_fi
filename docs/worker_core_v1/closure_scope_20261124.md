@@ -1,5 +1,14 @@
 # 收口台账：2026-11-24最新决定
 
+## 2026-11-25 Y1更新（优先于下方历史排期）
+
+- 交付顺序改为先r8，再33/r7.5和D包增量；冻结发行物保持不变。
+- 黄区阶段1原声明通过18、22、39mr、28、17、20；后续声明26fia补齐配置后通过。均待逐组合效果/身份提取页，未新增正式登记。
+- 41更正为黄区harness缺少机制枚举，尚未进入测试；不是公共disable缺陷。
+- 39op第二owner的wrapper对象归属失败待定位，不能用permit/group/provider三种不同身份字符串混比定性。26fia configure问题暂按部署/可信bootstrap接线处理，不采用未关联的forkserver因果推断。
+- 详见[阶段1接收记录](yellow_intake_20261125_r741_phase1.md)、[故障结果分析](y1_phase1_fault_analysis_20261125.md)与[r8维护记录](r8_y1_defect_review_20261125.md)。本阶段不放宽owner保护、Native准入或登记证据要求。
+- 黄区自有适配器、CLI、HCCL及宿主接线由黄区本地闭环；公共runtime问题由Codex定位后修复。没有暂停黄区其它测试。
+
 公共13项：18、22、39op、39mr、28 denominator、17、Batch、15、41、26fia、20、33在A3 Qwen3.8 TP2完成注入测试与登记；8在A3 DeepSeek V4-0731 TP8+EP完成。TP1不是必要条件，已有结果保留。
 
 不交付4项：25、26 residual、28 FA legal、28 FIA legal。15为B档ND视图别名断开，不含私有格式触发条件；changed为调用次数，changed_elements单列。
