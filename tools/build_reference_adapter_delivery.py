@@ -26,6 +26,14 @@ FAMILIES={
            'reference_adapters/review_reference.py','tests/worker_extension/test_reference_matmul.py']),
  'matmul-bias':(['row34_bf16_before_bias'],['reference_adapters/matmul_order.py',
            'reference_adapters/review_reference.py','tests/worker_extension/test_reference_matmul.py']),
+ 'vision-fp8':(['row32_conv3d_input_e4m3','row32_conv3d_input_e5m2'],
+          ['reference_adapters/vision_precision.py','reference_adapters/precision_rules.py',
+           'reference_adapters/review_reference.py','tests/worker_extension/test_reference_precision_rules.py',
+           'reference_adapters/projection_round.py','reference_adapters/hidden_rows.py']),
+ 'projection-round':(['row34_projection_mantissa5','row34_projection_mantissa3'],
+          ['reference_adapters/projection_round.py','reference_adapters/precision_rules.py',
+           'reference_adapters/hidden_rows.py','reference_adapters/review_reference.py',
+           'tests/worker_extension/test_reference_precision_rules.py','reference_adapters/vision_precision.py']),
 }
 DEPENDENCIES=['experiments/worker_core_v11_20261118/external_input_examples.py',
     'fault_injection/sites/norm18_variance.py','fault_injection/sites/norm18.py',
@@ -66,7 +74,8 @@ def build(family,destination):
         checkout_forms[file]=dict(release_sha256=sha(frozen),a2_checkout_sha256=sha(current),
             identical_bytes=frozen==current,only_checkout_line_endings=frozen!=current)
     blobs={f:(ROOT/f).read_bytes() for f in ['reference_adapters/__init__.py','reference_adapters/README.md',
-        'reference_adapters/bootstrap.py','reference_adapters/product_probe.py',*files]}
+        'reference_adapters/bootstrap.py','reference_adapters/product_probe.py',
+        'reference_adapters/control_guard.py','reference_adapters/refusal_probe.py',*files]}
     # Embedded test files may import sibling factories; do not advertise CPU
     # commands requiring absent modules. A2 product commands are per variant.
     recipes=[]

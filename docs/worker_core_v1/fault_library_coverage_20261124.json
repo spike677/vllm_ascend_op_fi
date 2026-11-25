@@ -163,12 +163,12 @@
     {
       "row": 12,
       "category": "C",
-      "capability": "黄区operator_output_value：compute_logits列错位/命名坍塌",
-      "boundary": "C类现象复现；原机理为lm_head错误量化/量化误差累积，当前lm_head BF16未量化，不宣称原机理成立",
+      "capability": "v2 persistent_weight: row12_lm_head_collapse / row12_lm_head_swap",
+      "boundary": "lm_head fixed token weight-row construction; explicit derived-copy/tied-weight refusal; old transient logits rotation excluded",
       "deployment": "Qwen3.8 A3 TP2（蓝区A2仅验证）",
-      "evidence": "reference_adapter_a2_20261124.json row12_logits_columns_rotate：原回执/错误日志SHA及窗口恢复；等待真实采样边界适配。",
+      "evidence": "reference_adapters/lm_head_rows.py; lm_head_product.py; review_lm_head.py",
       "progress_state": "REFERENCE_ADAPTER_PENDING",
-      "progress_note": "参考factory及CPU4项已写；A2实际compute_logits→sampler消费链仍未闭合，REFERENCE_LOGITS_SOFTMAX_NOT_OBSERVED，同原因NPU尝试停止。未完成两个owner、引擎退出，不交付为通过项；不改共享runtime。"
+      "progress_note": "CPU 21-test related suite passed. A2 first attempt rejected after read-only reader census missed actual linear; fixed exact weight-reader matching, real sampler proof and two-owner negatives pending rerun. Not qualified."
     },
     {
       "row": 13,
@@ -347,12 +347,12 @@
     {
       "row": 32,
       "category": "B",
-      "capability": "黄区operator_input_precision/compute_downcast扩展Conv3d",
-      "boundary": "输入cast与内部低精度重算须分别记变体；3D/图片待验收",
+      "capability": "row32_conv3d_input_e4m3 / row32_conv3d_input_e5m2",
+      "boundary": "Conv3d input FP8-like rounding phenomenon proxy; original operator dtype preserved; old FP16 round-trip retained as zero-effect history",
       "deployment": "Qwen3.8 A3 TP2（蓝区A2仅验证）",
-      "evidence": "reference_adapter_a2_20261124.json#row32_conv3d_input_fp16：每rank applied/consumed/restored=6，changed=0、changed_elements=0；不额外加扰动",
+      "evidence": "reference_adapter_a2_20261124.json#row32_conv3d_input_e4m3",
       "progress_state": "REFERENCE_ADAPTER_PENDING",
-      "progress_note": "实现与A2两个owner执行恢复已完成；该组合changed=0，未复现数值精度损失，不计正式通过"
+      "progress_note": "E4M3: A2/0.26/CANN9.1/Qwen3.8 community W8A8/TP2 two owners reviewed, each rank 6 changed/consumed/restored calls; E5M2 still queued. A3 pending. No REGISTERED claim."
     },
     {
       "row": 33,
@@ -366,12 +366,12 @@
     {
       "row": 34,
       "category": "C",
-      "capability": "黄区float_matmul现象变体（独立登记）",
-      "boundary": "C类；eager无原图编译融合，比较MM与加法路径的数值现象，不用公共39mr结果替代黄区适配器验收",
+      "capability": "row34_projection_mantissa5 / row34_projection_mantissa3",
+      "boundary": "real BF16 down_proj output mantissa truncation before actual fused add_rms_norm_bias consumer; phenomenon proxy; old bias path retained",
       "deployment": "Qwen3.8 A3 TP2（蓝区A2仅验证）",
-      "evidence": "黄区float_matmul需适配；同一次测试仅在证据逐条支持时备注覆盖多行",
+      "evidence": "reference_adapter_a2_20261124.json#row34_projection_mantissa5",
       "progress_state": "REFERENCE_ADAPTER_PENDING",
-      "progress_note": "参考factory和CPU测试已写；A2社区权重两个rank无真实BF16带bias视觉候选（REFERENCE_NO_REAL_BF16_WEIGHT）。测试引擎退出，非安全拒绝，不算两个owner通过。当前部署不适用；不授予A3资格。"
+      "progress_note": "mantissa5: A2/0.26/CANN9.1/Qwen3.8 community W8A8/TP2 two owners reviewed, each rank1536 changed/consumed/restored calls; mantissa3 queued. A3 pending. No REGISTERED claim."
     },
     {
       "row": 35,
