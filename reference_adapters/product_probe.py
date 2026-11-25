@@ -6,9 +6,14 @@ from pathlib import Path
 from demoncat.runtime.vllm_ascend.controller import DemoncatWorkerExtension
 
 
-class AcceptanceExtension(DemoncatWorkerExtension):
+from reference_adapters.control_guard import ReferenceControlMixin
+
+class AcceptanceExtension(ReferenceControlMixin,DemoncatWorkerExtension):
     def demoncat_acceptance_bootstrap(self,action,options):
         from reference_adapters.bootstrap import trusted_bootstrap
+        if action.startswith('reference_'):
+            from reference_adapters.refusal_probe import control
+            return control(self,action,options)
         if action=='alias_diagnostics':
             from alias15_finiteness_probe import install
             return install(self)
@@ -41,7 +46,7 @@ class HTTPExecutor:
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--reference',required=True,nargs='+'); p.add_argument('--mechanism',nargs='+',choices=['15','18','39','22','28','17','batch','39mr','33','41','26fia','20'],required=True)
+    p=argparse.ArgumentParser();p.add_argument('--reference',required=True,nargs='+');p.add_argument('--refusal-only',action='store_true'); p.add_argument('--mechanism',nargs='+',choices=['15','18','39','22','28','17','batch','39mr','33','41','26fia','20'],required=True)
     p.add_argument('--negative-regression',action='store_true')
     p.add_argument('--batch-canary-negative',action='store_true')
     p.add_argument('--effect-probe',action='store_true')
@@ -147,6 +152,11 @@ def main():
         if a.external_example or a.external_sampling or a.external_vision or a.external_input:
             ex.collective_rpc('demoncat_acceptance_bootstrap',args=('external_configure',dict(canary_tokens=canary,variant=a.references)))
         else:ex.collective_rpc('demoncat_acceptance_bootstrap',args=('configure',dict(paths=list(paths.values()),canary_tokens={mechanisms[k]:canary for k in a.mechanism})))
+        if a.refusal_only:
+            from reference_adapters.refusal_probe import run
+            assert a.references==['row34_bf16_before_bias']
+            run(ex,lambda:inference(canary_text),root,a.reference)
+            return
         for key in a.mechanism:
             mechanism=mechanisms[key];target=root/('product_http_'+key+'.json')
             report=dict(status='STARTED',entry='VLLM_HTTP_API',host_per_request_hooks=False,mechanism=mechanism,scopes=[],source_manifest_sha256=source_sha)
