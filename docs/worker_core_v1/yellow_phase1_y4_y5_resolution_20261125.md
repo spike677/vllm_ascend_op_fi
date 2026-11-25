@@ -2,6 +2,8 @@
 
 来源：负责人2026-11-25本聊天纯文本回传，无新附件原件；不为聊天摘要编造运行回执SHA。目标组合为黄区A3/Qwen3.8/0.26/CANN9.1/TP2，具体身份仍以每次正式文本为准。本记录不修改冻结包、不新增适配器补充件、不授予A3资格。
 
+后到[控制证据更正](yellow_intake_20261125_control_evidence_correction.md)已明确：26fia没有补配置后的新失败，撤销“新产品缺陷”疑问；39op旧失败stdout未保存，改为黄区补归档后复测；Batch组内Barrier若位于run_canary则不符合串行B1契约，但exit5仍需内层错误。下方保留收到本轮摘要时的审查过程。
+
 ## 1. 阶段1状态：通过声明与缺陷定性分开
 
 - 新增18.variance_under4：回传644、changed644、failed0、两个owner。新增15.alias_detach：回传64、changed26/64与64/64、failed0、两个owner。记为黄区声明通过、待正式效果/身份页；15的changed小于applied符合计数语义，不是失败。八项计数仍需逐owner/rank对应，不能从摘要推填。
