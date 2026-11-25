@@ -1,0 +1,369 @@
+{
+  "scope": "Only containers exclusively mapped to physical cards 2/5; project containers protected; no other device or data changes",
+  "restore": "stop and join bounded monitor; dispatcher configuration unchanged",
+  "windows": [
+    {
+      "window": "r8full1125b1",
+      "start_utc": "2026-11-25T14:35:57.551994+00:00",
+      "ended_utc": "2026-11-25T15:14:10.995517+00:00",
+      "status": "FINISHED",
+      "cards": [
+        2,
+        5
+      ],
+      "isolation_removed": true,
+      "automatic_end_utc": "2026-11-26T01:00:00+00:00",
+      "method": "R8_REGRESSION_ONLY_CARD2_5_STOP_MONITOR",
+      "controller_sha256": "b4581abb144469396a3273b007ec79df191b455075079ccdd5d1c0fd92a51f82",
+      "events_sha256": "eb113f29513eae79483fb15cf492888883734f7b25b34d3188ca6ce0a34dc699",
+      "events": [
+        {
+          "time": "2026-11-25T14:35:57.552080+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "R8_REGRESSION_ONLY_CARD2_5_STOP_MONITOR",
+          "automatic_end_utc": "2026-11-26T01:00:00+00:00",
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-25T14:35:57.668621+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unpermute-v2_dev5_slot0_5927050f",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T14:35:58.468297+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unpermute-v2_dev5_slot0_5927050f",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T14:37:04.942560+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unpermute-v2_dev2_slot0_1b828180",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T14:37:05.606444+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unpermute-v2_dev2_slot0_1b828180",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T14:38:01.846017+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unpermute-v2_dev5_slot0_72223d5e",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T14:38:02.529856+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unpermute-v2_dev5_slot0_72223d5e",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T14:40:49.744115+00:00",
+          "event": "REGRESSION_CASE_END",
+          "case": "r8full1125a1-18api",
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "time": "2026-11-25T14:41:02.295147+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unpermute-v2_dev2_slot0_e0b01ef2",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T14:41:02.921856+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unpermute-v2_dev2_slot0_e0b01ef2",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T14:41:13.150046+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unpermute-v3_dev5_slot0_a9004453",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T14:41:13.946009+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unpermute-v3_dev5_slot0_a9004453",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T14:42:15.289047+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unpermute-v3_dev2_slot0_3d102044",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T14:42:15.992476+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unpermute-v3_dev2_slot0_3d102044",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T14:45:34.850976+00:00",
+          "event": "REGRESSION_CASE_END",
+          "case": "r8full1125a1-18over",
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "time": "2026-11-25T14:45:45.602600+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unpermute-v3_dev5_slot0_f0805280",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T14:45:46.207454+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unpermute-v3_dev5_slot0_f0805280",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T14:46:42.429715+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unpermute-v3_dev2_slot0_6b1bebba",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T14:46:43.059963+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unpermute-v3_dev2_slot0_6b1bebba",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T14:50:17.671903+00:00",
+          "event": "REGRESSION_CASE_END",
+          "case": "r8full1125a1-18under",
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "time": "2026-11-25T14:54:41.167767+00:00",
+          "event": "REGRESSION_CASE_END",
+          "case": "r8full1125a1-22",
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "time": "2026-11-25T14:54:54.809355+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unperm-nonzero_dev5_slot0_50b4cbf4",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T14:54:55.484340+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unperm-nonzero_dev5_slot0_50b4cbf4",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T14:55:56.818552+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unperm-nonzero_dev2_slot0_69948b55",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T14:55:57.657959+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unperm-nonzero_dev2_slot0_69948b55",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T14:59:30.675366+00:00",
+          "event": "REGRESSION_CASE_END",
+          "case": "r8full1125a1-39op",
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "time": "2026-11-25T14:59:47.801816+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unperm-nonzero_dev5_slot0_9e14a27e",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T14:59:48.418718+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unperm-nonzero_dev5_slot0_9e14a27e",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T15:00:49.785784+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unperm-nonzero_dev2_slot0_3fdaa836",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T15:00:50.467803+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unperm-nonzero_dev2_slot0_3fdaa836",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T15:04:20.092546+00:00",
+          "event": "REGRESSION_CASE_END",
+          "case": "r8full1125a1-39mr",
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "time": "2026-11-25T15:04:35.389715+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unperm-nonzero2_dev2_slot0_7903ce65",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T15:04:36.042573+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unperm-nonzero2_dev2_slot0_7903ce65",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T15:05:37.365557+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unperm-nonzero2_dev5_slot0_7a5f42c2",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T15:05:38.074113+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unperm-nonzero2_dev5_slot0_7a5f42c2",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T15:08:43.049718+00:00",
+          "event": "REGRESSION_CASE_END",
+          "case": "r8full1125a1-28",
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "time": "2026-11-25T15:08:57.479488+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unperm-nonzero2_dev2_slot0_2a79237c",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T15:08:58.163561+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unperm-nonzero2_dev2_slot0_2a79237c",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T15:09:59.533525+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/ttk_q_unperm-nonzero2_dev5_slot0_941a7c83",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 user authorized continuous preemption during r8 regression including renamed tasks; only containers exclusively mapping cards2/5"
+        },
+        {
+          "time": "2026-11-25T15:10:00.212774+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/ttk_q_unperm-nonzero2_dev5_slot0_941a7c83",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T15:14:09.966248+00:00",
+          "event": "REGRESSION_CASE_END",
+          "case": "r8full1125a1-17",
+          "exit_code": 0,
+          "error": null
+        },
+        {
+          "time": "2026-11-25T15:14:10.995613+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ]
+    }
+  ]
+}

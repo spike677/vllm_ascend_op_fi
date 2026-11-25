@@ -1,0 +1,523 @@
+{
+  "case": "r8full1125a1-39mr",
+  "window": "r8full1125b1",
+  "source_commit": "3d4c9e396e2c826839b3ce739734af02713f64ab",
+  "source_manifest_sha256": "b87aced01c6bc4ad438f03118cb933e18d5ae0b02ab39962cdc5726318079c0e",
+  "started_utc": "2026-11-25T14:59:32.065410+00:00",
+  "ended_utc": "2026-11-25T15:04:20.089786+00:00",
+  "exit_code": 0,
+  "passed": true,
+  "records": [
+    {
+      "file": "product_http_39mr.json",
+      "bytes": 26341670,
+      "sha256": "0b3fa0ada17a562d1100dbf3610c8aaf7c1f3723e98096d88c9bf56d361308f0",
+      "mechanism": "39.matmul_range",
+      "passed": true,
+      "review": {
+        "status": "PRODUCT_BLUE_REVIEW_PASSED",
+        "mechanism": "39.matmul_range",
+        "source_manifest_sha256": "b87aced01c6bc4ad438f03118cb933e18d5ae0b02ab39962cdc5726318079c0e",
+        "scopes": [
+          {
+            "scope": 0,
+            "effects": [
+              {
+                "rank": 0,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 704,
+                  "attempted": 704,
+                  "applied": 704,
+                  "changed": 702,
+                  "consumed": 704,
+                  "restored": 704,
+                  "failed": 0
+                },
+                "changed_elements": 702,
+                "reasons": [],
+                "consumers": [
+                  "aten::contiguous",
+                  "npu::npu_swiglu",
+                  "vllm::qwen_gdn_attention_core",
+                  "vllm::triton_split_qkv_rmsnorm_mrope"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 704,
+                  "attempted": 704,
+                  "applied": 704,
+                  "changed": 703,
+                  "consumed": 704,
+                  "restored": 704,
+                  "failed": 0
+                },
+                "changed_elements": 703,
+                "reasons": [],
+                "consumers": [
+                  "aten::contiguous",
+                  "npu::npu_swiglu",
+                  "vllm::qwen_gdn_attention_core",
+                  "vllm::triton_split_qkv_rmsnorm_mrope"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 704,
+                  "attempted": 704,
+                  "applied": 704,
+                  "changed": 702,
+                  "consumed": 704,
+                  "restored": 704,
+                  "failed": 0
+                },
+                "changed_elements": 702,
+                "reasons": [],
+                "consumers": [
+                  "aten::contiguous",
+                  "npu::npu_swiglu",
+                  "vllm::qwen_gdn_attention_core",
+                  "vllm::triton_split_qkv_rmsnorm_mrope"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 704,
+                  "attempted": 704,
+                  "applied": 704,
+                  "changed": 703,
+                  "consumed": 704,
+                  "restored": 704,
+                  "failed": 0
+                },
+                "changed_elements": 703,
+                "reasons": [],
+                "consumers": [
+                  "aten::contiguous",
+                  "npu::npu_swiglu",
+                  "vllm::qwen_gdn_attention_core",
+                  "vllm::triton_split_qkv_rmsnorm_mrope"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 704,
+                  "attempted": 704,
+                  "applied": 704,
+                  "changed": 703,
+                  "consumed": 704,
+                  "restored": 704,
+                  "failed": 0
+                },
+                "changed_elements": 703,
+                "reasons": [],
+                "consumers": [
+                  "aten::contiguous",
+                  "npu::npu_swiglu",
+                  "vllm::qwen_gdn_attention_core",
+                  "vllm::triton_split_qkv_rmsnorm_mrope"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 704,
+                  "attempted": 704,
+                  "applied": 704,
+                  "changed": 701,
+                  "consumed": 704,
+                  "restored": 704,
+                  "failed": 0
+                },
+                "changed_elements": 701,
+                "reasons": [],
+                "consumers": [
+                  "aten::contiguous",
+                  "npu::npu_swiglu",
+                  "vllm::qwen_gdn_attention_core",
+                  "vllm::triton_split_qkv_rmsnorm_mrope"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              }
+            ],
+            "batch": null,
+            "canary_exact": true,
+            "all_resources_zero": true
+          },
+          {
+            "scope": 1,
+            "effects": [
+              {
+                "rank": 0,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 704,
+                  "attempted": 704,
+                  "applied": 704,
+                  "changed": 702,
+                  "consumed": 704,
+                  "restored": 704,
+                  "failed": 0
+                },
+                "changed_elements": 702,
+                "reasons": [],
+                "consumers": [
+                  "aten::contiguous",
+                  "npu::npu_swiglu",
+                  "vllm::qwen_gdn_attention_core",
+                  "vllm::triton_split_qkv_rmsnorm_mrope"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 0,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 704,
+                  "attempted": 704,
+                  "applied": 704,
+                  "changed": 703,
+                  "consumed": 704,
+                  "restored": 704,
+                  "failed": 0
+                },
+                "changed_elements": 703,
+                "reasons": [],
+                "consumers": [
+                  "aten::contiguous",
+                  "npu::npu_swiglu",
+                  "vllm::qwen_gdn_attention_core",
+                  "vllm::triton_split_qkv_rmsnorm_mrope"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 704,
+                  "attempted": 704,
+                  "applied": 704,
+                  "changed": 702,
+                  "consumed": 704,
+                  "restored": 704,
+                  "failed": 0
+                },
+                "changed_elements": 702,
+                "reasons": [],
+                "consumers": [
+                  "aten::contiguous",
+                  "npu::npu_swiglu",
+                  "vllm::qwen_gdn_attention_core",
+                  "vllm::triton_split_qkv_rmsnorm_mrope"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 1,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 704,
+                  "attempted": 704,
+                  "applied": 704,
+                  "changed": 703,
+                  "consumed": 704,
+                  "restored": 704,
+                  "failed": 0
+                },
+                "changed_elements": 703,
+                "reasons": [],
+                "consumers": [
+                  "aten::contiguous",
+                  "npu::npu_swiglu",
+                  "vllm::qwen_gdn_attention_core",
+                  "vllm::triton_split_qkv_rmsnorm_mrope"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 704,
+                  "attempted": 704,
+                  "applied": 704,
+                  "changed": 703,
+                  "consumed": 704,
+                  "restored": 704,
+                  "failed": 0
+                },
+                "changed_elements": 703,
+                "reasons": [],
+                "consumers": [
+                  "aten::contiguous",
+                  "npu::npu_swiglu",
+                  "vllm::qwen_gdn_attention_core",
+                  "vllm::triton_split_qkv_rmsnorm_mrope"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 2,
+                "coverage": {
+                  "observed": 1216,
+                  "eligible": 704,
+                  "attempted": 704,
+                  "applied": 704,
+                  "changed": 701,
+                  "consumed": 704,
+                  "restored": 704,
+                  "failed": 0
+                },
+                "changed_elements": 701,
+                "reasons": [],
+                "consumers": [
+                  "aten::contiguous",
+                  "npu::npu_swiglu",
+                  "vllm::qwen_gdn_attention_core",
+                  "vllm::triton_split_qkv_rmsnorm_mrope"
+                ],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 0,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              },
+              {
+                "rank": 1,
+                "request_index": 3,
+                "coverage": {
+                  "observed": 0,
+                  "eligible": 0,
+                  "attempted": 0,
+                  "applied": 0,
+                  "changed": 0,
+                  "consumed": 0,
+                  "restored": 0,
+                  "failed": 0
+                },
+                "changed_elements": 0,
+                "reasons": [
+                  "GENERATION_OUTSIDE_VALIDATED_1_TO_4"
+                ],
+                "consumers": [],
+                "native_runtime": null,
+                "native_library_sha256": null,
+                "nonfinite_before": null,
+                "nonfinite_after": null
+              }
+            ],
+            "batch": null,
+            "canary_exact": true,
+            "all_resources_zero": true
+          }
+        ],
+        "product_entry": "ProductClient direct constructor",
+        "between_request_cache_reset": null,
+        "deployment_config_sha256": null,
+        "hardware_scope": "A2/0.26/Qwen3.8-community-W8A8/TP2",
+        "yellow_main_project_integration_verified": false,
+        "product_closed": false,
+        "qualification_granted": false
+      },
+      "owners": [
+        "worker-group-10ab516d23a24bde8798a50d4ccbdf82",
+        "worker-group-ed3a1c7e8c824283853c105ac32fb7ab"
+      ],
+      "coverage": [
+        {
+          "scope": 0,
+          "owner": "worker-group-10ab516d23a24bde8798a50d4ccbdf82",
+          "rank": 0,
+          "counts": {
+            "observed": 3648,
+            "eligible": 2112,
+            "attempted": 2112,
+            "applied": 2112,
+            "changed": 2107,
+            "consumed": 2112,
+            "restored": 2112,
+            "failed": 0
+          }
+        },
+        {
+          "scope": 0,
+          "owner": "worker-group-10ab516d23a24bde8798a50d4ccbdf82",
+          "rank": 1,
+          "counts": {
+            "observed": 3648,
+            "eligible": 2112,
+            "attempted": 2112,
+            "applied": 2112,
+            "changed": 2107,
+            "consumed": 2112,
+            "restored": 2112,
+            "failed": 0
+          }
+        },
+        {
+          "scope": 1,
+          "owner": "worker-group-ed3a1c7e8c824283853c105ac32fb7ab",
+          "rank": 0,
+          "counts": {
+            "observed": 3648,
+            "eligible": 2112,
+            "attempted": 2112,
+            "applied": 2112,
+            "changed": 2107,
+            "consumed": 2112,
+            "restored": 2112,
+            "failed": 0
+          }
+        },
+        {
+          "scope": 1,
+          "owner": "worker-group-ed3a1c7e8c824283853c105ac32fb7ab",
+          "rank": 1,
+          "counts": {
+            "observed": 3648,
+            "eligible": 2112,
+            "attempted": 2112,
+            "applied": 2112,
+            "changed": 2107,
+            "consumed": 2112,
+            "restored": 2112,
+            "failed": 0
+          }
+        }
+      ],
+      "same_workers_two_owners": true,
+      "negative_controls": {}
+    }
+  ],
+  "hardware_scope": "A2/Ascend910B4/0.26/CANN9.1/community-Qwen3.8-W8A8/TP2",
+  "qualification_granted": false
+}
