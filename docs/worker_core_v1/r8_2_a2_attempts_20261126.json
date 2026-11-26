@@ -1,0 +1,186 @@
+{
+  "schema": "dcat.r82.a2.attempts.v1",
+  "scope": "A2 / 0.26 / CANN9.1 / Qwen3.8 W8A8 / TP2",
+  "cards": [
+    2,
+    5
+  ],
+  "under4_root_cause": "NOT_YET_OBSERVED",
+  "batch_real_retry_verified": false,
+  "windows": [
+    {
+      "window": "r82effects1126a1",
+      "start": "2026-11-26T08:12:43.168995+00:00",
+      "end": "2026-11-26T08:17:11.874479+00:00",
+      "elapsed_seconds": 268.70552430301905,
+      "isolation_removed": true,
+      "controller_original_sha256": "e5c725e92558dd848a16fd433e532356a9281f495492dee4180c3c2806cf3095",
+      "isolation_original_sha256": "b71e4eea6f340c8d57230687c62eda49effd92b3fe64a9230cd2bd13b60604a1",
+      "stopped": [
+        {
+          "time": "2026-11-26T08:12:44.405397+00:00",
+          "container": "/ttk_q_gating-topk-full_dev5_slot0_e3980fe8",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-26T08:13:20.940276+00:00",
+          "container": "/ttk_q_ttk930-fix-mhcpost_dev2_slot0_c673501b",
+          "image": "sha256:1dc9491f615c3b3c79f3cd14a366c2a48fbc72cca55b0b10ad5c0ef28cca72f7",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-26T08:13:57.561713+00:00",
+          "container": "/ttk_q_gating-topk-full_dev2_slot0_94d35fc7",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-26T08:14:18.710704+00:00",
+          "container": "/ttk_q_ttk930-fix-mhcpost_dev2_slot0_a7de39ac",
+          "image": "sha256:1dc9491f615c3b3c79f3cd14a366c2a48fbc72cca55b0b10ad5c0ef28cca72f7",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-26T08:14:55.485688+00:00",
+          "container": "/ttk_q_gating-topk-full_dev5_slot0_29e2f227",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-26T08:17:09.197178+00:00",
+          "container": "/atk_q_expm1-1126-smoke_dev2_slot0_df41ce24",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "exit_code": 0
+        }
+      ],
+      "cases": [
+        {
+          "id": "r82effects1126a1-under4",
+          "exit_code": null,
+          "source_commit": "b050f7105ca0cd8dc6fe4d16ab67241ad643b07e",
+          "source_manifest_sha256": "f78eb86aa3071ba718cdcf5feadb8dd2fcdb621d2a9a90cf119e4780f7fd99df",
+          "state": null,
+          "cleanup_state": {
+            "Status": "running",
+            "Running": true,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 33707,
+            "ExitCode": 0,
+            "Error": "",
+            "StartedAt": "2026-11-26T08:12:47.59800568Z",
+            "FinishedAt": "0001-01-01T00:00:00Z"
+          },
+          "same_process_recovery_proven": false
+        }
+      ],
+      "verdict": "INVALIDATED_OBSERVER_BOUNDARY_REVISED"
+    },
+    {
+      "window": "r82effects1126a2",
+      "start": "2026-11-26T08:17:48.287287+00:00",
+      "end": "2026-11-26T08:30:22.724750+00:00",
+      "elapsed_seconds": 754.4375064158812,
+      "isolation_removed": true,
+      "controller_original_sha256": "4b2c468b70045172ed0741c6ad9a2bc3be9e741190ced52554fd3194194845b5",
+      "isolation_original_sha256": "17b2a735410e86cfff33b4135c729b77ba72bfef92a8fdf576d42a10635f7ac0",
+      "stopped": [
+        {
+          "time": "2026-11-26T08:17:49.303389+00:00",
+          "container": "/ttk_q_gating-topk-full_dev2_slot0_09cd16e3",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-26T08:18:20.599401+00:00",
+          "container": "/ttk_q_ttk930-fix-moetokenpermute_dev2_slot0_6cfd02b5",
+          "image": "sha256:1dc9491f615c3b3c79f3cd14a366c2a48fbc72cca55b0b10ad5c0ef28cca72f7",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-26T08:19:22.634716+00:00",
+          "container": "/ttk_q_ttk930-fix-moetokenpermute_dev2_slot0_b68256fe",
+          "image": "sha256:1dc9491f615c3b3c79f3cd14a366c2a48fbc72cca55b0b10ad5c0ef28cca72f7",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-26T08:23:03.133384+00:00",
+          "container": "/ttk_q_ttk930-fix-mhcpost_dev2_slot0_7b642d4c",
+          "image": "sha256:1dc9491f615c3b3c79f3cd14a366c2a48fbc72cca55b0b10ad5c0ef28cca72f7",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-26T08:30:22.724434+00:00",
+          "container": "/ttk_q_gating-topk-retry_dev5_slot0_3d865729",
+          "image": "cann:9.3.0-910b-ttk",
+          "exit_code": 0
+        }
+      ],
+      "cases": [
+        {
+          "id": "r82effects1126a2-under4",
+          "exit_code": 137,
+          "source_commit": "d18cfe44e94796db3085a538e8864aa1e8f2e70d",
+          "source_manifest_sha256": "0908512940e5bd7231c8c77dd1eab83b974e5045d22b3ab7a845534abc255295",
+          "state": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 137,
+            "Error": "",
+            "StartedAt": "2026-11-26T08:17:52.911576758Z",
+            "FinishedAt": "2026-11-26T08:22:37.533262708Z"
+          },
+          "cleanup_state": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 137,
+            "Error": "",
+            "StartedAt": "2026-11-26T08:17:52.911576758Z",
+            "FinishedAt": "2026-11-26T08:22:37.533262708Z"
+          },
+          "same_process_recovery_proven": false
+        },
+        {
+          "id": "r82effects1126a2-batch",
+          "exit_code": null,
+          "source_commit": "d18cfe44e94796db3085a538e8864aa1e8f2e70d",
+          "source_manifest_sha256": "0908512940e5bd7231c8c77dd1eab83b974e5045d22b3ab7a845534abc255295",
+          "state": null,
+          "cleanup_state": {
+            "Status": "exited",
+            "Running": false,
+            "Paused": false,
+            "Restarting": false,
+            "OOMKilled": false,
+            "Dead": false,
+            "Pid": 0,
+            "ExitCode": 137,
+            "Error": "",
+            "StartedAt": "2026-11-26T08:22:40.673911952Z",
+            "FinishedAt": "2026-11-26T08:23:49.459113505Z"
+          },
+          "same_process_recovery_proven": false
+        }
+      ],
+      "verdict": "INTERRUPTED_NO_ACCEPTANCE_RESULT"
+    }
+  ],
+  "notes": [
+    "Controller RUNNING in original is a stale interrupted state; end and isolation_removed are recorded by finally.",
+    "Second window controller was observed in process state T; actor unknown. Docker SIGKILL on under4; Batch exited137, OOMKilled=false.",
+    "No NPU success inferred from CPU tests, historical results, container cleanup or incomplete receipts."
+  ]
+}
