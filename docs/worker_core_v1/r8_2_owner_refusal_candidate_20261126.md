@@ -1,4 +1,6 @@
-# 第二owner拒绝放大：r8.2最小候选，待黄区同次证据定稿
+# 第二owner拒绝放大：r8.2最小候选
+
+> 11-26晚更新：冻结r8的准确ALREADY_INSTALLED→OWNER_MISMATCH→exit5路径已在A2 TP2复现；候选用同探针返回exit4，未向竞争owner发binding rollback，原owner不变并正常恢复。详见 `r8_owner_rollback_a2_20261126.md`。C1“missing_permit回滚成功但binding残留”在冻结r8两次独立实例均未复现，黄区仍缺带owner的审计和中间RPC，不能把本C2修复当成C1根因修复。以下保留CPU候选形成时的证据与实现边界。
 
 分支 `codex/rc3-r8-2-owner-refusal-20261126`，从已交付工具提交fad902e3开出。**仅候选，不冻结、不打新标签、不交付新wheel、不要求黄区替换运行时。** r8.1继续以e38c4113为登记基线；已交付Native/N2工具包原样保留。
 

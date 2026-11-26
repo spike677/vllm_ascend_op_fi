@@ -1,0 +1,209 @@
+{
+  "schema": "dcat.owner.rollback.a2.review.v1",
+  "attempt": "r8owner1126a1",
+  "qualification_granted": false,
+  "combination": {
+    "hardware": "Ascend910B4/A2",
+    "stack": "vLLM0.26.0/vllm-ascend0.26.0rc1/CANN9.1.0",
+    "model": "Qwen3.8-27B-W8A8 community",
+    "tp": 2,
+    "physical_cards": [
+      2,
+      5
+    ]
+  },
+  "runtime_commit": "e38c4113b421ac979699071a60e80d3babd05e07",
+  "diagnostic_overlay": {
+    "path": "experiments/worker_core_v11_20261118/owner_rollback_reproduction.py",
+    "commit": "f7c025b83af1e2237ab672538c61ecea6cfac88a",
+    "sha256": "da8c5c605bfd1263c5939c28805c8c5b47819f0fd4d832e8a98c4521b536e973"
+  },
+  "source_manifest_sha256": "af1de12c9125ed3cf6033d6917a2563f802fd929bbe4a042acea3d9e08440362",
+  "source": {
+    "product_host": {
+      "path": "/source/src/demoncat/runtime/vllm_ascend/worker_extension/product_host.py",
+      "sha256": "eed69a5853386405fb84f966271f01c3baf89893b03b9a6c9ed90b007fd23a9a"
+    },
+    "product_binding": {
+      "path": "/source/src/demoncat/runtime/vllm_ascend/worker_extension/product_binding.py",
+      "sha256": "6680e2cee9ac32786349516494236833d3edee83bd83713f27e7ca54e9477a12"
+    },
+    "continuous_binding": {
+      "path": "/source/src/demoncat/runtime/vllm_ascend/worker_extension/continuous_binding.py",
+      "sha256": "672d8b46ab322e58dca3602f55e3123c9b06140da451a37a4e9757b8ec673d89"
+    }
+  },
+  "c1": {
+    "result": "NOT_REPRODUCED",
+    "registered22_exit": 4,
+    "missing_permit_exit": 4,
+    "missing_owner": "worker-group-db9c76b455bc4b709e6529469aa727bb",
+    "positive_owner": "worker-group-14f4da1720da4c4cbfba14cf6c69f9c3",
+    "immediate_audit_zero": true,
+    "post_cleanup_audit_zero": true,
+    "positive_exit": 0,
+    "positive_coverage": [
+      {
+        "rank": 0,
+        "coverage": {
+          "observed": 644,
+          "eligible": 644,
+          "attempted": 644,
+          "applied": 644,
+          "changed": 644,
+          "consumed": 644,
+          "restored": 644,
+          "failed": 0
+        },
+        "bytes_restored": true,
+        "completed": true
+      },
+      {
+        "rank": 1,
+        "coverage": {
+          "observed": 644,
+          "eligible": 644,
+          "attempted": 644,
+          "applied": 644,
+          "changed": 644,
+          "consumed": 644,
+          "restored": 644,
+          "failed": 0
+        },
+        "bytes_restored": true,
+        "completed": true
+      }
+    ],
+    "positive_recovery": {
+      "bytes_restored": true,
+      "resources_zero": true,
+      "canary_exact": true,
+      "restored": true
+    }
+  },
+  "c2": {
+    "exact_already_installed_path": false,
+    "attach_refusal_codes": [
+      "V026_UNREVIEWED_ACTUAL_FUNCTION:/source/src/demoncat/runtime/vllm_ascend/worker_extension/product_observer.py",
+      "V026_UNREVIEWED_ACTUAL_FUNCTION:/source/src/demoncat/runtime/vllm_ascend/worker_extension/product_observer.py"
+    ],
+    "challenger_owner": "worker-group-e67d5e46fb354581bd984a76b61930e3",
+    "exit_code": 5,
+    "original_owner_unchanged": true,
+    "challenger_rollback_rpcs": 2,
+    "challenger_recovery": null
+  },
+  "c3": {
+    "wrong_sha": "PRODUCT_NATIVE_REVIEWED_LIBRARY_REQUIRED",
+    "missing_path": "PRODUCT_NATIVE_LIBRARY_HASH_MISMATCH",
+    "both_ranks_exit4": true,
+    "library_unmapped_before_after": true,
+    "scope": "Shared trusted-config validation after norm control; not A3 fresh-instance qualification"
+  },
+  "final_resources_zero": true,
+  "healthy_inference": true,
+  "rpc_count": 79,
+  "window": {
+    "start": "2026-11-26T13:57:43.119987+00:00",
+    "end": "2026-11-26T14:02:20.524728+00:00",
+    "seconds": 277.4047612750437,
+    "isolation_removed": true,
+    "stops": [
+      {
+        "time": "2026-11-26T13:57:43.231658+00:00",
+        "event": "AUTHORIZED_STOP_BEGIN",
+        "container": "/atk_q_abs-b65021e2-full_dev2_slot0_b6d68e14",
+        "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+        "cards": [
+          2
+        ],
+        "authorization": "2026-11-26 user confirmed negotiated takeover after ten-minute idle wait; only containers exclusively mapping cards2/5 during this bounded validation window"
+      },
+      {
+        "time": "2026-11-26T13:57:44.114023+00:00",
+        "event": "AUTHORIZED_STOP_END",
+        "container": "/atk_q_abs-b65021e2-full_dev2_slot0_b6d68e14",
+        "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+        "exit_code": 0
+      },
+      {
+        "time": "2026-11-26T13:58:35.212362+00:00",
+        "event": "AUTHORIZED_STOP_BEGIN",
+        "container": "/atk_q_abs-b65021e2-full_dev5_slot0_b9cd80ac",
+        "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+        "cards": [
+          5
+        ],
+        "authorization": "2026-11-26 user confirmed negotiated takeover after ten-minute idle wait; only containers exclusively mapping cards2/5 during this bounded validation window"
+      },
+      {
+        "time": "2026-11-26T13:58:35.804305+00:00",
+        "event": "AUTHORIZED_STOP_END",
+        "container": "/atk_q_abs-b65021e2-full_dev5_slot0_b9cd80ac",
+        "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+        "exit_code": 0
+      },
+      {
+        "time": "2026-11-26T13:59:22.207477+00:00",
+        "event": "AUTHORIZED_STOP_BEGIN",
+        "container": "/atk_q_abs-b65021e2-full_dev2_slot0_0518a516",
+        "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+        "cards": [
+          2
+        ],
+        "authorization": "2026-11-26 user confirmed negotiated takeover after ten-minute idle wait; only containers exclusively mapping cards2/5 during this bounded validation window"
+      },
+      {
+        "time": "2026-11-26T13:59:22.784024+00:00",
+        "event": "AUTHORIZED_STOP_END",
+        "container": "/atk_q_abs-b65021e2-full_dev2_slot0_0518a516",
+        "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+        "exit_code": 0
+      },
+      {
+        "time": "2026-11-26T14:00:13.909888+00:00",
+        "event": "AUTHORIZED_STOP_BEGIN",
+        "container": "/atk_q_abs-b65021e2-full_dev5_slot0_9f26a719",
+        "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+        "cards": [
+          5
+        ],
+        "authorization": "2026-11-26 user confirmed negotiated takeover after ten-minute idle wait; only containers exclusively mapping cards2/5 during this bounded validation window"
+      },
+      {
+        "time": "2026-11-26T14:00:14.580799+00:00",
+        "event": "AUTHORIZED_STOP_END",
+        "container": "/atk_q_abs-b65021e2-full_dev5_slot0_9f26a719",
+        "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+        "exit_code": 0
+      }
+    ]
+  },
+  "originals": [
+    {
+      "path": "owner-reproduction.json",
+      "bytes": 4488807,
+      "sha256": "ceb815589181c7cd13a42518f9a741263b3174e11f7d5fa02362bd34bfcc61f2"
+    },
+    {
+      "path": "rpc-trace.json",
+      "bytes": 5472819,
+      "sha256": "937957515caa7789c20f59ee74d53d3cfefa57a5d1a71ed91c8d4915f7f81c3c"
+    },
+    {
+      "path": "controller.json",
+      "bytes": 63720,
+      "sha256": "06fd16bc3805d30bded1586c2fffe96d0a687e54f56c61bde1b4aa52849e0e07"
+    },
+    {
+      "path": "isolation.jsonl",
+      "bytes": 3040,
+      "sha256": "2583d80cceee8a7cb02a6e1e5bfb89cc4ea25489944ab3f008fced386cd8cfc5"
+    },
+    {
+      "path": "originals-manifest.json",
+      "bytes": 1862,
+      "sha256": "340e2f66d635c72d565571f77e406d462a69893b623efbbdba2906d4e683afb7"
+    }
+  ]
+}

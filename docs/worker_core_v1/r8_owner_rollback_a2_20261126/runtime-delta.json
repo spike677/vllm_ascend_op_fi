@@ -1,0 +1,13 @@
+{
+  "schema": "dcat.runtime.delta.v1",
+  "baseline": "e38c4113b421ac979699071a60e80d3babd05e07",
+  "candidate": "2191a50393c63a8b796c5f2161d7c0b7d3fad6fb",
+  "paths_compared": 428,
+  "fault_injection_files": 258,
+  "fault_injection_byte_identical": true,
+  "changed": [
+    "src/demoncat/runtime/vllm_ascend/worker_extension/product_host.py"
+  ],
+  "host_sha256": "d1d062b5171eeb65ca5f1552458ec92f08c2195bf27e3ea5605688d9d0a184ed",
+  "impact": "All ProductClient mechanisms share this host control path; only complete pre-install ALREADY_INSTALLED refusals change; no inference mechanism or Worker rollback modification"
+}

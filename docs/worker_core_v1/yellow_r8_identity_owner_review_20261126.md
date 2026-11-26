@@ -1,6 +1,6 @@
 # 11月26日追加审查：身份、负例和第二owner
 
-> 后续新实例证据更新：初始全rank审计零，残留发生在当前missing_permit期间，不再沿用旧实例残留来源推断。新owner拒绝被放大成exit5已由CPU独立复现并准备r8.2候选；同次实机owner/generation/RPC序号及missing_permit实际路径仍待补。最新结论见 `r8_2_owner_refusal_candidate_20261126.md`、`yellow_three_slot_review_20261126.md`。不修改已交付工具包中的历史文档副本。
+> 11-26晚最新审查：黄区补出了missing_permit回滚逐rank成功、结束审计全零，而后续新owner又见已有binding。现在不能把“残留发生在missing_permit期间”或“current_binding返回None”写成已证实根因；带owner的审计和中间RPC仍缺。冻结r8在A2按18验收+22免许可拒绝的同实例顺序复现，结果见 `r8_owner_rollback_a2_20261126.md`。C2拒绝放大与C1残留来源分别处理；不修改冻结包，不由蓝区结果代替A3负例登记。
 
 依据：`yellow-r8-negative-review-correction-e2931928/r8负例清理问题与15_22结论更正_原文.txt`，12871字节，SHA `a77349c88ac3137144eb6556f485f18d714a7e91989626689ae0a91c5b455929`；rank0沿用已存档 `yellow-r8-review-progress-b4133357` 文本。组合仅 A3 Ascend910_9382 / Qwen3.8 W8A8 / 0.26 / CANN9.1.0 / TP2。
 

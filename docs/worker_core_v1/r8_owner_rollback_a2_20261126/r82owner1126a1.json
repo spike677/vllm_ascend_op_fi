@@ -1,0 +1,147 @@
+{
+  "schema": "dcat.owner.rollback.a2.review.v1",
+  "attempt": "r82owner1126a1",
+  "qualification_granted": false,
+  "combination": {
+    "hardware": "Ascend910B4/A2",
+    "stack": "vLLM0.26.0/vllm-ascend0.26.0rc1/CANN9.1.0",
+    "model": "Qwen3.8-27B-W8A8 community",
+    "tp": 2,
+    "physical_cards": [
+      2,
+      5
+    ]
+  },
+  "runtime_commit": "2191a50393c63a8b796c5f2161d7c0b7d3fad6fb",
+  "diagnostic_overlay": {
+    "path": "experiments/worker_core_v11_20261118/owner_rollback_reproduction.py",
+    "commit": "2191a50393c63a8b796c5f2161d7c0b7d3fad6fb",
+    "sha256": "7100aaefb281455ada827bc417a6c3c860d9a461ea199ad1af1b765a1dff96a6"
+  },
+  "source_manifest_sha256": "340830ab834b1c8fc22ca223785dab85560d3c4a5eeb5e4d1c79f83412e88d31",
+  "source": {
+    "product_host": {
+      "path": "/source/src/demoncat/runtime/vllm_ascend/worker_extension/product_host.py",
+      "sha256": "d1d062b5171eeb65ca5f1552458ec92f08c2195bf27e3ea5605688d9d0a184ed"
+    },
+    "product_binding": {
+      "path": "/source/src/demoncat/runtime/vllm_ascend/worker_extension/product_binding.py",
+      "sha256": "6680e2cee9ac32786349516494236833d3edee83bd83713f27e7ca54e9477a12"
+    },
+    "continuous_binding": {
+      "path": "/source/src/demoncat/runtime/vllm_ascend/worker_extension/continuous_binding.py",
+      "sha256": "672d8b46ab322e58dca3602f55e3123c9b06140da451a37a4e9757b8ec673d89"
+    }
+  },
+  "c1": {
+    "result": "NOT_REPRODUCED",
+    "registered22_exit": 4,
+    "missing_permit_exit": 4,
+    "missing_owner": "worker-group-2d6d8669d2f04fbfad7881838941b483",
+    "positive_owner": "worker-group-6dcb0d54953548e1b983b47676e3a2b3",
+    "immediate_audit_zero": true,
+    "post_cleanup_audit_zero": true,
+    "positive_exit": 0,
+    "positive_coverage": [
+      {
+        "rank": 0,
+        "coverage": {
+          "observed": 644,
+          "eligible": 644,
+          "attempted": 644,
+          "applied": 644,
+          "changed": 644,
+          "consumed": 644,
+          "restored": 644,
+          "failed": 0
+        },
+        "bytes_restored": true,
+        "completed": true
+      },
+      {
+        "rank": 1,
+        "coverage": {
+          "observed": 644,
+          "eligible": 644,
+          "attempted": 644,
+          "applied": 644,
+          "changed": 644,
+          "consumed": 644,
+          "restored": 644,
+          "failed": 0
+        },
+        "bytes_restored": true,
+        "completed": true
+      }
+    ],
+    "positive_recovery": {
+      "bytes_restored": true,
+      "resources_zero": true,
+      "canary_exact": true,
+      "restored": true
+    }
+  },
+  "c2": {
+    "exact_already_installed_path": true,
+    "attach_refusal_codes": [
+      "CONTINUOUS_BINDING_ALREADY_INSTALLED",
+      "CONTINUOUS_BINDING_ALREADY_INSTALLED"
+    ],
+    "challenger_owner": "worker-group-826828cfc1f444dd9311e71e003647b1",
+    "exit_code": 4,
+    "original_owner_unchanged": true,
+    "challenger_rollback_rpcs": 0,
+    "challenger_recovery": {
+      "resources_zero": true,
+      "enable_rollback": true,
+      "canary_exact": null,
+      "restored": false,
+      "resource_scope": "CURRENT_ENABLE_ATTEMPT",
+      "global_resources_zero": null
+    }
+  },
+  "c3": {
+    "wrong_sha": "PRODUCT_NATIVE_REVIEWED_LIBRARY_REQUIRED",
+    "missing_path": "PRODUCT_NATIVE_LIBRARY_HASH_MISMATCH",
+    "both_ranks_exit4": true,
+    "library_unmapped_before_after": true,
+    "scope": "Shared trusted-config validation after norm control; not A3 fresh-instance qualification"
+  },
+  "final_resources_zero": true,
+  "healthy_inference": true,
+  "rpc_count": 77,
+  "window": {
+    "start": "2026-11-26T14:09:40.266555+00:00",
+    "end": "2026-11-26T14:13:57.532011+00:00",
+    "seconds": 257.26547572785057,
+    "isolation_removed": true,
+    "stops": []
+  },
+  "originals": [
+    {
+      "path": "owner-reproduction.json",
+      "bytes": 4490814,
+      "sha256": "d9e8fedbea61c244f746d70cb2f85681025bea29629d9bce66f3d1492d90c460"
+    },
+    {
+      "path": "rpc-trace.json",
+      "bytes": 5471203,
+      "sha256": "053d5218c6260d2a39a6f0a4e06e2aa15b8520785754308bfbaf20e0e3d3e978"
+    },
+    {
+      "path": "controller.json",
+      "bytes": 63724,
+      "sha256": "2cd50eb842443ec78665e08f3476979bb1eea521aaef1549e097b6ca0f653f19"
+    },
+    {
+      "path": "isolation.jsonl",
+      "bytes": 661,
+      "sha256": "ecda05491aef19287ed3b5b759aaeb30a13fdf0293ec568bef0f56db5cb089d3"
+    },
+    {
+      "path": "originals-manifest.json",
+      "bytes": 1869,
+      "sha256": "5905c172de602a48087fd0cf02e99cf7db98fcca3a70cfd119b6a699b8083b7e"
+    }
+  ]
+}
