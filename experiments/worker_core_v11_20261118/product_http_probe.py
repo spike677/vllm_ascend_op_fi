@@ -7,6 +7,17 @@ from demoncat.runtime.vllm_ascend.controller import DemoncatWorkerExtension
 class AcceptanceExtension(DemoncatWorkerExtension):
     def demoncat_acceptance_bootstrap(self,action,options):
         from product_mode_probe import trusted_bootstrap
+        if action=='effect_round_start':
+            from effect_schedule_probe import RoundObserver
+            assert not hasattr(self,'_effect_round')
+            self._effect_round=RoundObserver(self)
+            return dict(armed=True)
+        if action=='effect_round_stop':
+            result=self._effect_round.stop()
+            del self._effect_round
+            import torch
+            result['rank']=torch.distributed.get_rank()
+            return result
         if action=='alias_diagnostics':
             from alias15_finiteness_probe import install
             return install(self)
@@ -43,6 +54,7 @@ def main():
     p.add_argument('--negative-regression',action='store_true')
     p.add_argument('--batch-canary-negative',action='store_true')
     p.add_argument('--effect-probe',action='store_true')
+    p.add_argument('--effect-force-split-off',action='store_true')
     p.add_argument('--external-example',action='store_true')
     p.add_argument('--external-sampling',action='store_true')
     p.add_argument('--external-vision',action='store_true')
@@ -276,7 +288,26 @@ def main():
                 prompts=['Name a city with a river.','Explain how a bicycle moves.','What is seven plus six?']
                 if batch:prompts=['Explain briefly '+t for t in ['weather','cities','plants','rivers','physics','music','bikes','oceans']]
                 target_effect=root/('effect_'+key+'.json')
-                effect=effect_run(ProductAdapter(factory,send_effect,identity),prompts,
+                adapter=ProductAdapter(factory,send_effect,identity)
+                effect_round_number=0
+                def observed(prompts,sampling):
+                    nonlocal effect_round_number
+                    effect_round_number+=1
+                    ex.collective_rpc('demoncat_acceptance_bootstrap',args=('effect_round_start',{}))
+                    try:
+                        if batch and a.effect_force_split_off and effect_round_number==3:
+                            # Deliberate HTTP arrival-pattern negative, never fabricate schedule evidence.
+                            middle=len(prompts)//2
+                            output=send_effect(prompts[:middle],sampling)
+                            tail=send_effect(prompts[middle:],sampling)
+                            output['choices']+= [dict(c,index=c['index']+middle) for c in tail['choices']]
+                            output['split_http_reply_ids']=[output.get('id'),tail.get('id')]
+                        else:output=send_effect(prompts,sampling)
+                    finally:
+                        trace=ex.collective_rpc('demoncat_acceptance_bootstrap',args=('effect_round_stop',{}))
+                    return dict(output=output,trace=sorted(trace,key=lambda r:r['rank']))
+                adapter.infer_observed=observed
+                effect=effect_run(adapter,prompts,max_off_attempts=8,
                     checkpoint=lambda raw:target_effect.write_bytes(canonical(raw)+b'\n'))
                 raw=canonical(effect)+b'\n';target_effect.write_bytes(raw)
                 page=summarize(effect,raw);verify(page)

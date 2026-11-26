@@ -41,7 +41,10 @@ def api_values(reply):
             tokens, values, top = lp.get('tokens'), lp.get('token_logprobs'), lp.get('top_logprobs')
         require(isinstance(tokens, list) and tokens and len(tokens) == len(values or []) == len(top or []),
                 'API_TOKEN_LOGPROBS_REQUIRED')
-        require(all(isinstance(t, dict) and len(t) >= 5 for t in top), 'API_TOP5_REQUIRED')
+        for position,t in enumerate(top):
+            require(isinstance(t,dict) and len(t)>=5,
+                    'API_TOP5_REQUIRED:choice='+str(choice['index'])+':position='+str(position)
+                    +':actual='+str(len(t) if isinstance(t,dict) else None))
         numbers = values + [v for t in top for v in t.values()]
         require(all(type(v) in (int, float) and math.isfinite(v) for v in numbers), 'API_LOGPROBS_NONFINITE')
         out.append(dict(tokens=tokens, token_logprobs=values, top_logprobs=top,
@@ -59,7 +62,7 @@ def compare(before, after):
                 exact=canonical(b) == canonical(a), baseline_sha256=sha(canonical(b)), after_sha256=sha(canonical(a)))
 
 
-def run(adapter, prompts, *, temperature=0, max_tokens=4, checkpoint=lambda raw: None):
+def run(adapter, prompts, *, temperature=0, max_tokens=4, max_off_attempts=4, checkpoint=lambda raw: None):
     """Factory returns a trusted deployment adapter (see product_effect_test.md).
 
     Each new_session creates a new owner on the SAME service/Worker group.
@@ -70,10 +73,13 @@ def run(adapter, prompts, *, temperature=0, max_tokens=4, checkpoint=lambda raw:
     raw = dict(schema='dcat.effect.raw.v1', identity=adapter.identity(), prompts=prompts,
                sampling=sampling, scopes=[], control_sequence=[], qualification_granted=False)
     raw['tool_sha256'] = sha(Path(__file__).read_bytes())
+    batch=raw['identity'].get('mechanism')=='quant.batch_shared_scale'
+    require(type(max_off_attempts) is int and 1<=max_off_attempts<=8,'OFF_ATTEMPT_BUDGET_INVALID')
+    require(not batch or callable(getattr(adapter,'infer_observed',None)), 'BATCH_ROUND_OBSERVER_REQUIRED')
     for index in range(2):
         session = adapter.new_session()
         scope = dict(index=index, owner=session.owner, worker_identity=session.worker_identity,
-                     controls=[], outputs={})
+                     controls=[], outputs={}, attempts=[])
         raw['scopes'].append(scope)
 
         def control(name):
@@ -89,21 +95,55 @@ def run(adapter, prompts, *, temperature=0, max_tokens=4, checkpoint=lambda raw:
                 checkpoint(raw)
             return row['result']
 
+        def inference(phase):
+            attempt=dict(phase=phase,index=sum(x['phase']==phase for x in scope['attempts']))
+            scope['attempts'].append(attempt)
+            try:
+                if callable(getattr(adapter,'infer_observed',None)):
+                    observed=adapter.infer_observed(prompts,sampling)
+                    attempt.update(output=observed['output'],trace=observed['trace'])
+                else:
+                    attempt['output']=adapter.infer(prompts,sampling)
+                scope['outputs'][phase]=attempt['output']
+            except Exception as error:
+                attempt['error']=dict(type=type(error).__name__,reason=str(error))
+                raise
+            finally:
+                checkpoint(raw)
+            return attempt
+
         control('attach')
         try:
-            scope['outputs']['baseline'] = adapter.infer(prompts, sampling)
+            baseline=inference('baseline')
             api_values(scope['outputs']['baseline'])
             control('enable')
-            scope['outputs']['fault'] = adapter.infer(prompts, sampling)
+            inference('fault')
             scope['observed'] = control('status')
         finally:
             # An uncertain enable is still the adapter's recovery responsibility.
             scope['disabled'] = control('disable')
-        scope['outputs']['off'] = adapter.infer(prompts, sampling)
-        scope['detached'] = control('detach')
+        try:
+            for _ in range(max_off_attempts if batch else 1):
+                off=inference('off')
+                if batch:
+                    from tools.effect_rounds import same_composition
+                    off['composition_matches_baseline']=same_composition(baseline['trace'],off['trace'],raw['identity']['tp'])
+                    checkpoint(raw)
+                    if not off['composition_matches_baseline']:
+                        continue
+                break
+            if batch:
+                require(off['composition_matches_baseline'],'BATCH_COMPOSITION_RETRY_EXHAUSTED')
+        finally:
+            scope['detached'] = control('detach')
         scope['evidence'] = session.evidence()  # facts + paths into original receipts
-        scope['comparison'] = dict(fault=compare(scope['outputs']['baseline'], scope['outputs']['fault']),
-                                   off=compare(scope['outputs']['baseline'], scope['outputs']['off']))
+        try:
+            scope['comparison'] = dict(fault=compare(scope['outputs']['baseline'], scope['outputs']['fault']),
+                                       off=compare(scope['outputs']['baseline'], scope['outputs']['off']))
+        except ValueError as error:
+            scope['api_error']=str(error)
+            checkpoint(raw)
+            raise
         checkpoint(raw)
     return raw
 
@@ -121,6 +161,18 @@ def summarize(raw, raw_bytes):
     issues.extend(registration_identity_issues(identity))
     issues.extend('IDENTITY_MISSING:' + k for k in DEPLOYMENT if k != 'image_digest' and identity.get(k) is None)
     for s in scopes:
+        if identity.get('mechanism')=='quant.batch_shared_scale':
+            from tools.effect_rounds import same_composition, signature
+            attempts=s.get('attempts',[])
+            base=[a for a in attempts if a['phase']=='baseline']
+            faults=[a for a in attempts if a['phase']=='fault']
+            offs=[a for a in attempts if a['phase']=='off']
+            require(len(base)==len(faults)==1 and 1<=len(offs)<=8,'BATCH_ROUND_ATTEMPTS_REQUIRED')
+            signature(faults[0]['trace'],tp)
+            matches=[same_composition(base[0]['trace'],a['trace'],tp) for a in offs]
+            require(matches[-1] and not any(matches[:-1]),'BATCH_RETRY_MUST_STOP_AT_FIRST_MATCH')
+            require(all(canonical(s['outputs'][phase])==canonical(a['output']) for phase,a in
+                        [('baseline',base[0]),('fault',faults[0]),('off',offs[-1])]),'BATCH_SELECTED_REPLY_MISMATCH')
         e = s['evidence']
         require(sorted(r['rank'] for r in e['ranks']) == list(range(tp)), 'EXACT_RANK_SET_REQUIRED')
         packed = []
