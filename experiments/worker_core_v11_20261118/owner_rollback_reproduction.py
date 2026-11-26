@@ -190,7 +190,11 @@ def main():
         if positive['enable']['exit_code'] == 0:
             positive['request'] = infer('Explain briefly why rain falls.')
             positive['status'] = c.status()
-            # C2: a competing owner must never clear the live owner's binding.
+            # C2: disable releases observers/leases but retains this owner's
+            # binding until detach. This reaches ALREADY_INSTALLED itself,
+            # rather than an earlier live-wrapper identity guard.
+            positive['disable'] = product_control_reply(c.disable)
+            assert positive['disable']['exit_code'] == 0
             challenger = client(18)
             collision = dict(owner=challenger.identity.owner, attach=challenger.attach())
             report['collision'] = collision
@@ -199,7 +203,6 @@ def main():
             collision['cleanup'] = copy.deepcopy(challenger.cleanup_evidence)
             collision['recovery'] = copy.deepcopy(challenger.recovery)
             collision['after'] = audit('after_competing_owner')
-            positive['disable'] = product_control_reply(c.disable)
             positive['detach'] = product_control_reply(c.detach)
             collision['disable_after_owner_release'] = product_control_reply(challenger.disable)
             collision['detach_after_owner_release'] = product_control_reply(challenger.detach)
