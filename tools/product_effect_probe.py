@@ -69,7 +69,12 @@ def run(adapter, prompts, *, temperature=0, max_tokens=4, max_off_attempts=4, ch
     No per-user request registration, process creation or permission installation.
     """
     require(prompts and 0 <= temperature and max_tokens > 0, 'INVALID_INPUT')
-    sampling = dict(temperature=temperature, seed=42, logprobs=5, max_tokens=max_tokens)
+    # Completion top_logprobs is a dictionary. Distinct vocabulary IDs can
+    # decode to the same string (including incomplete byte tokens), collapsing
+    # its keys. Ask vLLM for its lossless token-ID representation in every round;
+    # do not relax the top-5 or finite-value checks when a fault exposes this.
+    sampling = dict(temperature=temperature, seed=42, logprobs=5, max_tokens=max_tokens,
+                    return_tokens_as_token_ids=True)
     raw = dict(schema='dcat.effect.raw.v1', identity=adapter.identity(), prompts=prompts,
                sampling=sampling, scopes=[], control_sequence=[], qualification_granted=False)
     raw['tool_sha256'] = sha(Path(__file__).read_bytes())

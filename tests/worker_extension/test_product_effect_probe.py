@@ -81,6 +81,22 @@ class EffectTests(unittest.TestCase):
                 assert sampling['seed']==42 and sampling['temperature']==.5 and sampling['logprobs']==5
                 return response(.1 if self.active else 0)
         self.assertEqual(len(run(A(),['x'],temperature=.5)['scopes']),2)
+
+    def test_distinct_byte_tokens_use_lossless_keys_in_every_round(self):
+        class A(Adapter):
+            seen=[]
+            def infer(self,prompts,sampling):
+                self.seen.append(dict(sampling))
+                r=response(.1 if self.active else 0)
+                ids=[236,250,104,255,248]
+                entries={'token_id:'+str(i):-float(n+1)+(.1 if self.active else 0)
+                         for n,i in enumerate(ids)} if sampling.get('return_tokens_as_token_ids') else {'':-1.0}
+                r['choices'][0]['logprobs']['top_logprobs']=[entries]
+                return r
+        a=A();raw=run(a,['prompt'])
+        self.assertEqual(len(a.seen),6)
+        self.assertTrue(all(s['return_tokens_as_token_ids'] is True for s in a.seen))
+        self.assertTrue(verify(self.page(raw))['registration_ready'])
     def test_error_cleanup_checkpoint(self):
         a=Adapter();a.infer=lambda p,s: (_ for _ in ()).throw(RuntimeError('kernel error'))
         checkpoints=[]

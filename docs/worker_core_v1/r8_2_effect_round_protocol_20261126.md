@@ -23,6 +23,10 @@ API_TOP5_REQUIRED 现在附 choice、token 位置和实际条目数，仍要求�
 
 先区分：实际 logits 非有限；不同 token ID 解码成相同字串导致字典合并；服务端漏字段；请求关联不足。没有同次原件前不放宽门禁，不把错误强制转成通过。baseline/fault/off 回包及 trace 在校验前落盘，失败后仍保留。
 
+11月26日协商窗口 `r82effects1126a3` 已复现：故障轮 choice0 position0 的 API 字典只有一个空字符串键；两个 rank 在 baseline/fault/off 各12步的完整 logits 均无非有限值。首步 top5 ID 为236、250、104、255、248，对应原始 logits 为21.375、20.75、20.5、19.875、19.75；实际模型 tokenizer 将这五个不完整字节 token 单独解码成同一个替代字符。vLLM completion serving 在构造 top_logprobs 时用解码字符串作字典键，因此不是“实际只算出了一个候选”。原件保留，不将本次失败改写为通过。
+
+修复限效果工具请求：所有轮次显式设置 `return_tokens_as_token_ids=true`，使用该0.26镜像已有的无歧义键格式。temperature、seed、logprobs、生成长度及故障参数均不变；仍要求每位置至少5条且数值有限，仍精确比较OFF。CPU覆盖多token同字串碰撞；修复后的NPU回归必须使用新的源码清单，不能沿用上述失败轮次作为通过证据。不修改模型、tokenizer、采样算法或服务端。
+
 ## 17 计数
 
 没有改 changed 或 changed_elements 的定义。相同事件集必须在 session evidence 和 product review 中得到相同总数。已增加两路径对照测试，并对蓝区真实17原件复核；不同原件先关联 owner/request/image，不能把同名 scope0 当同一次执行。
