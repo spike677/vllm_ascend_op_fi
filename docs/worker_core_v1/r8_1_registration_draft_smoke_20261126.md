@@ -11,7 +11,7 @@ from demoncat.runtime.vllm_ascend.worker_extension.product_registration import (
     IDENTITY_FIELDS, validate_identity, validate_record, digest)
 
 # rank0_identity / rank1_identity 必须来自黄区原样回传的实际 observe_identity。
-# 不用默认值填充；当前未收到，不构造可执行记录。
+# 不用默认值填充；当前七项双rank身份已入独立草稿，负例未齐，不构造可执行记录。
 record = {
     "schema": "dcat.product.registration.v1",
     "source": "YELLOW_DEDICATED_INSTANCE",
@@ -51,3 +51,5 @@ validate_record(record)
 证据未齐前本单只是准备稿；不得把示意 True 或未知 SHA 当实测值。
 
 11月26日17时补充：22/15的新页面与产品提取通过；over4仅效果页面通过，产品路径和提取完整性均未通过。完整身份已收到rank0文本/视觉/Native三类，但rank1仍缺；Native构建元数据为空，负例尚无有效结果。详见 `yellow_r8_followup_review_20261126.md`。本维护分支继续零改动，不发布。
+
+随后收到rank1文本/视觉/Native身份，覆盖上述历史缺件中的rank1。七项双rank草稿已写入 `r8_1_expected_ranks_draft_20261126.json`，14份身份通过校验，negative_controls仍为null。Native sidecar已生成但黄区实际观测待回传；当前结论以 `yellow_r8_identity_owner_review_20261126.md` 为准。运行时登记表仍不改。

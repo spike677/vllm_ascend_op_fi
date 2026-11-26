@@ -1,5 +1,7 @@
 # r8.2 效果工具 A2 验证完成
 
+> 后续诊断更新：本页记录下述9464df0c那一次注入验收，不代表Batch根因已全部闭合。新增5f1dc24f的三轮无注入对照发现：实际组成相同，冷启动第0请求仍与后两轮不同；不能仅以组成一致推定确定性，也不放宽OFF精确恢复。见 `r8_2_batch_no_injection_20261126/README.md`。rank1身份随后补齐，登记现状见 `yellow_r8_identity_owner_review_20261126.md`。
+
 组合：A2 / Ascend910B4，vLLM0.26.0、vllm-ascend0.26.0rc1、torch2.10.0+cpu、torch_npu2.10.0.post4、CANN9.1.0；社区Qwen3.8 W8A8，TP2，124卡2/5。只记蓝区验证，不赋予A3资格。
 
 最终源码 `9464df0c2bd05eef00759f7cba359fee803a682e`，实机源码清单SHA `7ffa9de5a6fee00ab55b064cf5e64f179f6b2b6f483615a81638307c02c6cd60`。当前代码和这份实机快照一致，之后仅补审查文档。CPU **44/44**；公共机制/运行时 **442文件与冻结r8逐字节一致**。

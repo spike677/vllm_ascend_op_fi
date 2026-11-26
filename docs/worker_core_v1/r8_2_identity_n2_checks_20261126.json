@@ -1,0 +1,98 @@
+{
+  "schema": "dcat.r82.identity.n2.baseline.checks.v1",
+  "modules": [
+    "test_effect_count_provenance",
+    "test_effect_rounds",
+    "test_product_effect_probe",
+    "test_product_review",
+    "test_product_registration",
+    "test_product_registration_pipeline",
+    "test_batch_baseline_control",
+    "test_native_build_metadata",
+    "test_fault33_launch_host",
+    "test_r81_identity_draft"
+  ],
+  "tests": 68,
+  "passed": 68,
+  "errors": 0,
+  "failures": 0,
+  "skipped": 0,
+  "seconds": 0.5,
+  "runtime_baseline": "e38c4113b421ac979699071a60e80d3babd05e07",
+  "runtime_files_checked": 442,
+  "runtime_all_byte_equal": true,
+  "npu_source_commit": "5f1dc24fcc89a759d98c72807067b47d24e94f29",
+  "npu_source_manifest_sha256": "52c2b0cd51b921292bc5d914358db088cbe24a2b08dde3e886ce353b853868f8",
+  "files": [
+    {
+      "path": "tools/generate_native_build_metadata.py",
+      "bytes": 2940,
+      "sha256": "b8525e04e3160e615e260275196ea77949a60a4193eaad38486f7ab5d024a970"
+    },
+    {
+      "path": "tools/extract_fault33_existing.py",
+      "bytes": 6480,
+      "sha256": "2c84f71cae4ef00e6b98e94974e5bd57faa7f2edc5f144aa179a16ab4983606c"
+    },
+    {
+      "path": "tools/extract_fault33_launch_host.py",
+      "bytes": 3601,
+      "sha256": "93d0504f82cbbd7a247fe23803dbeef4c7706afcffc50938ff86341ffaa426df"
+    },
+    {
+      "path": "tests/worker_extension/test_native_build_metadata.py",
+      "bytes": 2870,
+      "sha256": "09deb2ae1add1f04834d3e1ceae50e689a6f74c94d466bd8155bcb04d3f0a4a3"
+    },
+    {
+      "path": "tests/worker_extension/test_fault33_existing_extract.py",
+      "bytes": 4134,
+      "sha256": "7b8e19420a0a4b09baefc37fa09ae4671d42b1b2d4aa3caa9ad02e6cc59d24e0"
+    },
+    {
+      "path": "tests/worker_extension/test_fault33_launch_host.py",
+      "bytes": 3284,
+      "sha256": "2acbb733d3f2d198f88aada133b4ca30b43c6108ebad60e74cbd3f0bfbc53801"
+    },
+    {
+      "path": "tests/worker_extension/test_r81_identity_draft.py",
+      "bytes": 1089,
+      "sha256": "a160bee3015915f6a84b8e8031da33f3b555ee8eff02c1216ee9774cdd699634"
+    },
+    {
+      "path": "tools/review_launch_capture_v2.py",
+      "bytes": 4013,
+      "sha256": "66ee176da78971091b2e2108d7f296123bc6abeb5b909862f99a0fb38268743f"
+    },
+    {
+      "path": "experiments/worker_core_v11_20261118/batch_baseline_control.py",
+      "bytes": 3631,
+      "sha256": "960876cf13784641e749f32b778a8f0af6a58f8b0bc44e09a7869df0ee11de33"
+    },
+    {
+      "path": "experiments/worker_core_v11_20261118/product_http_probe.py",
+      "bytes": 26903,
+      "sha256": "6811514a4104ad343499837ad77a9f0d588fed7bb25c2375595e437ea972a20e"
+    },
+    {
+      "path": "docs/worker_core_v1/native_build_metadata_d9aa_20261126/dcat-native-build.json",
+      "bytes": 989,
+      "sha256": "c61f1a27a78e27d65cb714f786a5f1015d64754550460027097ad0b04a973ea9"
+    },
+    {
+      "path": "docs/worker_core_v1/r8_1_expected_ranks_draft_20261126.json",
+      "bytes": 40697,
+      "sha256": "0e3d8d22e65b7b30dd0906d061ade81a356a4dd7a22267087cd778f18217e468"
+    }
+  ],
+  "n2_cli_cpu_fixture": {
+    "six_shape_rank_records": true,
+    "returncode": 0,
+    "jsonl_records": 19,
+    "max_line_bytes": 1415,
+    "two_runs_byte_equal": true,
+    "stdout_sha256": "e31a6579afc384229bfb86c20b2ea383ca5452b8a092ac42dfff540b89ca1b3f",
+    "ready_for_control_recompute": false
+  },
+  "qualification_granted": false
+}

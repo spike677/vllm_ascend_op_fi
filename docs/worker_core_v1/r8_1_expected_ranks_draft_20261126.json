@@ -1,0 +1,1059 @@
+{
+  "schema": "dcat.product.registration.expected_ranks.draft.v1",
+  "baseline": "e38c4113b421ac979699071a60e80d3babd05e07",
+  "draft_only": true,
+  "loadable_registry": false,
+  "sources": [
+    {
+      "file": "r8验收裁定与后续进展记录_原文.txt",
+      "bytes": 30280,
+      "sha256": "e97bcd4d01dc5af871e0fe4fed61881b9a90ccf218a30ecd34f71e37367fb271"
+    },
+    {
+      "file": "r8负例清理问题与15_22结论更正_原文.txt",
+      "bytes": 12871,
+      "sha256": "a77349c88ac3137144eb6556f485f18d714a7e91989626689ae0a91c5b455929"
+    }
+  ],
+  "identity_reuse": "Owner-authorized shared text deployment identity for six mechanisms; separate visual identity for17. Both actual rank texts retained, not synthesized from rank0.",
+  "records": [
+    {
+      "mechanism": "18.api_half",
+      "expected_ranks": [
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 0,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 0,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        },
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 1,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        }
+      ],
+      "evidence": {
+        "negative_controls": null
+      },
+      "blockers": [
+        "NEGATIVE_CONTROLS_PENDING"
+      ],
+      "executable": false,
+      "identity_status": "TWO_RANKS_VALIDATED_TEXT_ATTESTATION"
+    },
+    {
+      "mechanism": "22.wrong_row",
+      "expected_ranks": [
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 0,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 0,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        },
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 1,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        }
+      ],
+      "evidence": {
+        "negative_controls": null
+      },
+      "blockers": [
+        "NEGATIVE_CONTROLS_PENDING"
+      ],
+      "executable": false,
+      "identity_status": "TWO_RANKS_VALIDATED_TEXT_ATTESTATION"
+    },
+    {
+      "mechanism": "15.alias_detach",
+      "expected_ranks": [
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 0,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 0,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        },
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 1,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        }
+      ],
+      "evidence": {
+        "negative_controls": null
+      },
+      "blockers": [
+        "NEGATIVE_CONTROLS_PENDING"
+      ],
+      "executable": false,
+      "identity_status": "TWO_RANKS_VALIDATED_TEXT_ATTESTATION"
+    },
+    {
+      "mechanism": "39.output_proxy",
+      "expected_ranks": [
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 0,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 0,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        },
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 1,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        }
+      ],
+      "evidence": {
+        "negative_controls": null
+      },
+      "blockers": [
+        "NEGATIVE_CONTROLS_PENDING"
+      ],
+      "executable": false,
+      "identity_status": "TWO_RANKS_VALIDATED_TEXT_ATTESTATION"
+    },
+    {
+      "mechanism": "39.matmul_range",
+      "expected_ranks": [
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 0,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 0,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        },
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 1,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        }
+      ],
+      "evidence": {
+        "negative_controls": null
+      },
+      "blockers": [
+        "NEGATIVE_CONTROLS_PENDING"
+      ],
+      "executable": false,
+      "identity_status": "TWO_RANKS_VALIDATED_TEXT_ATTESTATION"
+    },
+    {
+      "mechanism": "28.fia.denominator_replay",
+      "expected_ranks": [
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 0,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 0,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        },
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 1,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": null
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        }
+      ],
+      "evidence": {
+        "negative_controls": null
+      },
+      "blockers": [
+        "NEGATIVE_CONTROLS_PENDING"
+      ],
+      "executable": false,
+      "identity_status": "TWO_RANKS_VALIDATED_TEXT_ATTESTATION"
+    },
+    {
+      "mechanism": "17.spatial_padding",
+      "expected_ranks": [
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 0,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 0,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": [
+              1,
+              4,
+              4
+            ]
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        },
+        {
+          "hardware_family": "A3",
+          "hardware_device_name": "Ascend910_9382",
+          "hardware_logical_device": 1,
+          "torch": "2.10.0+cpu",
+          "torch_npu": "2.10.0.post4",
+          "vllm": "0.26.0",
+          "vllm_ascend": "0.26.0rc1",
+          "python": "3.12.13",
+          "cann": [
+            "9.1.0"
+          ],
+          "dtype": "torch.bfloat16",
+          "tp": 2,
+          "pp": 1,
+          "dp": 1,
+          "ep": {
+            "enabled": false,
+            "placement": [],
+            "routing": "NOT_APPLICABLE"
+          },
+          "rank": 1,
+          "eager": true,
+          "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+          "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+          "quant_model_description_sha256": "d3725f719225567a6cd0fd3e340860082e36c3643dfe0f32d64e3172547bf793",
+          "safetensors_index_sha256": {
+            "quant_model_weights.safetensors.index.json": "512d41c5403b1fe0a65861ffe70da9a84a1e93a534e132fd31a01fdc32844ae9"
+          },
+          "live_config_matches_file": true,
+          "max_model_len": 1024,
+          "max_num_batched_tokens": 1024,
+          "max_num_seqs": 1,
+          "async_scheduling": false,
+          "prefix_caching": false,
+          "mtp_disabled": true,
+          "kv_connector_disabled": true,
+          "source_fingerprints": {
+            "model": "da738a2017741b8df66cbdb2ce5301c5cdec87ffacb2279f85245640eb33c496",
+            "runner": "4699af75ac8b4b55283d55190365e93d13820a05888bfa65aea8746deabc4d3a"
+          },
+          "runtime_libraries": {
+            "libascendcl.so": {
+              "sha256": "123d67c313f743e5d6f2e856f40c24d5edac376975cf0a7a1019e079b4171480",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            },
+            "libruntime.so": {
+              "sha256": "7bc2b610dff552df2f114c95701156b4aba43ffcba24e06e3c249e1cf57bbc21",
+              "version": "9.1.0",
+              "metadata_sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848"
+            }
+          },
+          "implementation_sha256": "003294ac9e7468b2069719a44f9931514a9ce504c6b12e6c39f64684878f0bee",
+          "request_range": {
+            "max_context": 1024,
+            "max_tokens": 4,
+            "max_num_seqs": 1,
+            "single_chunk": true,
+            "image_grid": [
+              1,
+              4,
+              4
+            ]
+          },
+          "native_identity": {
+            "applicable": false
+          },
+          "execution_mode": "product",
+          "variant_revision": "1"
+        }
+      ],
+      "evidence": {
+        "negative_controls": null
+      },
+      "blockers": [
+        "NEGATIVE_CONTROLS_PENDING",
+        "EFFECT_PRODUCT_REQUEST_IMAGE_JOIN_PENDING"
+      ],
+      "executable": false,
+      "identity_status": "TWO_RANKS_VALIDATED_TEXT_ATTESTATION"
+    }
+  ]
+}
