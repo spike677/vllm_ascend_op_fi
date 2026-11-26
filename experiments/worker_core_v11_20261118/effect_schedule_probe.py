@@ -18,8 +18,6 @@ class RoundObserver:
         self.scheduler = None
         self.truncated = False
         self.patch(self.runner, 'execute_model', self.execute)
-        self.patch(self.runner, '_preprocess', self.preprocess)
-        self.patch(self.model, 'compute_logits', self.compute_logits)
 
     def patch(self, obj, name, handler):
         present = name in vars(obj)
@@ -32,10 +30,9 @@ class RoundObserver:
 
     def execute(self, original, scheduler, *args, **kwargs):
         self.scheduler = scheduler
-        return original(scheduler, *args, **kwargs)
-
-    def preprocess(self, original, *args, **kwargs):
-        result = original(*args, **kwargs)
+        result = original(scheduler, *args, **kwargs)
+        if not scheduler.num_scheduled_tokens:
+            return result
         if len(self.steps) >= self.limit:
             self.truncated = True
             return result
@@ -51,10 +48,11 @@ class RoundObserver:
                 prompt_length=len(tokens), computed=int(batch.num_computed_tokens_cpu[position]),
                 scheduled=int(self.scheduler.num_scheduled_tokens[rid])))
         self.steps.append(dict(step=len(self.steps), rows=rows))
+        state=getattr(self.runner,'execute_model_state',None)
+        self.record_logits(getattr(state,'logits',None))
         return result
 
-    def compute_logits(self, original, *args, **kwargs):
-        result = original(*args, **kwargs)
+    def record_logits(self, result):
         if result is not None and len(self.logits) < self.limit:
             import torch
             flat = result.detach().reshape(-1,result.shape[-1])
