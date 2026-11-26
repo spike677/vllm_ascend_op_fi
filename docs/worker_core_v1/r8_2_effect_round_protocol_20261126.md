@@ -27,6 +27,8 @@ API_TOP5_REQUIRED 现在附 choice、token 位置和实际条目数，仍要求�
 
 修复限效果工具请求：所有轮次显式设置 `return_tokens_as_token_ids=true`，使用该0.26镜像已有的无歧义键格式。temperature、seed、logprobs、生成长度及故障参数均不变；仍要求每位置至少5条且数值有限，仍精确比较OFF。CPU覆盖多token同字串碰撞；修复后的NPU回归必须使用新的源码清单，不能沿用上述失败轮次作为通过证据。不修改模型、tokenizer、采样算法或服务端。
 
+最终源码 `9464df0c` 已在A2同组Worker两个owner完成under4和Batch回归，见 `r8_2_a2_completion_20261126.md`。Batch实际组成不匹配后重发成功，全部原件保留；under4使用token-ID表示后完整五项和恢复门禁均通过。旧失败记录仍为失败，不补改原件。
+
 ## 17 计数
 
 没有改 changed 或 changed_elements 的定义。相同事件集必须在 session evidence 和 product review 中得到相同总数。已增加两路径对照测试，并对蓝区真实17原件复核；不同原件先关联 owner/request/image，不能把同名 scope0 当同一次执行。

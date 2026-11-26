@@ -27,7 +27,7 @@
 - 补全同一精确组合的负例原件摘要：拒绝码、CLI exit、引擎存活、清理零资源、随后正对照；包括通用、Native、视觉及未登记拒绝。连接拒绝不是有效负例。
 - 每个 rank 原样提供 `observe_identity` 的完整 `IDENTITY_FIELDS`；不能把单份 runtime-identity 的部署字段复制到另一个 rank。特别包括 Python、EP、源码指纹、映射运行库、implementation SHA、请求范围及 Native 构建身份。
 - 补标签、许可 SHA、owner、原件 SHA 的对应关系和耗时记录。耗时不作门禁，image_digest 为 null 不阻止登记。
-- 22、15、18.variance_over4 仍缺页面原文，只记“需补交”。over4 的 CLI 映射由黄区处理。
+- 17时后续文本已补22、15、18.variance_over4页面，审查见 `yellow_r8_followup_review_20261126.md`：22/15页面与产品提取通过；over4效果页通过，但产品提取哈希不符且产品流程仍失败。rank1身份及负例仍缺，不能登记。
 - under4 的 API_TOP5_REQUIRED、Batch 的 OFF_API_NOT_EXACT 仍保留失败，进入独立 r8.2 诊断，不填入 r8.1。
 
 ## 17：先关联原件，不能直接改计数

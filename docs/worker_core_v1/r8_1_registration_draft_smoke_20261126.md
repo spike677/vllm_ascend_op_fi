@@ -49,3 +49,5 @@ validate_record(record)
 7. 保存标签、源码、注册表/record SHA、两 rank 身份 SHA、owner/原件对照、免许可正例和负例。黄区最终结果回传后再写 product_closed；r8.1 发布本身不等于产品闭环。
 
 证据未齐前本单只是准备稿；不得把示意 True 或未知 SHA 当实测值。
+
+11月26日17时补充：22/15的新页面与产品提取通过；over4仅效果页面通过，产品路径和提取完整性均未通过。完整身份已收到rank0文本/视觉/Native三类，但rank1仍缺；Native构建元数据为空，负例尚无有效结果。详见 `yellow_r8_followup_review_20261126.md`。本维护分支继续零改动，不发布。

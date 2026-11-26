@@ -1,0 +1,1611 @@
+{
+  "schema": "dcat.r82.a2.completed.review.v1",
+  "scope": "A2 / Ascend910B4 / vLLM0.26.0 / vllm-ascend0.26.0rc1 / CANN9.1.0 / Qwen3.8-community-W8A8 / TP2",
+  "cards": [
+    2,
+    5
+  ],
+  "qualification_granted": false,
+  "source_commit": "9464df0c2bd05eef00759f7cba359fee803a682e",
+  "windows": [
+    {
+      "window": "r82effects1126a3",
+      "start": "2026-11-26T08:58:04.327295+00:00",
+      "end": "2026-11-26T09:13:12.168612+00:00",
+      "wall_seconds": 907.8413396219257,
+      "isolation_removed": true,
+      "controller": {
+        "file": "controller.json",
+        "bytes": 69767,
+        "sha256": "e465dcc916629a12b68b43874a90dd342184a934c1ae05d253d349dab831eff5"
+      },
+      "isolation": {
+        "file": "isolation.jsonl",
+        "bytes": 3068,
+        "sha256": "4b3d840e1983460b217f094b10c30f736bb3d2f0978b38c6fb3f41b7250d208a"
+      },
+      "docker_events": {
+        "file": "docker-events.jsonl",
+        "bytes": 70507,
+        "sha256": "26b7042f474e15fb399ac37e42e55c9256c7f58cc85075e46fa8f53304a6f2d8"
+      },
+      "stopped_containers": [
+        {
+          "time": "2026-11-26T08:58:04.442350+00:00",
+          "container": "/pt-chunkcat-fewer-d5",
+          "image": "cann:9.3.0-910b-ttk",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-26T09:03:39.344711+00:00",
+          "container": "/atk_q_rasbot-expm1-d523-jump-1K7W4K_dev5_slot0_849b922b",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-26T09:04:31.645228+00:00",
+          "container": "/atk_q_rasbot-expm1-d523-jump-1K7W4K_dev2_slot0_da9d37f2",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-26T09:12:53.367061+00:00",
+          "container": "/atk_q_cumsum-1126-smoke_dev5_slot0_cee1d5c3",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            5
+          ]
+        }
+      ],
+      "stop_results": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "source_commit": "9e4aeaf59fdce19f87c5ce1a06445a3a63574621",
+      "source_manifest_sha256": "6a983cbef27b7ef72935e89347ffc148190c295f73164be3939868e3171302f9",
+      "source_files_verified": 781,
+      "cases": [
+        {
+          "mechanism": "18.variance_under4",
+          "exit_code": 2,
+          "container_wall_seconds": 317.845597,
+          "oom_killed": false,
+          "product_original": {
+            "file": "product_http_18.json",
+            "bytes": 29404150,
+            "sha256": "ac6ece45d21cf6020e935a2669c472b0cca41cb7cd390f94cb3555e5804d21df"
+          },
+          "effect_original": {
+            "file": "effect_18.json",
+            "bytes": 16201191,
+            "sha256": "05b63724125bce23132b8a69be54ad91172c19b5920516ed9a1c03cee56a8dc2"
+          },
+          "sampling": {
+            "logprobs": 5,
+            "max_tokens": 4,
+            "seed": 42,
+            "temperature": 0
+          },
+          "source_manifest_sha256": "6a983cbef27b7ef72935e89347ffc148190c295f73164be3939868e3171302f9",
+          "verdict": "ORIGINAL_API_TOP5_FAILURE_REPRODUCED",
+          "error": "ValueError('API_TOP5_REQUIRED:choice=0:position=0:actual=1')",
+          "rounds": [
+            {
+              "scope": 0,
+              "phase": "baseline",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 0,
+              "phase": "fault",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 0,
+              "phase": "off",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "mechanism": "quant.batch_shared_scale",
+          "exit_code": 0,
+          "container_wall_seconds": 581.236837,
+          "oom_killed": false,
+          "product_original": {
+            "file": "product_http_batch.json",
+            "bytes": 15483860,
+            "sha256": "ccf4b9cbb43f956e0a8e79d7e8a85339935983b80ddb2d354ece91044d8c8519"
+          },
+          "effect_original": {
+            "file": "effect_batch.json",
+            "bytes": 7854307,
+            "sha256": "381962a3a2c3ff106d0d92f46ad8152381e2a81f96f80a49c45eb16c3424a733"
+          },
+          "sampling": {
+            "logprobs": 5,
+            "max_tokens": 4,
+            "seed": 42,
+            "temperature": 0
+          },
+          "source_manifest_sha256": "6a983cbef27b7ef72935e89347ffc148190c295f73164be3939868e3171302f9",
+          "product_review": "PRODUCT_BLUE_REVIEW_PASSED",
+          "effect_verify": {
+            "extract_sha256": "3474c3476a0d24d259598f3064cca789004e232987de68fdc84e82459f7d4e31",
+            "integrity_valid": true,
+            "registration_ready": true,
+            "qualification_granted": false
+          },
+          "page": {
+            "file": "effect_batch_page.json",
+            "bytes": 2234,
+            "sha256": "3dc3ee004e172da27b29d3f0ece6a9faa3d04460f75e37c0293cc97b959afa04"
+          },
+          "same_workers_two_owners": true,
+          "effect_scopes": [
+            {
+              "owner": "worker-group-ebf75347917a4e89a5f145d44ee428ec",
+              "provider_owners": [
+                "e30ed581514973318bdb662b37551cec",
+                "502ed7c6d8d3fa5cbe4d5e19e9981ef1"
+              ],
+              "seq": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "ranks": [
+                [
+                  0,
+                  1520,
+                  912,
+                  912,
+                  912,
+                  912,
+                  912,
+                  912,
+                  0,
+                  15165693
+                ],
+                [
+                  1,
+                  1520,
+                  912,
+                  912,
+                  912,
+                  911,
+                  912,
+                  912,
+                  0,
+                  15197904
+                ]
+              ],
+              "effect": [
+                true,
+                true,
+                true,
+                null
+              ],
+              "recovery": [
+                true,
+                true,
+                true
+              ],
+              "off_exact": true
+            },
+            {
+              "owner": "worker-group-95b3b9da88d74b54860af82f6a15cf4f",
+              "provider_owners": [
+                "f9c6e227b69b72bda7e08e2ec1fe4fec",
+                "26be6b86008b9a144cc573589e7f146c"
+              ],
+              "seq": [
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "ranks": [
+                [
+                  0,
+                  1520,
+                  912,
+                  912,
+                  912,
+                  912,
+                  912,
+                  912,
+                  0,
+                  15165693
+                ],
+                [
+                  1,
+                  1520,
+                  912,
+                  912,
+                  912,
+                  911,
+                  912,
+                  912,
+                  0,
+                  15197904
+                ]
+              ],
+              "effect": [
+                true,
+                true,
+                true,
+                null
+              ],
+              "recovery": [
+                true,
+                true,
+                true
+              ],
+              "off_exact": true
+            }
+          ],
+          "product_scope_recovery": [
+            {
+              "scope": 0,
+              "canary_exact": true,
+              "all_resources_zero": true
+            },
+            {
+              "scope": 1,
+              "canary_exact": true,
+              "all_resources_zero": true
+            }
+          ],
+          "verdict": "BLUE_VALIDATION_PASSED_NO_A3_QUALIFICATION",
+          "rounds": [
+            {
+              "scope": 0,
+              "phase": "baseline",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 0,
+              "phase": "fault",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 0,
+              "phase": "off",
+              "index": 0,
+              "composition_matches_baseline": false,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    4,
+                    4,
+                    4,
+                    3,
+                    1,
+                    4,
+                    4,
+                    4,
+                    3
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    4,
+                    4,
+                    4,
+                    3,
+                    1,
+                    4,
+                    4,
+                    4,
+                    3
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 0,
+              "phase": "off",
+              "index": 1,
+              "composition_matches_baseline": true,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 1,
+              "phase": "baseline",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 1,
+              "phase": "fault",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 1,
+              "phase": "off",
+              "index": 0,
+              "composition_matches_baseline": true,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "window": "r82effects1126a4",
+      "start": "2026-11-26T09:14:27.222852+00:00",
+      "end": "2026-11-26T09:30:04.412809+00:00",
+      "wall_seconds": 937.189976924099,
+      "isolation_removed": true,
+      "controller": {
+        "file": "controller.json",
+        "bytes": 69760,
+        "sha256": "a560d02637d1dcf07a5cf4794b5a462ff40ba9d9aa03d6f2aa97df893780a743"
+      },
+      "isolation": {
+        "file": "isolation.jsonl",
+        "bytes": 5116,
+        "sha256": "efd85f20e85deb4bf181d5b76681714b7946b1683ef1b2673b2ae27f82463aa4"
+      },
+      "docker_events": {
+        "file": "docker-events.jsonl",
+        "bytes": 50176,
+        "sha256": "6547c82387431c055dedcef2b1cdcb88224c8ae78ebae5e818dde343aa3c545b"
+      },
+      "stopped_containers": [
+        {
+          "time": "2026-11-26T09:14:27.339563+00:00",
+          "container": "/atk-addcdiv-930-replay-20261126-d5",
+          "image": "cann:9.3.0-910b-ttk-64bfa8a2",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-26T09:20:06.187693+00:00",
+          "container": "/atk-nearzero-930-20261126-d2",
+          "image": "cann:9.3.0-910b-ttk-64bfa8a2",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-26T09:23:47.015490+00:00",
+          "container": "/atk-nearzero-930-20261126-d5",
+          "image": "cann:9.3.0-910b-ttk-64bfa8a2",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-26T09:24:02.931079+00:00",
+          "container": "/atk-nearzero-930-20261126-d2",
+          "image": "cann:9.3.0-910b-ttk-64bfa8a2",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-26T09:25:20.398719+00:00",
+          "container": "/atk-nearzero-930-20261126-d5",
+          "image": "cann:9.3.0-910b-ttk-64bfa8a2",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-26T09:26:53.757207+00:00",
+          "container": "/atk-nearzero-930-20261126-d5",
+          "image": "cann:9.3.0-910b-ttk-64bfa8a2",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-26T09:27:55.902172+00:00",
+          "container": "/agitated_murdock",
+          "image": "cann:9.1.0-910b-torch2.10.0_npu-atk26.7.8",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-26T09:28:43.856172+00:00",
+          "container": "/atk-nearzero-930-20261126-d2",
+          "image": "cann:9.3.0-910b-ttk-64bfa8a2",
+          "cards": [
+            2
+          ]
+        }
+      ],
+      "stop_results": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "source_commit": "9464df0c2bd05eef00759f7cba359fee803a682e",
+      "source_manifest_sha256": "7ffa9de5a6fee00ab55b064cf5e64f179f6b2b6f483615a81638307c02c6cd60",
+      "source_files_verified": 781,
+      "cases": [
+        {
+          "mechanism": "18.variance_under4",
+          "exit_code": 0,
+          "container_wall_seconds": 340.058421,
+          "oom_killed": false,
+          "product_original": {
+            "file": "product_http_18.json",
+            "bytes": 29403080,
+            "sha256": "f7846f6f46264098c7ef867f8823a08d59559ec46bc8b07e4adff2f5c9903721"
+          },
+          "effect_original": {
+            "file": "effect_18.json",
+            "bytes": 32411461,
+            "sha256": "c40269cbe881c65c25e24e1d39ac26d67833ce9a443977f59b54243d3210d67d"
+          },
+          "sampling": {
+            "logprobs": 5,
+            "max_tokens": 4,
+            "return_tokens_as_token_ids": true,
+            "seed": 42,
+            "temperature": 0
+          },
+          "source_manifest_sha256": "7ffa9de5a6fee00ab55b064cf5e64f179f6b2b6f483615a81638307c02c6cd60",
+          "product_review": "PRODUCT_BLUE_REVIEW_PASSED",
+          "effect_verify": {
+            "extract_sha256": "ec104b48b397f5f3fec048c8633ec01d0fdfa7d835d88fa6e48ddc06a4a1c295",
+            "integrity_valid": true,
+            "registration_ready": true,
+            "qualification_granted": false
+          },
+          "page": {
+            "file": "effect_18_page.json",
+            "bytes": 2253,
+            "sha256": "a20e927816c7d07b2e982e77f48b54a107122ba5f0e225a5a7cb8f407bf08909"
+          },
+          "same_workers_two_owners": true,
+          "effect_scopes": [
+            {
+              "owner": "worker-group-ebd559d35c2a454bba2d1948038cafd8",
+              "provider_owners": [
+                "dd5a84a3a04a98177d46346b4e4e7946",
+                "3cf0294ba4cd549b93113bf0f62a2be1"
+              ],
+              "seq": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "ranks": [
+                [
+                  0,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  0,
+                  20806159
+                ],
+                [
+                  1,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  0,
+                  20806139
+                ]
+              ],
+              "effect": [
+                true,
+                true,
+                true,
+                null
+              ],
+              "recovery": [
+                true,
+                true,
+                true
+              ],
+              "off_exact": true
+            },
+            {
+              "owner": "worker-group-c1680547d473489aa665e61def8a0df6",
+              "provider_owners": [
+                "249037bcc85afee9859d2fe1de3e4572",
+                "2a3fa935661389ce65032cd790e965a8"
+              ],
+              "seq": [
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "ranks": [
+                [
+                  0,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  0,
+                  20806159
+                ],
+                [
+                  1,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  1932,
+                  0,
+                  20806139
+                ]
+              ],
+              "effect": [
+                true,
+                true,
+                true,
+                null
+              ],
+              "recovery": [
+                true,
+                true,
+                true
+              ],
+              "off_exact": true
+            }
+          ],
+          "product_scope_recovery": [
+            {
+              "scope": 0,
+              "canary_exact": true,
+              "all_resources_zero": true
+            },
+            {
+              "scope": 1,
+              "canary_exact": true,
+              "all_resources_zero": true
+            }
+          ],
+          "verdict": "BLUE_VALIDATION_PASSED_NO_A3_QUALIFICATION",
+          "rounds": [
+            {
+              "scope": 0,
+              "phase": "baseline",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 0,
+              "phase": "fault",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 0,
+              "phase": "off",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 1,
+              "phase": "baseline",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 1,
+              "phase": "fault",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 1,
+              "phase": "off",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "mechanism": "quant.batch_shared_scale",
+          "exit_code": 0,
+          "container_wall_seconds": 587.805438,
+          "oom_killed": false,
+          "product_original": {
+            "file": "product_http_batch.json",
+            "bytes": 15483937,
+            "sha256": "aa09c70f954636d0d112e16ce7871aa28674bf45f3619e3af346353f17b381ab"
+          },
+          "effect_original": {
+            "file": "effect_batch.json",
+            "bytes": 7876192,
+            "sha256": "dac2f0c3f392740d75e83c3910eb417841fae3908da80c52e07063ae27f58a10"
+          },
+          "sampling": {
+            "logprobs": 5,
+            "max_tokens": 4,
+            "return_tokens_as_token_ids": true,
+            "seed": 42,
+            "temperature": 0
+          },
+          "source_manifest_sha256": "7ffa9de5a6fee00ab55b064cf5e64f179f6b2b6f483615a81638307c02c6cd60",
+          "product_review": "PRODUCT_BLUE_REVIEW_PASSED",
+          "effect_verify": {
+            "extract_sha256": "c213cb47947761b2be6b83715833f3c49fd29071078176551247228c101dfc8e",
+            "integrity_valid": true,
+            "registration_ready": true,
+            "qualification_granted": false
+          },
+          "page": {
+            "file": "effect_batch_page.json",
+            "bytes": 2234,
+            "sha256": "798139ff0bc45d54e13755e2bfde42e37168e2effbc0cbf3a9008b4e26a038ba"
+          },
+          "same_workers_two_owners": true,
+          "effect_scopes": [
+            {
+              "owner": "worker-group-88b45ac8ddf442359cbcd93d93cc0461",
+              "provider_owners": [
+                "b730d7b6199be63f8fbbaeef281ecc29",
+                "2b6dc524cb25d1b4b68e0f40ed71bddc"
+              ],
+              "seq": [
+                1,
+                2,
+                3,
+                4,
+                5
+              ],
+              "ranks": [
+                [
+                  0,
+                  1520,
+                  912,
+                  912,
+                  912,
+                  912,
+                  912,
+                  912,
+                  0,
+                  15165693
+                ],
+                [
+                  1,
+                  1520,
+                  912,
+                  912,
+                  912,
+                  911,
+                  912,
+                  912,
+                  0,
+                  15197904
+                ]
+              ],
+              "effect": [
+                true,
+                true,
+                true,
+                null
+              ],
+              "recovery": [
+                true,
+                true,
+                true
+              ],
+              "off_exact": true
+            },
+            {
+              "owner": "worker-group-9a0871ddb82f4eadbd9f4f016ddee51f",
+              "provider_owners": [
+                "a3affe31cbc646f918e9806e4d2a1bb1",
+                "a57137f7aaeb5aa0787bb6e55814b04b"
+              ],
+              "seq": [
+                6,
+                7,
+                8,
+                9,
+                10
+              ],
+              "ranks": [
+                [
+                  0,
+                  1520,
+                  912,
+                  912,
+                  912,
+                  912,
+                  912,
+                  912,
+                  0,
+                  15165693
+                ],
+                [
+                  1,
+                  1520,
+                  912,
+                  912,
+                  912,
+                  911,
+                  912,
+                  912,
+                  0,
+                  15197904
+                ]
+              ],
+              "effect": [
+                true,
+                true,
+                true,
+                null
+              ],
+              "recovery": [
+                true,
+                true,
+                true
+              ],
+              "off_exact": true
+            }
+          ],
+          "product_scope_recovery": [
+            {
+              "scope": 0,
+              "canary_exact": true,
+              "all_resources_zero": true
+            },
+            {
+              "scope": 1,
+              "canary_exact": true,
+              "all_resources_zero": true
+            }
+          ],
+          "verdict": "BLUE_VALIDATION_PASSED_NO_A3_QUALIFICATION",
+          "rounds": [
+            {
+              "scope": 0,
+              "phase": "baseline",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 0,
+              "phase": "fault",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 0,
+              "phase": "off",
+              "index": 0,
+              "composition_matches_baseline": false,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    4,
+                    4,
+                    4,
+                    3,
+                    1,
+                    4,
+                    4,
+                    4,
+                    3
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    4,
+                    4,
+                    4,
+                    3,
+                    1,
+                    4,
+                    4,
+                    4,
+                    3
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 0,
+              "phase": "off",
+              "index": 1,
+              "composition_matches_baseline": true,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 1,
+              "phase": "baseline",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 1,
+              "phase": "fault",
+              "index": 0,
+              "composition_matches_baseline": null,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            },
+            {
+              "scope": 1,
+              "phase": "off",
+              "index": 0,
+              "composition_matches_baseline": true,
+              "ranks": [
+                {
+                  "rank": 0,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                },
+                {
+                  "rank": 1,
+                  "batch_sizes": [
+                    1,
+                    8,
+                    8,
+                    8,
+                    7
+                  ],
+                  "full_logit_nonfinite": 0,
+                  "methods_restored": true,
+                  "truncated": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "note": "Container wall time includes load/warmup/controls; it is not kernel-active time or a performance gate. Original failure remains failed. A3 registrations unchanged."
+}
