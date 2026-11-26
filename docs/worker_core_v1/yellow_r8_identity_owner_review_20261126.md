@@ -12,11 +12,15 @@
 
 Native 的 d9aa 构建元数据已生成，见 `native_build_metadata_d9aa_20261126/README.md`。这是可核对的原A2构建身份，不替换黄区旧回执中的 null；41/26fia/20仍需放置sidecar后双rank实读，负例合格后才登记。
 
-## 第二owner：等待情况B证据，不改运行时
+## 第二owner：情况A已定性，拒绝被放大的问题单独保留
 
-已收到文字栈：rank0 `PRODUCT_ROLLBACK_OWNER_MISMATCH`、rank1 `CONTINUOUS_BINDING_ALREADY_INSTALLED`，经 ProductClient.disable → _rollback_enable → binding rollback。它说明错误被放大，但**不足以确认**究竟是前一scope未清理的情况A，还是前一owner合法占用、第二owner被拒后错误回滚他人资源的情况B。原文对旧binding的解释不是独立证明。
+追加材料：黄区 `r8负例第二次500定位与Batch更正_原文.txt`，5347字节、SHA `34fdadee334dcbaf24127445441b750139b577c8388839dd8d8c544d734175c6`；负责人本轮裁定原文34269字节、SHA `178f7ccdb748f74de4a1b341a7e6d738b6e6b53be72d05cb1e40cb8b4adff78f`。黄区确认 already_enabled 分支使用同一个 client。
 
-按负责人决定，本轮不立项修改公共runtime，不放宽 remove_permit、不把其他owner的binding强制移除。黄区负例适配器先按既定生命周期自行修正。
+复核冻结r8的 product_host.py（SHA `eed69a5853386405fb84f966271f01c3baf89893b03b9a6c9ed90b007fd23a9a`）：enable 的重复调用守卫在 try 前，直接拒绝 PRODUCT_NEW_ATTACHMENT_REQUIRED，不调用Worker、不设置待回滚标志。首次 _enable 在binding attach前设置 bound=True；其后失败会置 _enable_failure_pending，回滚成功才清除此标志。disable 的 _rollback_enable 分支说明前一次enable及其回滚未完成，而不是成功enable后的重复调用。
+
+结合本次原始栈中的其他owner拒绝及既有binding，**第二次500定性为情况A：用例首次enable前已存在其他owner的binding，尚未走到重复enable。** 不再把A/B本身列为待判定。各rank错误码不同不能单独证明泄漏发生在哪个rank或哪一步；TypeError、remove_permit失败或之前用例中途退出只是来源候选，须新实例逐用例审计定位。
+
+残留及负例适配器清理由黄区负责。第一次enable被拒后，回滚碰到其他owner，最终变成exit5的问题由codex单独跟踪。本轮不修改公共runtime，不放宽remove_permit、不强制移除其他owner的binding。
 
 需同一次运行的最小证据：
 
@@ -25,7 +29,7 @@ Native 的 d9aa 构建元数据已生成，见 `native_build_metadata_d9aa_20261
 3. 后续回滚目标owner/generation、调用序号、逐rank返回体和CLI退出码；不能混接两次运行的日志。
 4. 回滚后owner0的原binding/租约未受损、引擎存活；按owner0自己的关闭流程能完成恢复。
 
-若这些确认B：再做最小修复，使未创建本owner资源时回滚幂等成功，保留enable的契约拒绝码、CLI exit4；绝不回滚owner0的资源。若确认A：由黄区修复scope0关闭/移除顺序。情况未明不将exit5当合格负例，也不提前填写negative_controls=true。
+新实例若不再出现首次enable拒绝后exit5，登记为r8.2待办，不阻塞合格的本轮负例登记；若再出现，按上述同次运行逐RPC证据做最小修复：确实没有本owner资源可清理时幂等成功，保留最初契约拒绝码、CLI exit4，不回滚别人的资源。部分rank已创建本owner资源时仍必须清理并证明恢复，不能把真实恢复失败吞成exit4。修复须补CPU和受影响A2回归，不能塞进只改登记表的r8.1。未提供完整证据的负例不记通过。
 
 ## 当前负例结论
 

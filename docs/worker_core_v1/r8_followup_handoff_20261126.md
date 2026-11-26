@@ -7,7 +7,7 @@
 |Native构建身份|d9aa… 的 dcat-native-build.json 已按原构建证据生成；989字节、SHA c61f1a27…73ea9|黄区核对库SHA后放到实际库旁，再回传双rank observe_identity；负例通过后登记|
 |N2|新增 launch_host 变体，传完整host/holder，tiling仍null|黄区用已有六条原件离线运行；不阻塞D/G，不直接进入33控制重算|
 |Batch|A2/0.26/Qwen3.8 W8A8/TP2 三轮无注入完成；同组成下首轮第0请求不同，后两轮精确|保留基线不稳定结论；具体内核与黄区OFF原因未证明，不放宽恢复协议|
-|第二owner|已有栈，尚不能确认情况B|待同次运行owner/调用序号/资源归属证据；未改runtime|
+|第二owner|追加执行路径复核已确认情况A，残留来源待审计|首次enable拒绝被放大成exit5单列：新实例不再出现则留r8.2待办，再出现则按逐RPC证据最小修复；未改runtime|
 |r8.1草稿|七项14份rank身份校验通过，expected_ranks已填|negative_controls保持null，未加载、未登记|
 
 交接入口：
