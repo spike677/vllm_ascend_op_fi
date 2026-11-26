@@ -1,0 +1,103 @@
+{
+  "status": "INCOMPLETE_NOT_QUALIFIED",
+  "scope": "A2/0.26/CANN9.1/community Qwen3.8 W8A8/TP2",
+  "source_manifest_sha256": "b87aced01c6bc4ad438f03118cb933e18d5ae0b02ab39962cdc5726318079c0e",
+  "failure_phase": "scope1 enable / warmup canary before injection",
+  "error": "RuntimeError('PRODUCT_ENABLE_RECOVERY_REQUIRED:Remote end closed connection without response; cleanup=<urlopen error [Errno 111] Connection refused>')",
+  "scope0_recovery": {
+    "bytes_restored": true,
+    "resources_zero": true,
+    "canary_exact": true,
+    "restored": true
+  },
+  "scope0_cleanup": [
+    {
+      "status": "PERMIT_REMOVED",
+      "leases": 0,
+      "owners": 0
+    },
+    {
+      "status": "PERMIT_REMOVED",
+      "leases": 0,
+      "owners": 0
+    }
+  ],
+  "nonserial_negative": {
+    "exit_code": 4,
+    "refusal_codes": [
+      "PRODUCT_BATCH_CANARY_REQUIRES_SERIAL_B1"
+    ],
+    "health_http": 200,
+    "resources": [
+      {
+        "rank": 0,
+        "leases": 0,
+        "owners": 0,
+        "bindings": 0,
+        "wrappers": 0
+      },
+      {
+        "rank": 1,
+        "leases": 0,
+        "owners": 0,
+        "bindings": 0,
+        "wrappers": 0
+      }
+    ]
+  },
+  "termination_evidence": {
+    "time_utc": "2026-11-25T15:20:15Z",
+    "api": "shutdown triggered",
+    "engine": "SIGTERM",
+    "sender": "UNPROVEN",
+    "container_oom_killed": false,
+    "our_isolation_stop_of_project_container": false,
+    "same_image_launcher_source_check": {
+      "api_shutdown_trigger": "signal_handler registered for SIGINT and SIGTERM",
+      "source_copy_sha256": "9e68fa5293c429219f5d636cc4f08d3a2751434f99f15b833d0035b42025e130",
+      "sender_not_identified": true
+    },
+    "failed_receipt_mtime_utc": "2026-11-25T15:21:16.278506+00:00",
+    "ordering": "API shutdown log at 15:20:15 precedes FAILED receipt write at 15:21:16; probe finally server.terminate follows that save. Initial shutdown is not explained by this final cleanup. Sender still unproven."
+  },
+  "classification": "API process termination observed; origin not proven. No public-runtime fix or yellow equivalence claimed.",
+  "retry": {
+    "status": "PASSED",
+    "attempt": "r8batch1125r1",
+    "source_unchanged": true,
+    "source_manifest_sha256": "b87aced01c6bc4ad438f03118cb933e18d5ae0b02ab39962cdc5726318079c0e",
+    "review_sha256": "4199c66ac21431108aebad5827df7d473df2f8bafc5583934cf734c2840f46e5",
+    "same_workers_two_owners": true,
+    "signal_observation": "Only terminal cleanup: probe kill(72,SIGTERM) at epoch1795622484.804926; API receives it at1795622484.805106 from namespace pid71. No earlier SIGINT/SIGTERM in attached API trace.",
+    "trace_limit": "Only own API and probe main threads traced; not a retrospective identification of the first failure sender.",
+    "trace_files": {
+      "signals-2187981.log": {
+        "bytes": 84,
+        "sha256": "b2700efd4635686eb312ef9deed3a6913e59a6b9d8381fd9bd084590eeab7de6"
+      },
+      "signals-2188006.log": {
+        "bytes": 743,
+        "sha256": "66579bcd806ace9148436a70cec5c94908ea6427ce0ef0b1c2ae472edecf03ca"
+      }
+    },
+    "yellow_failure_resolved": false
+  },
+  "originals": {
+    "product_http_batch.json": {
+      "bytes": 7750327,
+      "sha256": "71011f0037152e187ae65ae49e233a37623ce85ab0b35b4f7f3d983b254f937e"
+    },
+    "product_batch_canary_negative.json": {
+      "bytes": 2278,
+      "sha256": "6875bd6b498f64378efbb98aa58bcb2fc3235891b21bd6aa9e044fb7ecc6319f"
+    },
+    "http-server.log": {
+      "bytes": 53747,
+      "sha256": "e28532937ff8d9912d8d2b4da43a1a580655719c2fe83d07efc14f821711eae0"
+    },
+    "process.log": {
+      "bytes": 499,
+      "sha256": "985b7daa1b4b8d407e1dd61b67b289b89e4f2cffbd434d913f8716369e0093d4"
+    }
+  }
+}

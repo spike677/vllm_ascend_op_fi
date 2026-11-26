@@ -1,0 +1,162 @@
+{
+  "schema": "demoncat.native_regions.build.v1",
+  "status": "BUILD_AND_CPU_TESTS_ONLY",
+  "npu_calls": 0,
+  "qualification_granted": false,
+  "started": "2026-11-23T07:54:35.762650+00:00",
+  "machine": "aarch64",
+  "sources": {
+    "postwrite.cpp": "06f908d2d46c9a0ac0af290d559ff75ec1eb1b5c9d5ffb1c784c20c077698ec2",
+    "postwrite.h": "d5981e69442673bd0d6b1570eb53fb2ae1a5a29e2881bbbe4eff0253ebbeb68c",
+    "test_bound_addresses.cpp": "85dbc7368f85634306ccbae9f9baa68c988463aea4befaa92b34d47d8db0d23f",
+    "test_stream_regions.cpp": "ee4e1acfb596b1e6f31d59072b5d5c39ba0a2e36f30500e9843e2d99cd3d3b2f",
+    "test_original_snapshot.cpp": "e527304e75c25ca827bac57eb1f2dd1de91a8a3bdd43fa4ba43efb3f4ae2ff7f"
+  },
+  "commands": [
+    {
+      "args": [
+        "g++",
+        "--version"
+      ],
+      "returncode": 0,
+      "stdout": "g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0\nCopyright (C) 2021 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "g++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pthread",
+        "-I/usr/local/Ascend/cann-9.1.0/include",
+        "/work/source/test_bound_addresses.cpp",
+        "-o",
+        "/work/build/test_bound_addresses"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "/work/build/test_bound_addresses"
+      ],
+      "returncode": 0,
+      "stdout": "{\"status\":\"PASS_CPU_EXISTING_LINKED_ADDRESSES_ONLY\",\"actual_npu_calls\":0}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "g++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pthread",
+        "-I/usr/local/Ascend/cann-9.1.0/include",
+        "/work/source/test_original_snapshot.cpp",
+        "-o",
+        "/work/build/test_original_snapshot"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "/work/build/test_original_snapshot"
+      ],
+      "returncode": 0,
+      "stdout": "{\"status\":\"PASS_CPU_LEASE_ORIGINAL_DIAGNOSTIC\",\"npu_compute\":false}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "g++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pthread",
+        "-I/usr/local/Ascend/cann-9.1.0/include",
+        "/work/source/test_stream_regions.cpp",
+        "-o",
+        "/work/build/test_stream_regions"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "/work/build/test_stream_regions"
+      ],
+      "returncode": 0,
+      "stdout": "{\"status\":\"PASS_CPU_STREAM_OBJECT_REGIONS\",\"actual_npu_calls\":0}\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "g++",
+        "-std=c++17",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pthread",
+        "-I/usr/local/Ascend/cann-9.1.0/include",
+        "-fPIC",
+        "-shared",
+        "/work/source/postwrite.cpp",
+        "-L/usr/local/Ascend/cann-9.1.0/lib64",
+        "-lascendcl",
+        "-Wl,-soname,libdcat_postwrite.so",
+        "-o",
+        "/work/build/libdcat_postwrite.so"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "nm",
+        "-D",
+        "--defined-only",
+        "/work/build/libdcat_postwrite.so"
+      ],
+      "returncode": 0,
+      "stdout": "0000000000003930 W _ZNSt12_Vector_baseImSaImEED1Ev\n0000000000003930 W _ZNSt12_Vector_baseImSaImEED2Ev\n0000000000003780 W _ZNSt12_Vector_baseItSaItEED1Ev\n0000000000003780 W _ZNSt12_Vector_baseItSaItEED2Ev\n00000000000037a0 W _ZNSt6vectorItSaItEE17_M_default_appendEm\n0000000000001d90 T dcat_pw_abi\n0000000000003150 T dcat_pw_apply\n0000000000002090 T dcat_pw_copy_original_v1\n00000000000023e0 T dcat_pw_copy_region_v2\n0000000000001e50 T dcat_pw_lease_byte_capacity\n0000000000001e40 T dcat_pw_lease_capacity\n0000000000001da0 T dcat_pw_linked_address_v1\n0000000000001fa0 T dcat_pw_live\n0000000000003120 T dcat_pw_open\n0000000000003130 T dcat_pw_open_stream_v2\n0000000000001e60 T dcat_pw_read_span\n0000000000002970 T dcat_pw_release\n0000000000002740 T dcat_pw_restore\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "readelf",
+        "-d",
+        "/work/build/libdcat_postwrite.so"
+      ],
+      "returncode": 0,
+      "stdout": "\nDynamic section at offset 0x4da8 contains 29 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libascendcl.so]\n 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-aarch64.so.1]\n 0x000000000000000e (SONAME)             Library soname: [libdcat_postwrite.so]\n 0x000000000000000c (INIT)               0x1288\n 0x000000000000000d (FINI)               0x394c\n 0x0000000000000019 (INIT_ARRAY)         0x14d90\n 0x000000000000001b (INIT_ARRAYSZ)       16 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x14da0\n 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x1f0\n 0x0000000000000005 (STRTAB)             0x7b0\n 0x0000000000000006 (SYMTAB)             0x2a0\n 0x000000000000000a (STRSZ)              1365 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000003 (PLTGOT)             0x14fe8\n 0x0000000000000002 (PLTRELSZ)           792 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0xf70\n 0x0000000000000007 (RELA)               0xe38\n 0x0000000000000008 (RELASZ)             312 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000006ffffffe (VERNEED)            0xd78\n 0x000000006fffffff (VERNEEDNUM)         4\n 0x000000006ffffff0 (VERSYM)             0xd06\n 0x000000006ffffff9 (RELACOUNT)          4\n 0x0000000000000000 (NULL)               0x0\n",
+      "stderr": ""
+    }
+  ],
+  "compiler": "g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+  "sdk_version_files": {
+    "aarch64-linux/ascend_toolkit_install.info": {
+      "sha256": "a9b17ef608ebeb70ade09cde1c12a545eb5e8f3e5312f6806ca0d368b0464848",
+      "text": "package_name=Ascend-cann-toolkit\nversion=9.1.0\ninnerversion=V100R001C11SPC001B243\ncompatible_version=[V100R001C15],[V100R001C21],[V100R001C23],[V100R001C10]\narch=aarch64\nos=linux\npath=/usr/local/Ascend/cann-9.1.0\n"
+    }
+  },
+  "dependencies": "\nDynamic section at offset 0x4da8 contains 29 entries:\n  Tag        Type                         Name/Value\n 0x0000000000000001 (NEEDED)             Shared library: [libascendcl.so]\n 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]\n 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]\n 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-aarch64.so.1]\n 0x000000000000000e (SONAME)             Library soname: [libdcat_postwrite.so]\n 0x000000000000000c (INIT)               0x1288\n 0x000000000000000d (FINI)               0x394c\n 0x0000000000000019 (INIT_ARRAY)         0x14d90\n 0x000000000000001b (INIT_ARRAYSZ)       16 (bytes)\n 0x000000000000001a (FINI_ARRAY)         0x14da0\n 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)\n 0x000000006ffffef5 (GNU_HASH)           0x1f0\n 0x0000000000000005 (STRTAB)             0x7b0\n 0x0000000000000006 (SYMTAB)             0x2a0\n 0x000000000000000a (STRSZ)              1365 (bytes)\n 0x000000000000000b (SYMENT)             24 (bytes)\n 0x0000000000000003 (PLTGOT)             0x14fe8\n 0x0000000000000002 (PLTRELSZ)           792 (bytes)\n 0x0000000000000014 (PLTREL)             RELA\n 0x0000000000000017 (JMPREL)             0xf70\n 0x0000000000000007 (RELA)               0xe38\n 0x0000000000000008 (RELASZ)             312 (bytes)\n 0x0000000000000009 (RELAENT)            24 (bytes)\n 0x000000006ffffffe (VERNEED)            0xd78\n 0x000000006fffffff (VERNEEDNUM)         4\n 0x000000006ffffff0 (VERSYM)             0xd06\n 0x000000006ffffff9 (RELACOUNT)          4\n 0x0000000000000000 (NULL)               0x0\n",
+  "library": {
+    "file": "libdcat_postwrite.so",
+    "bytes": 29088,
+    "sha256": "d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274"
+  },
+  "ended": "2026-11-23T07:54:40.625874+00:00"
+}

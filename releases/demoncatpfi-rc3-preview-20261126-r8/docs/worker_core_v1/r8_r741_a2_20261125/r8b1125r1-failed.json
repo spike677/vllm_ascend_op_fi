@@ -1,0 +1,18 @@
+{
+  "window": {
+    "status": "CASE_FAILED",
+    "start": "2026-11-25T03:38:19.877971+00:00",
+    "ended": "2026-11-25T03:42:27.139730+00:00",
+    "elapsed_seconds": 247.2618609231431,
+    "isolation_removed": true
+  },
+  "receipt_sha256": "d5f6a08c5dfa3e8287e9a73f1f2d532e11594f2b885a4c981737946e7d3d405b",
+  "receipt_bytes": 5592,
+  "status": "FAILED",
+  "error": "AssertionError()",
+  "traceback": "Traceback (most recent call last):\n  File \"/source/experiments/worker_core_v11_20261118/registered_http_probe.py\", line 141, in main\n    assert negative['attach']['exit_code']==4 and 'PRODUCT_COMBINATION_NOT_REGISTERED' in negative['attach']['refusal_codes']\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n",
+  "scopes": 0,
+  "classification": "ACCEPTANCE_HARNESS_DUPLICATE_ATTACH_AFTER_CAPABILITIES",
+  "passed": false,
+  "fix": "Call enable to exercise registration admission, then verify rollback, disable/detach and same-engine inference; no runtime or registration identity changed."
+}

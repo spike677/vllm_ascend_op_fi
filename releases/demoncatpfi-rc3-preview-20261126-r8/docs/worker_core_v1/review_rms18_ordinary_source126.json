@@ -1,0 +1,260 @@
+{
+  "schema": "demoncat.review.rms18_ordinary_source126.v1",
+  "review_date": "2026-11-19",
+  "status": "ORDINARY_SINGLE_TARGET_ORIGINAL_RECORDS_CONSISTENT",
+  "review_kind": "INDEPENDENT_OFFLINE_ORIGINAL_JSON_AND_PINNED_SOURCE_REVIEW",
+  "issues": [],
+  "scope": {
+    "mechanism": "18.api_half",
+    "model": "Qwen3-0.6B",
+    "physical_card": 5,
+    "worker": "vllm_ascend.worker.worker.NPUWorker",
+    "tp": 1,
+    "rank": 0,
+    "mode": "eager fresh prefill",
+    "dtype": "torch.bfloat16",
+    "prompt_tokens": 14,
+    "generated_tokens_per_request": 1,
+    "phases": [
+      "normal",
+      "fault",
+      "off",
+      "health"
+    ],
+    "actual_requests": 4,
+    "target_count": 1,
+    "full_model_census": false
+  },
+  "qualification": {
+    "C1": false,
+    "C2": false,
+    "C3": false,
+    "E5": false,
+    "main_project_integration": "NOT_VERIFIED",
+    "qualification_granted": false,
+    "historical_scope_inherited": false
+  },
+  "originals": {
+    "result.json": {
+      "bytes": 80450,
+      "sha256": "0b6a575d265944b6def836fea25ccbb0f49483220b7ceb7412797e562c36ae39"
+    },
+    "host_receipt.json": {
+      "bytes": 1174679,
+      "sha256": "e3852e86a0cfdbc541f9455815317ec717e0cc0fe6b15e0345f44a91db9c2eb5"
+    },
+    "controller.json": {
+      "bytes": 62247,
+      "sha256": "41982429bcc85c359f5b306bde2fd4cfd7d498bd41d6a3016add35c0574a1971"
+    },
+    "source_manifest.json": {
+      "bytes": 239264,
+      "sha256": "c36875d564665c9163fd223bb9fc5eb1089b1b1dd4914a19dd713d6e110cec3b"
+    }
+  },
+  "source": {
+    "commit": "ce597d2dfb7a0c9c939d1a9164c83e3651f4abb0",
+    "manifest_sha256": "c36875d564665c9163fd223bb9fc5eb1089b1b1dd4914a19dd713d6e110cec3b",
+    "manifest_entries": 1259,
+    "participating_git_blobs_rehashed": 31,
+    "installed_module_fingerprints_joined": 24,
+    "unused_manifest_files_rehashed": false,
+    "image": "sha256:35f9e569dbe3dc8db90cb361886d7889489efd8fa065860c8de319e13ab025d0",
+    "model_weights_manifest_sha256_recorded": "5283e499d78dad400860a4ddd708a0aa0f00a10bfc6f7adccfcddee9cb743a9e",
+    "model_weight_bytes_rehashed_offline": false
+  },
+  "host": {
+    "action_count": 17,
+    "actions": [
+      "attach",
+      "prepare",
+      "register",
+      "check",
+      "enable",
+      "advance",
+      "query",
+      "advance",
+      "query",
+      "advance",
+      "query",
+      "advance",
+      "query",
+      "finish",
+      "disable",
+      "unregister",
+      "detach"
+    ],
+    "same_public_ticket_and_worker": true,
+    "distinct_native_owner_consistent_with_runtime_lease": true,
+    "generation": 1,
+    "four_unique_request_and_invocation_ids": true,
+    "scheduler_ids_match_actual_pre_hooks_and_query_rows": true,
+    "all_input_id_and_position_hashes_recomputed": true,
+    "complete_root_input_digest": "91c08c19f69a0831ac399a8d320ac8d35ce7d7f932c626a12c803ede284abd21",
+    "query_rows_equal_request_observations": true,
+    "pending_request_never_borrows_completed_effect": true
+  },
+  "target": {
+    "path": "model.layers.0.input_layernorm",
+    "selection": "FIRST_ACTUAL_RMS_RETURN_REQUIRES_CONSUMER",
+    "operator": "npu.npu_rms_norm.default",
+    "boundary": "module_return_gain_proxy",
+    "native_reduce_error_claimed": false,
+    "source_contract": "ACTUAL_NATIVE_RMS_WEIGHT_AND_MODULE_RETURN_LINEAGE",
+    "callable_source_binding_sha256": "3d5a0d693f974ee4f2d45add3481c74e1f1572b3cdf54484eb5655cb5003c4d7",
+    "callable_source_bytes_not_rehashed_offline": true,
+    "same_module_input_weight_storage_and_original_return": true,
+    "original_return_sha256": "ce217af1adae25652d656bfbc4ee7b385f7925e762b7406b1e88e74c3e02f9e8",
+    "target_weight_sha256": "83137f390b694349d479dca59711b1b8b8fe1f029747c8c11bbc3d1a53863140",
+    "events_per_phase": [
+      1,
+      1,
+      0,
+      0
+    ],
+    "applied_events_per_phase": [
+      0,
+      1,
+      0,
+      0
+    ],
+    "observed_original_native_calls_per_normal_fault": [
+      1,
+      1
+    ],
+    "normal_fault_consumer_equal": true,
+    "consumer": {
+      "actual_return_lineage": true,
+      "operator": "vllm.unquantized_gemm.default",
+      "path": "model.layers.0.self_attn.qkv_proj",
+      "post_root": false,
+      "returned": true
+    }
+  },
+  "numeric_effect": {
+    "source": "RUNTIME_COMPLETE_SAME_RETURN_CPU_READBACK_SUMMARY",
+    "raw_tensor_arrays_recomputed_offline": false,
+    "gain": 0.5,
+    "shape": [
+      14,
+      1024
+    ],
+    "dtype": "torch.bfloat16",
+    "changed_elements_reported": 14336,
+    "elements_reported": 14336,
+    "finite_pair_elements_reported": 14336,
+    "max_abs_diff_finite_reported": 1.4296875,
+    "nonfinite_before_after_reported": [
+      0,
+      0
+    ],
+    "four_samples_independently_exact_half": true,
+    "sample_count": 4,
+    "samples": [
+      {
+        "after": 0.037841796875,
+        "before": 0.07568359375,
+        "flat_index": 0
+      },
+      {
+        "after": 0.2314453125,
+        "before": 0.462890625,
+        "flat_index": 1
+      },
+      {
+        "after": -0.326171875,
+        "before": -0.65234375,
+        "flat_index": 2
+      },
+      {
+        "after": -0.036865234375,
+        "before": -0.07373046875,
+        "flat_index": 3
+      }
+    ]
+  },
+  "outputs": {
+    "full_hidden_and_logits_hashes": {
+      "normal": {
+        "hidden": "79f94b2e13fa304b11e136d997c1b27e97276b9559dfe1f13b0774c0a6e67de7",
+        "logits": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be"
+      },
+      "fault": {
+        "hidden": "d7460e37122c24bb1caaf8f9e846415add9e1bc7a346e95edaeee9b6c3b1ac79",
+        "logits": "d6c8c1cbeaa21360c4ec545e2e9932d1151c201fc21881eb54de7574818c5e9a"
+      },
+      "off": {
+        "hidden": "79f94b2e13fa304b11e136d997c1b27e97276b9559dfe1f13b0774c0a6e67de7",
+        "logits": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be"
+      },
+      "health": {
+        "hidden": "79f94b2e13fa304b11e136d997c1b27e97276b9559dfe1f13b0774c0a6e67de7",
+        "logits": "c8007deca69b29e1360d88c68150a9bf83f19e8b08db7cc651e7b0fd93eb21be"
+      }
+    },
+    "fault_hidden_hash_changed": true,
+    "fault_logits_hash_changed": true,
+    "off_and_health_hashes_equal_normal": true,
+    "tokens_by_phase": {
+      "normal": [
+        576
+      ],
+      "fault": [
+        576
+      ],
+      "off": [
+        576
+      ],
+      "health": [
+        576
+      ]
+    },
+    "text_by_phase": {
+      "normal": " The",
+      "fault": " The",
+      "off": " The",
+      "health": " The"
+    },
+    "fault_generated_token_changed": false,
+    "fault_generated_text_changed": false,
+    "continuous_decode_verified": false
+  },
+  "recovery": {
+    "off_health_rms_observers": [
+      0,
+      0
+    ],
+    "complete_hidden_logits_recovery_in_same_worker": true,
+    "pending_scope_hides_current_effect": true,
+    "last_fault_effect_explicitly_historical": true,
+    "final_owned_hooks": 0,
+    "final_dispatch_leases": 0,
+    "final_inflight": 0,
+    "final_pending_request": null,
+    "final_registered": false,
+    "final_replay_pending": false,
+    "final_recovery_validation_pending": false,
+    "host_ticket_and_attachment_removed": true,
+    "binding_removed": true,
+    "ownership_retained": false,
+    "first_error": null
+  },
+  "controller": {
+    "exit_code": 0,
+    "oom_killed": false,
+    "owned_container_removed": true,
+    "pre_post_gate_blocker_counts": [
+      0,
+      0
+    ],
+    "container_cleanup_used_as_numerical_recovery_proof": false
+  },
+  "limitations": [
+    "Single target, one prompt, BF16 TP1 eager on the recorded Qwen3 model; no all-layer coverage or additional-model claim.",
+    "Return-half proxy after a real RMS result; no internal RMS reduction defect claim.",
+    "Independent offline comparison uses original summaries and complete-output digests; full tensor arrays were not present or recalculated.",
+    "No new statistics/mix collection or E5 inference.",
+    "One generated token per request; no continuous-generation acceptance.",
+    "The acceptance driver is separate from the inaccessible yellow-zone main project."
+  ]
+}

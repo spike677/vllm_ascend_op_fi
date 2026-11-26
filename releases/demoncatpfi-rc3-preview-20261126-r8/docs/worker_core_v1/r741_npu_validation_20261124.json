@@ -1,0 +1,858 @@
+{
+  "schema": "dcat.r741.npu_validation.v1",
+  "date": "2026-11-24",
+  "combination": "BLUE_COMBINATION / Ascend910B4 A2 / CANN9.1.0 / vLLM0.26.0 + vllm-ascend0.26.0rc1 / Qwen3.8 community W8A8 / TP2",
+  "qualification_granted": false,
+  "release_frozen": false,
+  "cases": [
+    {
+      "case": "r741reg1124a1-old18",
+      "mechanism": "18.api_half",
+      "status": "HTTP_PRODUCT_TWO_SCOPES_PENDING_REVIEW",
+      "source_commit": "bfb8bc9e8f7e1a194cae6cb6443bf0a20b634150",
+      "source_manifest_sha256": "18c73e8013ea3b8c61fd3e2e2204a473bdc637672fa10ad56e19eda869ceeff5",
+      "receipt": {
+        "file": "product_http_18.json",
+        "bytes": 12620685,
+        "sha256": "2e6b9fe3a3fe5ce0666a53dcac108d25c05254d58c539976a504457d00a5f2bd"
+      },
+      "started_utc": "2026-11-24T13:15:20.516761+00:00",
+      "ended_utc": "2026-11-24T13:19:58.520726+00:00",
+      "allocated_wall_seconds": 278.003965,
+      "exit_code": 0,
+      "qualification_granted": false,
+      "review": "PASSED",
+      "scopes": [
+        {
+          "scope": 0,
+          "owners": [
+            "18f6080fe95208dbfd65bc94c5e660d5",
+            "cd021804c25e990e4dc1d08f75e82c41"
+          ],
+          "coverage_by_rank": {
+            "0": {
+              "observed": 1932,
+              "eligible": 1932,
+              "attempted": 1932,
+              "applied": 1932,
+              "changed": 1931,
+              "consumed": 1932,
+              "restored": 1932,
+              "failed": 0
+            },
+            "1": {
+              "observed": 1932,
+              "eligible": 1932,
+              "attempted": 1932,
+              "applied": 1932,
+              "changed": 1931,
+              "consumed": 1932,
+              "restored": 1932,
+              "failed": 0
+            }
+          },
+          "changed_elements_by_rank": {
+            "0": 1931,
+            "1": 1931
+          },
+          "consumers": [
+            "aten::index",
+            "npu::npu_dynamic_quant",
+            "vllm::unified_attention_with_output"
+          ],
+          "native_producers": [],
+          "request_seconds": [
+            3.3408618760295212,
+            3.211238916963339,
+            3.2570962058380246,
+            1.3251080878544599
+          ],
+          "performance_ratio": null,
+          "performance_note": "No matched normal user-request timing collected; absolute HTTP times only",
+          "restore": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "range_negative": true,
+          "permit_profile_path_negatives": true
+        },
+        {
+          "scope": 1,
+          "owners": [
+            "01e6c89be7ca9679495c3771ed591e52",
+            "e9a7fa1a8d693b1fa8f9ae708795cf8c"
+          ],
+          "coverage_by_rank": {
+            "0": {
+              "observed": 1932,
+              "eligible": 1932,
+              "attempted": 1932,
+              "applied": 1932,
+              "changed": 1931,
+              "consumed": 1932,
+              "restored": 1932,
+              "failed": 0
+            },
+            "1": {
+              "observed": 1932,
+              "eligible": 1932,
+              "attempted": 1932,
+              "applied": 1932,
+              "changed": 1931,
+              "consumed": 1932,
+              "restored": 1932,
+              "failed": 0
+            }
+          },
+          "changed_elements_by_rank": {
+            "0": 1931,
+            "1": 1931
+          },
+          "consumers": [
+            "aten::index",
+            "npu::npu_dynamic_quant",
+            "vllm::unified_attention_with_output"
+          ],
+          "native_producers": [],
+          "request_seconds": [
+            3.218425180995837,
+            3.211524923099205,
+            3.242965912912041,
+            1.3083234999794513
+          ],
+          "performance_ratio": null,
+          "performance_note": "No matched normal user-request timing collected; absolute HTTP times only",
+          "restore": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "range_negative": true,
+          "permit_profile_path_negatives": true
+        }
+      ],
+      "deployment_identity": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "execution_mode": "product",
+        "hardware_device_name": "Ascend910B4",
+        "hardware_family": "A2",
+        "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+        "hardware_logical_device": 0,
+        "live_config_matches_file": true,
+        "max_model_len": 1024,
+        "max_num_batched_tokens": 1024,
+        "max_num_seqs": 1,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "pp": 1,
+        "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+        "safetensors_index_sha256": {
+          "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+        },
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      },
+      "control_negative_receipt": {
+        "file": "product_control_negative.json",
+        "bytes": 2259499,
+        "sha256": "17e2af634da884cf804a7fcaf53dd13e005234b29e4467fc946f24bb5ebdfabb"
+      },
+      "control_negative_exit_codes": {
+        "unknown_profile_cli": 4,
+        "missing_permit_cli": 4,
+        "cli_99": 4
+      }
+    },
+    {
+      "case": "r741reg1124a1-old17",
+      "mechanism": "17.spatial_padding",
+      "status": "HTTP_PRODUCT_TWO_SCOPES_PENDING_REVIEW",
+      "source_commit": "bfb8bc9e8f7e1a194cae6cb6443bf0a20b634150",
+      "source_manifest_sha256": "18c73e8013ea3b8c61fd3e2e2204a473bdc637672fa10ad56e19eda869ceeff5",
+      "receipt": {
+        "file": "product_http_17.json",
+        "bytes": 289993,
+        "sha256": "5aa3239602531313c7855d2476d385681040f8c47548dba90153e66c097c5b07"
+      },
+      "started_utc": "2026-11-24T13:19:59.898735+00:00",
+      "ended_utc": "2026-11-24T13:25:23.050583+00:00",
+      "allocated_wall_seconds": 323.151848,
+      "exit_code": 0,
+      "qualification_granted": false,
+      "review": "PASSED",
+      "scopes": [
+        {
+          "scope": 0,
+          "owners": [
+            "1489cc21ab77c2728fd1d59c580e4ec9",
+            "4836ff60c736a18ab6cf90d10521c569"
+          ],
+          "coverage_by_rank": {
+            "0": {
+              "observed": 3,
+              "eligible": 3,
+              "attempted": 3,
+              "applied": 3,
+              "changed": 3,
+              "consumed": 3,
+              "restored": 3,
+              "failed": 0
+            },
+            "1": {
+              "observed": 3,
+              "eligible": 3,
+              "attempted": 3,
+              "applied": 3,
+              "changed": 3,
+              "consumed": 3,
+              "restored": 3,
+              "failed": 0
+            }
+          },
+          "changed_elements_by_rank": {
+            "0": 55154,
+            "1": 55154
+          },
+          "consumers": [
+            "aten::add"
+          ],
+          "native_producers": [],
+          "request_seconds": [
+            1.3671295698732138,
+            1.3067394089885056,
+            1.3140343760605901,
+            1.446159205166623
+          ],
+          "performance_ratio": null,
+          "performance_note": "No matched normal user-request timing collected; absolute HTTP times only",
+          "restore": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "range_negative": true,
+          "permit_profile_path_negatives": true
+        },
+        {
+          "scope": 1,
+          "owners": [
+            "0e2a9169d6df833fed1ea69a1b39facb",
+            "5e65843f327384bad03f007019fe1a57"
+          ],
+          "coverage_by_rank": {
+            "0": {
+              "observed": 3,
+              "eligible": 3,
+              "attempted": 3,
+              "applied": 3,
+              "changed": 3,
+              "consumed": 3,
+              "restored": 3,
+              "failed": 0
+            },
+            "1": {
+              "observed": 3,
+              "eligible": 3,
+              "attempted": 3,
+              "applied": 3,
+              "changed": 3,
+              "consumed": 3,
+              "restored": 3,
+              "failed": 0
+            }
+          },
+          "changed_elements_by_rank": {
+            "0": 55154,
+            "1": 55154
+          },
+          "consumers": [
+            "aten::add"
+          ],
+          "native_producers": [],
+          "request_seconds": [
+            1.3231781090144068,
+            1.3082549290265888,
+            1.3234879849478602,
+            1.477158057037741
+          ],
+          "performance_ratio": null,
+          "performance_note": "No matched normal user-request timing collected; absolute HTTP times only",
+          "restore": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "range_negative": true,
+          "permit_profile_path_negatives": true
+        }
+      ],
+      "deployment_identity": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "execution_mode": "product",
+        "hardware_device_name": "Ascend910B4",
+        "hardware_family": "A2",
+        "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+        "hardware_logical_device": 0,
+        "live_config_matches_file": true,
+        "max_model_len": 1024,
+        "max_num_batched_tokens": 1024,
+        "max_num_seqs": 1,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "pp": 1,
+        "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+        "safetensors_index_sha256": {
+          "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+        },
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      }
+    },
+    {
+      "case": "r741routes1124a1-variance",
+      "mechanism": "18.variance_over4",
+      "status": "HTTP_PRODUCT_TWO_SCOPES_PENDING_REVIEW",
+      "source_commit": "bfb8bc9e8f7e1a194cae6cb6443bf0a20b634150",
+      "source_manifest_sha256": "18c73e8013ea3b8c61fd3e2e2204a473bdc637672fa10ad56e19eda869ceeff5",
+      "receipt": {
+        "file": "product_http_18.json",
+        "bytes": 29340552,
+        "sha256": "73f982fc21a84138b5c87fc2795ea80f80acda2e1555ceb648e096d942588622"
+      },
+      "started_utc": "2026-11-24T13:05:17.862004+00:00",
+      "ended_utc": "2026-11-24T13:10:03.099549+00:00",
+      "allocated_wall_seconds": 285.237545,
+      "exit_code": 0,
+      "qualification_granted": false,
+      "review": "PASSED",
+      "scopes": [
+        {
+          "scope": 0,
+          "owners": [
+            "0bbbc0076ebb619b4d53d851554a0c45",
+            "f921cc6a6b29547b386609426ea8c399"
+          ],
+          "coverage_by_rank": {
+            "0": {
+              "observed": 1932,
+              "eligible": 1932,
+              "attempted": 1932,
+              "applied": 1932,
+              "changed": 1932,
+              "consumed": 1932,
+              "restored": 1932,
+              "failed": 0
+            },
+            "1": {
+              "observed": 1932,
+              "eligible": 1932,
+              "attempted": 1932,
+              "applied": 1932,
+              "changed": 1932,
+              "consumed": 1932,
+              "restored": 1932,
+              "failed": 0
+            }
+          },
+          "changed_elements_by_rank": {
+            "0": 20807703,
+            "1": 20807713
+          },
+          "consumers": [
+            "aten::index",
+            "npu::npu_dynamic_quant",
+            "vllm::unified_attention_with_output"
+          ],
+          "native_producers": [],
+          "request_seconds": [
+            3.48550907894969,
+            3.4604080291464925,
+            3.386868152068928,
+            1.3445585460867733
+          ],
+          "performance_ratio": null,
+          "performance_note": "No matched normal user-request timing collected; absolute HTTP times only",
+          "restore": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "range_negative": true,
+          "permit_profile_path_negatives": true
+        },
+        {
+          "scope": 1,
+          "owners": [
+            "ca32cd1b725d77cf39658828d07a7f86",
+            "cf9c23b7073c1eb46748cd8e444e6824"
+          ],
+          "coverage_by_rank": {
+            "0": {
+              "observed": 1932,
+              "eligible": 1932,
+              "attempted": 1932,
+              "applied": 1932,
+              "changed": 1932,
+              "consumed": 1932,
+              "restored": 1932,
+              "failed": 0
+            },
+            "1": {
+              "observed": 1932,
+              "eligible": 1932,
+              "attempted": 1932,
+              "applied": 1932,
+              "changed": 1932,
+              "consumed": 1932,
+              "restored": 1932,
+              "failed": 0
+            }
+          },
+          "changed_elements_by_rank": {
+            "0": 20807703,
+            "1": 20807713
+          },
+          "consumers": [
+            "aten::index",
+            "npu::npu_dynamic_quant",
+            "vllm::unified_attention_with_output"
+          ],
+          "native_producers": [],
+          "request_seconds": [
+            3.516523813130334,
+            3.3294231730978936,
+            3.3258369341492653,
+            1.3173616260755807
+          ],
+          "performance_ratio": null,
+          "performance_note": "No matched normal user-request timing collected; absolute HTTP times only",
+          "restore": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "range_negative": true,
+          "permit_profile_path_negatives": true
+        }
+      ],
+      "deployment_identity": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "execution_mode": "product",
+        "hardware_device_name": "Ascend910B4",
+        "hardware_family": "A2",
+        "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+        "hardware_logical_device": 0,
+        "live_config_matches_file": true,
+        "max_model_len": 1024,
+        "max_num_batched_tokens": 1024,
+        "max_num_seqs": 1,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "pp": 1,
+        "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+        "safetensors_index_sha256": {
+          "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+        },
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      }
+    },
+    {
+      "case": "r741routes1124a1-vision",
+      "mechanism": "external.conv3d_output_gain",
+      "status": "FAILED",
+      "source_commit": "bfb8bc9e8f7e1a194cae6cb6443bf0a20b634150",
+      "source_manifest_sha256": "18c73e8013ea3b8c61fd3e2e2204a473bdc637672fa10ad56e19eda869ceeff5",
+      "receipt": {
+        "file": "product_http_17.json",
+        "bytes": 20754,
+        "sha256": "344e2008a3deffec5a8af8a404848cb40e246f0459009ea203106452fcc63112"
+      },
+      "started_utc": "2026-11-24T13:10:04.445071+00:00",
+      "ended_utc": "2026-11-24T13:15:16.939479+00:00",
+      "allocated_wall_seconds": 312.494408,
+      "exit_code": 2,
+      "qualification_granted": false,
+      "error": "<HTTPError 500: 'Internal Server Error'>",
+      "cause": "EXTERNAL_ACTUAL_PATCH_CONV3D_REQUIRED: nn.Conv3d class assumption rejected actual vLLM Conv3dLayer before rewrite",
+      "review": "FAILED_NOT_QUALIFIED"
+    },
+    {
+      "case": "r741routes1124a2-vision",
+      "mechanism": "external.conv3d_output_gain",
+      "status": "HTTP_PRODUCT_TWO_SCOPES_PENDING_REVIEW",
+      "source_commit": "acd82e0385fccafc730a29f594f28196dbf1baf0",
+      "source_manifest_sha256": "ccf7db983fed1845a4244f7b15d1510524b24443c331bff658755f4cdd510d8b",
+      "receipt": {
+        "file": "product_http_17.json",
+        "bytes": 300756,
+        "sha256": "ad65e2320bb32d70f757f5e4ab5c6b07404b92e004e889281d15e5d0261ff534"
+      },
+      "started_utc": "2026-11-24T13:25:26.685981+00:00",
+      "ended_utc": "2026-11-24T13:30:59.116843+00:00",
+      "allocated_wall_seconds": 332.430862,
+      "exit_code": 0,
+      "qualification_granted": false,
+      "review": "PASSED",
+      "scopes": [
+        {
+          "scope": 0,
+          "owners": [
+            "b1a78c24b8c19a338ad815c6f7a850ea",
+            "d3ccefd4a88166821a0eff12e4c53fce"
+          ],
+          "coverage_by_rank": {
+            "0": {
+              "observed": 3,
+              "eligible": 3,
+              "attempted": 3,
+              "applied": 3,
+              "changed": 3,
+              "consumed": 3,
+              "restored": 3,
+              "failed": 0
+            },
+            "1": {
+              "observed": 3,
+              "eligible": 3,
+              "attempted": 3,
+              "applied": 3,
+              "changed": 3,
+              "consumed": 3,
+              "restored": 3,
+              "failed": 0
+            }
+          },
+          "changed_elements_by_rank": {
+            "0": 55296,
+            "1": 55296
+          },
+          "consumers": [
+            "aten::add"
+          ],
+          "native_producers": [
+            "aten::conv3d"
+          ],
+          "request_seconds": [
+            1.4384465848561376,
+            1.3582333109807223,
+            1.3675570711493492,
+            1.5384874250739813
+          ],
+          "performance_ratio": null,
+          "performance_note": "No matched normal user-request timing collected; absolute HTTP times only",
+          "restore": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "range_negative": true,
+          "permit_profile_path_negatives": true
+        },
+        {
+          "scope": 1,
+          "owners": [
+            "12c887e1b7553c0be11df996cd61c3ef",
+            "2ba9c81d1fa8ab0a87b1b8c079fe861b"
+          ],
+          "coverage_by_rank": {
+            "0": {
+              "observed": 3,
+              "eligible": 3,
+              "attempted": 3,
+              "applied": 3,
+              "changed": 3,
+              "consumed": 3,
+              "restored": 3,
+              "failed": 0
+            },
+            "1": {
+              "observed": 3,
+              "eligible": 3,
+              "attempted": 3,
+              "applied": 3,
+              "changed": 3,
+              "consumed": 3,
+              "restored": 3,
+              "failed": 0
+            }
+          },
+          "changed_elements_by_rank": {
+            "0": 55296,
+            "1": 55296
+          },
+          "consumers": [
+            "aten::add"
+          ],
+          "native_producers": [
+            "aten::conv3d"
+          ],
+          "request_seconds": [
+            1.3628949110861868,
+            1.3632132280617952,
+            1.3526694828178734,
+            1.5144412401132286
+          ],
+          "performance_ratio": null,
+          "performance_note": "No matched normal user-request timing collected; absolute HTTP times only",
+          "restore": {
+            "bytes_restored": true,
+            "resources_zero": true,
+            "canary_exact": true,
+            "restored": true
+          },
+          "range_negative": true,
+          "permit_profile_path_negatives": true
+        }
+      ],
+      "deployment_identity": {
+        "cann": [
+          "9.1.0"
+        ],
+        "dp": 1,
+        "dtype": "torch.bfloat16",
+        "eager": true,
+        "hardware_device_name": "Ascend910B4",
+        "hardware_family": "A2",
+        "hardware_identity_source": "INITIALIZED_TORCH_NPU_DEVICE_QUERY",
+        "hardware_logical_device": 0,
+        "live_config_matches_file": true,
+        "max_model_len": 1024,
+        "max_num_batched_tokens": 1024,
+        "max_num_seqs": 1,
+        "model_class": "vllm.model_executor.models.qwen3_5.Qwen3_5ForConditionalGeneration",
+        "model_config_sha256": "191e0af232104ed8b65258cf3fb2b842e288008baca7633c11b82a1ac7203aab",
+        "pp": 1,
+        "quant_model_description_sha256": "ae7835acbab2264a4e9940e1b45507fdc80be75b527fec2dbc21f0701c7c178b",
+        "safetensors_index_sha256": {
+          "quant_model_weights.safetensors.index.json": "939c73d639e0ad8b758e7d9f17b282b0d2ce5fbc39ce751fbd2b49ef508cbe92"
+        },
+        "torch": "2.10.0+cpu",
+        "torch_npu": "2.10.0.post4",
+        "tp": 2,
+        "vllm": "0.26.0",
+        "vllm_ascend": "0.26.0rc1"
+      }
+    }
+  ],
+  "windows": [
+    {
+      "window": "window-r741reg1124a1",
+      "start_utc": "2026-11-24T13:15:17.970679+00:00",
+      "end_utc": "2026-11-24T13:25:24.095658+00:00",
+      "elapsed_seconds": 606.1250023541506,
+      "isolation_removed": true,
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "retained_allocation_override": true,
+      "stopped_containers": [
+        {
+          "time": "2026-11-24T13:15:33.483549+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-e5f531c1de3e4f0f_dev2_slot0_85ca51b6",
+          "id": "f6c245e4463bbfdb81f8ea83e249add61d24f67d767ac0a9b8a83d1940592639",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-24T13:15:34.108457+00:00",
+          "event": "STOP_END",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-e5f531c1de3e4f0f_dev2_slot0_85ca51b6",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "returncode": 0,
+          "stdout": "f6c245e4463bbfdb81f8ea83e249add61d24f67d767ac0a9b8a83d1940592639",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-24T13:16:25.302424+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-e5f531c1de3e4f0f_dev5_slot0_1c4c1e42",
+          "id": "720add09a2b6ca127017688358ece0e40d97f23cb8576d789b322c3f284fa792",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-24T13:16:25.927767+00:00",
+          "event": "STOP_END",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-e5f531c1de3e4f0f_dev5_slot0_1c4c1e42",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "returncode": 0,
+          "stdout": "720add09a2b6ca127017688358ece0e40d97f23cb8576d789b322c3f284fa792",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-24T13:17:12.014067+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-e5f531c1de3e4f0f_dev2_slot0_96b06c7e",
+          "id": "b47ae973ddd2ee2adb25c7e4b63ce78b22232d32aad280b502c5fd1f6f7f7989",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "cards": [
+            2
+          ]
+        },
+        {
+          "time": "2026-11-24T13:17:12.709030+00:00",
+          "event": "STOP_END",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-e5f531c1de3e4f0f_dev2_slot0_96b06c7e",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "returncode": 0,
+          "stdout": "b47ae973ddd2ee2adb25c7e4b63ce78b22232d32aad280b502c5fd1f6f7f7989",
+          "stderr": ""
+        },
+        {
+          "time": "2026-11-24T13:18:03.918974+00:00",
+          "event": "STOP_BEGIN",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-e5f531c1de3e4f0f_dev5_slot0_10521b8e",
+          "id": "9a6aa5c80462264130f1265212e09c12c3a7d08fb3e84b6c4cb0a3cc102edaf7",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "cards": [
+            5
+          ]
+        },
+        {
+          "time": "2026-11-24T13:18:04.620261+00:00",
+          "event": "STOP_END",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-e5f531c1de3e4f0f_dev5_slot0_10521b8e",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "returncode": 0,
+          "stdout": "9a6aa5c80462264130f1265212e09c12c3a7d08fb3e84b6c4cb0a3cc102edaf7",
+          "stderr": ""
+        }
+      ],
+      "controller": {
+        "file": "controller.json",
+        "bytes": 69014,
+        "sha256": "d6a7cb7172f1abba4248837b7e54a6805b8c1e5ec035a143c7dde11d31191f39"
+      },
+      "isolation_log": {
+        "file": "isolation.jsonl",
+        "bytes": 2918,
+        "sha256": "69c66c0a3a9666c9d2223ec73c5385b009b65d6e643aa9a440b594a6e2345ba4"
+      }
+    },
+    {
+      "window": "window-r741routes1124a1",
+      "start_utc": "2026-11-24T13:05:15.271276+00:00",
+      "end_utc": "2026-11-24T13:15:17.964870+00:00",
+      "elapsed_seconds": 602.6936105468776,
+      "isolation_removed": true,
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "retained_allocation_override": true,
+      "stopped_containers": [],
+      "controller": {
+        "file": "controller.json",
+        "bytes": 69065,
+        "sha256": "f009bd79bbf8903701fa5517436bf36325f22c0b854768bb7d7da9b3bce97c45"
+      },
+      "isolation_log": {
+        "file": "isolation.jsonl",
+        "bytes": 490,
+        "sha256": "89cc6afca46f95a341ee874f66ccc30fc2a2cd9b947416fac3da3998c28f811f"
+      }
+    },
+    {
+      "window": "window-r741routes1124a2",
+      "start_utc": "2026-11-24T13:25:24.118863+00:00",
+      "end_utc": "2026-11-24T13:31:00.147150+00:00",
+      "elapsed_seconds": 336.0283222759608,
+      "isolation_removed": true,
+      "method": "BOUNDED_EXACT_DEVICE_DOCKER_STOP_CLEANER",
+      "retained_allocation_override": true,
+      "stopped_containers": [],
+      "controller": {
+        "file": "controller.json",
+        "bytes": 63323,
+        "sha256": "4e2484fabff06973a95a56633c3e4175f4236763902ffc37e2dce4e64d2ef2c2"
+      },
+      "isolation_log": {
+        "file": "isolation.jsonl",
+        "bytes": 490,
+        "sha256": "1c7166970c929c3a34cc9def4e1444b4e2b8b81ce0c1a8175cb30b3553b1505e"
+      }
+    }
+  ],
+  "limits": [
+    "A2 evidence does not qualify A3",
+    "Whole-output gain is a mean-square proxy; epsilon ratio is not reproduced",
+    "Consumer arguments cover the rewritten region; final aten::index semantically selects only final-token rows",
+    "User-request full-model B/F output comparison and matched performance ratios are not collected by this product harness",
+    "All shared release gates and no-device install remain separate from this targeted NPU validation"
+  ],
+  "cpu_rechecks": [
+    {
+      "log": "vision-fix-cpu.log",
+      "run": 32,
+      "passed": 32,
+      "sha256": "8d259d7b2565c9f0074577b8e16367f4b18bb82d5dda1dcff917ea7290e0d38f"
+    },
+    {
+      "log": "npu-product-regression-final.log",
+      "run": 91,
+      "passed": 91,
+      "sha256": "dfb7c64602502fd50207a23d46ae22e4a8c05c18d8dd401c3af0a9698e9be6f0"
+    }
+  ],
+  "evidence_archives": [
+    {
+      "file": "r741reg1124a1-evidence.tgz",
+      "bytes": 1012672,
+      "sha256": "1cbaa3f38c290ea1255676bd34f071bad41d3553e053f05a8403aa26c3fb922e"
+    },
+    {
+      "file": "r741routes1124a1-evidence.tgz",
+      "bytes": 2439740,
+      "sha256": "f185714d597df4b10fc7ab9f782b671f74f3725aecab519f93b0dfbbe6466fc6"
+    },
+    {
+      "file": "r741routes1124a2-evidence.tgz",
+      "bytes": 34130,
+      "sha256": "4564b8b8be3870d842d029cdad500e227e66bb70b758cecc72bcf7333e1b5052"
+    }
+  ],
+  "status": "TARGETED_NPU_VALIDATION_PASSED_WITH_RETAINED_INITIAL_FAILURE",
+  "final_device_check": {
+    "cards": [
+      2,
+      5
+    ],
+    "compute_processes": 0,
+    "owned_test_containers": 0,
+    "live_isolation_controllers": 0,
+    "time_reference": "Observed after final isolation end 2026-11-24T13:31:00Z; exact check timestamp not captured"
+  }
+}

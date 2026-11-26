@@ -1,0 +1,157 @@
+{
+  "schema": "dcat.yellow.followup.review.v1",
+  "materials": [
+    {
+      "source": "yellow-r6-update-17cd0d22",
+      "file": "r6独立安装与执行记录_原文.txt",
+      "bytes": 10616,
+      "sha256": "f755f2a7f9e8fde1819e558a9105f5ad2126bc0ce3be274e93e9cbfe86ad4780",
+      "review": [
+        {
+          "kind": "product_page",
+          "mechanism": "18.api_half",
+          "scope": 0,
+          "rank": 0,
+          "extract_sha256": "2b72904ba643fdb04b9fa49dd04621eec082d313948bb843e8bdf7265b174b8c",
+          "canonical_verified": true,
+          "reviewer_matches_yellow_tools_r1": true,
+          "counts": {
+            "applied": 1932,
+            "attempted": 1932,
+            "changed": 1931,
+            "consumed": 1932,
+            "eligible": 1932,
+            "failed": 0,
+            "observed": 1932,
+            "restored": 1932
+          },
+          "canary_exact": true,
+          "all_resources_zero": true,
+          "identity_issues": [],
+          "source_manifest_sha256": "7a411ce29de51a0fecc6dbfe850aeea765f948c6414708360c873dfe22f38bf4",
+          "missing": [
+            "scope1/rank1 page",
+            "missing-permit and unknown-profile negatives"
+          ],
+          "registration_ready": false
+        },
+        {
+          "kind": "product_page",
+          "mechanism": "18.api_half",
+          "scope": 0,
+          "rank": 1,
+          "extract_sha256": "d4758a1edc042c2bc7605411d28982f7faafb8149414765ec40a931fdef094e0",
+          "canonical_verified": true,
+          "reviewer_matches_yellow_tools_r1": true,
+          "counts": {
+            "applied": 1932,
+            "attempted": 1932,
+            "changed": 1931,
+            "consumed": 1932,
+            "eligible": 1932,
+            "failed": 0,
+            "observed": 1932,
+            "restored": 1932
+          },
+          "canary_exact": true,
+          "all_resources_zero": true,
+          "identity_issues": [],
+          "source_manifest_sha256": "7a411ce29de51a0fecc6dbfe850aeea765f948c6414708360c873dfe22f38bf4",
+          "missing": [
+            "scope1/rank1 page",
+            "missing-permit and unknown-profile negatives"
+          ],
+          "registration_ready": false
+        },
+        {
+          "kind": "product_page",
+          "mechanism": "18.api_half",
+          "scope": 1,
+          "rank": 0,
+          "extract_sha256": "06f665605714a735a621c1ece3881d3b217b5d53df5a82ab10774c21893e221c",
+          "canonical_verified": true,
+          "reviewer_matches_yellow_tools_r1": true,
+          "counts": {
+            "applied": 1932,
+            "attempted": 1932,
+            "changed": 1931,
+            "consumed": 1932,
+            "eligible": 1932,
+            "failed": 0,
+            "observed": 1932,
+            "restored": 1932
+          },
+          "canary_exact": true,
+          "all_resources_zero": true,
+          "identity_issues": [],
+          "source_manifest_sha256": "7a411ce29de51a0fecc6dbfe850aeea765f948c6414708360c873dfe22f38bf4",
+          "missing": [
+            "scope1/rank1 page",
+            "missing-permit and unknown-profile negatives"
+          ],
+          "registration_ready": false
+        }
+      ]
+    },
+    {
+      "source": "yellow-native-extract-r6-install-5f863898",
+      "file": "Native提取全文与r6安装进展_原文.txt",
+      "bytes": 4657,
+      "sha256": "804e82d28a3c50f4bfd5d5ba068e5feafb658a6f8eabbccde6e83559c83d7643",
+      "review": [
+        {
+          "kind": "native_build",
+          "extract_sha256": "5f863898a877f6dd0f181949e66cfcce07e3a7673fba5632a594dc61d21863d2",
+          "canonical_verified": true,
+          "transport_escape_removed": true,
+          "source_matches": {
+            "postwrite.cpp": {
+              "demoncatpfi-rc3-preview-20261122-r5": true,
+              "demoncatpfi-rc3-preview-20261123-r6": true,
+              "HEAD": true
+            },
+            "postwrite.h": {
+              "demoncatpfi-rc3-preview-20261122-r5": true,
+              "demoncatpfi-rc3-preview-20261123-r6": true,
+              "HEAD": true
+            },
+            "test_bound_addresses.cpp": {
+              "demoncatpfi-rc3-preview-20261122-r5": true,
+              "demoncatpfi-rc3-preview-20261123-r6": true,
+              "HEAD": true
+            },
+            "test_original_snapshot.cpp": {
+              "demoncatpfi-rc3-preview-20261122-r5": true,
+              "demoncatpfi-rc3-preview-20261123-r6": true,
+              "HEAD": true
+            },
+            "test_stream_regions.cpp": {
+              "demoncatpfi-rc3-preview-20261122-r5": true,
+              "demoncatpfi-rc3-preview-20261123-r6": true,
+              "HEAD": true
+            }
+          },
+          "library": [
+            "libdcat_postwrite.so",
+            29088,
+            "d9aa0d9488c5c1e8f7fca10c297e4968687ceb6a24866d8346bd33a58afce274"
+          ],
+          "receipt": [
+            "receipt.json",
+            9057,
+            "ff19425f6b1e0460f39b3ca5f8a0f2b4b04b59a4aa9a329d957eff68ddc0a01e"
+          ],
+          "compiler": "g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+          "recipe": "tools/build_native_regions.py:postwrite-stream-object-v2",
+          "source_release": "demoncatpfi-rc3-preview-20261122-r5",
+          "source_commit": "d4ae552df2b4fd82641bb39f234d2071dcccaed5",
+          "sdk": "9.1.0",
+          "cann_runtime": null,
+          "decision": "YELLOW_TEXT_BUILD_IDENTITY_ACCEPTED_RUNTIME_CHECK_REQUIRED",
+          "qualification_granted": false
+        }
+      ]
+    }
+  ],
+  "product_registration_ready": false
+}

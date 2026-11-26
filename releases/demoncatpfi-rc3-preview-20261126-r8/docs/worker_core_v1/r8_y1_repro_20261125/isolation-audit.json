@@ -1,0 +1,186 @@
+{
+  "schema": "dcat.y1.isolation.audit.v1",
+  "checked_at": "2026-11-25T05:07:48.358830+00:00",
+  "authorization": {
+    "start": "2026-11-25T04:52:44.276992+00:00",
+    "end": "2026-11-25T05:37:44.276992+00:00",
+    "cards": [
+      2,
+      5
+    ],
+    "scope": "ATK only; explicit renewal for Y1 defects",
+    "maximum_seconds": 2700
+  },
+  "attempts": [
+    {
+      "attempt": "y1repro1125a1",
+      "window": {
+        "status": "FINISHED",
+        "start": "2026-11-25T04:52:44.331253+00:00",
+        "ended": "2026-11-25T05:06:18.259351+00:00",
+        "elapsed_seconds": 813.9282021741383,
+        "isolation_removed": true
+      },
+      "events": [
+        {
+          "time": "2026-11-25T04:52:44.331331+00:00",
+          "event": "ISOLATION_START",
+          "cards": [
+            2,
+            5
+          ],
+          "method": "BOUNDED_CARD2_5_ATK_STOP_MONITOR",
+          "maximum_seconds": 2700,
+          "dispatcher_or_docker_configuration_changed": false
+        },
+        {
+          "time": "2026-11-25T04:52:44.445404+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-codex-28fb6b5f-01_dev5_slot0_84cfb2b3",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 new explicit45minute authorization for Y1 reproduction, ATK only cards2/5"
+        },
+        {
+          "time": "2026-11-25T04:52:45.240031+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-codex-28fb6b5f-01_dev5_slot0_84cfb2b3",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T04:52:45.240212+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-000e6e1aa4e44a14_dev2_slot0_4f571d1c",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 new explicit45minute authorization for Y1 reproduction, ATK only cards2/5"
+        },
+        {
+          "time": "2026-11-25T04:52:45.926633+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-000e6e1aa4e44a14_dev2_slot0_4f571d1c",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T04:53:31.928209+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-codex-28fb6b5f-01_dev2_slot0_2b0c52a0",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 new explicit45minute authorization for Y1 reproduction, ATK only cards2/5"
+        },
+        {
+          "time": "2026-11-25T04:53:32.611965+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-codex-28fb6b5f-01_dev2_slot0_2b0c52a0",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T04:53:53.058633+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-000e6e1aa4e44a14_dev5_slot0_72753b76",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 new explicit45minute authorization for Y1 reproduction, ATK only cards2/5"
+        },
+        {
+          "time": "2026-11-25T04:53:53.623601+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-000e6e1aa4e44a14_dev5_slot0_72753b76",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T04:54:24.303637+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-codex-28fb6b5f-01_dev2_slot0_c97ee83c",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 new explicit45minute authorization for Y1 reproduction, ATK only cards2/5"
+        },
+        {
+          "time": "2026-11-25T04:54:24.966798+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-codex-28fb6b5f-01_dev2_slot0_c97ee83c",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T04:54:45.417385+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-000e6e1aa4e44a14_dev5_slot0_bd687384",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 new explicit45minute authorization for Y1 reproduction, ATK only cards2/5"
+        },
+        {
+          "time": "2026-11-25T04:54:46.007970+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-000e6e1aa4e44a14_dev5_slot0_bd687384",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T04:55:21.799910+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-codex-28fb6b5f-01_dev5_slot0_24024854",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "cards": [
+            5
+          ],
+          "authorization": "2026-11-25 new explicit45minute authorization for Y1 reproduction, ATK only cards2/5"
+        },
+        {
+          "time": "2026-11-25T04:55:22.372458+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-codex-28fb6b5f-01_dev5_slot0_24024854",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T04:55:42.837387+00:00",
+          "event": "AUTHORIZED_STOP_BEGIN",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-000e6e1aa4e44a14_dev2_slot0_b33bc880",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "cards": [
+            2
+          ],
+          "authorization": "2026-11-25 new explicit45minute authorization for Y1 reproduction, ATK only cards2/5"
+        },
+        {
+          "time": "2026-11-25T04:55:43.488756+00:00",
+          "event": "AUTHORIZED_STOP_END",
+          "container": "/atk_q_ops-math-v900-aclnnAbs-000e6e1aa4e44a14_dev2_slot0_b33bc880",
+          "image": "cann:9.0.0-910b-torch2.10.0_npu-atk26.4.30",
+          "exit_code": 0
+        },
+        {
+          "time": "2026-11-25T05:06:18.259458+00:00",
+          "event": "ISOLATION_END",
+          "cleaner_stopped": true,
+          "dispatch_ability_restored": true,
+          "restoration": "Bounded cleaner stopped and joined; dispatcher configuration never changed; no external container deleted or restarted"
+        }
+      ]
+    }
+  ],
+  "remaining_controllers": [],
+  "remaining_project_containers": [],
+  "configuration_changed": false,
+  "restoration": "Bounded stop monitors joined and exited; dispatch configuration never changed; no container deleted or restarted."
+}
