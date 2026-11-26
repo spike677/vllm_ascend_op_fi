@@ -55,6 +55,7 @@ def main():
     p.add_argument('--batch-canary-negative',action='store_true')
     p.add_argument('--effect-probe',action='store_true')
     p.add_argument('--effect-force-split-off',action='store_true')
+    p.add_argument('--baseline-only-b8',action='store_true')
     p.add_argument('--external-example',action='store_true')
     p.add_argument('--external-sampling',action='store_true')
     p.add_argument('--external-vision',action='store_true')
@@ -71,6 +72,7 @@ def main():
     if a.variance18 and a.mechanism!=['18']:p.error('Variance proxy requires --mechanism 18')
     if sum((a.external_example,a.external_sampling,a.external_vision,bool(a.external_input),bool(a.variance18)))>1:p.error('Choose one adapter variant')
     if a.batch_canary_negative and not batch:p.error('Nonserial canary negative requires Batch')
+    if a.baseline_only_b8 and (not batch or a.effect_probe or a.negative_regression):p.error('Baseline-only requires isolated Batch without product controls')
     if ('batch' in a.mechanism or '33' in a.mechanism) and len(a.mechanism)!=1:p.error('Batch/33 use their own scheduler profile')
     report=dict(status='STARTED',entry='VLLM_HTTP_API',host_per_request_hooks=False,scopes=[])
     target=root/'product_http.json'
@@ -95,6 +97,10 @@ def main():
                 with urllib.request.urlopen(ex.base+'/health',timeout=2):break
             except Exception:time.sleep(1)
         else:raise RuntimeError('HTTP_SERVER_READY_TIMEOUT')
+        if a.baseline_only_b8:
+            from batch_baseline_control import run as run_baselines
+            run_baselines(ex,root)
+            return 0
         from demoncat.runtime.vllm_ascend.worker_extension.product_host import ProductClient
         if a.status_diagnostics:
             from demoncat.runtime.vllm_ascend.worker_extension.product_diagnostics import DiagnosticProductClient as ProductClient
