@@ -1,0 +1,43 @@
+{
+  "schema": "dcat.owner.attach.refusal.candidate.cpu.v1",
+  "status": "PASSED",
+  "tests": 43,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "seconds": 2.3120000001508743,
+  "modules": [
+    "test_product_attach_refusal_noop",
+    "test_product_rejection_recovery",
+    "test_registered_enable_boundary",
+    "test_product_control_refusal",
+    "test_product_host_safety",
+    "test_persistent_product_host",
+    "test_product_bootstrap"
+  ],
+  "qualification_granted": false,
+  "a2_validated": false,
+  "yellow_same_run_identity_pending": true,
+  "expanded_suite": {
+    "status": "BLOCKED_BEFORE_TEST_RUN",
+    "module": "test_product_batch",
+    "reason": "Windows torch c10.dll dependency load error WinError126"
+  },
+  "original_r8_reproduction": {
+    "tests": 6,
+    "failures": 2,
+    "expected_exit": 4,
+    "actual_exit": 5,
+    "worker_binding_guard_path": true
+  },
+  "files": [
+    {
+      "path": "src/demoncat/runtime/vllm_ascend/worker_extension/product_host.py",
+      "sha256": "d1d062b5171eeb65ca5f1552458ec92f08c2195bf27e3ea5605688d9d0a184ed"
+    },
+    {
+      "path": "tests/worker_extension/test_product_attach_refusal_noop.py",
+      "sha256": "d715fecf0cc86adfa0b4ab3231d0bdfea16f922f1879a69e1a076a84642da325"
+    }
+  ]
+}

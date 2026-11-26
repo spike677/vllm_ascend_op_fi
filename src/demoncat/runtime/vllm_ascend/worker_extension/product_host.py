@@ -189,6 +189,29 @@ class ProductClient:
         self.recovery = dict(resources_zero=True, enable_rollback=True,
                              canary_exact=None, restored=False)
 
+    def _record_uninstalled_attach(self, error):
+        # Only this guard is proven to run before the binding write. An arbitrary
+        # typed refusal, missing reply or partial success is not proof of no work.
+        if (error.code != 'PRODUCT_BINDING_ATTACH_FAILED'
+                or len(error.refusals) != len(self.members) or not self.members
+                or [r['rank'] for r in error.refusals] != list(range(len(self.members)))
+                or any(r['status'] != 'PRODUCT_BINDING_REFUSED'
+                       or r['code'] != 'CONTINUOUS_BINDING_ALREADY_INSTALLED'
+                       for r in error.refusals)):
+            return False
+        states = [client.snapshot() for client in self.clients]
+        if (len(states) != len(self.members) or any('attachment' not in s
+                or s['attachment'] is not None or s.get('ownership_retained') is not False for s in states)):
+            return False
+        # These are this client's ledgers, not a global Worker resource audit.
+        self.cleanup_evidence = dict(scope='CURRENT_ENABLE_ATTEMPT',
+            attach_refusal=error.to_dict(), binding_rollback=[],
+            enable_rollback=[dict(rank=m['rank'],status='NOT_ATTACHED',resources_zero=True) for m in self.members])
+        self.bound = self.enabled = self._enable_failure_pending = False
+        self.recovery = dict(resources_zero=True, enable_rollback=True,
+            canary_exact=None, restored=False, resource_scope='CURRENT_ENABLE_ATTEMPT',global_resources_zero=None)
+        return True
+
     def _enable(self, scope=None):
         with self._lock:
             if not self.clients or self.bound:
@@ -198,7 +221,11 @@ class ProductClient:
                 members_sha256=digest(self.members), mechanism=self.config.mechanism,
                 tp=len(self.members), injection_policy='ALL_RANK_EVERY_ELIGIBLE_CALL')
             self.bound = True  # retain cleanup responsibility even if one rank rejects attach
-            attached=self._binding('attach', group_contract=contract, scope=dict(mode=policy.mode))
+            try:
+                attached=self._binding('attach', group_contract=contract, scope=dict(mode=policy.mode))
+            except ProductContractRefused as error:
+                self._record_uninstalled_attach(error)
+                raise  # Preserve the original refusal and exit 4 when no cleanup is needed.
             if self.config.mechanism.startswith('external.'):
                 sources={r.get('external_source_sha256') for r in attached}
                 if len(sources)!=1 or None in sources:
