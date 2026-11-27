@@ -1,0 +1,28 @@
+{
+  "schema": "dcat.v4.upgrade.cpu.v1",
+  "date": "2026-11-27",
+  "tests_run": 18,
+  "failures": 0,
+  "errors": 0,
+  "passed": true,
+  "scope": "stdlib source intake and Python boundary core only; not tensor/NPU/V4 qualification",
+  "files": [
+    {
+      "path": "tools/review_v4_installed_sources.py",
+      "sha256": "7fd056e46ad6f4e3bc3c8e63e93788ad4671738d96f337652b5ae72def1738c1"
+    },
+    {
+      "path": "experiments/worker_core_v11_20261118/dsv4_boundary_observer.py",
+      "sha256": "0c34e00a9e98f6bd0a727fdfb017ba71f0ff5169e588a158b6f7f414bf6c2146"
+    },
+    {
+      "path": "tests/worker_extension/test_v4_source_intake.py",
+      "sha256": "eef7549daa96cb2fe6156c1b639f4c4817cf47395df06b7af50e8af780f13ff9"
+    },
+    {
+      "path": "tests/worker_extension/test_dsv4_boundary_observer.py",
+      "sha256": "900be1acdda9d73bc4cad0e7290321a759acb3af281633adce6068067ded37e9"
+    }
+  ],
+  "log": "test_bad_configuration_is_unknown (test_v4_source_intake.SourceIntakeTests.test_bad_configuration_is_unknown) ... ok\ntest_exact_diff_and_repeatable (test_v4_source_intake.SourceIntakeTests.test_exact_diff_and_repeatable) ... ok\ntest_first_non_hash_candidate_needs_real_configuration (test_v4_source_intake.SourceIntakeTests.test_first_non_hash_candidate_needs_real_configuration) ... ok\ntest_missing_is_not_default_identity (test_v4_source_intake.SourceIntakeTests.test_missing_is_not_default_identity) ... ok\ntest_selector_extra_file_included (test_v4_source_intake.SourceIntakeTests.test_selector_extra_file_included) ... ok\ntest_source_is_parsed_not_executed (test_v4_source_intake.SourceIntakeTests.test_source_is_parsed_not_executed) ... ok\ntest_traversal_and_absolute_rejected (test_v4_source_intake.SourceIntakeTests.test_traversal_and_absolute_rejected) ... ok\ntest_bad_source_rejected_before_any_install (test_dsv4_boundary_observer.BoundaryTests.test_bad_source_rejected_before_any_install) ... ok\ntest_budget_truncates_observation_not_model (test_dsv4_boundary_observer.BoundaryTests.test_budget_truncates_observation_not_model) ... ok\ntest_byte_budget (test_dsv4_boundary_observer.BoundaryTests.test_byte_budget) ... ok\ntest_foreign_wrapper_not_removed (test_dsv4_boundary_observer.BoundaryTests.test_foreign_wrapper_not_removed) ... ok\ntest_nested_boundaries_keep_parent_call (test_dsv4_boundary_observer.BoundaryTests.test_nested_boundaries_keep_parent_call) ... ok\ntest_original_error_preserved (test_dsv4_boundary_observer.BoundaryTests.test_original_error_preserved) ... ok\ntest_parallel_threads_are_not_parent_and_child (test_dsv4_boundary_observer.BoundaryTests.test_parallel_threads_are_not_parent_and_child) ... ok\ntest_preserves_result_kwargs_and_exact_method_identity (test_dsv4_boundary_observer.BoundaryTests.test_preserves_result_kwargs_and_exact_method_identity) ... ok\ntest_snapshot_error_does_not_change_result (test_dsv4_boundary_observer.BoundaryTests.test_snapshot_error_does_not_change_result) ... ok\ntest_unknown_argument_refused (test_dsv4_boundary_observer.BoundaryTests.test_unknown_argument_refused) ... ok\ntest_wrapped_method_cannot_be_approved_by_hash (test_dsv4_boundary_observer.BoundaryTests.test_wrapped_method_cannot_be_approved_by_hash) ... ok\n\n----------------------------------------------------------------------\nRan 18 tests in 0.048s\n\nOK\n"
+}
